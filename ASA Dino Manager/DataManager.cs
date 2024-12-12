@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -10,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 //using System.Windows.Forms;
 using System.Xml.Linq;
+//using Android.Media;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace ASA_Dino_Manager
@@ -61,6 +63,7 @@ namespace ASA_Dino_Manager
         public static int StatusID = 0;
 
         public static bool NewSpecies = false;
+        public static bool forceLoad = false;
 
         public static bool InitDataManager()
         {
@@ -227,7 +230,6 @@ namespace ASA_Dino_Manager
             }
         }
 
-
         public static void FillSideMenu()
         {
             string[] classList = DataManager.GetAllClasses();
@@ -286,6 +288,23 @@ namespace ASA_Dino_Manager
 
             // Return the distinct values as an array
             return resultSet.ToArray();
+        }
+
+        public static string TagForClass(string DinoClass)
+        {
+            string result = "";
+
+            foreach (DataRow row in ImportsTable.Rows)
+            {
+                string columnValue = row["Class"].ToString();
+
+
+                if (columnValue.Contains(DinoClass.Replace(" ",".")))
+                {
+                    return row["Class"].ToString();
+                }
+            }
+            return result;
         }
 
         public static string[] GetDistinctFilteredColumnData(string inColumn1, string inData, string inColumn2, string inData2, string outData, string exclude = "")
@@ -634,17 +653,18 @@ namespace ASA_Dino_Manager
             {
                 return; // Exit early if tag is empty
             }
-            if (ModC > 0 || AddC > 0) // Check if we need to reload data
+            if (ModC > 0 || AddC > 0 || forceLoad) // Check if we need to reload data
             {
+                forceLoad = false;
                 // Clear the tables before populating them
                 DataManager.MaleTable.Clear();
                 DataManager.FemaleTable.Clear();
 
                 // Retrieve female data
-                string[] females = DataManager.GetDistinctFilteredColumnData("Tag", tag, "Sex", "Female", "ID");
+                string[] females = DataManager.GetDistinctFilteredColumnData("Class", tag, "Sex", "Female", "ID");
 
                 // Retrieve male data
-                string[] males = DataManager.GetDistinctFilteredColumnData("Tag", tag, "Sex", "Male", "ID");
+                string[] males = DataManager.GetDistinctFilteredColumnData("Class", tag, "Sex", "Male", "ID");
 
                 // Process females
                 List<string[]> MainStatsF =  DataManager.GetFirstStats(females);

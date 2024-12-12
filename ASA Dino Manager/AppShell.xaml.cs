@@ -43,21 +43,6 @@ namespace ASA_Dino_Manager
         }
 
 
-        private void ClearShell()
-        {
-            Items.Clear();
-            var shellContent = new ShellContent
-            {
-                Title = "Dino Archive",
-                ContentTemplate = new DataTemplate(typeof(MainPage)), // Replace with the appropriate page
-                Route = "Dino Archive"
-            };
-
-            // Add the ShellContent to the Shell
-            Items.Add(shellContent);
-        }
-
-
         private void PopulateShellContents()
         {
             string[] classList = DataManager.GetAllClasses();
@@ -199,6 +184,7 @@ namespace ASA_Dino_Manager
             }
 
             PopulateShellContents();
+            FileManager.WriteLog();
         }
 
         public void StopTimer()

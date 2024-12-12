@@ -11,7 +11,7 @@
                 Source="dino.png"
                 HeightRequest="185"
                 Aspect="AspectFit"
-                SemanticProperties.Description="dot net bot in a hovercraft number nine" />
+                SemanticProperties.Description="dinos" />
 
             <Label
                 x:Name="Label1"
