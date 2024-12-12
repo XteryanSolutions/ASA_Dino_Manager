@@ -6,7 +6,7 @@ namespace ASA_Dino_Manager
     public partial class MainPage : ContentPage
     {
         // This is a comment test yes it is !! BLUB
-
+        public static bool HideExcluded = false;
         public MainPage()
         { 
             InitializeComponent();
@@ -54,12 +54,30 @@ namespace ASA_Dino_Manager
                 DataManager.SetBinaryStats();
                 DataManager.GetBestPartner();
 
+
                 // Show data
                 var mainStack = new StackLayout
                 {
                     Spacing = 20,
                     Padding = 10
                 };
+
+
+
+                // Create a button and add it to the stack
+                var topButton = new Button
+                {
+                    Text = "Toggle Excluded",
+                    BackgroundColor = Colors.LightBlue,
+                    TextColor = Colors.White,
+                    FontAttributes = FontAttributes.Bold,
+                    HorizontalOptions = LayoutOptions.Center
+                };
+                topButton.Clicked += OnTopButtonClicked; // Attach an event handler
+                mainStack.Children.Add(topButton);
+
+
+
 
                 // Add male table
                 mainStack.Children.Add(CreateTableGrid(DataManager.MaleTable, "Male"));
@@ -99,25 +117,25 @@ namespace ASA_Dino_Manager
 
 
 
-            // Add table title
-            var titleLabel = new Label
-            {
-                Text = title,
-                FontAttributes = FontAttributes.Bold,
-                FontSize = 20,
-                HorizontalOptions = LayoutOptions.Center,
-                VerticalOptions = LayoutOptions.Center,
-                TextColor = Colors.Black
-            };
-            //Grid.SetColumnSpan(titleLabel, 3); // Span across all 3 columns
-            //AddToGrid(grid, titleLabel, 0, 0);
+            var maleColor = Colors.LightBlue;
+            var femaleColor = Colors.Pink;
+            var breedColor = Colors.LightYellow;
+            var goodColor = Colors.LightGreen;
 
-            var headerColor = Colors.LightBlue;
-            var cellColor = Colors.LightBlue;
 
-            if (title == "Male") { headerColor = Colors.LightBlue; cellColor = Colors.LightBlue; }
-            else if (title == "Female") { headerColor = Colors.Pink; cellColor = Colors.Pink; }
-            else { headerColor = Colors.LightYellow; cellColor = Colors.LightYellow; }
+
+
+            var headerColor = maleColor;
+            var DefaultColor = maleColor;
+
+
+
+            if (title == "Male") { DefaultColor = maleColor; }
+            else if (title == "Female") { DefaultColor = femaleColor; }
+            else {  DefaultColor = breedColor; }
+
+
+            headerColor = DefaultColor;
 
 
             // Add header row
@@ -139,6 +157,17 @@ namespace ASA_Dino_Manager
 
             foreach (DataRow row in table.Rows)
             {
+                var cellColor0 = DefaultColor;
+                var cellColor1 = DefaultColor;
+                var cellColor2 = DefaultColor;
+                var cellColor3 = DefaultColor;
+                var cellColor4 = DefaultColor;
+                var cellColor5 = DefaultColor;
+                var cellColor6 = DefaultColor;
+                var cellColor7 = DefaultColor;
+                var cellColor8 = DefaultColor;
+
+
                 string name = row["Name"].ToString();
                 string level = row["Level"].ToString();
                 string hp = row["Hp"].ToString();
@@ -151,24 +180,47 @@ namespace ASA_Dino_Manager
 
 
 
+
+                if (DataManager.ToDouble(hp) >= DataManager.HpMax) { cellColor2 = goodColor; }
+                if (DataManager.ToDouble(stamina) >= DataManager.StaminaMax) { cellColor3 = goodColor; }
+                if (DataManager.ToDouble(oxygen) >= DataManager.OxygenMax) { cellColor4 = goodColor; }
+                if (DataManager.ToDouble(food) >= DataManager.FoodMax) { cellColor5 = goodColor; }
+                if (DataManager.ToDouble(weight) >= DataManager.WeightMax) { cellColor6 = goodColor; }
+                if (DataManager.ToDouble(damage) >= DataManager.DamageMax) { cellColor7 = goodColor; }
+
+
+
+
                 // Add data to the grid
-                AddToGrid(grid, new Label { Text = name, TextColor = cellColor }, rowIndex, 0);
-                AddToGrid(grid, new Label { Text = level, TextColor = cellColor }, rowIndex, 1);
-                AddToGrid(grid, new Label { Text = hp, TextColor = cellColor }, rowIndex, 2);
-                AddToGrid(grid, new Label { Text = stamina, TextColor = cellColor }, rowIndex, 3);
-                AddToGrid(grid, new Label { Text = oxygen, TextColor = cellColor }, rowIndex, 4);
-                AddToGrid(grid, new Label { Text = food, TextColor = cellColor }, rowIndex, 5);
-                AddToGrid(grid, new Label { Text = weight, TextColor = cellColor }, rowIndex, 6);
-                AddToGrid(grid, new Label { Text = damage, TextColor = cellColor }, rowIndex, 7);
-                AddToGrid(grid, new Label { Text = status, TextColor = cellColor }, rowIndex, 8);
-
-
+                AddToGrid(grid, new Label { Text = name, TextColor = cellColor0 }, rowIndex, 0);
+                AddToGrid(grid, new Label { Text = level, TextColor = cellColor1 }, rowIndex, 1);
+                AddToGrid(grid, new Label { Text = hp, TextColor = cellColor2 }, rowIndex, 2);
+                AddToGrid(grid, new Label { Text = stamina, TextColor = cellColor3 }, rowIndex, 3);
+                AddToGrid(grid, new Label { Text = oxygen, TextColor = cellColor4 }, rowIndex, 4);
+                AddToGrid(grid, new Label { Text = food, TextColor = cellColor5 }, rowIndex, 5);
+                AddToGrid(grid, new Label { Text = weight, TextColor = cellColor6 }, rowIndex, 6);
+                AddToGrid(grid, new Label { Text = damage, TextColor = cellColor7 }, rowIndex, 7);
+                AddToGrid(grid, new Label { Text = status, TextColor = cellColor8 }, rowIndex, 8);
 
 
                 rowIndex++;
             }
 
             return grid;
+        }
+
+        private void OnTopButtonClicked(object? sender, EventArgs e)
+        {
+            if (HideExcluded)
+            {
+                HideExcluded = false;
+            }
+            else
+            {
+                HideExcluded = true;
+            }
+            // reload stuff
+            UpdateContentBasedOnNavigation();
         }
 
         private void AddToGrid(Grid grid, View view, int row, int column)
