@@ -2,19 +2,15 @@
 
 <!--  some stuff here to retrieve the dinoClassList-->
     
-    <Shell
-        x:Class="ASA_Dino_Manager.AppShell"
-        xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-        xmlns:local="clr-namespace:ASA_Dino_Manager"
-        Shell.FlyoutBehavior="Flyout"
-        Title="ASA Dino Manager 4.30">
+<Shell 
+    x:Class="ASA_Dino_Manager.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:ASA_Dino_Manager"
+    Shell.FlyoutBehavior="Flyout"
+    Title="ASA Dino Manager 4.30">
 
-    <ShellContent Title="Daeodon" ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
-
-    <ShellContent Title="Frogz" ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
-
-    <ShellContent Title="Blubbers" ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
+    <ShellContent Title="Dino Archive" ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
 
 
 
