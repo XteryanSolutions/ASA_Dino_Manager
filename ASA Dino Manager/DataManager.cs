@@ -64,6 +64,7 @@ namespace ASA_Dino_Manager
 
         public static bool NewSpecies = false;
         public static bool forceLoad = false;
+        public static string selectedClass = "";
 
         public static bool InitDataManager()
         {
@@ -610,103 +611,104 @@ namespace ASA_Dino_Manager
                 string mutes = a + b + c + d + e + f;
 
                 SetMutes(dino, mutes);
-                if (MainPage.HideExcluded)
-                {
-                    if (status != "Archived" && status != "Exclude")
-                    {
-                        // Fill the DataRow
-                        DataRow dr = table.NewRow();
-                        dr["ID"] = dino;
-                        dr["Name"] = BrStats[rowID][0].ToString();
-                        dr["Mama"] = GetLastColumnData("ID", BrStats[rowID][9].ToString(), "Name", "");
-                        dr["Papa"] = GetLastColumnData("ID", BrStats[rowID][10].ToString(), "Name", "");
-                        dr["Imprinter"] = BrStats[rowID][18].ToString();
-                        dr["Level"] = ToDouble(MainStats[rowID][1].ToString());
-                        dr["Hp"] = Math.Round(ToDouble(MainStats[rowID][2].ToString()), 1);
-                        dr["Stamina"] = Math.Round(ToDouble(MainStats[rowID][3].ToString()), 1);
-                        dr["Oxygen"] = Math.Round(ToDouble(MainStats[rowID][4].ToString()), 1);
-                        dr["Food"] = Math.Round(ToDouble(MainStats[rowID][5].ToString()), 1);
-                        dr["Weight"] = Math.Round(ToDouble(MainStats[rowID][6].ToString()), 1);
-                        dr["Damage"] = Math.Round((ToDouble(MainStats[rowID][7].ToString()) + 1) * 100, 1);
-                        dr["Speed"] = Math.Round((ToDouble(BrStats[rowID][8].ToString()) + 1) * 100);
-                        dr["Gen"] = ToDouble(BrStats[rowID][13].ToString());
-                        dr["MamaMute"] = ToDouble(BrStats[rowID][11].ToString());
-                        dr["PapaMute"] = ToDouble(BrStats[rowID][12].ToString());
-                        dr["Age"] = Math.Round(ToDouble(BrStats[rowID][15].ToString()) * 100);
-                        dr["Imprint"] = Math.Round(ToDouble(BrStats[rowID][17].ToString()) * 100);
-                        dr["Status"] = status;
-
-                        table.Rows.Add(dr);
-                    }
-                }
-                else
+                bool addIT = false;
+                if (MainPage.ToggleExcluded == 0)
                 {
                     if (status != "Archived")
                     {
-                        // Fill the DataRow
-                        DataRow dr = table.NewRow();
-                        dr["ID"] = dino;
-                        dr["Name"] = BrStats[rowID][0].ToString();
-                        dr["Mama"] = GetLastColumnData("ID", BrStats[rowID][9].ToString(), "Name", "");
-                        dr["Papa"] = GetLastColumnData("ID", BrStats[rowID][10].ToString(), "Name", "");
-                        dr["Imprinter"] = BrStats[rowID][18].ToString();
-                        dr["Level"] = ToDouble(MainStats[rowID][1].ToString());
-                        dr["Hp"] = Math.Round(ToDouble(MainStats[rowID][2].ToString()), 1);
-                        dr["Stamina"] = Math.Round(ToDouble(MainStats[rowID][3].ToString()), 1);
-                        dr["Oxygen"] = Math.Round(ToDouble(MainStats[rowID][4].ToString()), 1);
-                        dr["Food"] = Math.Round(ToDouble(MainStats[rowID][5].ToString()), 1);
-                        dr["Weight"] = Math.Round(ToDouble(MainStats[rowID][6].ToString()), 1);
-                        dr["Damage"] = Math.Round((ToDouble(MainStats[rowID][7].ToString()) + 1) * 100, 1);
-                        dr["Speed"] = Math.Round((ToDouble(BrStats[rowID][8].ToString()) + 1) * 100);
-                        dr["Gen"] = ToDouble(BrStats[rowID][13].ToString());
-                        dr["MamaMute"] = ToDouble(BrStats[rowID][11].ToString());
-                        dr["PapaMute"] = ToDouble(BrStats[rowID][12].ToString());
-                        dr["Age"] = Math.Round(ToDouble(BrStats[rowID][15].ToString()) * 100);
-                        dr["Imprint"] = Math.Round(ToDouble(BrStats[rowID][17].ToString()) * 100);
-                        dr["Status"] = status;
-
-                        table.Rows.Add(dr);
+                        addIT = true;
                     }
                 }
+                else if (MainPage.ToggleExcluded == 1)
+                {
+                    if (status != "Archived" && status != "Exclude")
+                    {
+                        addIT = true;
+                    }
+                }
+                else if (MainPage.ToggleExcluded == 2)
+                {
+                    if (status != "Archived" && status == "Exclude")
+                    {
+                        addIT = true;
+                    }
+                }
+
+                if (addIT)
+                {
+                    // Fill the DataRow
+                    DataRow dr = table.NewRow();
+                    dr["ID"] = dino;
+                    dr["Name"] = BrStats[rowID][0].ToString();
+                    dr["Mama"] = GetLastColumnData("ID", BrStats[rowID][9].ToString(), "Name", "");
+                    dr["Papa"] = GetLastColumnData("ID", BrStats[rowID][10].ToString(), "Name", "");
+                    dr["Imprinter"] = BrStats[rowID][18].ToString();
+                    dr["Level"] = ToDouble(MainStats[rowID][1].ToString());
+                    dr["Hp"] = Math.Round(ToDouble(MainStats[rowID][2].ToString()), 1);
+                    dr["Stamina"] = Math.Round(ToDouble(MainStats[rowID][3].ToString()), 1);
+                    dr["Oxygen"] = Math.Round(ToDouble(MainStats[rowID][4].ToString()), 1);
+                    dr["Food"] = Math.Round(ToDouble(MainStats[rowID][5].ToString()), 1);
+                    dr["Weight"] = Math.Round(ToDouble(MainStats[rowID][6].ToString()), 1);
+                    dr["Damage"] = Math.Round((ToDouble(MainStats[rowID][7].ToString()) + 1) * 100, 1);
+                    dr["Speed"] = Math.Round((ToDouble(BrStats[rowID][8].ToString()) + 1) * 100);
+                    dr["Gen"] = ToDouble(BrStats[rowID][13].ToString());
+                    dr["MamaMute"] = ToDouble(BrStats[rowID][11].ToString());
+                    dr["PapaMute"] = ToDouble(BrStats[rowID][12].ToString());
+                    dr["Age"] = Math.Round(ToDouble(BrStats[rowID][15].ToString()) * 100);
+                    dr["Imprint"] = Math.Round(ToDouble(BrStats[rowID][17].ToString()) * 100);
+                    dr["Status"] = status;
+
+                    table.Rows.Add(dr);
+                }
+
                 rowID++;
             }
         }
 
-        public static void GetDinoData(string tag) 
+        public static void GetDinoData(string DinoClass) 
         {
-
-            // change to dinoClass
-
-
-
-
-            if (string.IsNullOrEmpty(tag))
+            if (string.IsNullOrEmpty(DinoClass))
             {
                 return; // Exit early if tag is empty
             }
-            if (ModC > 0 || AddC > 0 || forceLoad) // Check if we need to reload data
+
+            forceLoad = false;
+            // Clear the tables before populating them
+            DataManager.MaleTable.Clear();
+            DataManager.FemaleTable.Clear();
+
+            // Retrieve female data
+            string[] females = DataManager.GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Female", "ID");
+
+            // Retrieve male data
+            string[] males = DataManager.GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Male", "ID");
+
+
+            if (MainPage.CurrentStats)
             {
-                forceLoad = false;
-                // Clear the tables before populating them
-                DataManager.MaleTable.Clear();
-                DataManager.FemaleTable.Clear();
-
-                // Retrieve female data
-                string[] females = DataManager.GetDistinctFilteredColumnData("Class", tag, "Sex", "Female", "ID");
-
-                // Retrieve male data
-                string[] males = DataManager.GetDistinctFilteredColumnData("Class", tag, "Sex", "Male", "ID");
-
                 // Process females
-                List<string[]> MainStatsF =  DataManager.GetFirstStats(females);
+                List<string[]> MainStatsF = DataManager.GetLastStats(females);
                 List<string[]> BrStatsF = DataManager.GetLastStats(females);
                 ProcessDinos(females, MainStatsF, BrStatsF, DataManager.FemaleTable);
 
                 // Process males
-                List<string[]> MainStatsM =  DataManager.GetFirstStats(males);
+                List<string[]> MainStatsM = DataManager.GetLastStats(males);
                 List<string[]> BrStatsM = DataManager.GetLastStats(males);
                 ProcessDinos(males, MainStatsM, BrStatsM, DataManager.MaleTable);
             }
+            else
+            {
+                // Process females
+                List<string[]> MainStatsF = DataManager.GetFirstStats(females);
+                List<string[]> BrStatsF = DataManager.GetLastStats(females);
+                ProcessDinos(females, MainStatsF, BrStatsF, DataManager.FemaleTable);
+
+                // Process males
+                List<string[]> MainStatsM = DataManager.GetFirstStats(males);
+                List<string[]> BrStatsM = DataManager.GetLastStats(males);
+                ProcessDinos(males, MainStatsM, BrStatsM, DataManager.MaleTable);
+            }
+
         }
 
         public static void GetDinoArchive()

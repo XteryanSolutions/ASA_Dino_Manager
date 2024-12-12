@@ -6,7 +6,14 @@ namespace ASA_Dino_Manager
     public partial class MainPage : ContentPage
     {
         // This is a comment test yes it is !! BLUB
-        public static bool HideExcluded = false;
+        public static int ToggleExcluded = 0;
+
+        public static bool OnlyExcluded = false;
+        public static bool CurrentStats = false;
+
+
+
+
         public MainPage()
         { 
             InitializeComponent();
@@ -47,15 +54,29 @@ namespace ASA_Dino_Manager
 
 
                 string dinoTag = DataManager.TagForClass(route);
-
-                DataManager.forceLoad = true;
-                DataManager.GetDinoData(dinoTag);
-                DataManager.SetMaxStats();
-                DataManager.SetBinaryStats();
-                DataManager.GetBestPartner();
+                DataManager.selectedClass = dinoTag;
 
 
-                // Show data
+                if (DataManager.selectedClass != "")
+                {
+                    DataManager.GetDinoData(DataManager.selectedClass);
+                    DataManager.SetMaxStats();
+                    DataManager.SetBinaryStats();
+                    DataManager.GetBestPartner();
+                }
+
+
+
+                // =================================================================================================    Show data   =====================================================
+
+                // Create the main layout
+                var mainLayout = new Grid();
+
+                // Define row definitions
+                mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Fixed button row
+                mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // Scrollable content
+
+
                 var mainStack = new StackLayout
                 {
                     Spacing = 20,
@@ -63,36 +84,105 @@ namespace ASA_Dino_Manager
                 };
 
 
+            
+                // Add the button grid
+                AddToGrid(mainLayout, CreateButtonGrid(), 0, 0);
 
-                // Create a button and add it to the stack
-                var topButton = new Button
+
+
+                // Create scrollable content
+                var scrollContent = new StackLayout
                 {
-                    Text = "Toggle Excluded",
-                    BackgroundColor = Colors.LightBlue,
-                    TextColor = Colors.White,
-                    FontAttributes = FontAttributes.Bold,
-                    HorizontalOptions = LayoutOptions.Center
+                    Spacing = 20,
+                    Padding = 10
                 };
-                topButton.Clicked += OnTopButtonClicked; // Attach an event handler
-                mainStack.Children.Add(topButton);
+
+                // Add male and female tables
+                scrollContent.Children.Add(CreateTableGrid(DataManager.MaleTable, "Male"));
+                scrollContent.Children.Add(CreateTableGrid(DataManager.FemaleTable, "Female"));
+               
+
+                // Wrap the scrollable content in a ScrollView and add it to the second row
+                var scrollView = new ScrollView { Content = scrollContent };
+
+
+                AddToGrid(mainLayout, scrollView, 1, 0);
 
 
 
+                // Create scrollable content
+                var scrollContent2 = new StackLayout
+                {
+                    Spacing = 20,
+                    Padding = 10
+                };
 
-                // Add male table
-                mainStack.Children.Add(CreateTableGrid(DataManager.MaleTable, "Male"));
-
-                // Add female table
-                mainStack.Children.Add(CreateTableGrid(DataManager.FemaleTable, "Female"));
-
-                // Add Bottom table
-                mainStack.Children.Add(CreateTableGrid(DataManager.BottomTable, "Bottom"));
+                scrollContent2.Children.Add(CreateTableGrid(DataManager.BottomTable, "Bottom"));
+                var scrollView2 = new ScrollView { Content = scrollContent2 };
 
 
+                AddToGrid(mainLayout, scrollView2, 2, 0);
 
-                this.Content = new ScrollView { Content = mainStack }; // Wrap in a 
+
+                this.Content = mainLayout;
 
             }
+        }
+        private Grid CreateButtonGrid()
+        {
+            var grid = new Grid
+            {
+                RowSpacing = 10,
+                ColumnSpacing = 10,
+                Padding = 10
+            };
+
+            // Define columns
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 0
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 1
+
+            var bColor1 = Colors.LightBlue;
+            var bColor2 = Colors.LightBlue;
+
+
+            if (MainPage.CurrentStats)
+            {
+                bColor2 = Colors.LightGreen;
+            }
+
+            if (MainPage.ToggleExcluded == 0)
+            {
+                bColor1 = Colors.LightBlue;
+            }
+            else if (MainPage.ToggleExcluded == 1)
+            {
+                bColor1 = Colors.LightGreen;
+            }
+            else if (MainPage.ToggleExcluded == 2)
+            {
+                bColor1 = Colors.LightYellow;
+            }
+
+
+
+            var topButton1 = new Button { Text = "Toggle Excluded" ,BackgroundColor = bColor1 };
+            var topButton2 = new Button { Text = "Current stats" ,BackgroundColor = bColor2 };
+
+
+
+            AddToGrid(grid, topButton1 , 0, 0);
+            AddToGrid(grid, topButton2, 0, 1);
+
+
+
+            // Create the fixed button
+
+
+            topButton1.Clicked += OnTopButton1Clicked;
+            topButton2.Clicked += OnTopButton2Clicked;
+
+
+            return grid;
         }
 
         private Grid CreateTableGrid(DataTable table, string title)
@@ -209,19 +299,32 @@ namespace ASA_Dino_Manager
             return grid;
         }
 
-        private void OnTopButtonClicked(object? sender, EventArgs e)
+        private void OnTopButton1Clicked(object? sender, EventArgs e)
         {
-            if (HideExcluded)
+            ToggleExcluded++;
+            if (ToggleExcluded == 3)
             {
-                HideExcluded = false;
+                ToggleExcluded = 0;
+            }
+
+            // reload stuff
+            UpdateContentBasedOnNavigation();
+        }
+
+        private void OnTopButton2Clicked(object? sender, EventArgs e)
+        {
+            if (CurrentStats)
+            {
+                CurrentStats = false;
             }
             else
             {
-                HideExcluded = true;
+                CurrentStats = true;
             }
             // reload stuff
             UpdateContentBasedOnNavigation();
         }
+
 
         private void AddToGrid(Grid grid, View view, int row, int column)
         {

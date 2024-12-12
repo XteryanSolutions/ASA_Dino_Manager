@@ -1,4 +1,5 @@
 ﻿//using Android.Nfc;
+using System.Reflection;
 using Microsoft.Maui.Controls;
 
 namespace ASA_Dino_Manager
@@ -62,10 +63,12 @@ namespace ASA_Dino_Manager
 
                 // Add the ShellContent to the Shell
                 Items.Add(shellContent);
+
                 return; // exit early if the tagList is empty
             }
             if (tagList.Length > tagSize)
             {
+                FileManager.Log("updated tagList");
                 Items.Clear();
                 tagSize = tagList.Length;
                 //ClearShell();
@@ -95,7 +98,7 @@ namespace ASA_Dino_Manager
 
         }
 
-        public static void StartImport()
+        public void ProcessAllData()
         {
             if (ImportEnabled)
             {
@@ -103,32 +106,47 @@ namespace ASA_Dino_Manager
                 {
                     if (!Importing)
                     {
-                        FileManager.Log("Starting Import thread");
-                        Thread thread = new Thread(delegate () { // start new thread
-                            try
-                            {
-                                Importing = true;
-                                var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-                                DataManager.Import();
-                                stopwatch.Stop();
-                                var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
-                                Importing = false;
-                                FileManager.SaveFiles();
-                                ImportCount++;
-                                double outAVG = 0;
-                                if (ImportCount < 2) { ImportAvg = elapsedMilliseconds; outAVG = ImportAvg; }
-                                else { ImportAvg += elapsedMilliseconds; outAVG = ImportAvg / ImportCount; }
+                        FileManager.Log("Starting Data Process...");
+                        try
+                        {
+                            Importing = true;
+                            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
-                                FileManager.Log("Imported files in " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
-                                Delay = DefaultDelay; // only start up timer after scanning is done 
-                            }
-                            catch
+
+                            DataManager.Import();
+                            FileManager.Log("imported");
+
+                            if (DataManager.selectedClass != "")
                             {
-                                FileManager.Log("Import thread failure");
-                                Delay = DefaultDelay; // infinite retries????????
+                                if (DataManager.ModC > 0 || DataManager.AddC > 0 || DataManager.forceLoad) // Check if we need to reload data
+                                {
+                                    FileManager.Log("updated database");
+                                    DataManager.GetDinoData(DataManager.selectedClass);
+                                    DataManager.SetMaxStats();
+                                    DataManager.SetBinaryStats();
+                                    DataManager.GetBestPartner();
+                                }
                             }
-                        });
-                        thread.Start();
+                            PopulateShellContents();
+
+
+                            stopwatch.Stop();
+                            var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
+                            Importing = false;
+                            FileManager.SaveFiles();
+                            ImportCount++;
+                            double outAVG = 0;
+                            if (ImportCount < 2) { ImportAvg = elapsedMilliseconds; outAVG = ImportAvg; }
+                            else { ImportAvg += elapsedMilliseconds; outAVG = ImportAvg / ImportCount; }
+
+                            FileManager.Log("Processed data in " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
+                            Delay = DefaultDelay; // only start up timer after scanning is done 
+                        }
+                        catch
+                        {
+                            FileManager.Log("Processed data failure");
+                            Delay = DefaultDelay; // infinite retries????????
+                        }
                     }
                     else
                     {
@@ -146,12 +164,11 @@ namespace ASA_Dino_Manager
             }
         }
 
-
         private void StartTimer()
         {
             _isTimerRunning = true; // Flag to control the timer
 
-            Device.StartTimer(TimeSpan.FromSeconds(5), () =>
+            Device.StartTimer(TimeSpan.FromSeconds(1), () =>
             {
                 if (!_isTimerRunning)
                     return false; // Stop the timer
@@ -166,24 +183,28 @@ namespace ASA_Dino_Manager
             //StartImport();
             // Logic to be executed every 5 seconds
             Console.WriteLine($"Function triggered at {DateTime.Now}");
-            //PopulateShellContents();
-            string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
-
-
-            
 
 
             if (FileManager.GamePath != "")
             {
                 ImportEnabled = true;
-                StartImport();
             }
             else
             {
                 ImportEnabled = false;
             }
 
-            PopulateShellContents();
+            Delay--;
+            if (Delay == 0)
+            {
+                ProcessAllData();
+            }
+            else if (Delay < -60) // if its taken longer than a minute to finish try again
+            {
+                ProcessAllData();
+                Delay = DefaultDelay;
+            }
+
             FileManager.WriteLog();
         }
 
