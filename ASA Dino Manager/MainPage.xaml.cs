@@ -7,6 +7,12 @@
         public MainPage()
         {
             InitializeComponent();
+
+            if (!FileManager.InitFileManager())
+            {
+                // Exit app here
+            }
+
         }
 
         private void OnCounterClicked(object sender, EventArgs e)

@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+//using System.Windows.Forms;
 
 namespace ASA_Dino_Manager
 {
@@ -14,7 +15,7 @@ namespace ASA_Dino_Manager
     {
 
         public static DateTime TimeStart = DateTime.UtcNow;
-        public static bool RunOnce = true;
+        public static bool RunOnce = true; // toggle off at init
 
         public static string AppPath = "";
         public static string GamePath = "";
@@ -33,8 +34,11 @@ namespace ASA_Dino_Manager
 
                 //AppPath = Path.GetDirectoryName(Application.ExecutablePath).ToString();
 
+                string assemblyPath = Assembly.GetExecutingAssembly().Location;
+                AppPath = Path.GetDirectoryName(assemblyPath);
+
                 if (!Directory.Exists(AppPath + @"\Logs")) { Directory.CreateDirectory(AppPath + @"\Logs"); }
-                if (!Directory.Exists(AppPath + @"\Imports")) { Directory.CreateDirectory(AppPath + @"\Imports"); }
+                if (!Directory.Exists(AppPath + @"\Data")) { Directory.CreateDirectory(AppPath + @"\Data"); }
 
                 if (!LoadColorFile()) { return false; }
 
@@ -57,13 +61,13 @@ namespace ASA_Dino_Manager
             return false;
         }
 
-        public static bool CheckPath(string test)
+        public static bool CheckPath(string dir)
         {
             try
             {
-                if (Directory.Exists(test))
+                if (Directory.Exists(dir))
                 {
-                    string[] exports = Directory.GetFiles(test + @"\", "*.ini", SearchOption.TopDirectoryOnly);
+                    string[] exports = Directory.GetFiles(dir + @"\", "*.ini", SearchOption.TopDirectoryOnly);
                     return true;
                 }
             }
@@ -75,9 +79,9 @@ namespace ASA_Dino_Manager
         {
             try
             {
-                if (File.Exists(AppPath + @"\config.hrv"))
+                if (File.Exists(AppPath + @"\Data\config.hrv"))
                 {
-                    using (StreamReader read = new StreamReader(AppPath + @"\config.hrv"))
+                    using (StreamReader read = new StreamReader(AppPath + @"\Data\config.hrv"))
                     {
                         string line;
                         while ((line = read.ReadLine()) != null)
@@ -112,7 +116,7 @@ namespace ASA_Dino_Manager
                 else
                 {
                     ColorString = DefaultColor;
-                    if (saveColorFile()) { return true; }
+                    if (SaveColorFile()) { return true; }
                     else { return false; }
                     }
             }
@@ -120,7 +124,7 @@ namespace ASA_Dino_Manager
             return false;
         }
 
-        public static bool saveColorFile()
+        public static bool SaveColorFile()
         {
             try
             {
@@ -153,7 +157,7 @@ namespace ASA_Dino_Manager
                         if (CheckPath(filepath)) // check if the path we found works
                         {
                             GamePath = filepath;
-                            using (StreamWriter writer = new StreamWriter(AppPath + @"\config.hrv"))
+                            using (StreamWriter writer = new StreamWriter(AppPath + @"\Data\config.hrv"))
                             {
                                 writer.WriteLine(filepath);
                             }
@@ -182,10 +186,10 @@ namespace ASA_Dino_Manager
             try
             {
                 DataManager.ImportsTable.Clear();
-                DataManager.ImportsTable.ReadXml(AppPath + @"\imports\dinos.hrv");
+                DataManager.ImportsTable.ReadXml(AppPath + @"\Data\dinos.hrv");
 
                 DataManager.StatTable.Clear();
-                DataManager.StatTable.ReadXml(AppPath + @"\imports\data.hrv");
+                DataManager.StatTable.ReadXml(AppPath + @"\Data\data.hrv");
             }
             catch
             {
@@ -198,8 +202,8 @@ namespace ASA_Dino_Manager
         {
             try
             {
-                DataManager.ImportsTable.WriteXml(AppPath + @"\imports\dinos.hrv");
-                DataManager.StatTable.WriteXml(AppPath + @"\imports\data.hrv");
+                DataManager.ImportsTable.WriteXml(AppPath + @"\Data\dinos.hrv");
+                DataManager.StatTable.WriteXml(AppPath + @"\Data\data.hrv");
             }
             catch
             {
