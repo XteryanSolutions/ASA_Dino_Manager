@@ -22,7 +22,6 @@ namespace ASA_Dino_Manager
         {
             InitializeComponent();
 
-
             if (!FileManager.InitFileManager())
             {
                 // Exit app here
@@ -36,7 +35,6 @@ namespace ASA_Dino_Manager
 
             PopulateShellContents();
         }
-
 
 
         private void PopulateShellContents()
@@ -59,7 +57,6 @@ namespace ASA_Dino_Manager
                 Items.Add(shellContent);
             }
         }
-
 
         public static void StartImport()
         {

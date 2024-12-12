@@ -101,9 +101,9 @@ namespace ASA_Dino_Manager
         {
             try
             {
-                if (File.Exists(AppPath + @"\colors.hrv"))
+                if (File.Exists(AppPath + @"\Data\colors.hrv"))
                 {
-                    using (StreamReader read = new StreamReader(AppPath + @"\colors.hrv"))
+                    using (StreamReader read = new StreamReader(AppPath + @"\Data\colors.hrv"))
                     {
                         string line; 
                         while ((line = read.ReadLine()) != null)
@@ -128,7 +128,7 @@ namespace ASA_Dino_Manager
         {
             try
             {
-                using (StreamWriter writer = new StreamWriter(AppPath + @"\colors.hrv"))
+                using (StreamWriter writer = new StreamWriter(AppPath + @"\Data\colors.hrv"))
                 {
                     writer.WriteLine(ColorString);
                 }
