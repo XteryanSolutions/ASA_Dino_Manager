@@ -62,13 +62,13 @@ namespace ASA_Dino_Manager
                 };
 
                 // Add male table
-                mainStack.Children.Add(CreateTableGrid(DataManager.MaleTable, "Male Table"));
+                mainStack.Children.Add(CreateTableGrid(DataManager.MaleTable, "Male"));
 
                 // Add female table
-                mainStack.Children.Add(CreateTableGrid(DataManager.FemaleTable, "Female Table"));
+                mainStack.Children.Add(CreateTableGrid(DataManager.FemaleTable, "Female"));
 
                 // Add Bottom table
-                mainStack.Children.Add(CreateTableGrid(DataManager.BottomTable, "Bottom Table"));
+                mainStack.Children.Add(CreateTableGrid(DataManager.BottomTable, "Bottom"));
 
 
 
@@ -115,9 +115,9 @@ namespace ASA_Dino_Manager
             var headerColor = Colors.LightBlue;
             var cellColor = Colors.LightBlue;
 
-            if (title == "") { }
-            else if (title == "") { }
-
+            if (title == "Male") { headerColor = Colors.LightBlue; cellColor = Colors.LightBlue; }
+            else if (title == "Female") { headerColor = Colors.Pink; cellColor = Colors.Pink; }
+            else { headerColor = Colors.LightYellow; cellColor = Colors.LightYellow; }
 
 
             // Add header row
