@@ -216,6 +216,7 @@ namespace ASA_Dino_Manager
                 //ArchiveTable.Columns.Add("Status", typeof(string));
 
 
+
                 FileManager.LoadFiles();
 
                 return true;
@@ -226,6 +227,66 @@ namespace ASA_Dino_Manager
             }
         }
 
+
+        public static void FillSideMenu()
+        {
+            string[] classList = DataManager.GetAllClasses();
+
+
+
+        }
+
+        public static string[] GetAllClasses(string exclude = "")
+        {
+            // get the raw unprocessed classlist
+            string[] classList = DataManager.GetAllDistinctColumnData("Class");
+
+            // Define exclusions
+            string[] excludes = { "N/A", "#", exclude };
+
+            // Use a HashSet to store distinct values
+            HashSet<string> resultSet = new HashSet<string>();
+
+
+            // Iterate through the rows of the list
+            foreach (string rawClass in classList) 
+            {
+                // split the string into a readable class
+
+                //  "/Game/PrimalEarth/Dinos/Daeodon/Daeodon_Character_BP.Daeodon_Character_BP_C"
+                string dinoClass = "";
+
+                if (rawClass.ToUpper().Contains("MAGIC"))
+                {
+                    var split = rawClass.Split(new[] { @"_Character_BP" }, StringSplitOptions.RemoveEmptyEntries);
+                    dinoClass = split[1].Replace(".", " ");
+                    dinoClass = dinoClass.Replace("_", " ").Trim();
+                }
+                else
+                {
+                    var split = rawClass.Split(new[] { @"/" }, StringSplitOptions.RemoveEmptyEntries);
+
+                    dinoClass = split[3].Replace(".", " ");
+                    dinoClass = dinoClass.Replace("_", " ").Trim();
+                }
+
+                //  "/Game/PrimalEarth/Dinos/Daeodon/Daeodon_Character_BP   .Daeodon    _Character_BP_C"
+                //  "/Forglar/Forglar_All/Dinos/MagicLand/Therizino_Character_BP    _Magic.Therizino    _Character_BP_Magic_C"
+                //  <Class>/Game/PrimalEarth/Dinos/Doedicurus/Doed_Character_BP.Doed_Character_BP_C</Class>
+
+
+                // Check if the value is not excluded and is not null/empty
+                if (!excludes.Contains(dinoClass) && !string.IsNullOrWhiteSpace(dinoClass))
+                {
+                    // Add the value to the result set (distinct)
+                    resultSet.Add(dinoClass);
+                }
+
+            }
+
+            // Return the distinct values as an array
+            return resultSet.ToArray();
+        }
 
         public static string[] GetDistinctFilteredColumnData(string inColumn1, string inData, string inColumn2, string inData2, string outData, string exclude = "")
         {
@@ -561,8 +622,14 @@ namespace ASA_Dino_Manager
             }
         }
 
-        public static void GetDinoData(string tag)
+        public static void GetDinoData(string tag) 
         {
+
+            // change to dinoClass
+
+
+
+
             if (string.IsNullOrEmpty(tag))
             {
                 return; // Exit early if tag is empty

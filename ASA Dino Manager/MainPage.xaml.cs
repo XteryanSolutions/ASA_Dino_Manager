@@ -33,8 +33,8 @@
                 // Exit app here
                 Application.Current.Quit();
             }
-        }
 
+        }
 
 
         private void StartImport()
