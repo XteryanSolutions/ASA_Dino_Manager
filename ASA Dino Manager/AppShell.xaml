@@ -7,18 +7,11 @@
     Shell.FlyoutBehavior="Flyout"
     Title="ASA Dino Manager 4.30">
 
-    <ShellContent
-        Title="Daeodon"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
-    <ShellContent
-    Title="Frogz"
-    ContentTemplate="{DataTemplate local:MainPage}"
-    Route="MainPage" />
-    <ShellContent
-    Title="Blubbers"
-    ContentTemplate="{DataTemplate local:MainPage}"
-    Route="MainPage" />
+    <ShellContent Title="Daeodon" ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
+
+    <ShellContent Title="Frogz" ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
+
+    <ShellContent Title="Blubbers" ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
 
 
 
