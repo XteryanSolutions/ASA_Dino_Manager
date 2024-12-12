@@ -1,4 +1,5 @@
 ﻿using Microsoft.Maui.Controls;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ASA_Dino_Manager
 {
@@ -7,22 +8,17 @@ namespace ASA_Dino_Manager
         // This is a comment test yes it is !! BLUB
 
         public MainPage()
-        {
+        { 
             InitializeComponent();
+            SetText("No dinos to show");
         }
 
-        private void OnCounterClicked(object sender, EventArgs e)
-        {
-            AppShell.StartImport();
-        }
 
-        public static void SetText(string text)
+        public void SetText(string text)
         {
             Label1.Text = text;
 
-            SemanticScreenReader.Announce(Label1.Text);
-
-
+            //SemanticScreenReader.Announce(Label1.Text);
         }
 
 

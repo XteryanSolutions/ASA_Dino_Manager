@@ -1,4 +1,5 @@
-﻿using Microsoft.Maui.Controls;
+﻿//using Android.Nfc;
+using Microsoft.Maui.Controls;
 
 namespace ASA_Dino_Manager
 {
@@ -8,15 +9,17 @@ namespace ASA_Dino_Manager
 
         // IMPORTING
         public static bool Importing = false;
-        public static bool ImportEnabled = true;
+        public static bool ImportEnabled = false;
         public static int Delay = 5;
         public static int DefaultDelay = 30; // default import delay in seconds
 
+        public static int tagSize = 0;
 
         // benchmark stuff
         private static int ImportCount = 0;
         private static double ImportAvg = 0; // keep track of average import time
 
+        private bool _isTimerRunning = false; // Timer control flag
 
         public AppShell()
         {
@@ -33,29 +36,75 @@ namespace ASA_Dino_Manager
                 Application.Current.Quit();
             }
 
+
             PopulateShellContents();
+
+            StartTimer();
+        }
+
+
+        private void ClearShell()
+        {
+            Items.Clear();
+            var shellContent = new ShellContent
+            {
+                Title = "Dino Archive",
+                ContentTemplate = new DataTemplate(typeof(MainPage)), // Replace with the appropriate page
+                Route = "Dino Archive"
+            };
+
+            // Add the ShellContent to the Shell
+            Items.Add(shellContent);
         }
 
 
         private void PopulateShellContents()
         {
-            // Retrieve the tag list from DataManager and sort alphabetically
+            string[] classList = DataManager.GetAllClasses();
             string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
-            var sortedTagList = tagList.OrderBy(tag => tag).ToArray();
 
-            // Loop through the sorted tags and create ShellContent dynamically
-            foreach (var tag in sortedTagList)
+            if (tagList.Length > tagSize)
             {
-                var shellContent = new ShellContent
-                {
-                    Title = tag,
-                    ContentTemplate = new DataTemplate(typeof(MainPage)), // Replace with the appropriate page
-                    Route = tag
-                };
+                tagSize = tagList.Length;
+                //ClearShell();
+                Items.Clear();
 
-                // Add the ShellContent to the Shell
-                Items.Add(shellContent);
+                // Retrieve the tag list from DataManager and sort alphabetically
+                var sortedTagList = classList.OrderBy(tag => tag).ToArray();
+
+                if (sortedTagList.Length < 1)
+                {
+                    var shellContent = new ShellContent
+                    {
+                        Title = "Dino Species",
+                        ContentTemplate = new DataTemplate(typeof(MainPage)), // Replace with the appropriate page
+                        Route = "Dino Species"
+                    };
+
+                    // Add the ShellContent to the Shell
+                    Items.Add(shellContent);
+                    return; // exit early if the tagList is empty
+                }
+
+                // Loop through the sorted tags and create ShellContent dynamically
+                foreach (var tag in sortedTagList)
+                {
+                    var shellContent = new ShellContent
+                    {
+                        Title = tag,
+                        ContentTemplate = new DataTemplate(typeof(MainPage)), // Replace with the appropriate page
+                        Route = tag
+                    };
+
+                    // Add the ShellContent to the Shell
+                    Items.Add(shellContent);
+                }
             }
+            else
+            {
+               // StartImport();
+            }
+
         }
 
         public static void StartImport()
@@ -107,6 +156,51 @@ namespace ASA_Dino_Manager
                     Delay = DefaultDelay;
                 }
             }
+        }
+
+
+        private void StartTimer()
+        {
+            _isTimerRunning = true; // Flag to control the timer
+
+            Device.StartTimer(TimeSpan.FromSeconds(5), () =>
+            {
+                if (!_isTimerRunning)
+                    return false; // Stop the timer
+
+                TriggerFunction();
+                return true; // Continue running the timer
+            });
+        }
+
+        private void TriggerFunction()
+        {
+            //StartImport();
+            // Logic to be executed every 5 seconds
+            Console.WriteLine($"Function triggered at {DateTime.Now}");
+            //PopulateShellContents();
+            string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
+
+
+            
+
+
+            if (FileManager.GamePath != "")
+            {
+                ImportEnabled = true;
+                StartImport();
+            }
+            else
+            {
+                ImportEnabled = false;
+            }
+
+            PopulateShellContents();
+        }
+
+        public void StopTimer()
+        {
+            _isTimerRunning = false; // Call this to stop the timer if needed
         }
 
 

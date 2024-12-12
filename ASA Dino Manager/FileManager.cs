@@ -145,7 +145,7 @@ namespace ASA_Dino_Manager
             {
                 bool result = true;
                 FileManager.Log("Scanning for gamePath...");
-                MainPage.SetText("Scanning...");
+                
                 Thread thread = new Thread(delegate () { // start calculation thread
                     try
                     {
