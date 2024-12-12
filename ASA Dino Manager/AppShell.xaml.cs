@@ -63,28 +63,31 @@ namespace ASA_Dino_Manager
             string[] classList = DataManager.GetAllClasses();
             string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
 
+            
+
+            if (tagList.Length < 1)
+            {
+                Items.Clear();
+                var shellContent = new ShellContent
+                {
+                    Title = "Looking for dinos",
+                    ContentTemplate = new DataTemplate(typeof(MainPage)), // Replace with the appropriate page
+                    Route = "Looking for dinos"
+                };
+
+                // Add the ShellContent to the Shell
+                Items.Add(shellContent);
+                return; // exit early if the tagList is empty
+            }
             if (tagList.Length > tagSize)
             {
+                Items.Clear();
                 tagSize = tagList.Length;
                 //ClearShell();
-                Items.Clear();
+                
 
                 // Retrieve the tag list from DataManager and sort alphabetically
                 var sortedTagList = classList.OrderBy(tag => tag).ToArray();
-
-                if (sortedTagList.Length < 1)
-                {
-                    var shellContent = new ShellContent
-                    {
-                        Title = "Dino Species",
-                        ContentTemplate = new DataTemplate(typeof(MainPage)), // Replace with the appropriate page
-                        Route = "Dino Species"
-                    };
-
-                    // Add the ShellContent to the Shell
-                    Items.Add(shellContent);
-                    return; // exit early if the tagList is empty
-                }
 
                 // Loop through the sorted tags and create ShellContent dynamically
                 foreach (var tag in sortedTagList)
