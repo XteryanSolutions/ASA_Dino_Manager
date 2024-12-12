@@ -41,7 +41,6 @@ namespace ASA_Dino_Manager
         public static int ModC = 0;  // keep track of updated dinos
         public static int AddC = 0;  // keep track of added dinos
 
-        public static string AppPath = "";
         public static string DecimalSeparator = "";
         public static string ThousandsSeparator = "";
 
@@ -67,8 +66,6 @@ namespace ASA_Dino_Manager
         {
             try
             {
-                //AppPath = Path.GetDirectoryName(Application.ExecutablePath).ToString();
-
                 DecimalSeparator = Culture.NumberFormat.CurrencyDecimalSeparator;
                 ThousandsSeparator = Culture.NumberFormat.CurrencyGroupSeparator;
 
@@ -228,6 +225,7 @@ namespace ASA_Dino_Manager
                 return false;
             }
         }
+
 
         public static string[] GetDistinctFilteredColumnData(string inColumn1, string inData, string inColumn2, string inData2, string outData, string exclude = "")
         {
@@ -1247,7 +1245,7 @@ namespace ASA_Dino_Manager
             }
         }
 
-        public static void NewImport()
+        public static void Import()
         {
             string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
 

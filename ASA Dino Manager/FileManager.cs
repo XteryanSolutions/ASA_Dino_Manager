@@ -166,7 +166,9 @@ namespace ASA_Dino_Manager
                         }
                         else
                         {
-                           // Application.Exit();
+                            // Application.Exit();
+                            FileManager.Log("Didnt find gamePath");
+                            Application.Current.Quit();
                         }
                     }
                     catch
