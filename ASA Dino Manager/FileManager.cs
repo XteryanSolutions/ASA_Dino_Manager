@@ -19,12 +19,11 @@ namespace ASA_Dino_Manager
 
         public static string AppPath = "";
         public static string GamePath = "";
-        public static string ColorString = "";
-        public static string DefaultColor = "#8cabff;#a1c5f7;#6378ab;#f77777;#f7ada1;#e3d788;#7b818a;#b0b0b0;#dbb172;#65e05a;#23a11a;#b267cf;";
         public static bool Scanning = false;
-
         public static string LogText = "";
 
+        public static string ColorString = "";
+        public static string DefaultColor = "#8cabff;#a1c5f7;#6378ab;#f77777;#f7ada1;#e3d788;#7b818a;#b0b0b0;#dbb172;#65e05a;#23a11a;#b267cf;";
 
         public static bool InitFileManager()
         {
@@ -146,7 +145,7 @@ namespace ASA_Dino_Manager
             {
                 bool result = true;
                 FileManager.Log("Scanning for gamePath...");
-               
+                MainPage.SetText("Scanning...");
                 Thread thread = new Thread(delegate () { // start calculation thread
                     try
                     {

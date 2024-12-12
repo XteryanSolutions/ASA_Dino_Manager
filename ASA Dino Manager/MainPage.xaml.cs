@@ -15,6 +15,17 @@ namespace ASA_Dino_Manager
         {
             AppShell.StartImport();
         }
+
+        public static void SetText(string text)
+        {
+            Label1.Text = text;
+
+            SemanticScreenReader.Announce(Label1.Text);
+
+
+        }
+
+
     }
 
 }
