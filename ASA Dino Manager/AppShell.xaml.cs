@@ -37,6 +37,7 @@ namespace ASA_Dino_Manager
                 Application.Current.Quit();
             }
 
+            DataManager.CleanDataBaseByID();
 
             PopulateShellContents();
 

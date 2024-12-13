@@ -8,7 +8,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:ASA_Dino_Manager"
     Shell.FlyoutBehavior="Flyout"
-    Title="ASA Dino Manager 4.30">
+    Title="ASA Dino Manager 4.31">
 
     <ShellContent Title="Dino Archive" ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
 

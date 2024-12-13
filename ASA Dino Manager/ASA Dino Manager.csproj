@@ -54,25 +54,25 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-maccatalyst|AnyCPU'">
-	  <ApplicationVersion>4</ApplicationVersion>
-	  <ApplicationDisplayVersion>0.04.30</ApplicationDisplayVersion>
+	  <ApplicationVersion></ApplicationVersion>
+	  <ApplicationDisplayVersion></ApplicationDisplayVersion>
 	  <Optimize>False</Optimize>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-windows10.0.19041.0|AnyCPU'">
-	  <ApplicationVersion>4</ApplicationVersion>
-	  <ApplicationDisplayVersion>0.04.30</ApplicationDisplayVersion>
+	  <ApplicationVersion></ApplicationVersion>
+	  <ApplicationDisplayVersion></ApplicationDisplayVersion>
 	  <Optimize>False</Optimize>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-maccatalyst|AnyCPU'">
-	  <ApplicationVersion>4</ApplicationVersion>
-	  <ApplicationDisplayVersion>0.04.30</ApplicationDisplayVersion>
+	  <ApplicationVersion></ApplicationVersion>
+	  <ApplicationDisplayVersion></ApplicationDisplayVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-windows10.0.19041.0|AnyCPU'">
-	  <ApplicationVersion>4</ApplicationVersion>
-	  <ApplicationDisplayVersion>0.04.30</ApplicationDisplayVersion>
+	  <ApplicationVersion></ApplicationVersion>
+	  <ApplicationDisplayVersion></ApplicationDisplayVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
