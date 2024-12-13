@@ -7,7 +7,7 @@ namespace ASA_Dino_Manager
 {
     public partial class AppShell : Shell
     {
-        public string version = "ASA Dino Manager 0.04.31";
+        public string version = "ASA Dino Manager 0.04.32";
 
         // IMPORTING
         public static bool Importing = false;
@@ -28,8 +28,8 @@ namespace ASA_Dino_Manager
 
         public AppShell()
         {
-            InitializeComponent();
-            FileManager.Log("====== Started " + version + " ======");
+            InitializeComponent(); this.Title = version;
+            FileManager.Log("====== Started " + version + " ======"); 
             if (!FileManager.InitFileManager())
             {
                 // Exit app here
@@ -68,7 +68,7 @@ namespace ASA_Dino_Manager
 
                 // Add the ShellContent to the Shell
                 Items.Add(shellContent);
-
+                FileManager.Log("No dinos");
                 return; // exit early if the tagList is empty
             }
             if (tagList.Length > tagSize)

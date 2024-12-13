@@ -53,6 +53,7 @@ namespace ASA_Dino_Manager
         {
             if (AppShell.needUpdate)
             {
+                FileManager.Log("Import Requesting GUI refresh");
                 isLoaded = false;
                 AppShell.needUpdate = false;
                 UpdateSpeciesContent();
@@ -81,6 +82,7 @@ namespace ASA_Dino_Manager
             {
                if (!isLoaded)
                 {
+                    FileManager.Log("Navigated Species");
                     UpdateSpeciesContent();
                     isLoaded = true;
                 }
@@ -171,7 +173,7 @@ namespace ASA_Dino_Manager
                 {
                     Spacing = 0,
                     Padding = 3,
-                    BackgroundColor = Colors.Gray
+                    BackgroundColor = Colors.DarkGray
                 };
 
                 bottomContent.Children.Add(CreateTableGrid(DataManager.BottomTable, "Bottom"));
@@ -193,7 +195,7 @@ namespace ASA_Dino_Manager
             double outAVG = 0;
             if (RefreshCount < 2) { RefreshAvg = elapsedMilliseconds; outAVG = RefreshAvg; }
             else { RefreshAvg += elapsedMilliseconds; outAVG = RefreshAvg / RefreshCount; }
-            FileManager.Log("Refresh UI - " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
+            FileManager.Log("Refreshed GUI - " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
             FileManager.Log("=====================================================================");
             AppShell.Importing = false; // unlock database
         }
