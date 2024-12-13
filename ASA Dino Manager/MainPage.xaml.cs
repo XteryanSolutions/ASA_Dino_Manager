@@ -23,6 +23,7 @@ namespace ASA_Dino_Manager
 
         private bool isLoaded = false;
 
+
         public MainPage()
         {
             InitializeComponent();
@@ -33,7 +34,6 @@ namespace ASA_Dino_Manager
 
             StartTimer();
         }
-
 
         private void StartTimer()
         {
@@ -61,7 +61,6 @@ namespace ASA_Dino_Manager
 
             FileManager.WriteLog();
         }
-
 
         public void StopTimer()
         {
