@@ -121,10 +121,11 @@ namespace ASA_Dino_Manager
                                 if (DataManager.ModC > 0 || DataManager.AddC > 0 || DataManager.forceLoad) // Check if we need to reload data
                                 {
                                     FileManager.Log("updated database");
-                                    DataManager.GetDinoData(DataManager.selectedClass);
-                                    DataManager.SetMaxStats();
-                                    DataManager.SetBinaryStats();
-                                    DataManager.GetBestPartner();
+                                    //DataManager.GetDinoData(DataManager.selectedClass);
+                                    //DataManager.SetMaxStats();
+                                    //DataManager.SetBinaryStats();
+                                    //DataManager.GetBestPartner();
+                                    MainPage.Update();
                                 }
                             }
                             PopulateShellContents();

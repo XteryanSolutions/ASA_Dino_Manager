@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Drawing;
 
+
 namespace ASA_Dino_Manager
 {
     public partial class MainPage : ContentPage
@@ -38,7 +39,14 @@ namespace ASA_Dino_Manager
             }
         }
 
-        private void UpdateContentBasedOnNavigation()
+        public static void Update()
+        {
+            var mc = new MainPage(); // apparently this doesnt work..
+            // seems like it runs the function but still ui doesnt update
+            mc.UpdateContentBasedOnNavigation();
+        }
+
+        public void UpdateContentBasedOnNavigation()
         {
             var route = Shell.Current.CurrentState.Location.ToString();
             route = route.Replace("/","");
