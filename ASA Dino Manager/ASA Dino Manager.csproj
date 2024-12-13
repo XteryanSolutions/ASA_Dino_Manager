@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net9.0-maccatalyst</TargetFrameworks>
+		<!--<TargetFrameworks>net9.0-maccatalyst</TargetFrameworks>-->
 		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
 		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
 		<!-- <TargetFrameworks>$(TargetFrameworks);net9.0-tizen</TargetFrameworks> -->
@@ -53,22 +53,27 @@
 		<RepositoryType>git</RepositoryType>
 	</PropertyGroup>
 
+	<!-- 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-maccatalyst|AnyCPU'">
-	  <ApplicationVersion></ApplicationVersion>
-	  <ApplicationDisplayVersion></ApplicationDisplayVersion>
-	  <Optimize>False</Optimize>
+		<ApplicationVersion></ApplicationVersion>
+		<ApplicationDisplayVersion></ApplicationDisplayVersion>
+		<Optimize>False</Optimize>
 	</PropertyGroup>
+	-->
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-windows10.0.19041.0|AnyCPU'">
 	  <ApplicationVersion></ApplicationVersion>
 	  <ApplicationDisplayVersion></ApplicationDisplayVersion>
 	  <Optimize>False</Optimize>
+	<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 	</PropertyGroup>
 
+	<!--
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-maccatalyst|AnyCPU'">
 	  <ApplicationVersion></ApplicationVersion>
 	  <ApplicationDisplayVersion></ApplicationDisplayVersion>
 	</PropertyGroup>
+	-->
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-windows10.0.19041.0|AnyCPU'">
 	  <ApplicationVersion></ApplicationVersion>
@@ -77,7 +82,7 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+		<!--<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" /> -->
 
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
@@ -87,11 +92,13 @@
 
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />
-
+		
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 
+	
+	
 	<ItemGroup>
 	  <None Remove="Platforms\Windows\Assets\DinoApp.altform-lightunplated_targetsize-16.png" />
 	  <None Remove="Platforms\Windows\Assets\DinoApp.altform-lightunplated_targetsize-24.png" />

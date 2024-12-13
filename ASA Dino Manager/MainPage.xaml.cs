@@ -1,7 +1,10 @@
 ﻿using System.Data;
 using System.Drawing;
-
-
+using Microsoft.Maui.Handlers;
+//using Microsoft.UI.Xaml.Controls;
+//using Microsoft.UI.Xaml.Input;
+using Microsoft.Maui;
+using Microsoft.Maui.Hosting;
 
 
 namespace ASA_Dino_Manager
@@ -277,8 +280,9 @@ namespace ASA_Dino_Manager
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 8
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 9
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 10
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 10
 
-            
+
 
             var maleColor = Colors.LightBlue;
             var femaleColor = Colors.Pink;
@@ -315,6 +319,9 @@ namespace ASA_Dino_Manager
             AddToGrid(grid, new Label { Text = "Status", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 8);
             AddToGrid(grid, new Label { Text = "Papa", FontAttributes = FontAttributes.Bold, TextColor = maleColor }, 0, 9);
             AddToGrid(grid, new Label { Text = "Mama", FontAttributes = FontAttributes.Bold, TextColor = femaleColor }, 0, 10);
+         
+            
+            AddToGrid(grid, new Label { Text = "", FontAttributes = FontAttributes.Bold, TextColor = femaleColor }, 0, 10);
 
 
 
@@ -366,17 +373,29 @@ namespace ASA_Dino_Manager
 
                 // Add data to the grid
                 var maleBtn = new Button { Text = name, BackgroundColor = maleColor};
-                var label1 = new Label { Text = name, TextColor = cellColor0 };
+                var label9 = new Label { Text = name, TextColor = cellColor0 };
+
+                var border = new Border
+                {
+
+                    Content = new Label
+                    {
+                        Text = "Hover over me",
+                        TextColor = Colors.Black,
+                        HorizontalOptions = LayoutOptions.Center,
+                        VerticalOptions = LayoutOptions.Center
+                    }
+                };
+
+                var t = new CheckBox
+                {
+                    HorizontalOptions = LayoutOptions.Start,
+                    VerticalOptions = LayoutOptions.Start
+                };
 
 
-                maleBtn.Clicked += OnTextClicked;
-                
 
-               // label1.Focused += OnTextClicked;
-
-
-
-                AddToGrid(grid, label1, rowIndex, 0);
+                AddToGrid(grid, label9, rowIndex, 0);
 
 
                 AddToGrid(grid, new Label { Text = level, TextColor = cellColor1 }, rowIndex, 1);
@@ -390,6 +409,9 @@ namespace ASA_Dino_Manager
 
                 AddToGrid(grid, new Label { Text = papa, TextColor = maleColor }, rowIndex, 9);
                 AddToGrid(grid, new Label { Text = mama, TextColor = femaleColor }, rowIndex, 10);
+
+                AddToGrid(grid, border, rowIndex, 11);
+
 
 
                 rowIndex++;

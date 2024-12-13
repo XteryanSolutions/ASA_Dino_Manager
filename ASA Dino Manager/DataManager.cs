@@ -231,14 +231,6 @@ namespace ASA_Dino_Manager
             }
         }
 
-        public static void FillSideMenu()
-        {
-            string[] classList = DataManager.GetAllClasses();
-
-
-
-        }
-
         public static string[] GetAllClasses(string exclude = "")
         {
             // get the raw unprocessed classlist
