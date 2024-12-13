@@ -215,7 +215,8 @@ namespace ASA_Dino_Manager
         public static void Log(string text)
         {
             LogText += text + Environment.NewLine;
-            Console.WriteLine(text);
+            //Console.WriteLine(text);
+            System.Diagnostics.Debug.WriteLine(text);
         }
 
         public static void WriteLog()

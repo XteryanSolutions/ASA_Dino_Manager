@@ -708,7 +708,7 @@ namespace ASA_Dino_Manager
                 List<string[]> BrStatsM = DataManager.GetLastStats(males);
                 ProcessDinos(males, MainStatsM, BrStatsM, DataManager.MaleTable);
             }
-
+            FileManager.Log("updated data");
         }
 
         public static void GetDinoArchive()
@@ -799,6 +799,7 @@ namespace ASA_Dino_Manager
                     if (SpeedM >= SpeedMax) { SpeedMax = SpeedM; }
                 }
             }
+            FileManager.Log("updated stats");
         }
 
         public static void SetBinaryStats()
@@ -947,6 +948,7 @@ namespace ASA_Dino_Manager
 
                 rowIDC++;
             }
+            FileManager.Log("updated binary");
         }
 
         public static void GetBestPartner()
@@ -1117,6 +1119,7 @@ namespace ASA_Dino_Manager
                     nr++;
                 }
             }
+            FileManager.Log("updated pairs");
         }
 
         public static void MakeOffspring(string male, string female, string offspring, string point)

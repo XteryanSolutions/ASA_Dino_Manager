@@ -1,4 +1,5 @@
 ﻿//using Android.Nfc;
+using System;
 using System.Reflection;
 using Microsoft.Maui.Controls;
 
@@ -6,7 +7,7 @@ namespace ASA_Dino_Manager
 {
     public partial class AppShell : Shell
     {
-
+        public string version = "ASA Dino Manager 0.04.31";
 
         // IMPORTING
         public static bool Importing = false;
@@ -21,22 +22,26 @@ namespace ASA_Dino_Manager
         private static double ImportAvg = 0; // keep track of average import time
 
         private bool _isTimerRunning = false; // Timer control flag
+        public static bool needUpdate = false;
+
+
 
         public AppShell()
         {
             InitializeComponent();
-
+            FileManager.Log("====== Started " + version + " ======");
             if (!FileManager.InitFileManager())
             {
                 // Exit app here
                 Application.Current.Quit();
             }
+            FileManager.Log("FileManager initialized");
             if (!DataManager.InitDataManager())
             {
                 // Exit app here
                 Application.Current.Quit();
             }
-
+            FileManager.Log("dataManager initialized");
             DataManager.CleanDataBaseByID();
 
             PopulateShellContents();
@@ -44,8 +49,7 @@ namespace ASA_Dino_Manager
             StartTimer();
         }
 
-
-        private void PopulateShellContents()
+        public void PopulateShellContents()
         {
             string[] classList = DataManager.GetAllClasses();
             string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
@@ -115,7 +119,7 @@ namespace ASA_Dino_Manager
 
 
                             DataManager.Import();
-                            FileManager.Log("imported");
+                            FileManager.Log("Scanned files");
 
                             if (DataManager.selectedClass != "")
                             {
@@ -126,7 +130,7 @@ namespace ASA_Dino_Manager
                                     //DataManager.SetMaxStats();
                                     //DataManager.SetBinaryStats();
                                     //DataManager.GetBestPartner();
-                                    MainPage.Update();
+                                    needUpdate = true;
                                 }
                             }
                             PopulateShellContents();
@@ -143,6 +147,7 @@ namespace ASA_Dino_Manager
 
                             FileManager.Log("Processed data in " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
                             Delay = DefaultDelay; // only start up timer after scanning is done 
+                            FileManager.Log("=====================================================================");
                         }
                         catch
                         {
@@ -182,11 +187,6 @@ namespace ASA_Dino_Manager
 
         private void TriggerFunction()
         {
-            //StartImport();
-            // Logic to be executed every 5 seconds
-            Console.WriteLine($"Function triggered at {DateTime.Now}");
-
-
             if (FileManager.GamePath != "")
             {
                 ImportEnabled = true;

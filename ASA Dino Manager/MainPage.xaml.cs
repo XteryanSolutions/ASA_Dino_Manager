@@ -2,8 +2,11 @@
 using System.Drawing;
 
 
+
+
 namespace ASA_Dino_Manager
 {
+
     public partial class MainPage : ContentPage
     {
         // This is a comment test yes it is !! BLUB
@@ -12,15 +15,56 @@ namespace ASA_Dino_Manager
         public static bool OnlyExcluded = false;
         public static bool CurrentStats = false;
 
+        // benchmark stuff
+        private static int RefreshCount = 0;
+        private static double RefreshAvg = 0; // keep track of average import time
 
+        private bool _isTimerRunning = false; // Timer control flag
 
+        private bool isLoaded = false;
 
         public MainPage()
-        { 
+        {
             InitializeComponent();
+
             SetText("No dinos here yet");
 
             Shell.Current.Navigated += OnShellNavigated;
+
+            StartTimer();
+        }
+
+
+        private void StartTimer()
+        {
+            _isTimerRunning = true; // Flag to control the timer
+
+            Device.StartTimer(TimeSpan.FromSeconds(1), () =>
+            {
+                if (!_isTimerRunning)
+                    return false; // Stop the timer
+
+                TriggerFunction();
+                return true; // Continue running the timer
+            });
+        }
+
+        private void TriggerFunction()
+        {
+            if (AppShell.needUpdate)
+            {
+                isLoaded = false;
+                AppShell.needUpdate = false;
+                UpdateSpeciesContent();
+            }
+
+            FileManager.WriteLog();
+        }
+
+
+        public void StopTimer()
+        {
+            _isTimerRunning = false; // Call this to stop the timer if needed
         }
 
         public void SetText(string text)
@@ -33,21 +77,20 @@ namespace ASA_Dino_Manager
         private void OnShellNavigated(object sender, ShellNavigatedEventArgs e)
         {
             // Check if the navigation is to the current page
-            if (e.Source == ShellNavigationSource.ShellItemChanged || e.Source == ShellNavigationSource.Push)
+            if (e.Source == ShellNavigationSource.ShellItemChanged)
             {
-                UpdateContentBasedOnNavigation();
+               if (!isLoaded)
+                {
+                    UpdateSpeciesContent();
+                    isLoaded = true;
+                }
             }
         }
 
-        public static void Update()
+        public void UpdateSpeciesContent()
         {
-            var mc = new MainPage(); // apparently this doesnt work..
-            // seems like it runs the function but still ui doesnt update
-            mc.UpdateContentBasedOnNavigation();
-        }
-
-        public void UpdateContentBasedOnNavigation()
-        {
+            AppShell.Importing = true; // lock database
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             var route = Shell.Current.CurrentState.Location.ToString();
             route = route.Replace("/","");
 
@@ -68,11 +111,15 @@ namespace ASA_Dino_Manager
                 {
                     DataManager.GetDinoData(DataManager.selectedClass);
                     DataManager.SetMaxStats();
-                    DataManager.SetBinaryStats();
-                    DataManager.GetBestPartner();
+
+                    if (!CurrentStats)
+                    {
+                        DataManager.SetBinaryStats();
+                        DataManager.GetBestPartner();
+                    }
                 }
 
-
+              
 
                 // ==============================================================    Show data   =====================================================
 
@@ -124,7 +171,7 @@ namespace ASA_Dino_Manager
                 {
                     Spacing = 0,
                     Padding = 3,
-                    BackgroundColor = Colors.Gray,
+                    BackgroundColor = Colors.Gray
                 };
 
                 bottomContent.Children.Add(CreateTableGrid(DataManager.BottomTable, "Bottom"));
@@ -137,6 +184,18 @@ namespace ASA_Dino_Manager
                 this.Content = mainLayout;
 
             }
+
+            stopwatch.Stop();
+
+
+            var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
+            RefreshCount++;
+            double outAVG = 0;
+            if (RefreshCount < 2) { RefreshAvg = elapsedMilliseconds; outAVG = RefreshAvg; }
+            else { RefreshAvg += elapsedMilliseconds; outAVG = RefreshAvg / RefreshCount; }
+            FileManager.Log("Refresh UI - " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
+            FileManager.Log("=====================================================================");
+            AppShell.Importing = false; // unlock database
         }
 
         private Grid CreateButtonGrid()
@@ -206,7 +265,7 @@ namespace ASA_Dino_Manager
             };
 
             // Define columns
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = 100 }); // 0
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 0
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 1
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 2
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 3
@@ -214,11 +273,11 @@ namespace ASA_Dino_Manager
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 5
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 6
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 7
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = 100 }); // 8
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = 100 }); // 9
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = 100 }); // 10
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 8
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 9
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 10
 
-
+            
 
             var maleColor = Colors.LightBlue;
             var femaleColor = Colors.Pink;
@@ -305,8 +364,15 @@ namespace ASA_Dino_Manager
 
 
                 // Add data to the grid
-                var maleBtn = new Button { Text = name, BackgroundColor = maleColor, AnchorY = AnchorY };
+                var maleBtn = new Button { Text = name, BackgroundColor = maleColor};
                 var label1 = new Label { Text = name, TextColor = cellColor0 };
+
+
+                maleBtn.Clicked += OnTextClicked;
+                
+
+               // label1.Focused += OnTextClicked;
+
 
 
                 AddToGrid(grid, label1, rowIndex, 0);
@@ -343,7 +409,7 @@ namespace ASA_Dino_Manager
             }
 
             // reload stuff
-            UpdateContentBasedOnNavigation();
+            UpdateSpeciesContent();
         }
 
         private void OnTopButton2Clicked(object? sender, EventArgs e)
@@ -357,7 +423,15 @@ namespace ASA_Dino_Manager
                 CurrentStats = true;
             }
             // reload stuff
-            UpdateContentBasedOnNavigation();
+            UpdateSpeciesContent();
+        }
+
+        private void OnTextClicked(object? sender, EventArgs e)
+        {
+     
+
+            // reload stuff
+            UpdateSpeciesContent();
         }
 
         private void AddToGrid(Grid grid, View view, int row, int column)
@@ -365,7 +439,7 @@ namespace ASA_Dino_Manager
             // Ensure rows exist up to the specified index
             while (grid.RowDefinitions.Count <= row)
             {
-                grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
             }
 
             // Set the row and column for the view
@@ -378,5 +452,7 @@ namespace ASA_Dino_Manager
 
 
     }
+
+
 
 }
