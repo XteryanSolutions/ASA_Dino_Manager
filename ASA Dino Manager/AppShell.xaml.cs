@@ -54,7 +54,9 @@ namespace ASA_Dino_Manager
             string[] classList = DataManager.GetAllClasses();
             string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
 
-            
+
+            string[] dinoList = DataManager.GetAllDistinctColumnData("Tag");
+
 
             if (tagList.Length < 1)
             {
@@ -85,9 +87,18 @@ namespace ASA_Dino_Manager
                 // Loop through the sorted tags and create ShellContent dynamically
                 foreach (var tag in sortedTagList)
                 {
+
+                    string dinoTag = DataManager.TagForClass(tag);
+                    // Retrieve female data
+                    string[] females = DataManager.GetDistinctFilteredColumnData("Class", dinoTag, "Sex", "Female", "ID");
+                    // Retrieve male data
+                    string[] males = DataManager.GetDistinctFilteredColumnData("Class", dinoTag, "Sex", "Male", "ID");
+
+                    int totalC = females.Length + males.Length;
+
                     var shellContent = new ShellContent
                     {
-                        Title = tag,
+                        Title = tag + " ("+ totalC + ")",
                         ContentTemplate = new DataTemplate(typeof(MainPage)), // Replace with the appropriate page
                         Route = tag
                     };
