@@ -3,13 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ASA_Dino_Manager.MainPage">
 
+    
+    
+    
     <ScrollView>
         <VerticalStackLayout
             Padding="30,0"
             Spacing="25">
             <Image
                 Source="dino.png"
-                HeightRequest="185"
+                HeightRequest="155"
                 Aspect="AspectFit"
                 SemanticProperties.Description="dinos" />
 
@@ -19,7 +22,18 @@
                 Style="{StaticResource Headline}"
                 SemanticProperties.HeadingLevel="Level1" />
 
+            <Label
+                x:Name="Label2"
+                Style="{StaticResource SubHeadline}"
+                Text="everything is great"
+                SemanticProperties.HeadingLevel="Level1" />
+
+
+
         </VerticalStackLayout>
     </ScrollView>
 
+    
+    
+    
 </ContentPage>

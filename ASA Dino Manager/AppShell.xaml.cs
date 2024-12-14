@@ -84,9 +84,6 @@ namespace ASA_Dino_Manager
                 var sortedTagList = classList.OrderBy(tag => tag).ToArray();
 
 
-
-                int totalCD = 0;
-
                 var shellContent1 = new ShellContent
                 {
                     Title = "Dino Manager ",

@@ -521,7 +521,8 @@ namespace ASA_Dino_Manager
             }
             else if (route == "ASA")
             {
-                SetText("Start Page");
+                SetText("New in 4.32");
+
             }
             else
             {
