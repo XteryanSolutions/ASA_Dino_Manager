@@ -5,6 +5,7 @@ using Microsoft.Maui.Handlers;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.Maui;
 using Microsoft.Maui.Hosting;
+using Microsoft.UI.Xaml.Documents;
 
 
 namespace ASA_Dino_Manager
@@ -62,7 +63,7 @@ namespace ASA_Dino_Manager
                 FileManager.Log("Import Requesting GUI refresh");
                 isLoaded = false;
                 AppShell.needUpdate = false;
-                UpdateMainContent();
+                ProcessContent();
             }
 
             FileManager.WriteLog();
@@ -88,7 +89,7 @@ namespace ASA_Dino_Manager
                if (!isLoaded)
                 {
                     FileManager.Log("Navigated Species");
-                    UpdateMainContent();
+                    ProcessContent();
                     isLoaded = true;
                 }
             }
@@ -185,7 +186,7 @@ namespace ASA_Dino_Manager
                 //else if (status == "") { status = "Exclude"; }
                 //DataManager.SetStatus(selectedID,status);
 
-                UpdateMainContent();
+                ProcessContent();
                 // label.BackgroundColor = Colors.White;
             };
 
@@ -210,7 +211,7 @@ namespace ASA_Dino_Manager
                 DataManager.GetDinoData(DataManager.selectedClass);
                 showStats = true;
 
-                UpdateMainContent();
+                ProcessContent();
                 // label.BackgroundColor = Colors.White;
             };
 
@@ -235,7 +236,7 @@ namespace ASA_Dino_Manager
 
                 showStats = true;
                 DataManager.GetDinoData(DataManager.selectedClass);
-                UpdateMainContent();
+                ProcessContent();
                 // label.BackgroundColor = Colors.White;
             };
 
@@ -254,7 +255,7 @@ namespace ASA_Dino_Manager
             }
 
             // reload stuff
-            UpdateMainContent();
+            ProcessContent();
         }
 
         private void OnRightButtonClicked(object? sender, EventArgs e)
@@ -269,7 +270,7 @@ namespace ASA_Dino_Manager
                 CurrentStats = true;
             }
             // reload stuff
-            UpdateMainContent();
+            ProcessContent();
         }
 
         private void AddToGrid(Grid grid, View view, int row, int column)
@@ -402,7 +403,7 @@ namespace ASA_Dino_Manager
                 string age = row["Age"].ToString();
                 double ageD = DataManager.ToDouble(age);
 
-                if (ageD < 100 && !name.Contains("Breed #")) { status = ageD + "% Grown"; }
+                if (ageD < 100 && !name.Contains("Breed #") && status == "") { status = ageD + "% Grown"; }
 
                 // Create a Label
                 var nameL = new Label { Text = name, TextColor = cellColor0 };
@@ -480,9 +481,28 @@ namespace ASA_Dino_Manager
             return grid;
         }
 
-        public void UpdateMainContent()
+        public void ProcessContent()
         {
-            AppShell.Importing = true; // lock database
+            if (Monitor.TryEnter(AppShell._dbLock, TimeSpan.FromSeconds(5)))
+            {
+                try
+                {
+                    UpdateMainContentPage();
+                }
+                finally
+                {
+                    Monitor.Exit(AppShell._dbLock);
+                }
+            }
+            else
+            {
+                FileManager.Log("Failed to acquire database lock within timeout.");
+                //Console.WriteLine("Failed to acquire database lock within timeout.");
+            }
+        }
+
+        public void UpdateMainContentPage()
+        {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             var route = Shell.Current.CurrentState.Location.ToString();
             route = route.Replace("/", "");
@@ -603,9 +623,8 @@ namespace ASA_Dino_Manager
 
                 AddToGrid(mainLayout, bottomPanel, 2, 0);
 
-
+                this.Content = null;
                 this.Content = mainLayout;
-
             }
 
             stopwatch.Stop();
@@ -618,7 +637,7 @@ namespace ASA_Dino_Manager
             else { RefreshAvg += elapsedMilliseconds; outAVG = RefreshAvg / RefreshCount; }
             FileManager.Log("Refreshed GUI - " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
             FileManager.Log("=====================================================================");
-            AppShell.Importing = false; // unlock database
+            FileManager.SaveFiles();
         }
 
 

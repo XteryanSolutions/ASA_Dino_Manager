@@ -10,7 +10,6 @@ namespace ASA_Dino_Manager
         public string version = "ASA Dino Manager 0.04.33";
 
         // IMPORTING
-        public static bool Importing = false;
         public static bool ImportEnabled = false;
         public static int Delay = 5;
         public static int DefaultDelay = 30; // default import delay in seconds
@@ -24,7 +23,7 @@ namespace ASA_Dino_Manager
         private bool _isTimerRunning = false; // Timer control flag
         public static bool needUpdate = false;
 
-
+        public static readonly object _dbLock = new object();
 
         public AppShell()
         {
@@ -44,12 +43,12 @@ namespace ASA_Dino_Manager
             FileManager.Log("dataManager initialized");
             DataManager.CleanDataBaseByID();
 
-            PopulateShellContents();
+            UpdateShellContents();
 
             StartTimer();
         }
 
-        public void PopulateShellContents()
+        public void UpdateShellContents()
         {
             string[] classList = DataManager.GetAllClasses();
             string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
@@ -114,63 +113,71 @@ namespace ASA_Dino_Manager
 
         }
 
+        public void StartProcess()
+        {
+            FileManager.Log("Starting Data Process...");
+            try
+            {
+                var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+
+                DataManager.Import();
+                FileManager.Log("Scanned files");
+
+                if (DataManager.selectedClass != "")
+                {
+                    if (DataManager.ModC > 0 || DataManager.AddC > 0 || DataManager.forceLoad) // Check if we need to reload data
+                    {
+                        FileManager.Log("Updated DataBase");
+                        needUpdate = true;
+                    }
+                }
+                UpdateShellContents();
+
+                stopwatch.Stop();
+                var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
+
+                FileManager.SaveFiles();
+                ImportCount++;
+                double outAVG = 0;
+                if (ImportCount < 2) { ImportAvg = elapsedMilliseconds; outAVG = ImportAvg; }
+                else { ImportAvg += elapsedMilliseconds; outAVG = ImportAvg / ImportCount; }
+
+                FileManager.Log("Processed data in " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
+                Delay = DefaultDelay; // only start up timer after scanning is done 
+                FileManager.Log("=====================================================================");
+            }
+            catch
+            {
+                FileManager.Log("Processed data failure");
+                Delay = DefaultDelay; // infinite retries????????
+            }
+        }
+
         public void ProcessAllData()
         {
             if (ImportEnabled)
             {
                 if (FileManager.CheckPath(FileManager.GamePath))
                 {
-                    if (!Importing)
+                    if (Monitor.TryEnter(_dbLock, TimeSpan.FromSeconds(5)))
                     {
-                        FileManager.Log("Starting Data Process...");
                         try
                         {
-                            Importing = true;
-                            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-
-
-                            DataManager.Import();
-                            FileManager.Log("Scanned files");
-
-                            if (DataManager.selectedClass != "")
-                            {
-                                if (DataManager.ModC > 0 || DataManager.AddC > 0 || DataManager.forceLoad) // Check if we need to reload data
-                                {
-                                    FileManager.Log("updated database");
-                                    //DataManager.GetDinoData(DataManager.selectedClass);
-                                    //DataManager.SetMaxStats();
-                                    //DataManager.SetBinaryStats();
-                                    //DataManager.GetBestPartner();
-                                    needUpdate = true;
-                                }
-                            }
-                            PopulateShellContents();
-
-
-                            stopwatch.Stop();
-                            var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
-                            Importing = false;
-                            FileManager.SaveFiles();
-                            ImportCount++;
-                            double outAVG = 0;
-                            if (ImportCount < 2) { ImportAvg = elapsedMilliseconds; outAVG = ImportAvg; }
-                            else { ImportAvg += elapsedMilliseconds; outAVG = ImportAvg / ImportCount; }
-
-                            FileManager.Log("Processed data in " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
-                            Delay = DefaultDelay; // only start up timer after scanning is done 
-                            FileManager.Log("=====================================================================");
+                            //Console.WriteLine("Database lock acquired. Updating content...");
+                            StartProcess();
                         }
-                        catch
+                        finally
                         {
-                            FileManager.Log("Processed data failure");
-                            Delay = DefaultDelay; // infinite retries????????
+                            Monitor.Exit(_dbLock);
                         }
                     }
                     else
                     {
-                        FileManager.Log("DataBase locked");
+                        FileManager.Log("Failed to acquire database lock within timeout.");
                         // restart timer if database is locked
                         Delay = DefaultDelay;
+                        // Console.WriteLine("Failed to acquire database lock within timeout.");
                     }
                 }
                 else
