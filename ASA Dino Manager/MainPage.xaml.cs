@@ -115,9 +115,13 @@ namespace ASA_Dino_Manager
 
                 if (DataManager.selectedClass != "")
                 {
-                    DataManager.GetDinoData(DataManager.selectedClass);
-                    DataManager.SetMaxStats();
 
+                    DataManager.GetDinoData(DataManager.selectedClass);
+
+                    if ( MainPage.ToggleExcluded != 3)
+                    {
+                        DataManager.SetMaxStats();
+                    }
                     if (!CurrentStats && MainPage.ToggleExcluded != 2 && MainPage.ToggleExcluded != 3)
                     {
                         DataManager.SetBinaryStats();
@@ -132,12 +136,18 @@ namespace ASA_Dino_Manager
                 // Create the main layout
                 var mainLayout = new Grid();
 
+                int t = DataManager.BottomTable.Rows.Count;
+                int rowH = 20;
+                int barH = (t * rowH) + rowH + 10;
+                if (t > 5) { barH = 120; }
+
                 // Define row definitions
                 mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Fixed button row
                 mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // Scrollable content
-                mainLayout.RowDefinitions.Add(new RowDefinition { Height = 120 }); // Scrollable content
+                mainLayout.RowDefinitions.Add(new RowDefinition { Height = barH }); // Scrollable content
 
 
+                
 
                 var mainStack = new StackLayout
                 {
@@ -479,14 +489,6 @@ namespace ASA_Dino_Manager
             {
                 CurrentStats = true;
             }
-            // reload stuff
-            UpdateSpeciesContent();
-        }
-
-        private void OnTextClicked(object? sender, EventArgs e)
-        {
-     
-
             // reload stuff
             UpdateSpeciesContent();
         }
