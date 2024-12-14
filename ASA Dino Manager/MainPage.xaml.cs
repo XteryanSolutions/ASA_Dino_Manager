@@ -2,7 +2,7 @@
 using System.Drawing;
 using Microsoft.Maui.Handlers;
 //using Microsoft.UI.Xaml.Controls;
-//using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.Maui;
 using Microsoft.Maui.Hosting;
 
@@ -25,6 +25,8 @@ namespace ASA_Dino_Manager
         private bool _isTimerRunning = false; // Timer control flag
 
         private bool isLoaded = false;
+
+        public string selectedID = "";
 
 
         public MainPage()
@@ -116,7 +118,7 @@ namespace ASA_Dino_Manager
                     DataManager.GetDinoData(DataManager.selectedClass);
                     DataManager.SetMaxStats();
 
-                    if (!CurrentStats)
+                    if (!CurrentStats && MainPage.ToggleExcluded != 2 && MainPage.ToggleExcluded != 3)
                     {
                         DataManager.SetBinaryStats();
                         DataManager.GetBestPartner();
@@ -236,11 +238,23 @@ namespace ASA_Dino_Manager
             {
                 bColor1 = Colors.LightYellow;
             }
+            else if (MainPage.ToggleExcluded == 3)
+            {
+                bColor1 = Colors.IndianRed;
+            }
 
+            string staText = "Breeding Stats";
 
+            string btnText = "Toggle";
+            if (ToggleExcluded == 0) { btnText = "All"; }
+            else if (ToggleExcluded == 1) { btnText = "Included"; }
+            else if (ToggleExcluded == 2) { btnText = "Excluded"; }
+            else if (ToggleExcluded == 3) { btnText = "Archived"; }
 
-            var topButton1 = new Button { Text = "Toggle Excluded" ,BackgroundColor = bColor1 };
-            var topButton2 = new Button { Text = "Current stats" ,BackgroundColor = bColor2 };
+            if (CurrentStats) { staText = "Current Stats"; }
+
+            var topButton1 = new Button { Text = btnText, BackgroundColor = bColor1 };
+            var topButton2 = new Button { Text = staText, BackgroundColor = bColor2 };
 
 
 
@@ -257,6 +271,28 @@ namespace ASA_Dino_Manager
 
 
             return grid;
+        }
+
+        void CreateTapGesture(Label label, string id)
+        {
+            // Create a TapGestureRecognizer
+            var tapGesture = new TapGestureRecognizer();
+            tapGesture.Tapped += (s, e) =>
+            {
+                // Handle the click event and pass additional data
+                FileManager.Log($"Label clicked! Item ID: {id}");
+                selectedID = id;
+                string status = DataManager.GetStatus(selectedID);
+                if (status == "Exclude") { status = ""; }
+                else if (status == "") { status = "Exclude"; }
+                DataManager.SetStatus(selectedID,status);
+
+                UpdateSpeciesContent();
+                // label.BackgroundColor = Colors.White;
+            };
+
+            // Attach the TapGestureRecognizer to the label
+            label.GestureRecognizers.Add(tapGesture);
         }
 
         private Grid CreateTableGrid(DataTable table, string title)
@@ -321,7 +357,7 @@ namespace ASA_Dino_Manager
             AddToGrid(grid, new Label { Text = "Mama", FontAttributes = FontAttributes.Bold, TextColor = femaleColor }, 0, 10);
          
             
-            AddToGrid(grid, new Label { Text = "", FontAttributes = FontAttributes.Bold, TextColor = femaleColor }, 0, 10);
+            AddToGrid(grid, new Label { Text = "", FontAttributes = FontAttributes.Bold, TextColor = femaleColor }, 0, 11);
 
 
 
@@ -358,7 +394,7 @@ namespace ASA_Dino_Manager
                 string papa = row["Papa"].ToString();
                 string mama = row["Mama"].ToString();
 
-
+                string id = row["ID"].ToString();
 
                 if (DataManager.ToDouble(level) >= DataManager.LevelMax) { cellColor2 = goodColor; }
                 if (DataManager.ToDouble(hp) >= DataManager.HpMax) { cellColor2 = goodColor; }
@@ -368,49 +404,46 @@ namespace ASA_Dino_Manager
                 if (DataManager.ToDouble(weight) >= DataManager.WeightMax) { cellColor6 = goodColor; }
                 if (DataManager.ToDouble(damage) >= DataManager.DamageMax) { cellColor7 = goodColor; }
 
+                // Create a Label
+                var nameL = new Label { Text = name, TextColor = cellColor0 };
+                var levelL = new Label { Text = level, TextColor = cellColor1 };
+                var hpL = new Label { Text = hp, TextColor = cellColor2 };
+                var staminaL = new Label { Text =stamina, TextColor = cellColor3 };
+                var oxygenL = new Label { Text = oxygen, TextColor = cellColor4 };
+                var foodL = new Label { Text = food, TextColor = cellColor5 };
+                var weightL = new Label { Text = weight, TextColor = cellColor6 };
+                var damageL = new Label { Text = damage, TextColor = cellColor7 };
+                var statusL = new Label { Text = status, TextColor = cellColor8 };
+                var papaL = new Label { Text = papa, TextColor = maleColor };
+                var mamaL = new Label { Text = mama, TextColor = femaleColor };
 
+                // Call the method to create and attach TapGesture
+                CreateTapGesture(nameL, id);
+                CreateTapGesture(levelL, id);
+                CreateTapGesture(hpL, id);
+                CreateTapGesture(staminaL, id);
+                CreateTapGesture(oxygenL, id);
+                CreateTapGesture(foodL, id);
+                CreateTapGesture(weightL, id);
+                CreateTapGesture(damageL, id);
+                CreateTapGesture(statusL, id);
+                CreateTapGesture(papaL, id);
+                CreateTapGesture(mamaL, id);
 
+                // add items to grid
+                AddToGrid(grid, nameL, rowIndex, 0);
+                AddToGrid(grid, levelL, rowIndex, 1);
+                AddToGrid(grid, hpL, rowIndex, 2);
+                AddToGrid(grid, staminaL, rowIndex, 3);
+                AddToGrid(grid, oxygenL, rowIndex, 4);
+                AddToGrid(grid, foodL, rowIndex, 5);
+                AddToGrid(grid, weightL, rowIndex, 6);
+                AddToGrid(grid, damageL, rowIndex, 7);
+                AddToGrid(grid, statusL, rowIndex, 8);
+                AddToGrid(grid, papaL, rowIndex, 9);
+                AddToGrid(grid, mamaL, rowIndex, 10);
 
-                // Add data to the grid
-                var maleBtn = new Button { Text = name, BackgroundColor = maleColor};
-                var label9 = new Label { Text = name, TextColor = cellColor0 };
-
-                var border = new Border
-                {
-
-                    Content = new Label
-                    {
-                        Text = "Hover over me",
-                        TextColor = Colors.Black,
-                        HorizontalOptions = LayoutOptions.Center,
-                        VerticalOptions = LayoutOptions.Center
-                    }
-                };
-
-                var t = new CheckBox
-                {
-                    HorizontalOptions = LayoutOptions.Start,
-                    VerticalOptions = LayoutOptions.Start
-                };
-
-
-
-                AddToGrid(grid, label9, rowIndex, 0);
-
-
-                AddToGrid(grid, new Label { Text = level, TextColor = cellColor1 }, rowIndex, 1);
-                AddToGrid(grid, new Label { Text = hp, TextColor = cellColor2 }, rowIndex, 2);
-                AddToGrid(grid, new Label { Text = stamina, TextColor = cellColor3 }, rowIndex, 3);
-                AddToGrid(grid, new Label { Text = oxygen, TextColor = cellColor4 }, rowIndex, 4);
-                AddToGrid(grid, new Label { Text = food, TextColor = cellColor5 }, rowIndex, 5);
-                AddToGrid(grid, new Label { Text = weight, TextColor = cellColor6 }, rowIndex, 6);
-                AddToGrid(grid, new Label { Text = damage, TextColor = cellColor7 }, rowIndex, 7);
-                AddToGrid(grid, new Label { Text = status, TextColor = cellColor8 }, rowIndex, 8);
-
-                AddToGrid(grid, new Label { Text = papa, TextColor = maleColor }, rowIndex, 9);
-                AddToGrid(grid, new Label { Text = mama, TextColor = femaleColor }, rowIndex, 10);
-
-                AddToGrid(grid, border, rowIndex, 11);
+               // AddToGrid(grid, label1, rowIndex, 11);
 
 
 
@@ -426,8 +459,9 @@ namespace ASA_Dino_Manager
         private void OnTopButton1Clicked(object? sender, EventArgs e)
         {
             ToggleExcluded++;
-            if (ToggleExcluded == 3)
+            if (ToggleExcluded == 4)
             {
+                
                 ToggleExcluded = 0;
             }
 

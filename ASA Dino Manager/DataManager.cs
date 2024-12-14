@@ -625,6 +625,13 @@ namespace ASA_Dino_Manager
                         addIT = true;
                     }
                 }
+                else if (MainPage.ToggleExcluded == 3)
+                {
+                    if (status == "Archived")
+                    {
+                        addIT = true;
+                    }
+                }
 
                 if (addIT)
                 {
