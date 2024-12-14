@@ -225,10 +225,13 @@ namespace ASA_Dino_Manager
                 ImportEnabled = false;
             }
 
-            SaveData();
 
             Delay--;
-            if (Delay == 0)
+            if (Delay == 2)
+            {
+                SaveData();
+            }
+            else if (Delay == 0)
             {
                 ProcessAllData();
             }

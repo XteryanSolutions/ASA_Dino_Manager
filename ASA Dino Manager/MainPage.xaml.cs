@@ -565,132 +565,116 @@ namespace ASA_Dino_Manager
 
         public void UpdateMainContentPage(string route)
         {
-            if (route == "Looking for dinos")
-            {
-
-            }
-            else if (route == "ASA")
-            {
-                SetText("Remember to feed your dinos");
-                
-            }
-            else
-            {
-                this.Content = null;
-                // get the selected species
-                string dinoTag = DataManager.TagForClass(route);
-                DataManager.selectedClass = dinoTag;
+            // get the selected species
+            string dinoTag = DataManager.TagForClass(route);
+            DataManager.selectedClass = dinoTag;
 
 
-                // load neccessary data based on toggles
-                if (DataManager.selectedClass != "")
+            // load neccessary data based on toggles
+            if (DataManager.selectedClass != "")
+            {
+                if (showStats)
                 {
-                    if (showStats)
+
+
+                    DataManager.GetOneDinoData(selectedID);
+
+
+                    if (MainPage.ToggleExcluded != 3)
                     {
-
-
-                        DataManager.GetOneDinoData(selectedID);
-
-
-                        if (MainPage.ToggleExcluded != 3)
-                        {
-                            DataManager.SetMaxStats();
-                        }
-                    }
-                    else
-                    {
-                        DataManager.GetDinoData(DataManager.selectedClass);
-
-
-                        if (MainPage.ToggleExcluded != 3)
-                        {
-                            DataManager.SetMaxStats();
-                        }
-                        if (!CurrentStats && MainPage.ToggleExcluded != 2 && MainPage.ToggleExcluded != 3)
-                        {
-                            DataManager.SetBinaryStats();
-                            DataManager.GetBestPartner();
-                        }
-
+                        DataManager.SetMaxStats();
                     }
                 }
-
-
-
-                // ==============================================================    Show data   =====================================================
-
-                // Create the main layout
-                var mainLayout = new Grid();
-
-
-                UnSelectDino(mainLayout);
-
-                // dynamically adjust the bottom bar height
-                int t = DataManager.BottomTable.Rows.Count;
-                int rowH = 20;
-                int barH = (t * rowH) + rowH + 10;
-                if (t > 5) { barH = 127; }
-
-                // Define row definitions
-                mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Fixed button row
-                mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // Scrollable content
-                mainLayout.RowDefinitions.Add(new RowDefinition { Height = barH }); // Scrollable content
-
-
-
-
-                var mainStack = new StackLayout
+                else
                 {
-                    Spacing = 0,
-                    Padding = 3
-                };
+                    DataManager.GetDinoData(DataManager.selectedClass);
 
 
+                    if (MainPage.ToggleExcluded != 3)
+                    {
+                        DataManager.SetMaxStats();
+                    }
+                    if (!CurrentStats && MainPage.ToggleExcluded != 2 && MainPage.ToggleExcluded != 3)
+                    {
+                        DataManager.SetBinaryStats();
+                        DataManager.GetBestPartner();
+                    }
 
-                // Add the button grid
-                AddToGrid(mainLayout, CreateButtonGrid(), 0, 0);
-
-
-
-                // Create scrollable content
-                var scrollContent = new StackLayout
-                {
-                    Spacing = 20,
-                    Padding = 3
-                };
-
-                // Add male and female tables
-                scrollContent.Children.Add(CreateDinoGrid(DataManager.MaleTable, "Male"));
-                scrollContent.Children.Add(CreateDinoGrid(DataManager.FemaleTable, "Female"));
-
-
-                // Wrap the scrollable content in a ScrollView and add it to the second row
-                var scrollView = new ScrollView { Content = scrollContent };
-
-
-                AddToGrid(mainLayout, scrollView, 1, 0);
-
-
-
-                // Create scrollable content
-                var bottomContent = new StackLayout
-                {
-                    Spacing = 0,
-                    Padding = 3,
-                    BackgroundColor = Colors.DarkGray
-                };
-
-                bottomContent.Children.Add(CreateDinoGrid(DataManager.BottomTable, "Bottom"));
-
-                var bottomPanel = new ScrollView { Content = bottomContent };
-
-
-                AddToGrid(mainLayout, bottomPanel, 2, 0);
-
-                this.Content = null;
-                this.Content = mainLayout;
+                }
             }
+
+
+
+            // ==============================================================    Show data   =====================================================
+
+            // Create the main layout
+            var mainLayout = new Grid();
+
+            UnSelectDino(mainLayout);
+
+            // dynamically adjust the bottom bar height
+            int t = DataManager.BottomTable.Rows.Count;
+            int rowH = 20;
+            int barH = (t * rowH) + rowH + 10;
+            if (t > 5) { barH = 127; }
+
+            // Define row definitions
+            mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Fixed button row
+            mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // Scrollable content
+            mainLayout.RowDefinitions.Add(new RowDefinition { Height = barH }); // Scrollable content
+
+
+
+
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            // Add the button grid
+            AddToGrid(mainLayout, CreateButtonGrid(), 0, 0);
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            // Create scrollable content
+            var scrollContent = new StackLayout
+            {
+                Spacing = 20,
+                Padding = 3
+            };
+
+            // Add male and female tables
+            scrollContent.Children.Add(CreateDinoGrid(DataManager.MaleTable, "Male"));
+            scrollContent.Children.Add(CreateDinoGrid(DataManager.FemaleTable, "Female"));
+
+            // Wrap the scrollable content in a ScrollView and add it to the second row
+            var scrollView = new ScrollView { Content = scrollContent };
+
+            AddToGrid(mainLayout, scrollView, 1, 0);
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            // Create scrollable content
+            var bottomContent = new StackLayout
+            {
+                Spacing = 0,
+                Padding = 3,
+                BackgroundColor = Colors.DarkGray
+            };
+
+            bottomContent.Children.Add(CreateDinoGrid(DataManager.BottomTable, "Bottom"));
+
+            // Wrap the scrollable content in a ScrollView and add it to the third row
+            var bottomPanel = new ScrollView { Content = bottomContent };
+
+            AddToGrid(mainLayout, bottomPanel, 2, 0);
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            this.Content = null;
+            this.Content = mainLayout;
         }
+
+
+
 
 
 
