@@ -521,7 +521,7 @@ namespace ASA_Dino_Manager
             }
             else if (route == "ASA")
             {
-                SetText("New in 4.32");
+                SetText("Remember to feed your dinos");
 
             }
             else
