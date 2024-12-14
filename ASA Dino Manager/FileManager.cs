@@ -210,7 +210,7 @@ namespace ASA_Dino_Manager
                 {
                     DataManager.ImportsTable.WriteXml(AppPath + @"\Data\dinos.hrv");
                     DataManager.StatTable.WriteXml(AppPath + @"\Data\data.hrv");
-                    FileManager.Log("Saved DataBase");
+                    FileManager.Log("==== Saved DataBase ====");
                     needSave = false;
                 }
                 catch

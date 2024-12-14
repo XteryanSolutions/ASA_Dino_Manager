@@ -93,6 +93,15 @@ namespace ASA_Dino_Manager
                 // Add the ShellContent to the Shell
                 Items.Add(shellContent1);
 
+                var shellContent2 = new ShellContent
+                {
+                    Title = "Dino Archive",
+                    ContentTemplate = new DataTemplate(typeof(MainPage)), // Replace with the appropriate page
+                    Route = "Archive"
+                };
+                // Add the ShellContent to the Shell
+                Items.Add(shellContent2);
+
 
                 // Loop through the sorted tags and create ShellContent dynamically
                 foreach (var tag in sortedTagList)

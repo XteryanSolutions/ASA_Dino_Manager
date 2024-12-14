@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.Maui;
 using Microsoft.Maui.Hosting;
 using Microsoft.UI.Xaml.Documents;
+using Microsoft.Maui.Controls;
 
 
 namespace ASA_Dino_Manager
@@ -35,7 +36,7 @@ namespace ASA_Dino_Manager
         {
             InitializeComponent();
 
-            SetText("No dinos here yet");
+            SetText("No dinos here yet...");
 
             Shell.Current.Navigated += OnShellNavigated;
 
@@ -275,7 +276,7 @@ namespace ASA_Dino_Manager
                 
                 ToggleExcluded = 0;
             }
-
+            if (showStats) { showStats = false; }
             // reload stuff
             RefreshContent();
         }
@@ -291,6 +292,7 @@ namespace ASA_Dino_Manager
             {
                 CurrentStats = true;
             }
+            if (showStats) { showStats = false; }
             // reload stuff
             RefreshContent();
         }
@@ -530,9 +532,21 @@ namespace ASA_Dino_Manager
 
         public void RouteContent()
         {
-            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();    // start timer here
             var route = Shell.Current.CurrentState.Location.ToString();
             route = route.Replace("/", "");
+
+
+            // get the selected species
+            string dinoTag = DataManager.TagForClass(route);
+            DataManager.selectedClass = dinoTag;
+
+            // Retrieve female data
+            string[] females = DataManager.GetDistinctFilteredColumnData("Class", dinoTag, "Sex", "Female", "ID");
+            // Retrieve male data
+            string[] males = DataManager.GetDistinctFilteredColumnData("Class", dinoTag, "Sex", "Male", "ID");
+            int totalC = females.Length + males.Length;
+
 
             if (route == "Looking for dinos")
             {
@@ -543,15 +557,60 @@ namespace ASA_Dino_Manager
                 SetText("Remember to feed your dinos");
 
             }
+            else if (route == "Archive")
+            {
+
+                DataManager.GetDinoArchive();
+
+                if (DataManager.ArchiveTable.Rows.Count < 1)
+                {
+                    SetText("No dinos in here :(");
+                }
+                else
+                {
+                    SetText("WIP");
+                }
+            }
             else
             {
-                UpdateMainContentPage(route);
+                if (totalC == 0) 
+                {
+                    SetText("No dinos in here :(");
+                }
+                else
+                {
+                    // Load necessary data based on toggles
+                    if (!string.IsNullOrEmpty(DataManager.selectedClass))
+                    {
+                        if (showStats)
+                        {
+                            DataManager.GetOneDinoData(selectedID);
+
+                            if (MainPage.ToggleExcluded != 3)
+                            {
+                                DataManager.SetMaxStats();
+                            }
+                        }
+                        else
+                        {
+                            DataManager.GetDinoData(DataManager.selectedClass);
+
+                            if (MainPage.ToggleExcluded != 3)
+                            {
+                                DataManager.SetMaxStats();
+                            }
+
+                            if (!CurrentStats && MainPage.ToggleExcluded != 2 && MainPage.ToggleExcluded != 3)
+                            {
+                                DataManager.SetBinaryStats();
+                                DataManager.GetBestPartner();
+                            }
+                        }
+                    }
+                    UpdateMainContentPage();
+                }
             }
-
-
-
-            stopwatch.Stop();
-
+            stopwatch.Stop(); // stop timer here
 
             var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
             RefreshCount++;
@@ -563,49 +622,9 @@ namespace ASA_Dino_Manager
             if (isLoaded) { isLoaded = false; FileManager.Log("Unset isLoaded"); }
         }
 
-        public void UpdateMainContentPage(string route)
+        public void UpdateMainContentPage()
         {
-            // get the selected species
-            string dinoTag = DataManager.TagForClass(route);
-            DataManager.selectedClass = dinoTag;
-
-
-            // load neccessary data based on toggles
-            if (DataManager.selectedClass != "")
-            {
-                if (showStats)
-                {
-
-
-                    DataManager.GetOneDinoData(selectedID);
-
-
-                    if (MainPage.ToggleExcluded != 3)
-                    {
-                        DataManager.SetMaxStats();
-                    }
-                }
-                else
-                {
-                    DataManager.GetDinoData(DataManager.selectedClass);
-
-
-                    if (MainPage.ToggleExcluded != 3)
-                    {
-                        DataManager.SetMaxStats();
-                    }
-                    if (!CurrentStats && MainPage.ToggleExcluded != 2 && MainPage.ToggleExcluded != 3)
-                    {
-                        DataManager.SetBinaryStats();
-                        DataManager.GetBestPartner();
-                    }
-
-                }
-            }
-
-
-
-            // ==============================================================    Show data   =====================================================
+            // ==============================================================    Create Dino Layout   =====================================================
 
             // Create the main layout
             var mainLayout = new Grid();
@@ -617,6 +636,10 @@ namespace ASA_Dino_Manager
             int rowH = 20;
             int barH = (t * rowH) + rowH + 10;
             if (t > 5) { barH = 127; }
+
+            else if (MainPage.ToggleExcluded == 3 && !showStats) { barH = 0; }
+            else if (MainPage.ToggleExcluded == 2 && !showStats) { barH = 0; }
+
 
             // Define row definitions
             mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Fixed button row
