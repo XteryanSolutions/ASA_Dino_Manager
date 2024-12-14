@@ -188,7 +188,8 @@ namespace ASA_Dino_Manager
                 BottomTable.Columns.Add("Imprint", typeof(double));
                 BottomTable.Columns.Add("Imprinter", typeof(string));
                 BottomTable.Columns.Add("ID", typeof(string));
-               
+
+
 
 
                 ComboTable.Clear();
@@ -1215,6 +1216,7 @@ namespace ASA_Dino_Manager
             //fill the bTable with all the rows that this id gets
             BottomTable.Clear();
 
+
             foreach (DataRow row in ImportsTable.Rows)
             {
                 if (row["ID"].ToString() == id)
@@ -1242,7 +1244,14 @@ namespace ASA_Dino_Manager
 
                     DataManager.BottomTable.Rows.Add(dr);
                 }
+
             }
+
+            // Sort the BottomTable based on the desired column
+            DataView view = new DataView(DataManager.BottomTable);
+            view.Sort = "ID DESC"; // Replace "Level" with the desired column and sorting order (e.g., "Name ASC", "ID DESC")
+            DataManager.BottomTable = view.ToTable();
+
         }
 
         public static void CleanDataBaseByID()

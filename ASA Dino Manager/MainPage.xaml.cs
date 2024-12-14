@@ -366,19 +366,22 @@ namespace ASA_Dino_Manager
                 var mamaL = new Label { Text = mama, TextColor = femaleColor };
 
 
+                if (title != "Bottom")
+                {
+                    // Call the method to create and attach TapGesture
+                    SelectDino(nameL, id);
+                    SelectDino(levelL, id);
+                    SelectDino(hpL, id);
+                    SelectDino(staminaL, id);
+                    SelectDino(oxygenL, id);
+                    SelectDino(foodL, id);
+                    SelectDino(weightL, id);
+                    SelectDino(damageL, id);
+                    SelectDino(statusL, id);
+                    SelectDino(papaL, id);
+                    SelectDino(mamaL, id);
+                }
 
-                // Call the method to create and attach TapGesture
-                SelectDino(nameL, id);
-                SelectDino(levelL, id);
-                SelectDino(hpL, id);
-                SelectDino(staminaL, id);
-                SelectDino(oxygenL, id);
-                SelectDino(foodL, id);
-                SelectDino(weightL, id);
-                SelectDino(damageL, id);
-                SelectDino(statusL, id);
-                SelectDino(papaL, id);
-                SelectDino(mamaL, id);
 
                 // add items to grid
                 AddToGrid(grid, nameL, rowIndex, 0);
