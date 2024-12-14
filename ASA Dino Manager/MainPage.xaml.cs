@@ -28,6 +28,7 @@ namespace ASA_Dino_Manager
 
         public string selectedID = "";
 
+        public bool showStats = false;
 
         public MainPage()
         {
@@ -93,127 +94,6 @@ namespace ASA_Dino_Manager
             }
         }
 
-        public void UpdateSpeciesContent()
-        {
-            AppShell.Importing = true; // lock database
-            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-            var route = Shell.Current.CurrentState.Location.ToString();
-            route = route.Replace("/","");
-
-            if (route == "Looking for dinos")
-            {
-
-            }
-            else
-            {
-                var labels = new List<Label>();
-
-
-                string dinoTag = DataManager.TagForClass(route);
-                DataManager.selectedClass = dinoTag;
-
-
-                if (DataManager.selectedClass != "")
-                {
-
-                    DataManager.GetDinoData(DataManager.selectedClass);
-
-                    if ( MainPage.ToggleExcluded != 3)
-                    {
-                        DataManager.SetMaxStats();
-                    }
-                    if (!CurrentStats && MainPage.ToggleExcluded != 2 && MainPage.ToggleExcluded != 3)
-                    {
-                        DataManager.SetBinaryStats();
-                        DataManager.GetBestPartner();
-                    }
-                }
-
-              
-
-                // ==============================================================    Show data   =====================================================
-
-                // Create the main layout
-                var mainLayout = new Grid();
-
-                int t = DataManager.BottomTable.Rows.Count;
-                int rowH = 20;
-                int barH = (t * rowH) + rowH + 10;
-                if (t > 5) { barH = 120; }
-
-                // Define row definitions
-                mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Fixed button row
-                mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // Scrollable content
-                mainLayout.RowDefinitions.Add(new RowDefinition { Height = barH }); // Scrollable content
-
-
-                
-
-                var mainStack = new StackLayout
-                {
-                    Spacing = 0,
-                    Padding = 3
-                };
-
-
-            
-                // Add the button grid
-                AddToGrid(mainLayout, CreateButtonGrid(), 0, 0);
-
-
-
-                // Create scrollable content
-                var scrollContent = new StackLayout
-                {
-                    Spacing = 20,
-                    Padding = 3
-                };
-
-                // Add male and female tables
-                scrollContent.Children.Add(CreateTableGrid(DataManager.MaleTable, "Male"));
-                scrollContent.Children.Add(CreateTableGrid(DataManager.FemaleTable, "Female"));
-               
-
-                // Wrap the scrollable content in a ScrollView and add it to the second row
-                var scrollView = new ScrollView { Content = scrollContent };
-
-
-                AddToGrid(mainLayout, scrollView, 1, 0);
-
-
-
-                // Create scrollable content
-                var bottomContent = new StackLayout
-                {
-                    Spacing = 0,
-                    Padding = 3,
-                    BackgroundColor = Colors.DarkGray
-                };
-
-                bottomContent.Children.Add(CreateTableGrid(DataManager.BottomTable, "Bottom"));
-                var bottomPanel = new ScrollView { Content = bottomContent };
-
-
-                AddToGrid(mainLayout, bottomPanel, 2, 0);
-
-
-                this.Content = mainLayout;
-
-            }
-
-            stopwatch.Stop();
-
-
-            var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
-            RefreshCount++;
-            double outAVG = 0;
-            if (RefreshCount < 2) { RefreshAvg = elapsedMilliseconds; outAVG = RefreshAvg; }
-            else { RefreshAvg += elapsedMilliseconds; outAVG = RefreshAvg / RefreshCount; }
-            FileManager.Log("Refreshed GUI - " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
-            FileManager.Log("=====================================================================");
-            AppShell.Importing = false; // unlock database
-        }
-
         private Grid CreateButtonGrid()
         {
             var grid = new Grid
@@ -276,26 +156,34 @@ namespace ASA_Dino_Manager
             // Create the fixed button
 
 
-            topButton1.Clicked += OnTopButton1Clicked;
-            topButton2.Clicked += OnTopButton2Clicked;
+            topButton1.Clicked += OnLeftButtonClicked;
+            topButton2.Clicked += OnRightButtonClicked;
 
 
             return grid;
         }
 
-        void CreateTapGesture(Label label, string id)
+        void SelectDino(Label label, string id)
         {
             // Create a TapGestureRecognizer
             var tapGesture = new TapGestureRecognizer();
             tapGesture.Tapped += (s, e) =>
             {
                 // Handle the click event and pass additional data
-                FileManager.Log($"Label clicked! Item ID: {id}");
+               
                 selectedID = id;
-                string status = DataManager.GetStatus(selectedID);
-                if (status == "Exclude") { status = ""; }
-                else if (status == "") { status = "Exclude"; }
-                DataManager.SetStatus(selectedID,status);
+
+                if (showStats) { showStats = false; }
+                else
+                {
+                    FileManager.Log($"Showing stats for ID: {id}");
+                    showStats = true;
+                }
+
+                //string status = DataManager.GetStatus(selectedID);
+                //if (status == "Exclude") { status = ""; }
+                //else if (status == "") { status = "Exclude"; }
+                //DataManager.SetStatus(selectedID,status);
 
                 UpdateSpeciesContent();
                 // label.BackgroundColor = Colors.White;
@@ -305,7 +193,56 @@ namespace ASA_Dino_Manager
             label.GestureRecognizers.Add(tapGesture);
         }
 
-        private Grid CreateTableGrid(DataTable table, string title)
+        void ExcludeDino(Label label)
+        {
+            // Create a TapGestureRecognizer
+            var tapGesture = new TapGestureRecognizer();
+            tapGesture.Tapped += (s, e) =>
+            {
+                // Handle the click event and pass additional data
+                //FileManager.Log("Exclude clicked!");
+
+                string status = DataManager.GetStatus(selectedID);
+                if (status == "Exclude") { status = ""; }
+                else if (status == "") { status = "Exclude"; }
+                DataManager.SetStatus(selectedID,status);
+
+                DataManager.GetDinoData(DataManager.selectedClass);
+                showStats = true;
+                UpdateSpeciesContent();
+                // label.BackgroundColor = Colors.White;
+            };
+
+            // Attach the TapGestureRecognizer to the label
+            label.GestureRecognizers.Add(tapGesture);
+        }
+
+        void ArchiveDino(Label label)
+        {
+            // Create a TapGestureRecognizer
+            var tapGesture = new TapGestureRecognizer();
+            tapGesture.Tapped += (s, e) =>
+            {
+                // Handle the click event and pass additional data
+                //FileManager.Log("Exclude clicked!");
+
+                string status = DataManager.GetStatus(selectedID);
+                if (status == "Archived") { status = ""; }
+                else if (status == "") { status = "Archived"; }
+                else if (status == "Exclude") { status = "Archived"; }
+                DataManager.SetStatus(selectedID, status);
+
+                showStats = true;
+                DataManager.GetDinoData(DataManager.selectedClass);
+                UpdateSpeciesContent();
+                // label.BackgroundColor = Colors.White;
+            };
+
+            // Attach the TapGestureRecognizer to the label
+            label.GestureRecognizers.Add(tapGesture);
+        }
+
+        private Grid CreateDinoGrid(DataTable table, string title)
         {
             var grid = new Grid
             {
@@ -326,7 +263,7 @@ namespace ASA_Dino_Manager
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 8
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 9
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 10
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 10
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 11
 
 
 
@@ -365,9 +302,10 @@ namespace ASA_Dino_Manager
             AddToGrid(grid, new Label { Text = "Status", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 8);
             AddToGrid(grid, new Label { Text = "Papa", FontAttributes = FontAttributes.Bold, TextColor = maleColor }, 0, 9);
             AddToGrid(grid, new Label { Text = "Mama", FontAttributes = FontAttributes.Bold, TextColor = femaleColor }, 0, 10);
-         
-            
-            AddToGrid(grid, new Label { Text = "", FontAttributes = FontAttributes.Bold, TextColor = femaleColor }, 0, 11);
+
+
+
+            //AddToGrid(grid, new Label { Text = "", FontAttributes = FontAttributes.Bold, TextColor = femaleColor }, 0, 11);
 
 
 
@@ -427,18 +365,20 @@ namespace ASA_Dino_Manager
                 var papaL = new Label { Text = papa, TextColor = maleColor };
                 var mamaL = new Label { Text = mama, TextColor = femaleColor };
 
+
+
                 // Call the method to create and attach TapGesture
-                CreateTapGesture(nameL, id);
-                CreateTapGesture(levelL, id);
-                CreateTapGesture(hpL, id);
-                CreateTapGesture(staminaL, id);
-                CreateTapGesture(oxygenL, id);
-                CreateTapGesture(foodL, id);
-                CreateTapGesture(weightL, id);
-                CreateTapGesture(damageL, id);
-                CreateTapGesture(statusL, id);
-                CreateTapGesture(papaL, id);
-                CreateTapGesture(mamaL, id);
+                SelectDino(nameL, id);
+                SelectDino(levelL, id);
+                SelectDino(hpL, id);
+                SelectDino(staminaL, id);
+                SelectDino(oxygenL, id);
+                SelectDino(foodL, id);
+                SelectDino(weightL, id);
+                SelectDino(damageL, id);
+                SelectDino(statusL, id);
+                SelectDino(papaL, id);
+                SelectDino(mamaL, id);
 
                 // add items to grid
                 AddToGrid(grid, nameL, rowIndex, 0);
@@ -453,8 +393,27 @@ namespace ASA_Dino_Manager
                 AddToGrid(grid, papaL, rowIndex, 9);
                 AddToGrid(grid, mamaL, rowIndex, 10);
 
-               // AddToGrid(grid, label1, rowIndex, 11);
 
+                
+                if (title == "Bottom" && showStats && rowIndex == 1)
+                {
+                    string tx = "Exclude";
+                    if (DataManager.GetStatus(selectedID) == "Exclude") { tx = "Include"; }
+                    var cellColor = Colors.Yellow;
+                    var excludeL = new Label { Text = tx, TextColor = cellColor,HorizontalOptions = LayoutOptions.End };
+                    ExcludeDino(excludeL);
+                    AddToGrid(grid, excludeL, 1, 11);
+                }
+
+                if (title == "Bottom" && showStats && rowIndex == 2)
+                {
+                    string tx = "Archive";
+                    if (DataManager.GetStatus(selectedID) == "Archived") { tx = "Restore"; }
+                    var cellColor = Colors.Purple;
+                    var archiveL = new Label { Text = tx, TextColor = cellColor, HorizontalOptions = LayoutOptions.End };
+                    ArchiveDino(archiveL);
+                    AddToGrid(grid, archiveL, 2, 11);
+                }
 
 
                 rowIndex++;
@@ -466,8 +425,9 @@ namespace ASA_Dino_Manager
             return grid;
         }
 
-        private void OnTopButton1Clicked(object? sender, EventArgs e)
+        private void OnLeftButtonClicked(object? sender, EventArgs e)
         {
+            showStats = false;
             ToggleExcluded++;
             if (ToggleExcluded == 4)
             {
@@ -479,8 +439,9 @@ namespace ASA_Dino_Manager
             UpdateSpeciesContent();
         }
 
-        private void OnTopButton2Clicked(object? sender, EventArgs e)
+        private void OnRightButtonClicked(object? sender, EventArgs e)
         {
+            showStats = false;
             if (CurrentStats)
             {
                 CurrentStats = false;
@@ -509,9 +470,148 @@ namespace ASA_Dino_Manager
             grid.Children.Add(view);
         }
 
+        public void UpdateSpeciesContent()
+        {
+            AppShell.Importing = true; // lock database
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            var route = Shell.Current.CurrentState.Location.ToString();
+            route = route.Replace("/", "");
+
+            if (route == "Looking for dinos")
+            {
+
+            }
+            else
+            {
+                var labels = new List<Label>();
+
+
+                string dinoTag = DataManager.TagForClass(route);
+                DataManager.selectedClass = dinoTag;
+
+
+                // load neccessary data
+                if (DataManager.selectedClass != "")
+                {
+                    if (showStats)
+                    {
+
+
+                        DataManager.GetOneDinoData(selectedID);
+
+
+                        if (MainPage.ToggleExcluded != 3)
+                        {
+                            DataManager.SetMaxStats();
+                        }
+                    }
+                    else
+                    {
+                        DataManager.GetDinoData(DataManager.selectedClass);
+
+
+                        if (MainPage.ToggleExcluded != 3)
+                        {
+                            DataManager.SetMaxStats();
+                        }
+                        if (!CurrentStats && MainPage.ToggleExcluded != 2 && MainPage.ToggleExcluded != 3)
+                        {
+                            DataManager.SetBinaryStats();
+                            DataManager.GetBestPartner();
+                        }
+
+                    }
+                }
+
+
+
+                // ==============================================================    Show data   =====================================================
+
+                // Create the main layout
+                var mainLayout = new Grid();
+
+
+                // dynamically adjust the bottom bar height
+                int t = DataManager.BottomTable.Rows.Count;
+                int rowH = 20;
+                int barH = (t * rowH) + rowH + 10;
+                if (t > 5) { barH = 127; }
+
+                // Define row definitions
+                mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Fixed button row
+                mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // Scrollable content
+                mainLayout.RowDefinitions.Add(new RowDefinition { Height = barH }); // Scrollable content
+
+
+
+
+                var mainStack = new StackLayout
+                {
+                    Spacing = 0,
+                    Padding = 3
+                };
+
+
+
+                // Add the button grid
+                AddToGrid(mainLayout, CreateButtonGrid(), 0, 0);
+
+
+
+                // Create scrollable content
+                var scrollContent = new StackLayout
+                {
+                    Spacing = 20,
+                    Padding = 3
+                };
+
+                // Add male and female tables
+                scrollContent.Children.Add(CreateDinoGrid(DataManager.MaleTable, "Male"));
+                scrollContent.Children.Add(CreateDinoGrid(DataManager.FemaleTable, "Female"));
+
+
+                // Wrap the scrollable content in a ScrollView and add it to the second row
+                var scrollView = new ScrollView { Content = scrollContent };
+
+
+                AddToGrid(mainLayout, scrollView, 1, 0);
+
+
+
+                // Create scrollable content
+                var bottomContent = new StackLayout
+                {
+                    Spacing = 0,
+                    Padding = 3,
+                    BackgroundColor = Colors.DarkGray
+                };
+
+                bottomContent.Children.Add(CreateDinoGrid(DataManager.BottomTable, "Bottom"));
+
+                var bottomPanel = new ScrollView { Content = bottomContent };
+
+
+                AddToGrid(mainLayout, bottomPanel, 2, 0);
+
+
+                this.Content = mainLayout;
+
+            }
+
+            stopwatch.Stop();
+
+
+            var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
+            RefreshCount++;
+            double outAVG = 0;
+            if (RefreshCount < 2) { RefreshAvg = elapsedMilliseconds; outAVG = RefreshAvg; }
+            else { RefreshAvg += elapsedMilliseconds; outAVG = RefreshAvg / RefreshCount; }
+            FileManager.Log("Refreshed GUI - " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
+            FileManager.Log("=====================================================================");
+            AppShell.Importing = false; // unlock database
+        }
+
+
 
     }
-
-
-
 }
