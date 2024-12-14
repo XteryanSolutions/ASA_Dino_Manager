@@ -62,7 +62,7 @@ namespace ASA_Dino_Manager
                 FileManager.Log("Import Requesting GUI refresh");
                 isLoaded = false;
                 AppShell.needUpdate = false;
-                UpdateSpeciesContent();
+                UpdateMainContent();
             }
 
             FileManager.WriteLog();
@@ -88,7 +88,7 @@ namespace ASA_Dino_Manager
                if (!isLoaded)
                 {
                     FileManager.Log("Navigated Species");
-                    UpdateSpeciesContent();
+                    UpdateMainContent();
                     isLoaded = true;
                 }
             }
@@ -185,7 +185,7 @@ namespace ASA_Dino_Manager
                 //else if (status == "") { status = "Exclude"; }
                 //DataManager.SetStatus(selectedID,status);
 
-                UpdateSpeciesContent();
+                UpdateMainContent();
                 // label.BackgroundColor = Colors.White;
             };
 
@@ -209,7 +209,8 @@ namespace ASA_Dino_Manager
 
                 DataManager.GetDinoData(DataManager.selectedClass);
                 showStats = true;
-                UpdateSpeciesContent();
+
+                UpdateMainContent();
                 // label.BackgroundColor = Colors.White;
             };
 
@@ -234,12 +235,57 @@ namespace ASA_Dino_Manager
 
                 showStats = true;
                 DataManager.GetDinoData(DataManager.selectedClass);
-                UpdateSpeciesContent();
+                UpdateMainContent();
                 // label.BackgroundColor = Colors.White;
             };
 
             // Attach the TapGestureRecognizer to the label
             label.GestureRecognizers.Add(tapGesture);
+        }
+
+        private void OnLeftButtonClicked(object? sender, EventArgs e)
+        {
+            showStats = false;
+            ToggleExcluded++;
+            if (ToggleExcluded == 4)
+            {
+                
+                ToggleExcluded = 0;
+            }
+
+            // reload stuff
+            UpdateMainContent();
+        }
+
+        private void OnRightButtonClicked(object? sender, EventArgs e)
+        {
+            showStats = false;
+            if (CurrentStats)
+            {
+                CurrentStats = false;
+            }
+            else
+            {
+                CurrentStats = true;
+            }
+            // reload stuff
+            UpdateMainContent();
+        }
+
+        private void AddToGrid(Grid grid, View view, int row, int column)
+        {
+            // Ensure rows exist up to the specified index
+            while (grid.RowDefinitions.Count <= row)
+            {
+                grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
+            }
+
+            // Set the row and column for the view
+            Grid.SetRow(view, row);
+            Grid.SetColumn(view, column);
+
+            // Add the view to the grid
+            grid.Children.Add(view);
         }
 
         private Grid CreateDinoGrid(DataTable table, string title)
@@ -282,13 +328,13 @@ namespace ASA_Dino_Manager
 
             if (title == "Male") { DefaultColor = maleColor; }
             else if (title == "Female") { DefaultColor = femaleColor; }
-            else {  DefaultColor = breedColor; }
+            else { DefaultColor = breedColor; }
 
 
             headerColor = DefaultColor;
 
 
-            
+
 
             // Add header row
             AddToGrid(grid, new Label { Text = "Name", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 0);
@@ -352,11 +398,17 @@ namespace ASA_Dino_Manager
                 if (DataManager.ToDouble(weight) >= DataManager.WeightMax) { cellColor6 = goodColor; }
                 if (DataManager.ToDouble(damage) >= DataManager.DamageMax) { cellColor7 = goodColor; }
 
+
+                string age = row["Age"].ToString();
+                double ageD = DataManager.ToDouble(age);
+
+                if (ageD < 100 && !name.Contains("Breed #")) { status = ageD + "% Grown"; }
+
                 // Create a Label
                 var nameL = new Label { Text = name, TextColor = cellColor0 };
                 var levelL = new Label { Text = level, TextColor = cellColor1 };
                 var hpL = new Label { Text = hp, TextColor = cellColor2 };
-                var staminaL = new Label { Text =stamina, TextColor = cellColor3 };
+                var staminaL = new Label { Text = stamina, TextColor = cellColor3 };
                 var oxygenL = new Label { Text = oxygen, TextColor = cellColor4 };
                 var foodL = new Label { Text = food, TextColor = cellColor5 };
                 var weightL = new Label { Text = weight, TextColor = cellColor6 };
@@ -397,13 +449,13 @@ namespace ASA_Dino_Manager
                 AddToGrid(grid, mamaL, rowIndex, 10);
 
 
-                
+
                 if (title == "Bottom" && showStats && rowIndex == 1)
                 {
                     string tx = "Exclude";
                     if (DataManager.GetStatus(selectedID) == "Exclude") { tx = "Include"; }
                     var cellColor = Colors.Yellow;
-                    var excludeL = new Label { Text = tx, TextColor = cellColor,HorizontalOptions = LayoutOptions.End };
+                    var excludeL = new Label { Text = tx, TextColor = cellColor, HorizontalOptions = LayoutOptions.End };
                     ExcludeDino(excludeL);
                     AddToGrid(grid, excludeL, 1, 11);
                 }
@@ -428,52 +480,7 @@ namespace ASA_Dino_Manager
             return grid;
         }
 
-        private void OnLeftButtonClicked(object? sender, EventArgs e)
-        {
-            showStats = false;
-            ToggleExcluded++;
-            if (ToggleExcluded == 4)
-            {
-                
-                ToggleExcluded = 0;
-            }
-
-            // reload stuff
-            UpdateSpeciesContent();
-        }
-
-        private void OnRightButtonClicked(object? sender, EventArgs e)
-        {
-            showStats = false;
-            if (CurrentStats)
-            {
-                CurrentStats = false;
-            }
-            else
-            {
-                CurrentStats = true;
-            }
-            // reload stuff
-            UpdateSpeciesContent();
-        }
-
-        private void AddToGrid(Grid grid, View view, int row, int column)
-        {
-            // Ensure rows exist up to the specified index
-            while (grid.RowDefinitions.Count <= row)
-            {
-                grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
-            }
-
-            // Set the row and column for the view
-            Grid.SetRow(view, row);
-            Grid.SetColumn(view, column);
-
-            // Add the view to the grid
-            grid.Children.Add(view);
-        }
-
-        public void UpdateSpeciesContent()
+        public void UpdateMainContent()
         {
             AppShell.Importing = true; // lock database
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
