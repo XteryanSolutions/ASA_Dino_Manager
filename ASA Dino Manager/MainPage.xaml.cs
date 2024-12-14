@@ -61,11 +61,10 @@ namespace ASA_Dino_Manager
             if (AppShell.needUpdate)
             {
                 FileManager.Log("Import Requesting GUI refresh");
-                isLoaded = false;
                 AppShell.needUpdate = false;
-                ProcessContent();
+                RefreshContent();
             }
-
+            
             FileManager.WriteLog();
         }
 
@@ -89,8 +88,9 @@ namespace ASA_Dino_Manager
                if (!isLoaded)
                 {
                     FileManager.Log("Navigated Species");
-                    ProcessContent();
+                    RefreshContent();
                     isLoaded = true;
+                    FileManager.Log("Set isLoaded");
                 }
             }
         }
@@ -176,8 +176,7 @@ namespace ASA_Dino_Manager
                 FileManager.Log($"Showing stats for ID: {id}");
                 showStats = true;
 
-                ProcessContent();
-                // label.BackgroundColor = Colors.White;
+                RefreshContent();
             };
 
             // Attach the TapGestureRecognizer to the label
@@ -194,8 +193,7 @@ namespace ASA_Dino_Manager
 
                 if (showStats) { showStats = false; }
 
-                ProcessContent();
-                // label.BackgroundColor = Colors.White;
+                RefreshContent();
             };
 
             // Attach the TapGestureRecognizer to the label
@@ -219,8 +217,7 @@ namespace ASA_Dino_Manager
                 DataManager.GetDinoData(DataManager.selectedClass);
                 showStats = true;
 
-                ProcessContent();
-                // label.BackgroundColor = Colors.White;
+                RefreshContent();
             };
 
             // Attach the TapGestureRecognizer to the label
@@ -242,10 +239,27 @@ namespace ASA_Dino_Manager
                 else if (status == "Exclude") { status = "Archived"; }
                 DataManager.SetStatus(selectedID, status);
 
-                showStats = true;
+                showStats = true; // wether or not to close the stat window
                 DataManager.GetDinoData(DataManager.selectedClass);
-                ProcessContent();
-                // label.BackgroundColor = Colors.White;
+                RefreshContent(); 
+            };
+
+            // Attach the TapGestureRecognizer to the label
+            label.GestureRecognizers.Add(tapGesture);
+        }
+
+        void PurgeDino(Label label)
+        {
+            // Create a TapGestureRecognizer
+            var tapGesture = new TapGestureRecognizer();
+            tapGesture.Tapped += (s, e) =>
+            {
+                // Handle the click event and pass additional data
+                //FileManager.Log("Exclude clicked!");
+
+                string status = DataManager.GetStatus(selectedID);
+
+                RefreshContent();
             };
 
             // Attach the TapGestureRecognizer to the label
@@ -263,7 +277,7 @@ namespace ASA_Dino_Manager
             }
 
             // reload stuff
-            ProcessContent();
+            RefreshContent();
         }
 
         private void OnRightButtonClicked(object? sender, EventArgs e)
@@ -278,7 +292,7 @@ namespace ASA_Dino_Manager
                 CurrentStats = true;
             }
             // reload stuff
-            ProcessContent();
+            RefreshContent();
         }
 
         private void AddToGrid(Grid grid, View view, int row, int column)
@@ -457,45 +471,50 @@ namespace ASA_Dino_Manager
                 AddToGrid(grid, papaL, rowIndex, 9);
                 AddToGrid(grid, mamaL, rowIndex, 10);
 
-
-
-                if (title == "Bottom" && showStats)
-                {
-                    string tx = "Exclude";
-                    if (DataManager.GetStatus(selectedID) == "Exclude") { tx = "Include"; }
-                    var cellColor = Colors.Yellow;
-                    var excludeL = new Label { Text = tx, TextColor = cellColor, HorizontalOptions = LayoutOptions.End };
-                    ExcludeDino(excludeL);
-                    AddToGrid(grid, excludeL, 0, 11);
-                }
-
-                if (title == "Bottom" && showStats)
-                {
-                    string tx = "Archive";
-                    if (DataManager.GetStatus(selectedID) == "Archived") { tx = "Restore"; }
-                    var cellColor = Colors.Purple;
-                    var archiveL = new Label { Text = tx, TextColor = cellColor, HorizontalOptions = LayoutOptions.End };
-                    ArchiveDino(archiveL);
-                    AddToGrid(grid, archiveL, 1, 11);
-                }
-
-
                 rowIndex++;
             }
 
+
+            if (title == "Bottom" && showStats)
+            {
+                string tx = "Exclude";
+                if (DataManager.GetStatus(selectedID) == "Exclude") { tx = "Include"; }
+                var cellColor = Colors.Yellow;
+                var excludeL = new Label { Text = tx, TextColor = cellColor, HorizontalOptions = LayoutOptions.End };
+                ExcludeDino(excludeL);
+                AddToGrid(grid, excludeL, 0, 11);
+            }
+
+            if (title == "Bottom" && showStats)
+            {
+                string tx = "Archive";
+                if (DataManager.GetStatus(selectedID) == "Archived") { tx = "Restore"; }
+                var cellColor = Colors.Purple;
+                var archiveL = new Label { Text = tx, TextColor = cellColor, HorizontalOptions = LayoutOptions.End };
+                ArchiveDino(archiveL);
+                AddToGrid(grid, archiveL, 1, 11);
+            }
+
+            if (title == "Bottom" && showStats && MainPage.ToggleExcluded == 3)
+            {
+                var cellColor = Colors.Red;
+                var archiveL = new Label { Text = "Purge", TextColor = cellColor, HorizontalOptions = LayoutOptions.End };
+                ArchiveDino(archiveL);
+                AddToGrid(grid, archiveL, 2, 11);
+            }
 
 
 
             return grid;
         }
 
-        public void ProcessContent()
+        public void RefreshContent()
         {
             if (Monitor.TryEnter(AppShell._dbLock, TimeSpan.FromSeconds(5)))
             {
                 try
                 {
-                    UpdateMainContentPage();
+                    RouteContent();
                 }
                 finally
                 {
@@ -509,7 +528,7 @@ namespace ASA_Dino_Manager
             }
         }
 
-        public void UpdateMainContentPage()
+        public void RouteContent()
         {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             var route = Shell.Current.CurrentState.Location.ToString();
@@ -526,14 +545,44 @@ namespace ASA_Dino_Manager
             }
             else
             {
-                var labels = new List<Label>();
+                UpdateMainContentPage(route);
+            }
 
 
+
+            stopwatch.Stop();
+
+
+            var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
+            RefreshCount++;
+            double outAVG = 0;
+            if (RefreshCount < 2) { RefreshAvg = elapsedMilliseconds; outAVG = RefreshAvg; }
+            else { RefreshAvg += elapsedMilliseconds; outAVG = RefreshAvg / RefreshCount; }
+            FileManager.Log("Refreshed GUI - " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
+            FileManager.Log("=====================================================================");
+            if (isLoaded) { isLoaded = false; FileManager.Log("Unset isLoaded"); }
+        }
+
+        public void UpdateMainContentPage(string route)
+        {
+            if (route == "Looking for dinos")
+            {
+
+            }
+            else if (route == "ASA")
+            {
+                SetText("Remember to feed your dinos");
+                
+            }
+            else
+            {
+                this.Content = null;
+                // get the selected species
                 string dinoTag = DataManager.TagForClass(route);
                 DataManager.selectedClass = dinoTag;
 
 
-                // load neccessary data
+                // load neccessary data based on toggles
                 if (DataManager.selectedClass != "")
                 {
                     if (showStats)
@@ -641,18 +690,6 @@ namespace ASA_Dino_Manager
                 this.Content = null;
                 this.Content = mainLayout;
             }
-
-            stopwatch.Stop();
-
-
-            var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
-            RefreshCount++;
-            double outAVG = 0;
-            if (RefreshCount < 2) { RefreshAvg = elapsedMilliseconds; outAVG = RefreshAvg; }
-            else { RefreshAvg += elapsedMilliseconds; outAVG = RefreshAvg / RefreshCount; }
-            FileManager.Log("Refreshed GUI - " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
-            FileManager.Log("=====================================================================");
-            FileManager.SaveFiles();
         }
 
 

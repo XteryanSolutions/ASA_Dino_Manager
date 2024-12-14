@@ -24,6 +24,7 @@ namespace ASA_Dino_Manager
 
         public static string ColorString = "";
         public static string DefaultColor = "#8cabff;#a1c5f7;#6378ab;#f77777;#f7ada1;#e3d788;#7b818a;#b0b0b0;#dbb172;#65e05a;#23a11a;#b267cf;";
+        public static bool needSave = false;
 
         public static bool InitFileManager()
         {
@@ -39,7 +40,7 @@ namespace ASA_Dino_Manager
                 if (!Directory.Exists(AppPath + @"\Logs")) { Directory.CreateDirectory(AppPath + @"\Logs"); }
                 if (!Directory.Exists(AppPath + @"\Data")) { Directory.CreateDirectory(AppPath + @"\Data"); }
 
-                if (!LoadColorFile()) { return false; }
+                // if (!LoadColorFile()) { return false; }
 
                 if (LoadPath()) // loaded
                 {
@@ -195,21 +196,29 @@ namespace ASA_Dino_Manager
             catch
             {
                 Console.WriteLine("no import dataBase! creating a new one");
+                needSave = true;
                 SaveFiles();
             } 
         }
 
+
         public static void SaveFiles()
         {
-            try
+            if (needSave)
             {
-                DataManager.ImportsTable.WriteXml(AppPath + @"\Data\dinos.hrv");
-                DataManager.StatTable.WriteXml(AppPath + @"\Data\data.hrv");
+                try
+                {
+                    DataManager.ImportsTable.WriteXml(AppPath + @"\Data\dinos.hrv");
+                    DataManager.StatTable.WriteXml(AppPath + @"\Data\data.hrv");
+                    FileManager.Log("Saved DataBase");
+                    needSave = false;
+                }
+                catch
+                {
+                    Console.WriteLine("File write failure");
+                }
             }
-            catch
-            {
-                Console.WriteLine("File write failure");
-            }
+           
         }
 
         public static void Log(string text)

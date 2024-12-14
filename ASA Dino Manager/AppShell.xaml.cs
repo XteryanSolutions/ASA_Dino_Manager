@@ -141,6 +141,7 @@ namespace ASA_Dino_Manager
                     {
                         FileManager.Log("Updated DataBase");
                         needUpdate = true;
+                        FileManager.needSave = true;
                     }
                 }
                 UpdateShellContents();
@@ -148,7 +149,6 @@ namespace ASA_Dino_Manager
                 stopwatch.Stop();
                 var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
 
-                FileManager.SaveFiles();
                 ImportCount++;
                 double outAVG = 0;
                 if (ImportCount < 2) { ImportAvg = elapsedMilliseconds; outAVG = ImportAvg; }
@@ -199,7 +199,7 @@ namespace ASA_Dino_Manager
                 }
             }
         }
-
+        
         private void StartTimer()
         {
             _isTimerRunning = true; // Flag to control the timer
@@ -225,6 +225,8 @@ namespace ASA_Dino_Manager
                 ImportEnabled = false;
             }
 
+            SaveData();
+
             Delay--;
             if (Delay == 0)
             {
@@ -235,8 +237,7 @@ namespace ASA_Dino_Manager
                 ProcessAllData();
                 Delay = DefaultDelay;
             }
-
-            FileManager.WriteLog();
+           
         }
 
         public void StopTimer()
@@ -244,6 +245,24 @@ namespace ASA_Dino_Manager
             _isTimerRunning = false; // Call this to stop the timer if needed
         }
 
+        private void SaveData()
+        {
+            if (Monitor.TryEnter(_dbLock, TimeSpan.FromSeconds(5)))
+            {
+                try
+                {
+                    FileManager.SaveFiles();
+                }
+                finally
+                {
+                    Monitor.Exit(_dbLock);
+                }
+            }
+            else
+            {
+                FileManager.Log("Failed to acquire database lock within timeout.");
+            }
+        }
 
     }
 }

@@ -506,6 +506,8 @@ namespace ASA_Dino_Manager
                     dr["Status"] = status;
                     DataManager.StatTable.Rows.Add(dr);
                 }
+                // request a save after modifying data
+                FileManager.needSave = true;
             }
         }
 
@@ -528,6 +530,8 @@ namespace ASA_Dino_Manager
                 dr["Notes"] = notes;
                 DataManager.StatTable.Rows.Add(dr);
             }
+            // request a save after modifying data
+            FileManager.needSave = true;
         }
 
         public static void SetMutes(string id, string mutes)
@@ -1359,6 +1363,8 @@ namespace ASA_Dino_Manager
                 }
 
                 FileManager.Log($"Purged ID: {id}");
+                // request a save after modifying data
+                FileManager.needSave = true;
             }
         }
 
