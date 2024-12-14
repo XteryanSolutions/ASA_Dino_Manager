@@ -171,20 +171,10 @@ namespace ASA_Dino_Manager
             tapGesture.Tapped += (s, e) =>
             {
                 // Handle the click event and pass additional data
-               
                 selectedID = id;
 
-                if (showStats) { showStats = false; }
-                else
-                {
-                    FileManager.Log($"Showing stats for ID: {id}");
-                    showStats = true;
-                }
-
-                //string status = DataManager.GetStatus(selectedID);
-                //if (status == "Exclude") { status = ""; }
-                //else if (status == "") { status = "Exclude"; }
-                //DataManager.SetStatus(selectedID,status);
+                FileManager.Log($"Showing stats for ID: {id}");
+                showStats = true;
 
                 ProcessContent();
                 // label.BackgroundColor = Colors.White;
@@ -194,6 +184,24 @@ namespace ASA_Dino_Manager
             label.GestureRecognizers.Add(tapGesture);
         }
 
+        void UnSelectDino(Grid grid)
+        {
+            // Create a TapGestureRecognizer
+            var tapGesture = new TapGestureRecognizer();
+            tapGesture.Tapped += (s, e) =>
+            {
+                // Handle the click event and pass additional data
+
+                if (showStats) { showStats = false; }
+
+                ProcessContent();
+                // label.BackgroundColor = Colors.White;
+            };
+
+            // Attach the TapGestureRecognizer to the label
+            grid.GestureRecognizers.Add(tapGesture);
+        }
+         
         void ExcludeDino(Label label)
         {
             // Create a TapGestureRecognizer
@@ -451,24 +459,24 @@ namespace ASA_Dino_Manager
 
 
 
-                if (title == "Bottom" && showStats && rowIndex == 1)
+                if (title == "Bottom" && showStats)
                 {
                     string tx = "Exclude";
                     if (DataManager.GetStatus(selectedID) == "Exclude") { tx = "Include"; }
                     var cellColor = Colors.Yellow;
                     var excludeL = new Label { Text = tx, TextColor = cellColor, HorizontalOptions = LayoutOptions.End };
                     ExcludeDino(excludeL);
-                    AddToGrid(grid, excludeL, 1, 11);
+                    AddToGrid(grid, excludeL, 0, 11);
                 }
 
-                if (title == "Bottom" && showStats && rowIndex == 2)
+                if (title == "Bottom" && showStats)
                 {
                     string tx = "Archive";
                     if (DataManager.GetStatus(selectedID) == "Archived") { tx = "Restore"; }
                     var cellColor = Colors.Purple;
                     var archiveL = new Label { Text = tx, TextColor = cellColor, HorizontalOptions = LayoutOptions.End };
                     ArchiveDino(archiveL);
-                    AddToGrid(grid, archiveL, 2, 11);
+                    AddToGrid(grid, archiveL, 1, 11);
                 }
 
 
@@ -510,6 +518,10 @@ namespace ASA_Dino_Manager
             if (route == "Looking for dinos")
             {
 
+            }
+            else if (route == "ASA")
+            {
+                SetText("Start Page");
             }
             else
             {
@@ -560,6 +572,8 @@ namespace ASA_Dino_Manager
                 // Create the main layout
                 var mainLayout = new Grid();
 
+
+                UnSelectDino(mainLayout);
 
                 // dynamically adjust the bottom bar height
                 int t = DataManager.BottomTable.Rows.Count;

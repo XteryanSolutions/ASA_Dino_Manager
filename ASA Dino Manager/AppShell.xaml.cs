@@ -83,6 +83,20 @@ namespace ASA_Dino_Manager
                 // Retrieve the tag list from DataManager and sort alphabetically
                 var sortedTagList = classList.OrderBy(tag => tag).ToArray();
 
+
+
+                int totalCD = 0;
+
+                var shellContent1 = new ShellContent
+                {
+                    Title = "Dino Manager ",
+                    ContentTemplate = new DataTemplate(typeof(MainPage)), // Replace with the appropriate page
+                    Route = "ASA"
+                };
+                // Add the ShellContent to the Shell
+                Items.Add(shellContent1);
+
+
                 // Loop through the sorted tags and create ShellContent dynamically
                 foreach (var tag in sortedTagList)
                 {
