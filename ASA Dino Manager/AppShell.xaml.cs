@@ -7,7 +7,7 @@ namespace ASA_Dino_Manager
 {
     public partial class AppShell : Shell
     {
-        public string version = "ASA Dino Manager 0.04.33";
+        public string version = "ASA Dino Manager 0.04.34";
 
         // IMPORTING
         public static bool ImportEnabled = false;

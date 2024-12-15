@@ -1386,6 +1386,7 @@ namespace ASA_Dino_Manager
                             DeleteRowsByID(id);
                         }
                     }
+                    FileManager.needSave = true;
                 }
                 finally
                 {

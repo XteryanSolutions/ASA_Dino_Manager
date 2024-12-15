@@ -268,6 +268,8 @@ namespace ASA_Dino_Manager
                 {
                     try
                     {
+                        showStats = false;
+                        FileManager.needSave = true;
                         DataManager.DeleteRowsByID(selectedID);
                     }
                     finally
