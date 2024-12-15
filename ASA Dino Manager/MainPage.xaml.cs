@@ -687,7 +687,8 @@ namespace ASA_Dino_Manager
             {
                 try
                 {
-                    MyDelayedOperationAsync(stat);
+                    RouteContent(stat);
+                   // MyDelayedOperationAsync(stat);
                 }
                 finally
                 {
@@ -703,7 +704,7 @@ namespace ASA_Dino_Manager
 
         public async Task MyDelayedOperationAsync(bool showStats)
         {
-            await Task.Delay(10); // Wait for 2 seconds
+            await Task.Delay(5); // Wait for 2 seconds
             isLoaded = false;
 
             RouteContent(showStats);
@@ -769,7 +770,7 @@ namespace ASA_Dino_Manager
             }
             else if (route == "ASA")
             {
-                UpdateStartContentPage("Feed Dino");
+                UpdateStartContentPage("Remember to feed your dinos!!!");
             }
             else if (route == "Archive")
             {
