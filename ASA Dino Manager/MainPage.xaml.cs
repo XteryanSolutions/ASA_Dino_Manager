@@ -115,7 +115,6 @@ namespace ASA_Dino_Manager
             }
         }
 
-
         void SelectDino(Label label, string id)
         {
             // Create a TapGestureRecognizer

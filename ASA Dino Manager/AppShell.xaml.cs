@@ -9,7 +9,7 @@ namespace ASA_Dino_Manager
 {
     public partial class AppShell : Shell
     {
-        public string version = "ASA Dino Manager 0.04.36";
+        public string version = "ASA Dino Manager 0.04.37";
 
         // IMPORTING
         public static bool ImportEnabled = false;
@@ -27,7 +27,7 @@ namespace ASA_Dino_Manager
 
         public static readonly object _dbLock = new object();
 
-        public static string target = "";
+        public static string target = ""; // wip
 
 
         public AppShell()
@@ -56,7 +56,6 @@ namespace ASA_Dino_Manager
             StartTimer();
 
         }
-
 
         public void UpdateShellContents()
         {
@@ -112,7 +111,6 @@ namespace ASA_Dino_Manager
             }
             FileManager.Log("Updated tagList");
         }
-
 
         public void StartProcess()
         {
