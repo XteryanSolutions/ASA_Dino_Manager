@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 //using System.Windows.Forms;
 using System.Xml.Linq;
+using Microsoft.UI.Xaml.Documents;
 //using Android.Media;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
@@ -737,6 +738,7 @@ namespace ASA_Dino_Manager
                     ArchiveTable.Rows.Add(dr);
                 }
             }
+            FileManager.Log("Archive retrieved");
         }
 
         public static void SetMaxStats()
@@ -1370,15 +1372,29 @@ namespace ASA_Dino_Manager
 
         public static void PurgeAll()
         {
-            string[] idList = DataManager.GetAllDistinctColumnData("ID");
-
-            foreach (string id in idList)
+            if (Monitor.TryEnter(AppShell._dbLock, TimeSpan.FromSeconds(5)))
             {
-                string status = GetStatus(id);
-                if (status == "Archived")
+                try
                 {
-                    DeleteRowsByID(id);
+                    string[] idList = DataManager.GetAllDistinctColumnData("ID");
+
+                    foreach (string id in idList)
+                    {
+                        string status = GetStatus(id);
+                        if (status == "Archived")
+                        {
+                            DeleteRowsByID(id);
+                        }
+                    }
                 }
+                finally
+                {
+                    Monitor.Exit(AppShell._dbLock);
+                }
+            }
+            else
+            {
+                FileManager.Log("Failed to acquire database lock within timeout.");
             }
         }
 
