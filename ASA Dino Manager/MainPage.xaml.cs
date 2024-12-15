@@ -45,10 +45,7 @@ namespace ASA_Dino_Manager
         public Color warnColor = Colors.LightYellow;
         public Color dangerColor = Colors.IndianRed;
 
-
-
         public Color DefaultColor = Colors.Red; // placeholder
-
 
 
         public MainPage()
@@ -116,12 +113,6 @@ namespace ASA_Dino_Manager
                 selectedID = id;
 
                 string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
-                string sex = DataManager.GetLastColumnData("ID", selectedID, "Sex");
-
-                if (sex == "Female")
-                {
-                   
-                }
 
                 FileManager.Log($"Showing stats for ID: {id}");
                 RefreshContent(true);
@@ -308,6 +299,10 @@ namespace ASA_Dino_Manager
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 9
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 10
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 11
+
+
+
+
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 12
 
 
@@ -395,7 +390,12 @@ namespace ASA_Dino_Manager
                 var foodL = new Label { Text = food, TextColor = cellColor5 };
                 var weightL = new Label { Text = weight, TextColor = cellColor6 };
                 var damageL = new Label { Text = damage, TextColor = cellColor7 };
+
+
                 var statusL = new Label { Text = status, TextColor = cellColor8 };
+                var genL = new Label { Text = gen, TextColor = cellColor8 };
+
+
                 var papaL = new Label { Text = papa, TextColor = maleColor };
                 var mamaL = new Label { Text = mama, TextColor = femaleColor };
 
@@ -412,6 +412,7 @@ namespace ASA_Dino_Manager
                     SelectDino(weightL, id);
                     SelectDino(damageL, id);
                     SelectDino(statusL, id);
+                    SelectDino(genL, id);
                     SelectDino(papaL, id);
                     SelectDino(mamaL, id);
                 }
@@ -426,8 +427,9 @@ namespace ASA_Dino_Manager
                 AddToGrid(grid, weightL, rowIndex, 6);
                 AddToGrid(grid, damageL, rowIndex, 7);
                 AddToGrid(grid, statusL, rowIndex, 8);
-                AddToGrid(grid, papaL, rowIndex, 9);
-                AddToGrid(grid, mamaL, rowIndex, 10);
+                AddToGrid(grid, genL, rowIndex, 9);
+                AddToGrid(grid, papaL, rowIndex, 10);
+                AddToGrid(grid, mamaL, rowIndex, 11);
 
                 rowIndex++;
             }
@@ -534,7 +536,6 @@ namespace ASA_Dino_Manager
         public async Task MyDelayedOperationAsync(bool showStats)
         {
             await Task.Delay(10); // Wait for 2 seconds
-            isLoaded = false;
 
             RouteContent(showStats);
         }
@@ -591,7 +592,7 @@ namespace ASA_Dino_Manager
             int totalC = females.Length + males.Length;
 
 
-            FileManager.Log("Routing -> " + route);
+            //FileManager.Log("Routing -> " + route);
             this.Content = null;
             if (route == "Looking for dinos")
             {
@@ -639,7 +640,14 @@ namespace ASA_Dino_Manager
             else { RefreshAvg += elapsedMilliseconds; outAVG = RefreshAvg / RefreshCount; }
             FileManager.Log("Refreshed GUI - " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
             FileManager.Log("=====================================================================");
-            isLoaded = false; // enable navigation
+            MyDelayedOperation();
+        }
+
+        public async Task MyDelayedOperation()
+        {
+            await Task.Delay(1000); // Wait for 100 ms
+            if (isLoaded) { isLoaded = false; FileManager.Log("Nav Unlocked"); }// enable navigation
+            // seems like 2 concurrent thread are started everytime navigation is triggered
         }
 
         private Grid CreateSidePanel(bool showStats)

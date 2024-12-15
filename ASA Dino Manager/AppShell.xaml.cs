@@ -74,7 +74,7 @@ namespace ASA_Dino_Manager
             }
             if (tagList.Length > tagSize)
             {
-                FileManager.Log("updated tagList");
+                FileManager.Log("Updated tagList");
                 Items.Clear();
                 tagSize = tagList.Length;
                 //ClearShell();
