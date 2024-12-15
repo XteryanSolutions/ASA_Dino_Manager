@@ -135,14 +135,13 @@ namespace ASA_Dino_Manager
 
         public void StartProcess()
         {
-            FileManager.Log("Starting Import Process...");
+            //FileManager.Log("Starting Import Process...");
             try
             {
                 var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
-
                 DataManager.Import();
-                FileManager.Log("Scanned files");
+                //FileManager.Log("Scanned files");
 
                 if (DataManager.selectedClass != "")
                 {
@@ -153,7 +152,6 @@ namespace ASA_Dino_Manager
                         needUpdate = true;
                     }
                 }
-
                 
                 UpdateShellContents();
 
