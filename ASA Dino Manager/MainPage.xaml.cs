@@ -383,12 +383,6 @@ namespace ASA_Dino_Manager
                 string imprinter = row["Imprinter"].ToString();
 
 
-                // mutation detection   mutaColo
-                string mutes = DataManager.GetMutes(id);
-
-
-
-
                 //recolor breeding stats
                 if (DataManager.ToDouble(level) >= DataManager.LevelMax) { cellColor1 = goodColor; }
                 if (DataManager.ToDouble(hp) >= DataManager.HpMax) { cellColor2 = goodColor; }
@@ -399,6 +393,20 @@ namespace ASA_Dino_Manager
                 if (DataManager.ToDouble(damage) >= DataManager.DamageMax) { cellColor7 = goodColor; }
 
 
+                // mutation detection overrides normal coloring -> mutaColor
+                string mutes = DataManager.GetMutes(id);
+                if (mutes.Length == 6 && !CurrentStats) // dont show mutations on current statview
+                {
+                    string aC = mutes.Substring(0, 1); string bC = mutes.Substring(1, 1); string cC = mutes.Substring(2, 1);
+                    string dC = mutes.Substring(3, 1); string eC = mutes.Substring(4, 1); string fC = mutes.Substring(5, 1);
+
+                    if (aC == "1") { cellColor2 = mutaColor; }
+                    if (bC == "1") { cellColor3 = mutaColor; }
+                    if (cC == "1") { cellColor4 = mutaColor; }
+                    if (dC == "1") { cellColor5 = mutaColor; }
+                    if (eC == "1") { cellColor6 = mutaColor; }
+                    if (fC == "1") { cellColor7 = mutaColor; }
+                }
 
                 // Baby detection
                 string age = row["Age"].ToString();
