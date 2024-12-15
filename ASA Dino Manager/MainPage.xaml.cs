@@ -191,8 +191,6 @@ namespace ASA_Dino_Manager
             tapGesture.Tapped += (s, e) =>
             {
                 // Handle the click event and pass additional data
-
-
                 RefreshContent(false);
             };
 
@@ -792,7 +790,6 @@ namespace ASA_Dino_Manager
             else if (route == "Archive")
             {
                 DataManager.GetDinoArchive();
-                
 
                 if (DataManager.ArchiveTable.Rows.Count < 1)
                 {
@@ -906,10 +903,10 @@ namespace ASA_Dino_Manager
             UnSelectDino(mainLayout);
 
             // dynamically adjust the bottom bar height
-            int t = DataManager.BottomTable.Rows.Count;
-            int rowH = 20;
-            int barH = (t * rowH) + rowH + 10;
-            if (t > 5) { barH = 127; }
+            int rowCount = DataManager.BottomTable.Rows.Count;
+            int rowHeight = 20;
+            int barH = (rowCount * rowHeight) + rowHeight + 11;
+            if (rowCount > 5) { barH = 127; }
 
             if (MainPage.ToggleExcluded == 3 && !showStats) { barH = 0; }
             if (MainPage.ToggleExcluded == 2 && !showStats) { barH = 0; }
