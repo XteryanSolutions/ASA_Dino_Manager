@@ -687,8 +687,8 @@ namespace ASA_Dino_Manager
             {
                 try
                 {
-                    RouteContent(stat);
-                   // MyDelayedOperationAsync(stat);
+                    //RouteContent(stat);
+                    MyDelayedOperationAsync(stat);
                 }
                 finally
                 {
@@ -704,11 +704,10 @@ namespace ASA_Dino_Manager
 
         public async Task MyDelayedOperationAsync(bool showStats)
         {
-            await Task.Delay(5); // Wait for 2 seconds
+            await Task.Delay(10); // Wait for 2 seconds
             isLoaded = false;
 
             RouteContent(showStats);
-            
         }
 
         public void RouteContent(bool showStats)
@@ -806,6 +805,7 @@ namespace ASA_Dino_Manager
             else { RefreshAvg += elapsedMilliseconds; outAVG = RefreshAvg / RefreshCount; }
             FileManager.Log("Refreshed GUI - " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
             FileManager.Log("=====================================================================");
+            isLoaded = false; // enable navigation
         }
 
 
