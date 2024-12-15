@@ -50,7 +50,6 @@ namespace ASA_Dino_Manager
         public Color dangerColor = Colors.IndianRed;
 
         public Color DefaultColor = Colors.Red; // placeholder
-
         public Color headerColor = Colors.White; // placeholder
 
 
@@ -842,12 +841,11 @@ namespace ASA_Dino_Manager
 
             // dynamically adjust the bottom bar height
             int rowCount = DataManager.BottomTable.Rows.Count;
-            int rowHeight = 20;
-            int barH = (rowCount * rowHeight) + rowHeight + 11;
+            int rowHeight = 21;
+            int barH = (rowCount * rowHeight) + rowHeight + 12;
             if (rowCount > 5) { barH = 127; }
 
-            if (MainPage.ToggleExcluded == 3 && !showStats) { barH = 0; }
-            if (MainPage.ToggleExcluded == 2 && !showStats) { barH = 0; }
+            if (((MainPage.ToggleExcluded == 3 || MainPage.ToggleExcluded == 2) && !showStats) || DataManager.BottomTable.Rows.Count < 1) { barH = 0; }
 
 
             // Define row definitions
