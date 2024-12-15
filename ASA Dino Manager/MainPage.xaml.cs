@@ -30,7 +30,9 @@ namespace ASA_Dino_Manager
 
         public string selectedID = "";
 
-        public bool showStats = false;
+        public static bool showStats = false;
+
+        public bool secondGo = false;
 
         public MainPage()
         {
@@ -65,7 +67,14 @@ namespace ASA_Dino_Manager
                 AppShell.needUpdate = false;
                 RefreshContent();
             }
-            
+            if (secondGo)
+            {
+                FileManager.Log("Double down");
+                secondGo = false;
+                RefreshContent();
+            }
+           // 
+
             FileManager.WriteLog();
         }
 
@@ -88,10 +97,12 @@ namespace ASA_Dino_Manager
             {
                if (!isLoaded)
                 {
+                    if (showStats) { showStats = false; }
                     FileManager.Log("Navigated Species");
                     RefreshContent();
                     isLoaded = true;
                     FileManager.Log("Set isLoaded");
+                    secondGo = true;
                 }
             }
         }
@@ -601,10 +612,10 @@ namespace ASA_Dino_Manager
             if (title != "Bottom")
             {
                 // Add header row
-                AddToGrid(grid, new Label { Text = "ID", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 2);
-                AddToGrid(grid, new Label { Text = "Tag", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 3);
-                AddToGrid(grid, new Label { Text = "Name", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 0);
-                AddToGrid(grid, new Label { Text = "Level", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 1);
+                AddToGrid(grid, new Label { Text = "ID", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 0);
+                AddToGrid(grid, new Label { Text = "Tag", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 1);
+                AddToGrid(grid, new Label { Text = "Name", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 2);
+                AddToGrid(grid, new Label { Text = "Level", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 3);
                 AddToGrid(grid, new Label { Text = "", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 4);
 
                 int rowIndex = 1; // Start adding rows below the header
@@ -752,6 +763,36 @@ namespace ASA_Dino_Manager
             string dinoTag = DataManager.TagForClass(route);
             DataManager.selectedClass = dinoTag;
 
+            // Load necessary data based on toggles
+            if (!string.IsNullOrEmpty(DataManager.selectedClass))
+            {
+                if (showStats)
+                {
+                    DataManager.GetOneDinoData(selectedID);
+
+                    if (MainPage.ToggleExcluded != 3)
+                    {
+                        DataManager.SetMaxStats();
+                    }
+                }
+                else
+                {
+                    DataManager.GetDinoData(DataManager.selectedClass);
+
+                    if (MainPage.ToggleExcluded != 3)
+                    {
+                        DataManager.SetMaxStats();
+                    }
+
+                    if (!CurrentStats && MainPage.ToggleExcluded != 2 && MainPage.ToggleExcluded != 3)
+                    {
+                        DataManager.SetBinaryStats();
+                        DataManager.GetBestPartner();
+                    }
+                }
+            }
+
+
             // Retrieve female data
             string[] females = DataManager.GetDistinctFilteredColumnData("Class", dinoTag, "Sex", "Female", "ID");
             // Retrieve male data
@@ -765,6 +806,7 @@ namespace ASA_Dino_Manager
             }
             else if (route == "ASA")
             {
+
                 SetText("Remember to feed your dinos");
 
             }
@@ -792,34 +834,6 @@ namespace ASA_Dino_Manager
                 }
                 else
                 {
-                    // Load necessary data based on toggles
-                    if (!string.IsNullOrEmpty(DataManager.selectedClass))
-                    {
-                        if (showStats)
-                        {
-                            DataManager.GetOneDinoData(selectedID);
-
-                            if (MainPage.ToggleExcluded != 3)
-                            {
-                                DataManager.SetMaxStats();
-                            }
-                        }
-                        else
-                        {
-                            DataManager.GetDinoData(DataManager.selectedClass);
-
-                            if (MainPage.ToggleExcluded != 3)
-                            {
-                                DataManager.SetMaxStats();
-                            }
-
-                            if (!CurrentStats && MainPage.ToggleExcluded != 2 && MainPage.ToggleExcluded != 3)
-                            {
-                                DataManager.SetBinaryStats();
-                                DataManager.GetBestPartner();
-                            }
-                        }
-                    }
                     UpdateMainContentPage();
                 }
             }
