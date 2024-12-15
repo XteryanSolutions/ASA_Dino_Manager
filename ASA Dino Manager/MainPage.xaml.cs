@@ -30,9 +30,6 @@ namespace ASA_Dino_Manager
 
         public string selectedID = "";
 
-        public static bool showStats = false;
-
-        public bool secondGo = false;
 
         public MainPage()
         {
@@ -49,7 +46,7 @@ namespace ASA_Dino_Manager
         {
             _isTimerRunning = true; // Flag to control the timer
 
-            Device.StartTimer(TimeSpan.FromSeconds(1), () =>
+            Device.StartTimer(TimeSpan.FromSeconds(2), () =>
             {
                 if (!_isTimerRunning)
                     return false; // Stop the timer
@@ -65,15 +62,12 @@ namespace ASA_Dino_Manager
             {
                 FileManager.Log("Import Requesting GUI refresh");
                 AppShell.needUpdate = false;
-                RefreshContent();
+                RefreshContent(false);
             }
-            if (secondGo)
-            {
-                FileManager.Log("Double down");
-                secondGo = false;
-                RefreshContent();
-            }
-           // 
+
+           // RefreshContent();
+
+            // 
 
             FileManager.WriteLog();
         }
@@ -97,12 +91,9 @@ namespace ASA_Dino_Manager
             {
                if (!isLoaded)
                 {
-                    if (showStats) { showStats = false; }
                     FileManager.Log("Navigated Species");
-                    RefreshContent();
+                    RefreshContent(false);
                     isLoaded = true;
-                    FileManager.Log("Set isLoaded");
-                    secondGo = true;
                 }
             }
         }
@@ -186,9 +177,7 @@ namespace ASA_Dino_Manager
                 selectedID = id;
 
                 FileManager.Log($"Showing stats for ID: {id}");
-                showStats = true;
-
-                RefreshContent();
+                RefreshContent(true);
             };
 
             // Attach the TapGestureRecognizer to the label
@@ -203,9 +192,8 @@ namespace ASA_Dino_Manager
             {
                 // Handle the click event and pass additional data
 
-                if (showStats) { showStats = false; }
 
-                RefreshContent();
+                RefreshContent(false);
             };
 
             // Attach the TapGestureRecognizer to the label
@@ -227,9 +215,8 @@ namespace ASA_Dino_Manager
                 DataManager.SetStatus(selectedID,status);
 
                 DataManager.GetDinoData(DataManager.selectedClass);
-                showStats = false;
 
-                RefreshContent();
+                RefreshContent(false);
             };
 
             // Attach the TapGestureRecognizer to the label
@@ -251,9 +238,8 @@ namespace ASA_Dino_Manager
                 else if (status == "Exclude") { status = "Archived"; }
                 DataManager.SetStatus(selectedID, status);
 
-                showStats = false; // wether or not to close the stat window
                 DataManager.GetDinoData(DataManager.selectedClass);
-                RefreshContent(); 
+                RefreshContent(false); 
             };
 
             // Attach the TapGestureRecognizer to the label
@@ -279,7 +265,6 @@ namespace ASA_Dino_Manager
                 {
                     try
                     {
-                        showStats = false;
                         FileManager.needSave = true;
                         DataManager.DeleteRowsByID(selectedID);
                     }
@@ -292,7 +277,7 @@ namespace ASA_Dino_Manager
                 {
                     FileManager.Log("Failed to acquire database lock within timeout.");
                 }
-                RefreshContent();
+                RefreshContent(false);
             }
             else
             {
@@ -314,10 +299,10 @@ namespace ASA_Dino_Manager
             {
                 // User selected "Yes"
                 FileManager.Log("Yep DO IT");
-                showStats = false;
+
                 DataManager.PurgeAll();
 
-                RefreshContent();
+                RefreshContent(false);
             }
             else
             {
@@ -345,8 +330,6 @@ namespace ASA_Dino_Manager
             tapGesture.Tapped += (s, e) =>
             {
                 // Handle the click event and pass additional data
-                showStats = false;
-
                 PurgeAllAsync();
             };
 
@@ -356,21 +339,18 @@ namespace ASA_Dino_Manager
 
         private void OnLeftButtonClicked(object? sender, EventArgs e)
         {
-            showStats = false;
             ToggleExcluded++;
             if (ToggleExcluded == 4)
             {
                 
                 ToggleExcluded = 0;
             }
-            if (showStats) { showStats = false; }
             // reload stuff
-            RefreshContent();
+            RefreshContent(false);
         }
 
         private void OnRightButtonClicked(object? sender, EventArgs e)
         {
-            showStats = false;
             if (CurrentStats)
             {
                 CurrentStats = false;
@@ -379,9 +359,8 @@ namespace ASA_Dino_Manager
             {
                 CurrentStats = true;
             }
-            if (showStats) { showStats = false; }
             // reload stuff
-            RefreshContent();
+            RefreshContent(false);
         }
 
         private void AddToGrid(Grid grid, View view, int row, int column)
@@ -400,7 +379,7 @@ namespace ASA_Dino_Manager
             grid.Children.Add(view);
         }
 
-        private Grid CreateDinoGrid(DataTable table, string title)
+        private Grid CreateDinoGrid(DataTable table, string title, bool showStats)
         {
             var grid = new Grid
             {
@@ -585,7 +564,7 @@ namespace ASA_Dino_Manager
             return grid;
         }
 
-        private Grid CreateArchiveGrid(DataTable table, string title)
+        private Grid CreateArchiveGrid(DataTable table, string title, bool showStats)
         {
             var grid = new Grid
             {
@@ -732,13 +711,13 @@ namespace ASA_Dino_Manager
             return grid;
         }
 
-        public void RefreshContent()
+        public void RefreshContent(bool stat)
         {
             if (Monitor.TryEnter(AppShell._dbLock, TimeSpan.FromSeconds(5)))
             {
                 try
                 {
-                    RouteContent();
+                    RouteContent(stat);
                 }
                 finally
                 {
@@ -752,7 +731,7 @@ namespace ASA_Dino_Manager
             }
         }
 
-        public void RouteContent()
+        public void RouteContent(bool showStats)
         {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();    // start timer here
             var route = Shell.Current.CurrentState.Location.ToString();
@@ -812,17 +791,16 @@ namespace ASA_Dino_Manager
             }
             else if (route == "Archive")
             {
-                //DataManager.GetDinoData(DataManager.selectedClass);
-
                 DataManager.GetDinoArchive();
                 
+
                 if (DataManager.ArchiveTable.Rows.Count < 1)
                 {
                     SetText("No dinos in here :(");
                 }
                 else
                 {
-                    UpdateArchiveContentPage();
+                    UpdateArchiveContentPage(showStats);
                 }
 
             }
@@ -834,7 +812,7 @@ namespace ASA_Dino_Manager
                 }
                 else
                 {
-                    UpdateMainContentPage();
+                    UpdateMainContentPage(showStats);
                 }
             }
             stopwatch.Stop(); // stop timer here
@@ -849,7 +827,7 @@ namespace ASA_Dino_Manager
             if (isLoaded) { isLoaded = false; FileManager.Log("Unset isLoaded"); }
         }
 
-        private void UpdateArchiveContentPage()
+        private void UpdateArchiveContentPage(bool showStats)
         {
             // ==============================================================    Create Dino Layout   =====================================================
 
@@ -887,7 +865,7 @@ namespace ASA_Dino_Manager
                 Padding = 3
             };
 
-            scrollContent.Children.Add(CreateArchiveGrid(DataManager.ArchiveTable, "Archive"));
+            scrollContent.Children.Add(CreateArchiveGrid(DataManager.ArchiveTable, "Archive", showStats));
 
             // Wrap the scrollable content in a ScrollView and add it to the second row
             var scrollView = new ScrollView { Content = scrollContent };
@@ -904,7 +882,7 @@ namespace ASA_Dino_Manager
                 BackgroundColor = Color.FromArgb("#312f38")
             };
 
-            bottomContent.Children.Add(CreateArchiveGrid(DataManager.ArchiveTable, "Bottom"));
+            bottomContent.Children.Add(CreateArchiveGrid(DataManager.ArchiveTable, "Bottom", showStats));
 
             // Wrap the scrollable content in a ScrollView and add it to the third row
             var bottomPanel = new ScrollView { Content = bottomContent };
@@ -918,7 +896,7 @@ namespace ASA_Dino_Manager
 
         }
 
-        public void UpdateMainContentPage()
+        public void UpdateMainContentPage(bool showStats)
         {
             // ==============================================================    Create Dino Layout   =====================================================
 
@@ -933,8 +911,8 @@ namespace ASA_Dino_Manager
             int barH = (t * rowH) + rowH + 10;
             if (t > 5) { barH = 127; }
 
-            else if (MainPage.ToggleExcluded == 3 && !showStats) { barH = 0; }
-            else if (MainPage.ToggleExcluded == 2 && !showStats) { barH = 0; }
+            if (MainPage.ToggleExcluded == 3 && !showStats) { barH = 0; }
+            if (MainPage.ToggleExcluded == 2 && !showStats) { barH = 0; }
 
 
             // Define row definitions
@@ -961,8 +939,8 @@ namespace ASA_Dino_Manager
             };
 
             // Add male and female tables
-            scrollContent.Children.Add(CreateDinoGrid(DataManager.MaleTable, "Male"));
-            scrollContent.Children.Add(CreateDinoGrid(DataManager.FemaleTable, "Female"));
+            scrollContent.Children.Add(CreateDinoGrid(DataManager.MaleTable, "Male", showStats));
+            scrollContent.Children.Add(CreateDinoGrid(DataManager.FemaleTable, "Female", showStats));
 
             // Wrap the scrollable content in a ScrollView and add it to the second row
             var scrollView = new ScrollView { Content = scrollContent };
@@ -979,7 +957,7 @@ namespace ASA_Dino_Manager
                 BackgroundColor = Color.FromArgb("#312f38")
             };
 
-            bottomContent.Children.Add(CreateDinoGrid(DataManager.BottomTable, "Bottom"));
+            bottomContent.Children.Add(CreateDinoGrid(DataManager.BottomTable, "Bottom", showStats));
 
             // Wrap the scrollable content in a ScrollView and add it to the third row
             var bottomPanel = new ScrollView { Content = bottomContent };

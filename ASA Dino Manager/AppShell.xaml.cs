@@ -12,7 +12,7 @@ namespace ASA_Dino_Manager
         // IMPORTING
         public static bool ImportEnabled = false;
         public static int Delay = 5;
-        public static int DefaultDelay = 30; // default import delay in seconds
+        public static int DefaultDelay = 10; // default import delay in seconds
 
         public static int tagSize = 0;
 
@@ -40,7 +40,7 @@ namespace ASA_Dino_Manager
                 // Exit app here
                 Application.Current.Quit();
             }
-            FileManager.Log("dataManager initialized");
+            FileManager.Log("DataManager initialized");
             DataManager.CleanDataBaseByID();
 
             UpdateShellContents();
@@ -135,7 +135,7 @@ namespace ASA_Dino_Manager
 
         public void StartProcess()
         {
-            FileManager.Log("Starting Data Process...");
+            FileManager.Log("Starting Import Process...");
             try
             {
                 var stopwatch = System.Diagnostics.Stopwatch.StartNew();
@@ -149,10 +149,12 @@ namespace ASA_Dino_Manager
                     if (DataManager.ModC > 0 || DataManager.AddC > 0 || DataManager.forceLoad) // Check if we need to reload data
                     {
                         FileManager.Log("Updated DataBase");
-                        needUpdate = true;
                         FileManager.needSave = true;
+                        needUpdate = true;
                     }
                 }
+
+                
                 UpdateShellContents();
 
                 stopwatch.Stop();
@@ -162,16 +164,15 @@ namespace ASA_Dino_Manager
                 double outAVG = 0;
                 if (ImportCount < 2) { ImportAvg = elapsedMilliseconds; outAVG = ImportAvg; }
                 else { ImportAvg += elapsedMilliseconds; outAVG = ImportAvg / ImportCount; }
-
-                FileManager.Log("Processed data in " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
-                Delay = DefaultDelay; // only start up timer after scanning is done 
+                FileManager.Log("Imported data in " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
                 FileManager.Log("=====================================================================");
             }
             catch
             {
-                FileManager.Log("Processed data failure");
-                Delay = DefaultDelay; // infinite retries????????
+                FileManager.Log("Import data failure");
+                
             }
+            Delay = DefaultDelay; // infinite retries????????
         }
 
         public void ProcessAllData()
