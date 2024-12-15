@@ -46,7 +46,23 @@ namespace ASA_Dino_Manager
             UpdateShellContents();
 
             StartTimer();
+
+            this.Navigated += OnShellNavigated;
         }
+
+        private void OnShellNavigated(object sender, ShellNavigatedEventArgs e)
+        {
+            // Log current and previous locations
+            var currentRoute = e.Current?.Location.OriginalString ?? "Unknown";
+            var previousRoute = e.Previous?.Location.OriginalString ?? "Unknown";
+
+            Console.WriteLine($"Navigated from {previousRoute} to {currentRoute}.");
+
+            // Execute custom logic
+            // needUpdate = true;
+        }
+
+
 
         public void UpdateShellContents()
         {

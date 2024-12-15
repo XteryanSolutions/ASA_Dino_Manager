@@ -10,6 +10,7 @@ using Microsoft.Maui.Controls;
 using MauiColor = Microsoft.Maui.Graphics.Color;
 using Microsoft.Maui.Controls.StyleSheets;
 using System.Xml.Linq;
+using Microsoft.Maui.Graphics.Text;
 
 namespace ASA_Dino_Manager
 {
@@ -49,12 +50,18 @@ namespace ASA_Dino_Manager
 
         public Color DefaultColor = Colors.Red; // placeholder
 
+        public Color headerColor = Colors.White; // placeholder
+
 
         public MainPage()
         {
             InitializeComponent();
 
-            Shell.Current.Navigated += OnShellNavigated;
+
+            if (!isLoaded) // prevents more than one instance to be added to eventhandler
+            {
+                Shell.Current.Navigated += OnShellNavigated;
+            }
 
             StartTimer();
         }
@@ -91,19 +98,22 @@ namespace ASA_Dino_Manager
             _isTimerRunning = false; // Call this to stop the timer if needed
         }
 
-        private void OnShellNavigated(object sender, ShellNavigatedEventArgs e)
+        public void OnShellNavigated(object sender, ShellNavigatedEventArgs e)
         {
             // Check if the navigation is to the current page
             if (e.Source == ShellNavigationSource.ShellItemChanged)
             {
-               if (!isLoaded)
+
+                if (!isLoaded)
                 {
                     FileManager.Log("Navigated Species");
                     RefreshContent(false);
                     isLoaded = true;
                 }
+
             }
         }
+
 
         void SelectDino(Label label, string id)
         {
@@ -312,36 +322,37 @@ namespace ASA_Dino_Manager
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 16
 
 
-            var headerColor = maleColor;
             DefaultColor = maleColor;
 
             if (title == "Male") { DefaultColor = maleColor; }
             else if (title == "Female") { DefaultColor = femaleColor; }
             else { DefaultColor = breedColor; }
+            
 
             headerColor = DefaultColor;
 
+            int fSize = 16;
 
             // Add header row
-            AddToGrid(grid, new Label { Text = "Name", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 0);
-            AddToGrid(grid, new Label { Text = "Level", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 1);
-            AddToGrid(grid, new Label { Text = "Hp", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 2);
-            AddToGrid(grid, new Label { Text = "Stamina", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 3);
-            AddToGrid(grid, new Label { Text = "Oxygen", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 4);
-            AddToGrid(grid, new Label { Text = "Food", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 5);
-            AddToGrid(grid, new Label { Text = "Weight", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 6);
-            AddToGrid(grid, new Label { Text = "Damage", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 7);
-            AddToGrid(grid, new Label { Text = "Status", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 8);
-            AddToGrid(grid, new Label { Text = "Gen", FontAttributes = FontAttributes.Bold, TextColor = femaleColor }, 0, 9);
-            AddToGrid(grid, new Label { Text = "Papa", FontAttributes = FontAttributes.Bold, TextColor = maleColor }, 0, 10);
-            AddToGrid(grid, new Label { Text = "Mama", FontAttributes = FontAttributes.Bold, TextColor = femaleColor }, 0, 11);
+            AddToGrid(grid, new Label { Text = "Name", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 0);
+            AddToGrid(grid, new Label { Text = "Level", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 1);
+            AddToGrid(grid, new Label { Text = "Hp", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 2);
+            AddToGrid(grid, new Label { Text = "Stamina", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 3);
+            AddToGrid(grid, new Label { Text = "Oxygen", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 4);
+            AddToGrid(grid, new Label { Text = "Food", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 5);
+            AddToGrid(grid, new Label { Text = "Weight", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 6);
+            AddToGrid(grid, new Label { Text = "Damage", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 7);
+            AddToGrid(grid, new Label { Text = "Status", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 8);
+            AddToGrid(grid, new Label { Text = "Gen", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 9);
+            AddToGrid(grid, new Label { Text = "Papa", FontAttributes = FontAttributes.Bold, TextColor = maleColor, FontSize = fSize }, 0, 10);
+            AddToGrid(grid, new Label { Text = "Mama", FontAttributes = FontAttributes.Bold, TextColor = femaleColor, FontSize = fSize }, 0, 11);
 
             if (title != "Bottom")
             {
-                AddToGrid(grid, new Label { Text = "PapaMut", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 12);
-                AddToGrid(grid, new Label { Text = "MamaMut", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 13);
-                AddToGrid(grid, new Label { Text = "Imprint", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 14);
-                AddToGrid(grid, new Label { Text = "Imprinter", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 15);
+                AddToGrid(grid, new Label { Text = "PapaMut", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 12);
+                AddToGrid(grid, new Label { Text = "MamaMut", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 13);
+                AddToGrid(grid, new Label { Text = "Imprint", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 14);
+                AddToGrid(grid, new Label { Text = "Imprinter", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 15);
 
             }
 
@@ -687,14 +698,6 @@ namespace ASA_Dino_Manager
             else { RefreshAvg += elapsedMilliseconds; outAVG = RefreshAvg / RefreshCount; }
             FileManager.Log("Refreshed GUI - " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
             FileManager.Log("=====================================================================");
-            MyDelayedOperation();
-        }
-
-        public async Task MyDelayedOperation()
-        {
-            await Task.Delay(1000); // Wait for 100 ms
-            if (isLoaded) { isLoaded = false; FileManager.Log("Nav Unlocked"); }// enable navigation
-            // seems like 2 concurrent thread are started everytime navigation is triggered
         }
 
         private Grid CreateSidePanel(bool showStats)
@@ -961,7 +964,7 @@ namespace ASA_Dino_Manager
 
             var image1 = new Image { Source = "dino.png",HeightRequest = 155,Aspect = Aspect.AspectFit, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start};
 
-            var label1 = new Label { Text = labelText, HorizontalOptions = LayoutOptions.Center ,VerticalOptions = LayoutOptions.Start };
+            var label1 = new Label { Text = labelText, HorizontalOptions = LayoutOptions.Center ,VerticalOptions = LayoutOptions.Start ,FontAttributes = FontAttributes.Bold, TextColor = okColor, FontSize = 22 };
 
 
             AddToGrid(mainLayout, image1, 0, 0);
