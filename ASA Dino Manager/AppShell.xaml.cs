@@ -155,7 +155,6 @@ namespace ASA_Dino_Manager
                 {
                     UpdateShellContents();
                 }
-
                    
 
                 stopwatch.Stop();

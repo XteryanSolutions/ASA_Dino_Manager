@@ -57,7 +57,7 @@ namespace ASA_Dino_Manager
         {
             InitializeComponent();
 
-
+            
             if (!isLoaded) // prevents more than one instance to be added to eventhandler
             {
                 Shell.Current.Navigated += OnShellNavigated;
@@ -109,6 +109,7 @@ namespace ASA_Dino_Manager
                     FileManager.Log("Navigated Species");
                     RefreshContent(false);
                     isLoaded = true;
+                    ToggleExcluded = 0; CurrentStats = false; // reset toggles when navigating
                 }
 
             }
