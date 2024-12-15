@@ -1372,31 +1372,17 @@ namespace ASA_Dino_Manager
 
         public static void PurgeAll()
         {
-            if (Monitor.TryEnter(AppShell._dbLock, TimeSpan.FromSeconds(5)))
-            {
-                try
-                {
-                    string[] idList = DataManager.GetAllDistinctColumnData("ID");
+            string[] idList = DataManager.GetAllDistinctColumnData("ID");
 
-                    foreach (string id in idList)
-                    {
-                        string status = GetStatus(id);
-                        if (status == "Archived")
-                        {
-                            DeleteRowsByID(id);
-                        }
-                    }
-                    FileManager.needSave = true;
-                }
-                finally
-                {
-                    Monitor.Exit(AppShell._dbLock);
-                }
-            }
-            else
+            foreach (string id in idList)
             {
-                FileManager.Log("Failed to acquire database lock within timeout.");
+                string status = GetStatus(id);
+                if (status == "Archived")
+                {
+                    DeleteRowsByID(id);
+                }
             }
+            FileManager.needSave = true;
         }
 
         public static void Import()

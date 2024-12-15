@@ -11,6 +11,7 @@ using MauiColor = Microsoft.Maui.Graphics.Color;
 using Microsoft.Maui.Controls.StyleSheets;
 using System.Xml.Linq;
 using Microsoft.Maui.Graphics.Text;
+using System.Text;
 
 namespace ASA_Dino_Manager
 {
@@ -144,7 +145,6 @@ namespace ASA_Dino_Manager
             tapGesture.Tapped += (s, e) =>
             {
                 // Handle the click event
-               
                 RefreshContent(false);
             };
 
@@ -222,9 +222,6 @@ namespace ASA_Dino_Manager
 
             if (answer)
             {
-                // User selected "Yes"
-                FileManager.Log("Yep DO IT");
-
                 if (Monitor.TryEnter(AppShell._dbLock, TimeSpan.FromSeconds(5)))
                 {
                     try
@@ -243,10 +240,6 @@ namespace ASA_Dino_Manager
                 }
                 RefreshContent(false);
             }
-            else
-            {
-                // User selected "No"
-            }
         }
 
         private async Task PurgeAllAsync()
@@ -261,16 +254,24 @@ namespace ASA_Dino_Manager
 
             if (answer)
             {
-                // User selected "Yes"
-                FileManager.Log("Yep DO IT");
-
-                DataManager.PurgeAll();
-
-                RefreshContent(false);
-            }
-            else
-            {
-                // User selected "No"
+                // User selected "Yes"  
+                if (Monitor.TryEnter(AppShell._dbLock, TimeSpan.FromSeconds(5)))
+                {
+                    try
+                    {
+                        DataManager.PurgeAll();
+                        FileManager.Log("Purged All Dinos");
+                        RefreshContent(false);
+                    }
+                    finally
+                    {
+                        Monitor.Exit(AppShell._dbLock);
+                    }
+                }
+                else
+                {
+                    FileManager.Log("Failed to acquire database lock within timeout.");
+                }    
             }
         }
 
@@ -584,7 +585,6 @@ namespace ASA_Dino_Manager
             {
                 try
                 {
-                    //RouteContent(stat);
                     MyDelayedOperationAsync(stat);
                 }
                 finally
@@ -595,7 +595,6 @@ namespace ASA_Dino_Manager
             else
             {
                 FileManager.Log("Failed to acquire database lock within timeout.");
-                //Console.WriteLine("Failed to acquire database lock within timeout.");
             }
         }
 
@@ -658,7 +657,7 @@ namespace ASA_Dino_Manager
             int totalC = females.Length + males.Length;
 
 
-            //FileManager.Log("Routing -> " + route);
+            FileManager.Log("Routing -> " + route);
             this.Content = null;
             if (route == "Looking for dinos")
             {
@@ -1052,7 +1051,6 @@ namespace ASA_Dino_Manager
 
             this.Content = mainLayout;
         }
-
 
 
 
