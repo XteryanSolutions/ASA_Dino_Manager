@@ -33,10 +33,12 @@ namespace ASA_Dino_Manager
         public string setRoute = "";
 
 
+        // table colors
         public Color maleColor = Colors.LightBlue;
         public Color femaleColor = Colors.Pink;
         public Color breedColor = Colors.LightYellow;
         public Color goodColor = Colors.LightGreen;
+        public Color mutaColor = Colors.MediumPurple;
 
 
         // button colors
@@ -300,10 +302,14 @@ namespace ASA_Dino_Manager
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 10
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 11
 
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 12
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 13
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 14
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 15
 
 
 
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 12
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 16
 
 
             var headerColor = maleColor;
@@ -330,6 +336,14 @@ namespace ASA_Dino_Manager
             AddToGrid(grid, new Label { Text = "Papa", FontAttributes = FontAttributes.Bold, TextColor = maleColor }, 0, 10);
             AddToGrid(grid, new Label { Text = "Mama", FontAttributes = FontAttributes.Bold, TextColor = femaleColor }, 0, 11);
 
+            if (title != "Bottom")
+            {
+                AddToGrid(grid, new Label { Text = "PapaMut", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 12);
+                AddToGrid(grid, new Label { Text = "MamaMut", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 13);
+                AddToGrid(grid, new Label { Text = "Imprint", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 14);
+                AddToGrid(grid, new Label { Text = "Imprinter", FontAttributes = FontAttributes.Bold, TextColor = headerColor }, 0, 15);
+
+            }
 
             int rowIndex = 1; // Start adding rows below the header
 
@@ -343,28 +357,39 @@ namespace ASA_Dino_Manager
                 var cellColor5 = DefaultColor;
                 var cellColor6 = DefaultColor;
                 var cellColor7 = DefaultColor;
+
                 var cellColor8 = DefaultColor;
+
+                string id = row["ID"].ToString();
 
 
                 string name = row["Name"].ToString();
                 string level = row["Level"].ToString();
+                //////////////
                 string hp = row["Hp"].ToString();
                 string stamina = row["Stamina"].ToString();
                 string oxygen = row["Oxygen"].ToString();
                 string food = row["Food"].ToString();
                 string weight = row["Weight"].ToString();
                 string damage = row["Damage"].ToString();
-
+                //////////////
                 string status = row["Status"].ToString();
-
                 string gen = row["Gen"].ToString();
-
                 string papa = row["Papa"].ToString();
                 string mama = row["Mama"].ToString();
+                string papaM = row["PapaMute"].ToString();
+                string mamaM = row["MamaMute"].ToString();
+                string imprint = row["Imprint"].ToString();
+                string imprinter = row["Imprinter"].ToString();
 
-                string id = row["ID"].ToString();
+
+                // mutation detection   mutaColo
+                string mutes = DataManager.GetMutes(id);
 
 
+
+
+                //recolor breeding stats
                 if (DataManager.ToDouble(level) >= DataManager.LevelMax) { cellColor1 = goodColor; }
                 if (DataManager.ToDouble(hp) >= DataManager.HpMax) { cellColor2 = goodColor; }
                 if (DataManager.ToDouble(stamina) >= DataManager.StaminaMax) { cellColor3 = goodColor; }
@@ -374,35 +399,39 @@ namespace ASA_Dino_Manager
                 if (DataManager.ToDouble(damage) >= DataManager.DamageMax) { cellColor7 = goodColor; }
 
 
-                string age = row["Age"].ToString();
-                double ageD = DataManager.ToDouble(age);
 
                 // Baby detection
+                string age = row["Age"].ToString();
+                double ageD = DataManager.ToDouble(age);
                 if (ageD < 100 && !name.Contains("Breed #") && status == "") { status = ageD + "% Grown"; }
 
 
-                // Create a Label
+                // Create a Labels
                 var nameL = new Label { Text = name, TextColor = cellColor0 };
                 var levelL = new Label { Text = level, TextColor = cellColor1 };
+                //////////////
                 var hpL = new Label { Text = hp, TextColor = cellColor2 };
                 var staminaL = new Label { Text = stamina, TextColor = cellColor3 };
                 var oxygenL = new Label { Text = oxygen, TextColor = cellColor4 };
                 var foodL = new Label { Text = food, TextColor = cellColor5 };
                 var weightL = new Label { Text = weight, TextColor = cellColor6 };
                 var damageL = new Label { Text = damage, TextColor = cellColor7 };
-
-
+                //////////////
                 var statusL = new Label { Text = status, TextColor = cellColor8 };
                 var genL = new Label { Text = gen, TextColor = cellColor8 };
-
-
                 var papaL = new Label { Text = papa, TextColor = maleColor };
                 var mamaL = new Label { Text = mama, TextColor = femaleColor };
+                var papaML = new Label { Text = papaM, TextColor = cellColor8 };
+                var mamaML = new Label { Text = mamaM, TextColor = cellColor8 };
+                var imprintL = new Label { Text = imprint, TextColor = cellColor8 };
+                var imprinterL = new Label { Text = imprinter, TextColor = cellColor8 };
 
 
-                if (title != "Bottom")
+
+
+                if (title != "Bottom") // dont make bottom panel selectable
                 {
-                    // Call the method to create and attach TapGesture
+                    // Attach TapGesture to all labels
                     SelectDino(nameL, id);
                     SelectDino(levelL, id);
                     SelectDino(hpL, id);
@@ -415,6 +444,10 @@ namespace ASA_Dino_Manager
                     SelectDino(genL, id);
                     SelectDino(papaL, id);
                     SelectDino(mamaL, id);
+                    SelectDino(papaML, id);
+                    SelectDino(mamaML, id);
+                    SelectDino(imprintL, id);
+                    SelectDino(imprinterL, id);
                 }
 
                 // add items to grid
@@ -430,6 +463,12 @@ namespace ASA_Dino_Manager
                 AddToGrid(grid, genL, rowIndex, 9);
                 AddToGrid(grid, papaL, rowIndex, 10);
                 AddToGrid(grid, mamaL, rowIndex, 11);
+                AddToGrid(grid, papaML, rowIndex, 12);
+                AddToGrid(grid, mamaML, rowIndex, 13);
+                AddToGrid(grid, imprintL, rowIndex, 14);
+                AddToGrid(grid, imprinterL, rowIndex, 15);
+
+
 
                 rowIndex++;
             }
