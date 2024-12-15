@@ -347,7 +347,7 @@ namespace ASA_Dino_Manager
             AddToGrid(grid, new Label { Text = "Papa", FontAttributes = FontAttributes.Bold, TextColor = maleColor, FontSize = fSize }, 0, 10);
             AddToGrid(grid, new Label { Text = "Mama", FontAttributes = FontAttributes.Bold, TextColor = femaleColor, FontSize = fSize }, 0, 11);
 
-            if (title != "Bottom")
+            if (title != "Bottom" || showStats)
             {
                 AddToGrid(grid, new Label { Text = "PapaMut", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 12);
                 AddToGrid(grid, new Label { Text = "MamaMut", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 13);
@@ -394,6 +394,12 @@ namespace ASA_Dino_Manager
                 string imprinter = row["Imprinter"].ToString();
 
 
+                if (ToggleExcluded == 2)
+                {
+                    if (status == "Exclude") { status = ""; }
+                }
+
+
                 //recolor breeding stats
                 if (DataManager.ToDouble(level) >= DataManager.LevelMax) { cellColor1 = goodColor; }
                 if (DataManager.ToDouble(hp) >= DataManager.HpMax) { cellColor2 = goodColor; }
@@ -423,6 +429,7 @@ namespace ASA_Dino_Manager
                 string age = row["Age"].ToString();
                 double ageD = DataManager.ToDouble(age);
                 if (ageD < 100 && !name.Contains("Breed #") && status == "") { status = ageD + "% Grown"; }
+
 
 
                 // Create a Labels
@@ -698,6 +705,7 @@ namespace ASA_Dino_Manager
             else { RefreshAvg += elapsedMilliseconds; outAVG = RefreshAvg / RefreshCount; }
             FileManager.Log("Refreshed GUI - " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
             FileManager.Log("=====================================================================");
+            AppShell.target = setRoute;
         }
 
         private Grid CreateSidePanel(bool showStats)

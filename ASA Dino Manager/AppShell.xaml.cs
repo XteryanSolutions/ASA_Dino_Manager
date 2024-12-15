@@ -1,13 +1,15 @@
 ﻿//using Android.Nfc;
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using Microsoft.Maui.Controls;
+using Windows.Devices.Bluetooth.Advertisement;
 
 namespace ASA_Dino_Manager
 {
     public partial class AppShell : Shell
     {
-        public string version = "ASA Dino Manager 0.04.35";
+        public string version = "ASA Dino Manager 0.04.36";
 
         // IMPORTING
         public static bool ImportEnabled = false;
@@ -24,6 +26,9 @@ namespace ASA_Dino_Manager
         public static bool needUpdate = false;
 
         public static readonly object _dbLock = new object();
+
+        public static string target = "";
+
 
         public AppShell()
         {
@@ -43,111 +48,71 @@ namespace ASA_Dino_Manager
             FileManager.Log("DataManager initialized");
             DataManager.CleanDataBaseByID();
 
+
+
             UpdateShellContents();
+
 
             StartTimer();
 
-            this.Navigated += OnShellNavigated;
         }
-
-        private void OnShellNavigated(object sender, ShellNavigatedEventArgs e)
-        {
-            // Log current and previous locations
-            var currentRoute = e.Current?.Location.OriginalString ?? "Unknown";
-            var previousRoute = e.Previous?.Location.OriginalString ?? "Unknown";
-
-            Console.WriteLine($"Navigated from {previousRoute} to {currentRoute}.");
-
-            // Execute custom logic
-            // needUpdate = true;
-        }
-
 
 
         public void UpdateShellContents()
         {
-            string[] classList = DataManager.GetAllClasses();
             string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
+            string[] classList = DataManager.GetAllClasses();
 
+            tagSize = tagList.Length;
 
-            string[] dinoList = DataManager.GetAllDistinctColumnData("Tag");
+            Items.Clear();
 
+            // Retrieve the tag list from DataManager and sort alphabetically
+            var sortedTagList = classList.OrderBy(tag => tag).ToArray();
 
-            if (tagList.Length < 1)
+            var shellContent1 = new ShellContent
             {
-                Items.Clear();
+                Title = "Dino Manager ",
+                ContentTemplate = new DataTemplate(typeof(MainPage)), // Replace with the appropriate page
+                Route = "ASA"
+            };
+            // Add the ShellContent to the Shell
+            Items.Add(shellContent1);
+
+            var shellContent2 = new ShellContent
+            {
+                Title = "Dino Archive",
+                ContentTemplate = new DataTemplate(typeof(MainPage)), // Replace with the appropriate page
+                Route = "Archive"
+            };
+            // Add the ShellContent to the Shell
+            Items.Add(shellContent2);
+
+
+            // Loop through the sorted tags and create ShellContent dynamically
+            foreach (var tag in sortedTagList)
+            {
+                string dinoTag = DataManager.TagForClass(tag);
+                // Retrieve female data
+                string[] females = DataManager.GetDistinctFilteredColumnData("Class", dinoTag, "Sex", "Female", "ID");
+                // Retrieve male data
+                string[] males = DataManager.GetDistinctFilteredColumnData("Class", dinoTag, "Sex", "Male", "ID");
+
+                int totalC = females.Length + males.Length;
+
                 var shellContent = new ShellContent
                 {
-                    Title = "Looking for dinos",
+                    Title = tag + " (" + totalC + ")",
                     ContentTemplate = new DataTemplate(typeof(MainPage)), // Replace with the appropriate page
-                    Route = "Looking for dinos"
+                    Route = tag
                 };
 
                 // Add the ShellContent to the Shell
                 Items.Add(shellContent);
-                FileManager.Log("No dinos");
-                return; // exit early if the tagList is empty
             }
-            if (tagList.Length > tagSize)
-            {
-                FileManager.Log("Updated tagList");
-                Items.Clear();
-                tagSize = tagList.Length;
-                //ClearShell();
-                
-
-                // Retrieve the tag list from DataManager and sort alphabetically
-                var sortedTagList = classList.OrderBy(tag => tag).ToArray();
-
-
-                var shellContent1 = new ShellContent
-                {
-                    Title = "Dino Manager ",
-                    ContentTemplate = new DataTemplate(typeof(MainPage)), // Replace with the appropriate page
-                    Route = "ASA"
-                };
-                // Add the ShellContent to the Shell
-                Items.Add(shellContent1);
-
-                var shellContent2 = new ShellContent
-                {
-                    Title = "Dino Archive",
-                    ContentTemplate = new DataTemplate(typeof(MainPage)), // Replace with the appropriate page
-                    Route = "Archive"
-                };
-                // Add the ShellContent to the Shell
-                Items.Add(shellContent2);
-
-
-                // Loop through the sorted tags and create ShellContent dynamically
-                foreach (var tag in sortedTagList)
-                {
-
-                    string dinoTag = DataManager.TagForClass(tag);
-                    // Retrieve female data
-                    string[] females = DataManager.GetDistinctFilteredColumnData("Class", dinoTag, "Sex", "Female", "ID");
-                    // Retrieve male data
-                    string[] males = DataManager.GetDistinctFilteredColumnData("Class", dinoTag, "Sex", "Male", "ID");
-
-                    int totalC = females.Length + males.Length;
-
-                    var shellContent = new ShellContent
-                    {
-                        Title = tag + " ("+ totalC + ")",
-                        ContentTemplate = new DataTemplate(typeof(MainPage)), // Replace with the appropriate page
-                        Route = tag
-                    };
-
-                    // Add the ShellContent to the Shell
-                    Items.Add(shellContent);
-                }
-            }
-            else
-            {
-               // StartImport();
-            }
-
+            FileManager.Log("Updated tagList");
         }
+
 
         public void StartProcess()
         {
@@ -168,8 +133,30 @@ namespace ASA_Dino_Manager
                         needUpdate = true;
                     }
                 }
-                
-                UpdateShellContents();
+
+
+                string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
+                if (tagList.Length < 1)
+                {
+                    Items.Clear();
+                    var shellContent = new ShellContent
+                    {
+                        Title = "Looking for dinos",
+                        ContentTemplate = new DataTemplate(typeof(MainPage)),
+                        Route = "Looking for dinos"
+                    };
+
+                    // Add the ShellContent to the Shell
+                    Items.Add(shellContent);
+                    FileManager.Log("No dinos =(");
+                    return; // exit early if the tagList is empty
+                }
+                if (tagList.Length > tagSize)
+                {
+                    UpdateShellContents();
+                }
+
+                   
 
                 stopwatch.Stop();
                 var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
