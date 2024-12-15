@@ -812,11 +812,12 @@ namespace ASA_Dino_Manager
                     var topButton3 = new Button { Text = btn3Text, BackgroundColor = bColor3 };
                     topButton3.Clicked += OnButton3Clicked;
                     AddToGrid(grid, topButton3, 0, 0);
-                }
 
-                var topButton4 = new Button { Text = "Purge", BackgroundColor = dangerColor };
-                topButton4.Clicked += OnButton4Clicked;
-                AddToGrid(grid, topButton4, 5, 0);
+
+                    var topButton4 = new Button { Text = "Purge", BackgroundColor = dangerColor };
+                    topButton4.Clicked += OnButton4Clicked;
+                    AddToGrid(grid, topButton4, 5, 0);
+                }
 
                 var topButton5 = new Button { Text = "Purge All", BackgroundColor = dangerColor };
                 topButton5.Clicked += OnButton5Clicked;
