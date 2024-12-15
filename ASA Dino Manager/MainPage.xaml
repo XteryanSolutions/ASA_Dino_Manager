@@ -18,7 +18,7 @@
 
             <Label
                 x:Name="Label1"
-                Text="Hello, Blubbers!"
+                Text="Loading..."
                 Style="{StaticResource Headline}"
                 SemanticProperties.HeadingLevel="Level1" />
 

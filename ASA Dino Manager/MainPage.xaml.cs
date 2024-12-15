@@ -8,25 +8,24 @@ using Microsoft.Maui.Hosting;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.Maui.Controls;
 using MauiColor = Microsoft.Maui.Graphics.Color;
+using Microsoft.Maui.Controls.StyleSheets;
 
 namespace ASA_Dino_Manager
 {
 
     public partial class MainPage : ContentPage
     {
-        // This is a comment test yes it is !! BLUB
+        // Toggles for viewing stats
         public static int ToggleExcluded = 0;
-
-        public static bool OnlyExcluded = false;
         public static bool CurrentStats = false;
 
-        // benchmark stuff
+        // Benchmark stuff
         private static int RefreshCount = 0;
         private static double RefreshAvg = 0; // keep track of average import time
 
         private bool _isTimerRunning = false; // Timer control flag
 
-        private bool isLoaded = false;
+        private bool isLoaded = false; // tag to prevent extra navigation triggers
 
         public string selectedID = "";
 
@@ -34,8 +33,6 @@ namespace ASA_Dino_Manager
         public MainPage()
         {
             InitializeComponent();
-
-            SetText("No dinos here yet...");
 
             Shell.Current.Navigated += OnShellNavigated;
 
@@ -64,10 +61,7 @@ namespace ASA_Dino_Manager
                 AppShell.needUpdate = false;
                 RefreshContent(false);
             }
-
            // RefreshContent();
-
-            // 
 
             FileManager.WriteLog();
         }
@@ -77,12 +71,6 @@ namespace ASA_Dino_Manager
             _isTimerRunning = false; // Call this to stop the timer if needed
         }
 
-        public void SetText(string text)
-        {
-            Label1.Text = text;
-
-            //SemanticScreenReader.Announce(Label1.Text);
-        }
 
         private void OnShellNavigated(object sender, ShellNavigatedEventArgs e)
         {
@@ -190,7 +178,7 @@ namespace ASA_Dino_Manager
             var tapGesture = new TapGestureRecognizer();
             tapGesture.Tapped += (s, e) =>
             {
-                // Handle the click event and pass additional data
+                // Handle the click event
                 RefreshContent(false);
             };
 
@@ -204,15 +192,11 @@ namespace ASA_Dino_Manager
             var tapGesture = new TapGestureRecognizer();
             tapGesture.Tapped += (s, e) =>
             {
-                // Handle the click event and pass additional data
-                //FileManager.Log("Exclude clicked!");
-
+                // Handle the click event
                 string status = DataManager.GetStatus(selectedID);
                 if (status == "Exclude") { status = ""; }
                 else if (status == "") { status = "Exclude"; }
                 DataManager.SetStatus(selectedID,status);
-
-                DataManager.GetDinoData(DataManager.selectedClass);
 
                 RefreshContent(false);
             };
@@ -227,16 +211,13 @@ namespace ASA_Dino_Manager
             var tapGesture = new TapGestureRecognizer();
             tapGesture.Tapped += (s, e) =>
             {
-                // Handle the click event and pass additional data
-                //FileManager.Log("Exclude clicked!");
-
+                // Handle the click event
                 string status = DataManager.GetStatus(selectedID);
                 if (status == "Archived") { status = ""; }
                 else if (status == "") { status = "Archived"; }
                 else if (status == "Exclude") { status = "Archived"; }
                 DataManager.SetStatus(selectedID, status);
 
-                DataManager.GetDinoData(DataManager.selectedClass);
                 RefreshContent(false); 
             };
 
@@ -327,7 +308,6 @@ namespace ASA_Dino_Manager
             var tapGesture = new TapGestureRecognizer();
             tapGesture.Tapped += (s, e) =>
             {
-                // Handle the click event and pass additional data
                 PurgeAllAsync();
             };
 
@@ -340,7 +320,6 @@ namespace ASA_Dino_Manager
             ToggleExcluded++;
             if (ToggleExcluded == 4)
             {
-                
                 ToggleExcluded = 0;
             }
             // reload stuff
@@ -401,7 +380,6 @@ namespace ASA_Dino_Manager
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 11
 
 
-
             var maleColor = Colors.LightBlue;
             var femaleColor = Colors.Pink;
             var breedColor = Colors.LightYellow;
@@ -409,10 +387,8 @@ namespace ASA_Dino_Manager
 
 
 
-
             var headerColor = maleColor;
             var DefaultColor = maleColor;
-
 
 
             if (title == "Male") { DefaultColor = maleColor; }
@@ -438,11 +414,7 @@ namespace ASA_Dino_Manager
             AddToGrid(grid, new Label { Text = "Papa", FontAttributes = FontAttributes.Bold, TextColor = maleColor }, 0, 9);
             AddToGrid(grid, new Label { Text = "Mama", FontAttributes = FontAttributes.Bold, TextColor = femaleColor }, 0, 10);
 
-
-
             //AddToGrid(grid, new Label { Text = "", FontAttributes = FontAttributes.Bold, TextColor = femaleColor }, 0, 11);
-
-
 
 
 
@@ -715,7 +687,7 @@ namespace ASA_Dino_Manager
             {
                 try
                 {
-                    RouteContent(stat);
+                    MyDelayedOperationAsync(stat);
                 }
                 finally
                 {
@@ -729,6 +701,15 @@ namespace ASA_Dino_Manager
             }
         }
 
+        public async Task MyDelayedOperationAsync(bool showStats)
+        {
+            await Task.Delay(10); // Wait for 2 seconds
+            isLoaded = false;
+
+            RouteContent(showStats);
+            
+        }
+
         public void RouteContent(bool showStats)
         {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();    // start timer here
@@ -739,6 +720,9 @@ namespace ASA_Dino_Manager
             // get the selected species
             string dinoTag = DataManager.TagForClass(route);
             DataManager.selectedClass = dinoTag;
+
+            // update data with new status
+            //DataManager.GetDinoData(DataManager.selectedClass);
 
             // Load necessary data based on toggles
             if (!string.IsNullOrEmpty(DataManager.selectedClass))
@@ -777,15 +761,15 @@ namespace ASA_Dino_Manager
             int totalC = females.Length + males.Length;
 
 
+            FileManager.Log("Routing -> " + route);
+            this.Content = null;
             if (route == "Looking for dinos")
             {
 
             }
             else if (route == "ASA")
             {
-
-                SetText("Remember to feed your dinos");
-
+                UpdateStartContentPage("Feed Dino");
             }
             else if (route == "Archive")
             {
@@ -793,19 +777,19 @@ namespace ASA_Dino_Manager
 
                 if (DataManager.ArchiveTable.Rows.Count < 1)
                 {
-                    SetText("No dinos in here :(");
+                    UpdateStartContentPage("No dinos in here :(");
                 }
                 else
                 {
                     UpdateArchiveContentPage(showStats);
                 }
-
+               
             }
             else
             {
                 if (totalC == 0) 
                 {
-                    SetText("No dinos in here :(");
+                    UpdateStartContentPage("No dinos in here :(");
                 }
                 else
                 {
@@ -821,7 +805,42 @@ namespace ASA_Dino_Manager
             else { RefreshAvg += elapsedMilliseconds; outAVG = RefreshAvg / RefreshCount; }
             FileManager.Log("Refreshed GUI - " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
             FileManager.Log("=====================================================================");
-            if (isLoaded) { isLoaded = false; FileManager.Log("Unset isLoaded"); }
+        }
+
+
+        private void UpdateStartContentPage(string labelText)
+        {
+            var mainLayout = new Grid();
+            UnSelectDino(mainLayout);
+
+            mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Fixed button row
+            mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // Scrollable content
+
+
+            var scrollContent = new StackLayout
+            {
+                Spacing = 20,
+                Padding = 3
+            };
+
+            var image1 = new Image { Source = "dino.png",HeightRequest = 155,Aspect = Aspect.AspectFit, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start};
+
+            var label1 = new Label { Text = labelText, HorizontalOptions = LayoutOptions.Center ,VerticalOptions = LayoutOptions.Start };
+
+
+            AddToGrid(mainLayout, image1, 0, 0);
+            AddToGrid(mainLayout, label1, 1, 0);
+
+
+
+
+            // Wrap the scrollable content in a ScrollView and add it to the second row
+            var scrollView = new ScrollView { Content = scrollContent };
+
+            AddToGrid(mainLayout, scrollView, 0, 0);
+
+            this.Content = null;
+            this.Content = mainLayout;
         }
 
         private void UpdateArchiveContentPage(bool showStats)
@@ -888,9 +907,7 @@ namespace ASA_Dino_Manager
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            this.Content = null;
             this.Content = mainLayout;
-
         }
 
         public void UpdateMainContentPage(bool showStats)
@@ -963,11 +980,8 @@ namespace ASA_Dino_Manager
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            this.Content = null;
             this.Content = mainLayout;
         }
-
-
 
 
 

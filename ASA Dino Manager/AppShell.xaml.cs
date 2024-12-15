@@ -251,6 +251,7 @@ namespace ASA_Dino_Manager
                 Delay = DefaultDelay;
             }
            
+
         }
 
         public void StopTimer()
