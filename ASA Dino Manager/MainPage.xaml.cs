@@ -622,7 +622,7 @@ namespace ASA_Dino_Manager
             //DataManager.GetDinoData(DataManager.selectedClass);
 
             // Load necessary data based on toggles
-            if (!string.IsNullOrEmpty(DataManager.selectedClass))
+            if (!string.IsNullOrEmpty(DataManager.selectedClass) && route != "Looking for dinos" && route != "ASA" && route != "Archive")
             {
                 if (showStats)
                 {
