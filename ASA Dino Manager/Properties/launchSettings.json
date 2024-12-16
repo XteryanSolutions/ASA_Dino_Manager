@@ -1,8 +1,8 @@
 {
   "profiles": {
-    "Windows Machine": {
-      "commandName": "MsixPackage",
-      "nativeDebugging": false
+    "ASA_Dino_Manager": {
+      "commandName": "Project",
+      "workingDirectory": "."
     }
   }
 }
