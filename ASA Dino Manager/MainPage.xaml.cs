@@ -18,8 +18,6 @@ namespace ASA_Dino_Manager
     public partial class MainPage : ContentPage
     {
 
-
-
         public MainPage()
         {
             InitializeComponent();
@@ -33,8 +31,8 @@ namespace ASA_Dino_Manager
 
                 FileManager.Log($"MainPage setRoute -> {route}");
 
-
-                //ToggleExcluded = 0; CurrentStats = false; // reset toggles when navigating
+                // reset toggles when navigating
+                Vars.ToggleExcluded = 0; Vars.CurrentStats = false;
             }
             RefreshContent(false);
         }

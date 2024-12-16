@@ -68,10 +68,15 @@ namespace ASA_Dino_Manager
                 if (Directory.Exists(dir))
                 {
                     string[] exports = Directory.GetFiles(dir + @"\", "*.ini", SearchOption.TopDirectoryOnly);
+                    if (!Vars.ImportEnabled) { Vars.ImportEnabled = true; FileManager.Log("Enabled Importing (Path checks out)"); Vars.setRoute = "ASA"; }
                     return true;
                 }
+                else { if (Vars.ImportEnabled) { Vars.ImportEnabled = false; FileManager.Log("Disabled Importing (Path not found)"); } }
             }
-            catch { }
+            catch
+            {
+                if (Vars.ImportEnabled) { Vars.ImportEnabled = false; FileManager.Log("Disabled Importing (Error)"); }
+            }
             return false;
         }
 
@@ -105,10 +110,10 @@ namespace ASA_Dino_Manager
                 {
                     using (StreamReader read = new StreamReader(AppPath + @"\Data\colors.hrv"))
                     {
-                        string line; 
+                        string line;
                         while ((line = read.ReadLine()) != null)
                         {
-                            ColorString = line; 
+                            ColorString = line;
                         }
                     }
                     return true;
@@ -118,7 +123,7 @@ namespace ASA_Dino_Manager
                     ColorString = DefaultColor;
                     if (SaveColorFile()) { return true; }
                     else { return false; }
-                    }
+                }
             }
             catch { }
             return false;
@@ -146,8 +151,9 @@ namespace ASA_Dino_Manager
             {
                 bool result = true;
                 FileManager.Log("Scanning for gamePath...");
-                
-                Thread thread = new Thread(delegate () { // start calculation thread
+
+                Thread thread = new Thread(delegate ()
+                { // start calculation thread
                     try
                     {
                         Scanning = true;
@@ -163,6 +169,7 @@ namespace ASA_Dino_Manager
                             }
                             FileManager.Log("Set New gamePath");
                             Scanning = false;
+                            if (!Vars.ImportEnabled) { Vars.ImportEnabled = true; FileManager.Log("Enabled Importing (Found GamePath)"); }
                         }
                         else
                         {
@@ -198,7 +205,7 @@ namespace ASA_Dino_Manager
                 Console.WriteLine("no import dataBase! creating a new one");
                 needSave = true;
                 SaveFiles();
-            } 
+            }
         }
 
 
@@ -218,7 +225,7 @@ namespace ASA_Dino_Manager
                     Console.WriteLine("File write failure");
                 }
             }
-           
+
         }
 
         public static void Log(string text)
@@ -400,7 +407,7 @@ namespace ASA_Dino_Manager
                         }
 
                     }
-                   
+
                 }
             }
             catch

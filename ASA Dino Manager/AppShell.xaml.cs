@@ -38,7 +38,7 @@ namespace ASA_Dino_Manager
             string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
 
             // if manager initialized and we are not scanning and there is dinos in taglist
-            if (!FileManager.Scanning && tagList.Length > 0) 
+            if (!FileManager.Scanning && tagList.Length > 0)
             {
                 DataManager.CleanDataBaseByID();
                 UpdateShellContents();
@@ -55,10 +55,7 @@ namespace ASA_Dino_Manager
                 Items.Add(shellContent);
                 FileManager.Log("No dinos =(");
             }
-
             StartTimer();
-
-
         }
 
 
@@ -83,7 +80,7 @@ namespace ASA_Dino_Manager
 
             var shellContent1 = new ShellContent
             {
-                Title = "Dino Manager ",
+                Title = "Dino Manager",
                 ContentTemplate = new DataTemplate(typeof(MainPage)), // Replace with the appropriate page
                 Route = "ASA"
             };
@@ -125,62 +122,52 @@ namespace ASA_Dino_Manager
             FileManager.Log("Updated tagList");
         }
 
-        public void StartProcess()
-        {
-            //FileManager.Log("Starting Import Process...");
-            try
-            {
-                var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-
-                DataManager.Import();
-                //FileManager.Log("Scanned files");
-
-
-                if (DataManager.ModC > 0 || DataManager.AddC > 0) // Check if we need to reload data
-                {
-                    FileManager.Log("Updated DataBase");
-                    FileManager.needSave = true;
-                }
-
-                string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
-                if (tagList.Length > Vars.tagSize)
-                {
-                   UpdateShellContents();
-                   MenuNavigation();
-                }
-
-
-                stopwatch.Stop();
-                var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
-
-                Vars.ImportCount++;
-                double outAVG = 0;
-                if (Vars.ImportCount < 2) { Vars.ImportAvg = elapsedMilliseconds; outAVG = Vars.ImportAvg; }
-                else { Vars.ImportAvg += elapsedMilliseconds; outAVG = Vars.ImportAvg / Vars.ImportCount; }
-                FileManager.Log("Imported data in " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
-                FileManager.Log("=====================================================================");
-            }
-            catch
-            {
-                FileManager.Log("Import data failure");
-
-            }
-            Vars.Delay = Vars.DefaultDelay; // infinite retries????????
-        }
-
 
         public void ProcessAllData()
         {
             if (Vars.ImportEnabled)
             {
+                // check if the gamepath works
+                // maybe redundant checks???
                 if (FileManager.CheckPath(FileManager.GamePath))
                 {
                     if (Monitor.TryEnter(Vars._dbLock, TimeSpan.FromSeconds(5)))
                     {
                         try
                         {
-                            //Console.WriteLine("Database lock acquired. Updating content...");
-                            StartProcess();
+                            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+                            // import files first
+                            DataManager.Import();
+
+                            // check for changes
+                            string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
+
+                            if (DataManager.ModC > 0 || DataManager.AddC > 0 || tagList.Length > Vars.tagSize) // Check if we need to reload data
+                            {
+                                FileManager.Log("Updated DataBase");
+
+
+                                FileManager.needSave = true;
+
+                                UpdateShellContents();
+                                MenuNavigation();
+                            }
+
+
+                            stopwatch.Stop();
+                            var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
+
+                            Vars.ImportCount++;
+                            double outAVG = 0;
+                            if (Vars.ImportCount < 2) { Vars.ImportAvg = elapsedMilliseconds; outAVG = Vars.ImportAvg; }
+                            else { Vars.ImportAvg += elapsedMilliseconds; outAVG = Vars.ImportAvg / Vars.ImportCount; }
+                            FileManager.Log("Imported data in " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
+                            FileManager.Log("=====================================================================");
+                        }
+                        catch
+                        {
+                            FileManager.Log("Import data failure");
                         }
                         finally
                         {
@@ -190,16 +177,12 @@ namespace ASA_Dino_Manager
                     else
                     {
                         FileManager.Log("Failed to acquire database lock within timeout.");
-                        // restart timer if database is locked
-                        Vars.Delay = Vars.DefaultDelay;
-                        // Console.WriteLine("Failed to acquire database lock within timeout.");
                     }
                 }
                 else
                 {
                     // scan for a new path and save it
                     FileManager.ScanPath();
-                    Vars.Delay = Vars.DefaultDelay;
                 }
             }
         }
@@ -220,31 +203,14 @@ namespace ASA_Dino_Manager
 
         private void TriggerFunction()
         {
-            if (FileManager.GamePath != "")
-            {
-                Vars.ImportEnabled = true;
-            }
-            else
-            {
-                Vars.ImportEnabled = false;
-            }
-
-
             Vars.Delay--;
-            if (Vars.Delay == 2)
+            if (Vars.Delay < 0)
             {
-                SaveData();
-            }
-            else if (Vars.Delay == 0)
-            {
-                ProcessAllData();
-            }
-            else if (Vars.Delay < -60) // if its taken longer than a minute to finish try again
-            {
-                ProcessAllData();
                 Vars.Delay = Vars.DefaultDelay;
+                SaveData();
+                ProcessAllData();
             }
-            
+
             FileManager.WriteLog();
         }
 
