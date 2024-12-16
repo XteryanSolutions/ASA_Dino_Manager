@@ -57,14 +57,16 @@ namespace ASA_Dino_Manager
         public static Color goodColor = Colors.LightGreen;
         public static Color mutaColor = Colors.MediumPurple;
 
+
         // button colors
         public static Color noColor = Colors.LightBlue;
         public static Color okColor = Colors.LightGreen;
         public static Color warnColor = Colors.LightYellow;
         public static Color dangerColor = Colors.IndianRed;
 
-        public static Color DefaultColor = Colors.Red; // placeholder
-        public static Color headerColor = Colors.White; // placeholder
+        // placeholder
+        public static Color DefaultColor = Colors.Red;
+        public static Color headerColor = Colors.White;
 
 
 

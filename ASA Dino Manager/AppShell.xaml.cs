@@ -143,13 +143,15 @@ namespace ASA_Dino_Manager
                             // check for changes
                             string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
 
-                            if (DataManager.ModC > 0 || DataManager.AddC > 0 || tagList.Length > Vars.tagSize) // Check if we need to reload data
+
+
+                            // Check if we need to reload data
+                            if (DataManager.ModC > 0 || DataManager.AddC > 0 || tagList.Length > Vars.tagSize) 
                             {
                                 FileManager.Log("Updated DataBase");
 
 
                                 FileManager.needSave = true;
-
                                 UpdateShellContents();
                                 MenuNavigation();
                             }

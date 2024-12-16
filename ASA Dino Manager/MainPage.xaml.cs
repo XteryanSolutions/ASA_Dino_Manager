@@ -31,9 +31,14 @@ namespace ASA_Dino_Manager
 
                 FileManager.Log($"MainPage setRoute -> {route}");
 
+
+                string dinoTag = DataManager.TagForClass(Vars.setRoute);
+                Vars.selectedClass = dinoTag;
+
                 // reset toggles when navigating
                 Vars.ToggleExcluded = 0; Vars.CurrentStats = false;
             }
+
             RefreshContent(false);
         }
 
@@ -102,7 +107,7 @@ namespace ASA_Dino_Manager
             // Handle the click event
             string status = DataManager.GetStatus(Vars.selectedID);
             if (status == "Exclude") { status = ""; }
-            else if (status == "") { status = "Exclude"; }
+            else if (status == "") { status = "Exclude"; FileManager.Log($"Excluded ID: {Vars.selectedID}"); }
             DataManager.SetStatus(Vars.selectedID, status);
 
             RefreshContent(false);
@@ -112,11 +117,13 @@ namespace ASA_Dino_Manager
         {
             // Handle the click event
             string status = DataManager.GetStatus(Vars.selectedID);
-            if (status == "Archived") { status = ""; }
-            else if (status == "") { status = "Archived"; }
-            else if (status == "Exclude") { status = "Archived"; }
+            if (status == "Archived") { status = ""; FileManager.Log($"Restored ID: {Vars.selectedID}"); }
+            else if (status == "") { status = "Archived"; FileManager.Log($"Archived ID: {Vars.selectedID}"); }
+            else if (status == "Exclude") { status = "Archived"; FileManager.Log($"Archived ID: {Vars.selectedID}"); }
             DataManager.SetStatus(Vars.selectedID, status);
 
+            // recompile the archive after archiving or unarchiving
+            DataManager.CompileDinoArchive();
             RefreshContent(false);
         }
 
@@ -148,6 +155,9 @@ namespace ASA_Dino_Manager
                     {
                         FileManager.needSave = true;
                         DataManager.DeleteRowsByID(Vars.selectedID);
+                        // recompile archive after deleting a row
+                        DataManager.CompileDinoArchive();
+                        RefreshContent(false);
                     }
                     finally
                     {
@@ -158,7 +168,6 @@ namespace ASA_Dino_Manager
                 {
                     FileManager.Log("Failed to acquire database lock within timeout.");
                 }
-                RefreshContent(false);
             }
         }
 
@@ -181,6 +190,8 @@ namespace ASA_Dino_Manager
                     {
                         DataManager.PurgeAll();
                         FileManager.Log("Purged All Dinos");
+                        // recompile archive after deleting all rows
+                        DataManager.CompileDinoArchive();
                         RefreshContent(false);
                     }
                     finally
@@ -549,6 +560,7 @@ namespace ASA_Dino_Manager
             {
                 try
                 {
+                    FileManager.Log("Displaying -> " + Vars.setRoute);
                     MyDelayedOperationAsync(stat);
                 }
                 finally
@@ -573,53 +585,6 @@ namespace ASA_Dino_Manager
         {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();    // start timer here
 
-            // get the selected species
-            string dinoTag = DataManager.TagForClass(Vars.setRoute);
-            Vars.selectedClass = dinoTag;
-
-            // update data with new status
-            //DataManager.GetDinoData(DataManager.selectedClass);
-
-            // Load necessary data based on toggles
-            if (!string.IsNullOrEmpty(Vars.selectedClass) && Vars.setRoute != "Looking for dinos" && Vars.setRoute != "ASA" && Vars.setRoute != "Archive")
-            {
-                if (showStats)
-                {
-                    DataManager.GetOneDinoData(Vars.selectedID);
-
-                    if (Vars.ToggleExcluded != 3)
-                    {
-                        DataManager.SetMaxStats();
-                    }
-                }
-                else
-                {
-                    // sort data based on column clicked
-                    DataManager.GetDinoData(Vars.selectedClass, Vars.sortM, Vars.sortF);
-
-
-                    if (Vars.ToggleExcluded != 3)
-                    {
-                        DataManager.SetMaxStats();
-                    }
-
-                    if (!Vars.CurrentStats && Vars.ToggleExcluded != 2 && Vars.ToggleExcluded != 3)
-                    {
-                        DataManager.SetBinaryStats();
-                        DataManager.GetBestPartner();
-                    }
-                }
-            }
-
-
-            // Retrieve female data
-            string[] females = DataManager.GetDistinctFilteredColumnData("Class", dinoTag, "Sex", "Female", "ID");
-            // Retrieve male data
-            string[] males = DataManager.GetDistinctFilteredColumnData("Class", dinoTag, "Sex", "Male", "ID");
-            int totalC = females.Length + males.Length;
-
-
-            FileManager.Log("Displaying -> " + Vars.setRoute);
             this.Content = null;
             if (Vars.setRoute == "Looking for dinos")
             {
@@ -634,20 +599,54 @@ namespace ASA_Dino_Manager
             else if (Vars.setRoute == "Archive")
             {
                 if (!showStats) { this.Title = Vars.setRoute; }
-                DataManager.GetDinoArchive();
 
-                if (DataManager.ArchiveTable.Rows.Count < 1)
-                {
-                    UpdateStartContentPage("No dinos in here :(");
-                }
-                else
+                if (DataManager.ArchiveTable.Rows.Count > 0)
                 {
                     UpdateArchiveContentPage(showStats);
                 }
-               
+                else
+                {
+                    UpdateStartContentPage("No dinos in here :(");
+                }
             }
             else
             {
+                // Load necessary data based on toggles
+                if (!string.IsNullOrEmpty(Vars.selectedClass))
+                {
+                    if (showStats)
+                    {
+                        DataManager.GetOneDinoData(Vars.selectedID);
+
+                        if (Vars.ToggleExcluded != 3)
+                        {
+                            DataManager.SetMaxStats();
+                        }
+                    }
+                    else
+                    {
+                        // sort data based on column clicked
+                        DataManager.GetDinoData(Vars.selectedClass, Vars.sortM, Vars.sortF);
+
+
+                        if (Vars.ToggleExcluded != 3)
+                        {
+                            DataManager.SetMaxStats();
+                        }
+
+                        if (!Vars.CurrentStats && Vars.ToggleExcluded != 2 && Vars.ToggleExcluded != 3)
+                        {
+                            DataManager.SetBinaryStats();
+                            DataManager.GetBestPartner();
+                        }
+                    }
+                }
+                // Retrieve female data
+                string[] females = DataManager.GetDistinctFilteredColumnData("Class", Vars.selectedClass, "Sex", "Female", "ID");
+                // Retrieve male data
+                string[] males = DataManager.GetDistinctFilteredColumnData("Class", Vars.selectedClass, "Sex", "Male", "ID");
+                int totalC = females.Length + males.Length;
+
                 if (!showStats) { this.Title = Vars.setRoute; }
                 if (totalC == 0) 
                 {

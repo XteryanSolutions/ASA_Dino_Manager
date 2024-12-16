@@ -163,8 +163,6 @@
 	  <None Remove="Platforms\Windows\Assets\DinoWide.scale-150.png" />
 	  <None Remove="Platforms\Windows\Assets\DinoWide.scale-200.png" />
 	  <None Remove="Platforms\Windows\Assets\DinoWide.scale-400.png" />
-	  <None Remove="Resources\Fonts\OpenSans-Regular.ttf" />
-	  <None Remove="Resources\Fonts\OpenSans-Semibold.ttf" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -224,11 +222,9 @@
 	  <Content Include="Platforms\Windows\Assets\DinoWide.scale-150.png" />
 	  <Content Include="Platforms\Windows\Assets\DinoWide.scale-200.png" />
 	  <Content Include="Platforms\Windows\Assets\DinoWide.scale-400.png" />
-	  <Content Include="Resources\Fonts\OpenSans-Regular.ttf" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="Resources\Fonts\OpenSans-Semibold.ttf" />
 	  <EmbeddedResource Include="Resources\Images\dino.png" />
 	</ItemGroup>
 

@@ -727,7 +727,7 @@ namespace ASA_Dino_Manager
             //  FileManager.Log("updated data");
         }
 
-        public static void GetDinoArchive()
+        public static void CompileDinoArchive()
         {
             // Retrieve distinct IDs
             string[] idList = DataManager.GetAllDistinctColumnData("ID");
@@ -749,7 +749,7 @@ namespace ASA_Dino_Manager
                     ArchiveTable.Rows.Add(dr);
                 }
             }
-           // FileManager.Log("Archive retrieved");
+            FileManager.Log("Archive compiled");
         }
 
         public static void SetMaxStats()
@@ -1136,7 +1136,7 @@ namespace ASA_Dino_Manager
                     nr++;
                 }
             }
-           // FileManager.Log("updated pairs");
+            FileManager.Log("Updated BreedPairs");
         }
 
         public static void MakeOffspring(string male, string female, string offspring, string point)
@@ -1268,7 +1268,7 @@ namespace ASA_Dino_Manager
             DataView view = new DataView(DataManager.BottomTable);
             view.Sort = "ID DESC"; // Replace "Level" with the desired column and sorting order (e.g., "Name ASC", "ID DESC")
             DataManager.BottomTable = view.ToTable();
-
+            FileManager.Log("Retrieved Dino Stats");
         }
 
         public static void CleanDataBaseByID()
