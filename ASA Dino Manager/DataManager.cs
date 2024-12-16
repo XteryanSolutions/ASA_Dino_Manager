@@ -61,11 +61,8 @@ namespace ASA_Dino_Manager
         public static string[] BinaryM = new string[1]; //keeping track of max stats for breeding
         public static string[] BinaryF = new string[1]; //keeping track of max stats for breeding
 
-        public static int StatusID = 0;
+        public static int StatusID = 0; // id for the status field in table
 
-        public static bool NewSpecies = false;
-        public static bool forceLoad = false;
-        public static string selectedClass = "";
 
         public static bool InitDataManager()
         {
@@ -610,28 +607,28 @@ namespace ASA_Dino_Manager
 
                 SetMutes(dino, mutes);
                 bool addIT = false;
-                if (MainPage.ToggleExcluded == 0)
+                if (Vars.ToggleExcluded == 0)
                 {
                     if (status != "Archived")
                     {
                         addIT = true;
                     }
                 }
-                else if (MainPage.ToggleExcluded == 1)
+                else if (Vars.ToggleExcluded == 1)
                 {
                     if (status != "Archived" && status != "Exclude")
                     {
                         addIT = true;
                     }
                 }
-                else if (MainPage.ToggleExcluded == 2)
+                else if (Vars.ToggleExcluded == 2)
                 {
                     if (status != "Archived" && status == "Exclude")
                     {
                         addIT = true;
                     }
                 }
-                else if (MainPage.ToggleExcluded == 3)
+                else if (Vars.ToggleExcluded == 3)
                 {
                     if (status == "Archived")
                     {
@@ -670,14 +667,13 @@ namespace ASA_Dino_Manager
             }
         }
 
-        public static void GetDinoData(string DinoClass,string sortM = "",string sortF = "") 
+        public static void GetDinoData(string DinoClass,string sortiM = "",string sortiF = "") 
         {
             if (string.IsNullOrEmpty(DinoClass))
             {
                 return; // Exit early if tag is empty
             }
 
-            forceLoad = false;
             // Clear the tables before populating them
             DataManager.MaleTable.Clear();
             DataManager.FemaleTable.Clear();
@@ -689,7 +685,7 @@ namespace ASA_Dino_Manager
             string[] males = DataManager.GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Male", "ID");
 
 
-            if (MainPage.CurrentStats)
+            if (Vars.CurrentStats)
             {
                 // Process females
                 List<string[]> MainStatsF = DataManager.GetLastStats(females);
@@ -718,13 +714,13 @@ namespace ASA_Dino_Manager
 
             // Sort the BottomTable based on the desired column
             DataView view1 = new DataView(DataManager.MaleTable);
-            view1.Sort = sortM; // Replace "Level" with the desired column and sorting order (e.g., "Name ASC", "ID DESC")
+            view1.Sort = sortiM; // Replace "Level" with the desired column and sorting order (e.g., "Name ASC", "ID DESC")
             DataManager.MaleTable = view1.ToTable();
 
 
             // Sort the BottomTable based on the desired column
             DataView view2 = new DataView(DataManager.FemaleTable);
-            view2.Sort = sortF; // Replace "Level" with the desired column and sorting order (e.g., "Name ASC", "ID DESC")
+            view2.Sort = sortiF; // Replace "Level" with the desired column and sorting order (e.g., "Name ASC", "ID DESC")
             DataManager.FemaleTable = view2.ToTable();
 
 
@@ -1402,8 +1398,6 @@ namespace ASA_Dino_Manager
 
         public static void Import()
         {
-            string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
-
             string[] exports = Directory.GetFiles(FileManager.GamePath + @"\", "*.ini", SearchOption.TopDirectoryOnly);
             AddC = 0; ModC = 0;
             foreach (string file in exports) // loop trough each file to look for data in all of them
@@ -1490,13 +1484,6 @@ namespace ASA_Dino_Manager
                 //Interface.timeS = Interface.timeSD;
                 //Interface.NeedUpdate = true;
                 FileManager.Log("Updated " + ModC + " dinos");
-            }
-
-            string[] ntagList = DataManager.GetAllDistinctColumnData("Tag");
-
-            if (ntagList.Count() > tagList.Count())
-            {
-                DataManager.NewSpecies = true;
             }
         }
 

@@ -9,33 +9,19 @@ namespace ASA_Dino_Manager
 {
     public partial class AppShell : Shell
     {
-        public string version = "ASA Dino Manager 0.04.37";
 
-        // IMPORTING
-        public static bool ImportEnabled = false;
-        public static int Delay = 5;
-        public static int DefaultDelay = 10; // default import delay in seconds
-
-        public static int tagSize = 0;
 
         // benchmark stuff
         private static int ImportCount = 0;
         private static double ImportAvg = 0; // keep track of average import time
 
         private bool _isTimerRunning = false; // Timer control flag
-        public static bool needUpdate = false;
-
-        public static readonly object _dbLock = new object();
-
-        public static string setRoute = "";
-
-        private bool isNavigationSuspended = false;
 
 
         public AppShell()
         {
-            InitializeComponent(); this.Title = version;
-            FileManager.Log("====== Started " + version + " ======");
+            InitializeComponent(); this.Title = Vars.version;
+            FileManager.Log("====== Started " + Vars.version + " ======");
             if (!FileManager.InitFileManager())
             {
                 // Exit app here
@@ -48,6 +34,8 @@ namespace ASA_Dino_Manager
                 Application.Current.Quit();
             }
             FileManager.Log("DataManager initialized");
+
+
 
 
             string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
@@ -79,17 +67,16 @@ namespace ASA_Dino_Manager
 
         public async Task MenuNavigation()
         {
-            FileManager.Log($"AppShell -> {setRoute}");
-            await Shell.Current.GoToAsync(setRoute);
+            FileManager.Log($"AppShell -> {Vars.setRoute}");
+            await Shell.Current.GoToAsync(Vars.setRoute);
         }
 
         public void UpdateShellContents()
         {
-            isNavigationSuspended = true;
             string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
             string[] classList = DataManager.GetAllClasses();
 
-            tagSize = tagList.Length;
+            Vars.tagSize = tagList.Length;
 
             Items.Clear();
 
@@ -137,7 +124,6 @@ namespace ASA_Dino_Manager
                 Items.Add(shellContent);
             }
             FileManager.Log("Updated tagList");
-            isNavigationSuspended = false;
         }
 
         public void StartProcess()
@@ -151,15 +137,14 @@ namespace ASA_Dino_Manager
                 //FileManager.Log("Scanned files");
 
 
-                if (DataManager.ModC > 0 || DataManager.AddC > 0 || DataManager.forceLoad) // Check if we need to reload data
+                if (DataManager.ModC > 0 || DataManager.AddC > 0) // Check if we need to reload data
                 {
                     FileManager.Log("Updated DataBase");
                     FileManager.needSave = true;
-                    needUpdate = true;
                 }
 
                 string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
-                if (tagList.Length > tagSize)
+                if (tagList.Length > Vars.tagSize)
                 {
                    UpdateShellContents();
                 }
@@ -184,17 +169,17 @@ namespace ASA_Dino_Manager
                 FileManager.Log("Import data failure");
 
             }
-            Delay = DefaultDelay; // infinite retries????????
+            Vars.Delay = Vars.DefaultDelay; // infinite retries????????
         }
 
 
         public void ProcessAllData()
         {
-            if (ImportEnabled)
+            if (Vars.ImportEnabled)
             {
                 if (FileManager.CheckPath(FileManager.GamePath))
                 {
-                    if (Monitor.TryEnter(_dbLock, TimeSpan.FromSeconds(5)))
+                    if (Monitor.TryEnter(Vars._dbLock, TimeSpan.FromSeconds(5)))
                     {
                         try
                         {
@@ -203,14 +188,14 @@ namespace ASA_Dino_Manager
                         }
                         finally
                         {
-                            Monitor.Exit(_dbLock);
+                            Monitor.Exit(Vars._dbLock);
                         }
                     }
                     else
                     {
                         FileManager.Log("Failed to acquire database lock within timeout.");
                         // restart timer if database is locked
-                        Delay = DefaultDelay;
+                        Vars.Delay = Vars.DefaultDelay;
                         // Console.WriteLine("Failed to acquire database lock within timeout.");
                     }
                 }
@@ -218,7 +203,7 @@ namespace ASA_Dino_Manager
                 {
                     // scan for a new path and save it
                     FileManager.ScanPath();
-                    Delay = DefaultDelay;
+                    Vars.Delay = Vars.DefaultDelay;
                 }
             }
         }
@@ -241,30 +226,30 @@ namespace ASA_Dino_Manager
         {
             if (FileManager.GamePath != "")
             {
-                ImportEnabled = true;
+                Vars.ImportEnabled = true;
             }
             else
             {
-                ImportEnabled = false;
+                Vars.ImportEnabled = false;
             }
 
 
-            Delay--;
-            if (Delay == 2)
+            Vars.Delay--;
+            if (Vars.Delay == 2)
             {
                 SaveData();
             }
-            else if (Delay == 0)
+            else if (Vars.Delay == 0)
             {
                 ProcessAllData();
             }
-            else if (Delay < -60) // if its taken longer than a minute to finish try again
+            else if (Vars.Delay < -60) // if its taken longer than a minute to finish try again
             {
                 ProcessAllData();
-                Delay = DefaultDelay;
+                Vars.Delay = Vars.DefaultDelay;
             }
 
-
+            FileManager.WriteLog();
         }
 
         public void StopTimer()
@@ -274,7 +259,7 @@ namespace ASA_Dino_Manager
 
         private void SaveData()
         {
-            if (Monitor.TryEnter(_dbLock, TimeSpan.FromSeconds(5)))
+            if (Monitor.TryEnter(Vars._dbLock, TimeSpan.FromSeconds(5)))
             {
                 try
                 {
@@ -282,7 +267,7 @@ namespace ASA_Dino_Manager
                 }
                 finally
                 {
-                    Monitor.Exit(_dbLock);
+                    Monitor.Exit(Vars._dbLock);
                 }
             }
             else
