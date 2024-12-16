@@ -349,8 +349,8 @@ namespace ASA_Dino_Manager
             var header10 = new Label { Text = "Papa", FontAttributes = FontAttributes.Bold, TextColor = maleColor, FontSize = fSize };
             var header11 = new Label { Text = "Mama", FontAttributes = FontAttributes.Bold, TextColor = femaleColor, FontSize = fSize };
 
-            var header12 = new Label { Text = "PapaMut", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-            var header13 = new Label { Text = "MamaMut", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+            var header12 = new Label { Text = "PapaMute", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+            var header13 = new Label { Text = "MamaMute", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
             var header14 = new Label { Text = "Imprint", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
             var header15 = new Label { Text = "Imprinter", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
@@ -1108,12 +1108,25 @@ namespace ASA_Dino_Manager
                 // Handle the click event and pass additional data
                 string column = label.Text;
 
-                
+                var splitM = sortM.Split(new[] { @" " }, StringSplitOptions.RemoveEmptyEntries);
+                var splitF = sortF.Split(new[] { @" " }, StringSplitOptions.RemoveEmptyEntries);
+
+                string outM = "";
+                string outF = "";
+
+                if (splitM.Length > 0)
+                {
+                    outM = splitM[0];
+                }
+                if (splitF.Length > 0)
+                {
+                    outF = splitF[0];
+                }
 
                 if (sex == "M")
                 {
                     // are we clicking the same column then toggle sorting
-                    if (sortM.Contains(column)) 
+                    if (outM == column) 
                     {
                         if (sortM.Contains("ASC"))
                         {
@@ -1132,7 +1145,7 @@ namespace ASA_Dino_Manager
                 else if (sex == "F")
                 {
                     // are we clicking the same column then toggle sorting
-                    if (sortF.Contains(column))
+                    if (outF == column)
                     {
                         if (sortF.Contains("ASC")) // then switch to descending
                         {
