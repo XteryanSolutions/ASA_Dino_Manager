@@ -52,6 +52,9 @@ namespace ASA_Dino_Manager
         public Color DefaultColor = Colors.Red; // placeholder
         public Color headerColor = Colors.White; // placeholder
 
+        private string sortM = "";
+        private string sortF = "";
+
 
         public MainPage()
         {
@@ -331,21 +334,55 @@ namespace ASA_Dino_Manager
 
             headerColor = DefaultColor;
 
-            int fSize = 16;
+            int fSize = 16;  // header fontsize
+
+            var header0 = new Label { Text = "Name", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+            var header1 = new Label { Text = "Level", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+            var header2 = new Label { Text = "Hp", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+            var header3 = new Label { Text = "Stamina", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+            var header4 = new Label { Text = "Oxygen", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+            var header5 = new Label { Text = "Food", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+            var header6 = new Label { Text = "Weight", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+            var header7 = new Label { Text = "Damage", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+            var header8 = new Label { Text = "Status", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+            var header9 = new Label { Text = "Gen", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+            var header10 = new Label { Text = "Papa", FontAttributes = FontAttributes.Bold, TextColor = maleColor, FontSize = fSize };
+            var header11 = new Label { Text = "Mama", FontAttributes = FontAttributes.Bold, TextColor = femaleColor, FontSize = fSize };
+
+
+            string sexS = "T";
+            if (title == "Male") { sexS = "M"; }
+            else { sexS = "F"; }
+
+            if (title != "Bottom") // not sortable bottom row
+            {
+                SortColumn(header0, sexS);
+                SortColumn(header1, sexS);
+                SortColumn(header2, sexS);
+                SortColumn(header3, sexS);
+                SortColumn(header4, sexS);
+                SortColumn(header5, sexS);
+                SortColumn(header6, sexS);
+                SortColumn(header7, sexS);
+                SortColumn(header8, sexS);
+                SortColumn(header9, sexS);
+                SortColumn(header10, sexS);
+                SortColumn(header11, sexS);
+            }
 
             // Add header row
-            AddToGrid(grid, new Label { Text = "Name", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 0);
-            AddToGrid(grid, new Label { Text = "Level", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 1);
-            AddToGrid(grid, new Label { Text = "Hp", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 2);
-            AddToGrid(grid, new Label { Text = "Stamina", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 3);
-            AddToGrid(grid, new Label { Text = "Oxygen", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 4);
-            AddToGrid(grid, new Label { Text = "Food", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 5);
-            AddToGrid(grid, new Label { Text = "Weight", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 6);
-            AddToGrid(grid, new Label { Text = "Damage", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 7);
-            AddToGrid(grid, new Label { Text = "Status", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 8);
-            AddToGrid(grid, new Label { Text = "Gen", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 9);
-            AddToGrid(grid, new Label { Text = "Papa", FontAttributes = FontAttributes.Bold, TextColor = maleColor, FontSize = fSize }, 0, 10);
-            AddToGrid(grid, new Label { Text = "Mama", FontAttributes = FontAttributes.Bold, TextColor = femaleColor, FontSize = fSize }, 0, 11);
+            AddToGrid(grid, header0, 0, 0);
+            AddToGrid(grid, header1, 0, 1);
+            AddToGrid(grid, header2, 0, 2);
+            AddToGrid(grid, header3, 0, 3);
+            AddToGrid(grid, header4, 0, 4);
+            AddToGrid(grid, header5, 0, 5);
+            AddToGrid(grid, header6, 0, 6);
+            AddToGrid(grid, header7, 0, 7);
+            AddToGrid(grid, header8, 0, 8);
+            AddToGrid(grid, header9, 0, 9);
+            AddToGrid(grid, header10, 0, 10);
+            AddToGrid(grid, header11, 0, 11);
 
             if (title != "Bottom" || showStats)
             {
@@ -632,7 +669,9 @@ namespace ASA_Dino_Manager
                 }
                 else
                 {
-                    DataManager.GetDinoData(DataManager.selectedClass);
+                    // sort data based on column clicked
+                    DataManager.GetDinoData(DataManager.selectedClass, sortM, sortF);
+
 
                     if (MainPage.ToggleExcluded != 3)
                     {
@@ -1050,7 +1089,64 @@ namespace ASA_Dino_Manager
             this.Content = mainLayout;
         }
 
+        void SortColumn(Label label,string sex)
+        {
+            // Create a TapGestureRecognizer
+            var tapGesture1 = new TapGestureRecognizer();
+            tapGesture1.Tapped += (s, e) =>
+            {
+                // Handle the click event and pass additional data
+                string column = label.Text;
 
+                
+
+                if (sex == "M")
+                {
+                    // are we clicking the same column then toggle sorting
+                    if (sortM.Contains(column)) 
+                    {
+                        if (sortM.Contains("ASC"))
+                        {
+                            sortM = column + " DESC";
+                        }
+                        else if (sortM.Contains("DESC"))
+                        {
+                            sortM = "";
+                        }
+                    }
+                    else
+                    {
+                        sortM = column + " ASC";
+                    }
+                }
+                else if (sex == "F")
+                {
+                    // are we clicking the same column then toggle sorting
+                    if (sortF.Contains(column))
+                    {
+                        if (sortF.Contains("ASC")) // then switch to descending
+                        {
+                            sortF = column + " DESC";
+                        }
+                        else if (sortF.Contains("DESC")) // finally turn it off
+                        {
+                            sortF = "";
+                        }
+                    }
+                    else // first sort ascending
+                    {
+                        sortF = column + " ASC";
+                    }
+                }
+
+                FileManager.Log($"Sorted: {sortM} : {sortF}");
+
+                RefreshContent(false);
+            };
+
+            // Attach the TapGestureRecognizer to the label
+            label.GestureRecognizers.Add(tapGesture1);
+        }
 
     }
 }

@@ -670,7 +670,7 @@ namespace ASA_Dino_Manager
             }
         }
 
-        public static void GetDinoData(string DinoClass) 
+        public static void GetDinoData(string DinoClass,string sortM = "",string sortF = "") 
         {
             if (string.IsNullOrEmpty(DinoClass))
             {
@@ -713,7 +713,22 @@ namespace ASA_Dino_Manager
                 List<string[]> BrStatsM = DataManager.GetLastStats(males);
                 ProcessDinos(males, MainStatsM, BrStatsM, DataManager.MaleTable);
             }
-          //  FileManager.Log("updated data");
+
+
+
+            // Sort the BottomTable based on the desired column
+            DataView view1 = new DataView(DataManager.MaleTable);
+            view1.Sort = sortM; // Replace "Level" with the desired column and sorting order (e.g., "Name ASC", "ID DESC")
+            DataManager.MaleTable = view1.ToTable();
+
+
+            // Sort the BottomTable based on the desired column
+            DataView view2 = new DataView(DataManager.FemaleTable);
+            view2.Sort = sortF; // Replace "Level" with the desired column and sorting order (e.g., "Name ASC", "ID DESC")
+            DataManager.FemaleTable = view2.ToTable();
+
+
+            //  FileManager.Log("updated data");
         }
 
         public static void GetDinoArchive()
