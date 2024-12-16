@@ -18,19 +18,19 @@ namespace ASA_Dino_Manager
         public AppShell()
         {
             InitializeComponent(); this.Title = Vars.version;
-            FileManager.Log("====== Started " + Vars.version + " ======");
+            FileManager.Log("====== Started " + Vars.version + " ======", 0);
             if (!FileManager.InitFileManager())
             {
                 // Exit app here
                 Application.Current.Quit();
             }
-            FileManager.Log("FileManager initialized");
+            FileManager.Log("FileManager initialized", 0);
             if (!DataManager.InitDataManager())
             {
                 // Exit app here
                 Application.Current.Quit();
             }
-            FileManager.Log("DataManager initialized");
+            FileManager.Log("DataManager initialized", 0);
 
 
 
@@ -38,7 +38,7 @@ namespace ASA_Dino_Manager
             string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
 
             // if manager initialized and we are not scanning and there is dinos in taglist
-            if (!FileManager.Scanning && tagList.Length > 0)
+            if (!Vars.Scanning && tagList.Length > 0)
             {
                 DataManager.CleanDataBaseByID();
                 UpdateShellContents();
@@ -53,7 +53,7 @@ namespace ASA_Dino_Manager
                     Route = "Looking for dinos"
                 };
                 Items.Add(shellContent);
-                FileManager.Log("No dinos =(");
+                FileManager.Log("No dinos =(", 0);
             }
             StartTimer();
         }
@@ -61,13 +61,13 @@ namespace ASA_Dino_Manager
 
         public async Task MenuNavigation()
         {
-            FileManager.Log($"AppShell -> {Vars.setRoute}");
+            FileManager.Log($"AppShell -> {Vars.setRoute}", 0);
             await Shell.Current.GoToAsync(Vars.setRoute);
         }
 
         public void UpdateShellContents()
         {
-            Vars.eventDisabled = true;
+            Vars.eventDisabled = true; FileManager.Log("Disabled Navigation", 0);
             string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
             string[] classList = DataManager.GetAllClasses();
 
@@ -118,8 +118,8 @@ namespace ASA_Dino_Manager
                 // Add the ShellContent to the Shell
                 Items.Add(shellContent);
             }
-            Vars.eventDisabled = false;
-            FileManager.Log("Updated tagList");
+            Vars.eventDisabled = false; FileManager.Log("Enabled Navigation", 0);
+            FileManager.Log("Updated tagList", 0);
         }
 
 
@@ -129,7 +129,7 @@ namespace ASA_Dino_Manager
             {
                 // check if the gamepath works
                 // maybe redundant checks???
-                if (FileManager.CheckPath(FileManager.GamePath))
+                if (FileManager.CheckPath(Vars.GamePath))
                 {
                     if (Monitor.TryEnter(Vars._dbLock, TimeSpan.FromSeconds(5)))
                     {
@@ -146,12 +146,11 @@ namespace ASA_Dino_Manager
 
 
                             // Check if we need to reload data
-                            if (DataManager.ModC > 0 || DataManager.AddC > 0 || tagList.Length > Vars.tagSize) 
+                            if (DataManager.ModC > 0 || DataManager.AddC > 0 || tagList.Length > Vars.tagSize)
                             {
-                                FileManager.Log("Updated DataBase");
+                                FileManager.Log("Updated DataBase", 0);
 
-
-                                FileManager.needSave = true;
+                                Vars.needSave = true;
                                 UpdateShellContents();
                                 MenuNavigation();
                             }
@@ -164,12 +163,12 @@ namespace ASA_Dino_Manager
                             double outAVG = 0;
                             if (Vars.ImportCount < 2) { Vars.ImportAvg = elapsedMilliseconds; outAVG = Vars.ImportAvg; }
                             else { Vars.ImportAvg += elapsedMilliseconds; outAVG = Vars.ImportAvg / Vars.ImportCount; }
-                            FileManager.Log("Imported data in " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
-                            FileManager.Log("=====================================================================");
+                            FileManager.Log("Imported data in " + elapsedMilliseconds + "ms" + " Avg: " + outAVG, 0);
+                            FileManager.Log("=====================================================================", 0);
                         }
                         catch
                         {
-                            FileManager.Log("Import data failure");
+                            FileManager.Log("Import data failure", 1);
                         }
                         finally
                         {
@@ -178,7 +177,7 @@ namespace ASA_Dino_Manager
                     }
                     else
                     {
-                        FileManager.Log("Failed to acquire database lock within timeout.");
+                        FileManager.Log("Failed to acquire database lock within timeout.", 1);
                     }
                 }
                 else
@@ -236,7 +235,7 @@ namespace ASA_Dino_Manager
             }
             else
             {
-                FileManager.Log("Failed to acquire database lock within timeout.");
+                FileManager.Log("Failed to acquire database lock within timeout.", 1);
             }
         }
 

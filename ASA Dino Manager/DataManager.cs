@@ -135,7 +135,7 @@ namespace ASA_Dino_Manager
                 FemaleTable.Columns.Add("Imprint", typeof(double));
                 FemaleTable.Columns.Add("Imprinter", typeof(string));
                 FemaleTable.Columns.Add("ID", typeof(string));
-                
+
 
 
                 MaleTable.Clear();
@@ -160,7 +160,7 @@ namespace ASA_Dino_Manager
                 MaleTable.Columns.Add("Imprint", typeof(double));
                 MaleTable.Columns.Add("Imprinter", typeof(string));
                 MaleTable.Columns.Add("ID", typeof(string));
-               
+
 
 
 
@@ -243,7 +243,7 @@ namespace ASA_Dino_Manager
 
 
             // Iterate through the rows of the list
-            foreach (string rawClass in classList) 
+            foreach (string rawClass in classList)
             {
                 // split the string into a readable class
 
@@ -291,7 +291,7 @@ namespace ASA_Dino_Manager
                 string columnValue = row["Class"].ToString();
 
 
-                if (columnValue.Contains(DinoClass.Replace(" ",".")))
+                if (columnValue.Contains(DinoClass.Replace(" ", ".")))
                 {
                     return row["Class"].ToString();
                 }
@@ -438,7 +438,7 @@ namespace ASA_Dino_Manager
                 int i = 0;
                 while (i < columns.Count())
                 {
-                    stats[i] = DataManager.GetLastColumnData("ID", id, columns[i],"0");
+                    stats[i] = DataManager.GetLastColumnData("ID", id, columns[i], "0");
                     i++;
                 }
                 results.Add(stats);
@@ -482,7 +482,7 @@ namespace ASA_Dino_Manager
             return "";
         }
 
-        public static void SetStatus(string id,string status)
+        public static void SetStatus(string id, string status)
         {
             if (id != "")
             {
@@ -492,7 +492,7 @@ namespace ASA_Dino_Manager
                     if (id == row["ID"].ToString()) // did we find our dino in dinoData file
                     {
                         StatTable.Rows[rowid].SetField(1, status);
-                        FileManager.Log($"Set status for id: {id} to: {status}");
+                        FileManager.Log($"Set status for id: {id} to: {status}", 0);
                         found = true; break;
                     }
                     rowid++;
@@ -505,7 +505,7 @@ namespace ASA_Dino_Manager
                     DataManager.StatTable.Rows.Add(dr);
                 }
                 // request a save after modifying data
-                FileManager.needSave = true;
+                Vars.needSave = true;
             }
         }
 
@@ -529,7 +529,7 @@ namespace ASA_Dino_Manager
                 DataManager.StatTable.Rows.Add(dr);
             }
             // request a save after modifying data
-            FileManager.needSave = true;
+            Vars.needSave = true;
         }
 
         public static void SetMutes(string id, string mutes)
@@ -667,7 +667,7 @@ namespace ASA_Dino_Manager
             }
         }
 
-        public static void GetDinoData(string DinoClass,string sortiM = "",string sortiF = "") 
+        public static void GetDinoData(string DinoClass, string sortiM = "", string sortiF = "")
         {
             if (string.IsNullOrEmpty(DinoClass))
             {
@@ -735,7 +735,7 @@ namespace ASA_Dino_Manager
             ArchiveTable.Clear();
 
             // now check the status of each id and add them to ArchiveTable if status = Archived
-            foreach (string dino in idList) 
+            foreach (string dino in idList)
             {
                 string status = GetStatus(dino);
                 if (status == "Archived")
@@ -749,7 +749,7 @@ namespace ASA_Dino_Manager
                     ArchiveTable.Rows.Add(dr);
                 }
             }
-            FileManager.Log("Archive compiled");
+            FileManager.Log("Archive compiled", 0);
         }
 
         public static void SetMaxStats()
@@ -913,9 +913,9 @@ namespace ASA_Dino_Manager
                 // UNFINISHED STUFF HERE WAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
                 if (mark)
                 {
-                  
+
                 }
-                if (binaryC == "000000" || compareStatus == "Exclude") { outStatus = "Garbage";  }
+                if (binaryC == "000000" || compareStatus == "Exclude") { outStatus = "Garbage"; }
                 if (compareStatus != "Exclude" && compareStatus != "Baby")
                 {
                     // something here to mark them as shiz
@@ -965,7 +965,7 @@ namespace ASA_Dino_Manager
 
                 rowIDC++;
             }
-           // FileManager.Log("updated binary");
+            // FileManager.Log("updated binary");
         }
 
         public static void GetBestPartner()
@@ -1136,7 +1136,7 @@ namespace ASA_Dino_Manager
                     nr++;
                 }
             }
-            FileManager.Log("Updated BreedPairs");
+            //FileManager.Log("Updated BreedPairs",0);
         }
 
         public static void MakeOffspring(string male, string female, string offspring, string point)
@@ -1256,7 +1256,7 @@ namespace ASA_Dino_Manager
                     dr["PapaMute"] = row["PapaMute"].ToString();
                     dr["Imprint"] = Math.Round(ToDouble(row["Imprint"].ToString()) * 100);
                     dr["Imprinter"] = row["Imprinter"].ToString();
-                    dr["Age"] = Math.Round(ToDouble(row["BabyAge"].ToString()) * 100);  
+                    dr["Age"] = Math.Round(ToDouble(row["BabyAge"].ToString()) * 100);
                     dr["ID"] = row["Time"].ToString();
 
                     DataManager.BottomTable.Rows.Add(dr);
@@ -1268,7 +1268,7 @@ namespace ASA_Dino_Manager
             DataView view = new DataView(DataManager.BottomTable);
             view.Sort = "ID DESC"; // Replace "Level" with the desired column and sorting order (e.g., "Name ASC", "ID DESC")
             DataManager.BottomTable = view.ToTable();
-            FileManager.Log("Retrieved Dino Stats");
+            //FileManager.Log("Retrieved Dino Stats");
         }
 
         public static void CleanDataBaseByID()
@@ -1324,13 +1324,11 @@ namespace ASA_Dino_Manager
             // Accept changes to finalize modifications.
             ImportsTable.AcceptChanges();
 
-            // Log the results.
-            foreach (var entry in deletedRowsPerID)
+            if (totalDeletedRows > 0)
             {
-                Console.WriteLine($"ID: {entry.Key}, Rows Deleted: {entry.Value}");
+                FileManager.Log("DataBase cleaned", 0);
             }
-            Console.WriteLine($"Total Rows Deleted: {totalDeletedRows}");
-            FileManager.Log("DataBase cleaned");
+
         }
 
         public static void DeleteRowsByID(string id)
@@ -1340,7 +1338,7 @@ namespace ASA_Dino_Manager
 
             if (rowsToDelete.Length == 0)
             {
-                FileManager.Log($"No rows found for ID: {id}");
+                FileManager.Log($"No rows found for ID: {id}", 1);
                 return;
             }
 
@@ -1353,31 +1351,31 @@ namespace ASA_Dino_Manager
                 row.Delete();
                 deletedCount++;
             }
-            
+
             // Commit the deletions to the DataTable.
             ImportsTable.AcceptChanges();
 
-            if (deletedCount > 0) 
+            if (deletedCount > 0)
             {
                 //Console.WriteLine($"Deleted {deletedCount} rows for ID: {id}");
 
                 DataManager.SetStatus(id, "");
                 // maybe delete the file too to prevent reimport
 
-                string file = FileManager.GamePath + @"\DinoExport_" + id + ".ini";
+                string file = Vars.GamePath + @"\DinoExport_" + id + ".ini";
                 if (File.Exists(file))
                 {
                     try
                     {
                         File.Delete(file);
-                        FileManager.Log($"Deleted: {file}");
+                        FileManager.Log($"Deleted: {file}", 1);
                     }
                     catch { }
                 }
 
-                FileManager.Log($"Purged ID: {id}");
+                FileManager.Log($"Purged ID: {id}", 0);
                 // request a save after modifying data
-                FileManager.needSave = true;
+                Vars.needSave = true;
             }
         }
 
@@ -1393,12 +1391,12 @@ namespace ASA_Dino_Manager
                     DeleteRowsByID(id);
                 }
             }
-            FileManager.needSave = true;
+            Vars.needSave = true;
         }
 
         public static void Import()
         {
-            string[] exports = Directory.GetFiles(FileManager.GamePath + @"\", "*.ini", SearchOption.TopDirectoryOnly);
+            string[] exports = Directory.GetFiles(Vars.GamePath + @"\", "*.ini", SearchOption.TopDirectoryOnly);
             AddC = 0; ModC = 0;
             foreach (string file in exports) // loop trough each file to look for data in all of them
             {
@@ -1477,13 +1475,13 @@ namespace ASA_Dino_Manager
             {
                 //Interface.timeS = Interface.timeSD;
                 //Interface.NeedUpdate = true;
-                FileManager.Log("Added " + AddC + " dinos");
+                FileManager.Log("Added " + AddC + " dinos", 0);
             }
             if (ModC > 0)
             {
                 //Interface.timeS = Interface.timeSD;
                 //Interface.NeedUpdate = true;
-                FileManager.Log("Updated " + ModC + " dinos");
+                FileManager.Log("Updated " + ModC + " dinos", 0);
             }
         }
 

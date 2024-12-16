@@ -9,8 +9,27 @@ namespace ASA_Dino_Manager
 
     internal class Vars
     {
+        // theese might move later to their proper location
+
         // Title version string
         public static string version = "ASA Dino Manager 0.04.37";
+
+
+        // Filemanager stuff
+        public static DateTime TimeStart = DateTime.UtcNow;
+        public static bool RunOnce = true; // toggle off at init
+
+        public static string AppPath = "";
+        public static string GamePath = "";
+        public static bool Scanning = false;
+
+
+        // logging
+        public static string LogText = "";
+        public static readonly object _logLock = new object();
+
+
+        public static bool needSave = false;
 
 
         // Toggles for viewing stats
@@ -20,12 +39,13 @@ namespace ASA_Dino_Manager
 
         // IMPORTING
         public static bool ImportEnabled = false;
-        public static int Delay = 5;
-        public static int DefaultDelay = 10; // default import delay in seconds
-        
+        public static int Delay = 5; // initial import delay
+        public static int DefaultDelay = 20; // default import delay in seconds
+
 
         // database lock
         public static readonly object _dbLock = new object();
+
 
         public static int tagSize = 0;
 
@@ -49,6 +69,8 @@ namespace ASA_Dino_Manager
         public static int ImportCount = 0;
         public static double ImportAvg = 0; // keep track of average import time
 
+
+        // Coloring
 
         // table colors
         public static Color maleColor = Colors.LightBlue;

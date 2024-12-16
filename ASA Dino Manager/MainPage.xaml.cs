@@ -29,7 +29,7 @@ namespace ASA_Dino_Manager
                 route = route.Replace("/", "");
                 Vars.setRoute = route;
 
-                FileManager.Log($"MainPage setRoute -> {route}");
+                FileManager.Log($"MainPage setRoute -> {route}", 0);
 
 
                 string dinoTag = DataManager.TagForClass(Vars.setRoute);
@@ -53,7 +53,7 @@ namespace ASA_Dino_Manager
 
                 string name = DataManager.GetLastColumnData("ID", Vars.selectedID, "Name");
 
-                FileManager.Log($"Showing stats for ID: {id}");
+                FileManager.Log($"Showing stats for ID: {id}", 0);
                 RefreshContent(true);
                 this.Title = name;
 
@@ -107,7 +107,7 @@ namespace ASA_Dino_Manager
             // Handle the click event
             string status = DataManager.GetStatus(Vars.selectedID);
             if (status == "Exclude") { status = ""; }
-            else if (status == "") { status = "Exclude"; FileManager.Log($"Excluded ID: {Vars.selectedID}"); }
+            else if (status == "") { status = "Exclude"; FileManager.Log($"Excluded ID: {Vars.selectedID}", 0); }
             DataManager.SetStatus(Vars.selectedID, status);
 
             RefreshContent(false);
@@ -117,9 +117,9 @@ namespace ASA_Dino_Manager
         {
             // Handle the click event
             string status = DataManager.GetStatus(Vars.selectedID);
-            if (status == "Archived") { status = ""; FileManager.Log($"Restored ID: {Vars.selectedID}"); }
-            else if (status == "") { status = "Archived"; FileManager.Log($"Archived ID: {Vars.selectedID}"); }
-            else if (status == "Exclude") { status = "Archived"; FileManager.Log($"Archived ID: {Vars.selectedID}"); }
+            if (status == "Archived") { status = ""; FileManager.Log($"Restored ID: {Vars.selectedID}", 0); }
+            else if (status == "") { status = "Archived"; FileManager.Log($"Archived ID: {Vars.selectedID}", 0); }
+            else if (status == "Exclude") { status = "Archived"; FileManager.Log($"Archived ID: {Vars.selectedID}", 0); }
             DataManager.SetStatus(Vars.selectedID, status);
 
             // recompile the archive after archiving or unarchiving
@@ -139,7 +139,7 @@ namespace ASA_Dino_Manager
 
         private async Task PurgeDinoAsync()
         {
-            FileManager.Log("Purge Dino???");
+            FileManager.Log("Purge Dino???", 1);
             bool answer = await Application.Current.MainPage.DisplayAlert(
     "Purge dino from DataBase",         // Title
     "Do you want to proceed?", // Message
@@ -153,7 +153,7 @@ namespace ASA_Dino_Manager
                 {
                     try
                     {
-                        FileManager.needSave = true;
+                        Vars.needSave = true;
                         DataManager.DeleteRowsByID(Vars.selectedID);
                         // recompile archive after deleting a row
                         DataManager.CompileDinoArchive();
@@ -166,14 +166,14 @@ namespace ASA_Dino_Manager
                 }
                 else
                 {
-                    FileManager.Log("Failed to acquire database lock within timeout.");
+                    FileManager.Log("Failed to acquire database lock within timeout.", 1);
                 }
             }
         }
 
         private async Task PurgeAllAsync()
         {
-            FileManager.Log("Purge Dino???");
+            FileManager.Log("Purge Dino???", 1);
             bool answer = await Application.Current.MainPage.DisplayAlert(
     "Purge All dinos from DataBase",         // Title
     "Do you want to proceed?", // Message
@@ -189,7 +189,7 @@ namespace ASA_Dino_Manager
                     try
                     {
                         DataManager.PurgeAll();
-                        FileManager.Log("Purged All Dinos");
+                        FileManager.Log("Purged All Dinos", 1);
                         // recompile archive after deleting all rows
                         DataManager.CompileDinoArchive();
                         RefreshContent(false);
@@ -201,8 +201,8 @@ namespace ASA_Dino_Manager
                 }
                 else
                 {
-                    FileManager.Log("Failed to acquire database lock within timeout.");
-                }    
+                    FileManager.Log("Failed to acquire database lock within timeout.", 1);
+                }
             }
         }
 
@@ -560,7 +560,7 @@ namespace ASA_Dino_Manager
             {
                 try
                 {
-                    FileManager.Log("Displaying -> " + Vars.setRoute);
+                    FileManager.Log("Displaying -> " + Vars.setRoute, 0);
                     MyDelayedOperationAsync(stat);
                 }
                 finally
@@ -570,7 +570,7 @@ namespace ASA_Dino_Manager
             }
             else
             {
-                FileManager.Log("Failed to acquire database lock within timeout.");
+                FileManager.Log("Failed to acquire database lock within timeout.", 1);
             }
         }
 
@@ -648,7 +648,7 @@ namespace ASA_Dino_Manager
                 int totalC = females.Length + males.Length;
 
                 if (!showStats) { this.Title = Vars.setRoute; }
-                if (totalC == 0) 
+                if (totalC == 0)
                 {
                     UpdateStartContentPage("No dinos in here :(");
                 }
@@ -664,8 +664,8 @@ namespace ASA_Dino_Manager
             double outAVG = 0;
             if (Vars.RefreshCount < 2) { Vars.RefreshAvg = elapsedMilliseconds; outAVG = Vars.RefreshAvg; }
             else { Vars.RefreshAvg += elapsedMilliseconds; outAVG = Vars.RefreshAvg / Vars.RefreshCount; }
-            FileManager.Log("Refreshed GUI - " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
-            FileManager.Log("=====================================================================");
+            FileManager.Log("Refreshed GUI - " + elapsedMilliseconds + "ms" + " Avg: " + outAVG, 0);
+            FileManager.Log("=====================================================================", 0);
         }
 
         private Grid CreateSidePanel(bool showStats)
@@ -794,7 +794,7 @@ namespace ASA_Dino_Manager
             {
                 RowSpacing = 0,
                 ColumnSpacing = 5,
-                Padding = 0, 
+                Padding = 0,
             };
 
             // Define columns
@@ -930,9 +930,9 @@ namespace ASA_Dino_Manager
                 Padding = 3
             };
 
-            var image1 = new Image { Source = "dino.png",HeightRequest = 155,Aspect = Aspect.AspectFit, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start};
+            var image1 = new Image { Source = "dino.png", HeightRequest = 155, Aspect = Aspect.AspectFit, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start };
 
-            var label1 = new Label { Text = labelText, HorizontalOptions = LayoutOptions.Center ,VerticalOptions = LayoutOptions.Start ,FontAttributes = FontAttributes.Bold, TextColor = Vars.okColor, FontSize = 22 };
+            var label1 = new Label { Text = labelText, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start, FontAttributes = FontAttributes.Bold, TextColor = Vars.okColor, FontSize = 22 };
 
 
             AddToGrid(mainLayout, image1, 0, 0);
@@ -988,7 +988,7 @@ namespace ASA_Dino_Manager
             // Create the main layout
             var mainLayout = new Grid();
 
-           
+
             // create main layout with 2 columns
 
             // Define row definitions
@@ -1007,12 +1007,12 @@ namespace ASA_Dino_Manager
             AddToGrid(mainLayout, CreateMainPanel(showStats), 0, 1);
 
             // attach unselect event after all content has been created
-            UnSelectDino(mainLayout); 
+            UnSelectDino(mainLayout);
 
             this.Content = mainLayout;
         }
 
-        void SortColumn(Label label,string sex)
+        void SortColumn(Label label, string sex)
         {
             // Create a TapGestureRecognizer
             var tapGesture1 = new TapGestureRecognizer();
@@ -1039,7 +1039,7 @@ namespace ASA_Dino_Manager
                 if (sex == "M")
                 {
                     // are we clicking the same column then toggle sorting
-                    if (outM == column) 
+                    if (outM == column)
                     {
                         if (Vars.sortM.Contains("ASC"))
                         {
@@ -1075,7 +1075,7 @@ namespace ASA_Dino_Manager
                     }
                 }
 
-                FileManager.Log($"Sorted: {Vars.sortM} : {Vars.sortF}");
+                FileManager.Log($"Sorted: {Vars.sortM} : {Vars.sortF}", 0);
 
                 RefreshContent(false);
             };
