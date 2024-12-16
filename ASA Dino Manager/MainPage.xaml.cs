@@ -349,6 +349,12 @@ namespace ASA_Dino_Manager
             var header10 = new Label { Text = "Papa", FontAttributes = FontAttributes.Bold, TextColor = maleColor, FontSize = fSize };
             var header11 = new Label { Text = "Mama", FontAttributes = FontAttributes.Bold, TextColor = femaleColor, FontSize = fSize };
 
+            var header12 = new Label { Text = "PapaMut", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+            var header13 = new Label { Text = "MamaMut", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+            var header14 = new Label { Text = "Imprint", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+            var header15 = new Label { Text = "Imprinter", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+
+
 
             string sexS = "T";
             if (title == "Male") { sexS = "M"; }
@@ -368,6 +374,10 @@ namespace ASA_Dino_Manager
                 SortColumn(header9, sexS);
                 SortColumn(header10, sexS);
                 SortColumn(header11, sexS);
+                SortColumn(header12, sexS);
+                SortColumn(header13, sexS);
+                SortColumn(header14, sexS);
+                SortColumn(header15, sexS);
             }
 
             // Add header row
@@ -386,10 +396,10 @@ namespace ASA_Dino_Manager
 
             if (title != "Bottom" || showStats)
             {
-                AddToGrid(grid, new Label { Text = "PapaMut", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 12);
-                AddToGrid(grid, new Label { Text = "MamaMut", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 13);
-                AddToGrid(grid, new Label { Text = "Imprint", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 14);
-                AddToGrid(grid, new Label { Text = "Imprinter", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize }, 0, 15);
+                AddToGrid(grid, header12, 0, 12);
+                AddToGrid(grid, header13, 0, 13);
+                AddToGrid(grid, header14, 0, 14);
+                AddToGrid(grid, header15, 0, 15);
 
             }
 
