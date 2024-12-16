@@ -1,5 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+	
+	
+	<PropertyGroup>
+		<GenerateSatelliteAssemblies>false</GenerateSatelliteAssemblies>
+	</PropertyGroup>
+
 	<PropertyGroup>
 		<!--<TargetFrameworks>net9.0-maccatalyst</TargetFrameworks>-->
 		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
@@ -39,7 +45,7 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<!--<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>-->
-		<DefaultLanguage>en</DefaultLanguage>
+		<!--<DefaultLanguage>en</DefaultLanguage>-->
 		<GenerateAppInstallerFile>False</GenerateAppInstallerFile>
 		<!--<AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>-->
 		<!--<PackageCertificateThumbprint>D4F410BC8E1854B6312042C51DB1EA7F9005ED65</PackageCertificateThumbprint>-->
@@ -52,7 +58,7 @@
 		<PackageIcon>dino.png</PackageIcon>
 		<RepositoryType>git</RepositoryType>
 		<WindowsPackageType>None</WindowsPackageType>
-		<BaseOutputPath>C:\Code\Build</BaseOutputPath>
+		<BaseOutputPath></BaseOutputPath>
 	</PropertyGroup>
 
 	<!-- 
@@ -67,7 +73,7 @@
 	  <ApplicationVersion></ApplicationVersion>
 	  <ApplicationDisplayVersion></ApplicationDisplayVersion>
 	  <Optimize>False</Optimize>
-	<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<!--<SatelliteResourceLanguages>en</SatelliteResourceLanguages>-->
 	</PropertyGroup>
 
 	<!--
@@ -99,11 +105,6 @@
 		<!--<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />-->
 	</ItemGroup>
 
-	<ItemGroup>
-	  <MauiImage Remove="Resources\Images\dino.png" />
-	</ItemGroup>
-
-	
 	
 	<ItemGroup>
 	  <None Remove="Platforms\Windows\Assets\DinoApp.altform-lightunplated_targetsize-16.png" />
@@ -162,6 +163,8 @@
 	  <None Remove="Platforms\Windows\Assets\DinoWide.scale-150.png" />
 	  <None Remove="Platforms\Windows\Assets\DinoWide.scale-200.png" />
 	  <None Remove="Platforms\Windows\Assets\DinoWide.scale-400.png" />
+	  <None Remove="Resources\Fonts\OpenSans-Regular.ttf" />
+	  <None Remove="Resources\Fonts\OpenSans-Semibold.ttf" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -224,12 +227,33 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <EmbeddedResource Include="Resources\Fonts\OpenSans-Regular.ttf" />
+	  <EmbeddedResource Include="Resources\Fonts\OpenSans-Semibold.ttf" />
 	  <EmbeddedResource Include="Resources\Images\dino.png" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<EmbeddedResource Include="Resources\Images\dino400.png" />
+	</ItemGroup>
+	
+	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <Compile Update="Properties\Resources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Resources.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <EmbeddedResource Update="Properties\Resources.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
 	</ItemGroup>
 
 	<!--<ItemGroup>-->

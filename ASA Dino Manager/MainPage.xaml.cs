@@ -1,7 +1,6 @@
 ﻿using System.Data;
 //using System.Drawing;
 using Microsoft.Maui.Handlers;
-//using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.Maui;
 using Microsoft.Maui.Hosting;
@@ -32,8 +31,6 @@ namespace ASA_Dino_Manager
 
         public string selectedID = "";
 
-        public string setRoute = "";
-
 
         // table colors
         public Color maleColor = Colors.LightBlue;
@@ -63,7 +60,17 @@ namespace ASA_Dino_Manager
             
             if (!isLoaded) // prevents more than one instance to be added to eventhandler
             {
-                Shell.Current.Navigated += OnShellNavigated;
+                isLoaded = true;
+                var route = Shell.Current.CurrentState.Location.ToString();
+                route = route.Replace("/", "");
+
+                AppShell.setRoute = route;
+
+                FileManager.Log($"MainPage setRoute -> {route}");
+
+                RefreshContent(false);
+
+                ToggleExcluded = 0; CurrentStats = false; // reset toggles when navigating
             }
 
             StartTimer();
@@ -87,13 +94,13 @@ namespace ASA_Dino_Manager
         {
             if (AppShell.needUpdate)
             {
-                FileManager.Log("Import Requesting GUI refresh");
-                AppShell.needUpdate = false;
-                RefreshContent(false);
+            //    FileManager.Log("Import Requesting GUI refresh");
+            //    AppShell.needUpdate = false;
+            //    RefreshContent(false);
             }
            // RefreshContent();
 
-            FileManager.WriteLog();
+          //  FileManager.WriteLog();
         }
 
         public void StopTimer()
@@ -106,7 +113,6 @@ namespace ASA_Dino_Manager
             // Check if the navigation is to the current page
             if (e.Source == ShellNavigationSource.ShellItemChanged)
             {
-
                 if (!isLoaded)
                 {
                     FileManager.Log("Navigated Species");
@@ -114,7 +120,6 @@ namespace ASA_Dino_Manager
                     isLoaded = true;
                     ToggleExcluded = 0; CurrentStats = false; // reset toggles when navigating
                 }
-
             }
         }
 
@@ -653,20 +658,16 @@ namespace ASA_Dino_Manager
         public void RouteContent(bool showStats)
         {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();    // start timer here
-            var route = Shell.Current.CurrentState.Location.ToString();
-            route = route.Replace("/", "");
-
-            setRoute = route;
 
             // get the selected species
-            string dinoTag = DataManager.TagForClass(route);
+            string dinoTag = DataManager.TagForClass(AppShell.setRoute);
             DataManager.selectedClass = dinoTag;
 
             // update data with new status
             //DataManager.GetDinoData(DataManager.selectedClass);
 
             // Load necessary data based on toggles
-            if (!string.IsNullOrEmpty(DataManager.selectedClass) && route != "Looking for dinos" && route != "ASA" && route != "Archive")
+            if (!string.IsNullOrEmpty(DataManager.selectedClass) && AppShell.setRoute != "Looking for dinos" && AppShell.setRoute != "ASA" && AppShell.setRoute != "Archive")
             {
                 if (showStats)
                 {
@@ -704,21 +705,21 @@ namespace ASA_Dino_Manager
             int totalC = females.Length + males.Length;
 
 
-            FileManager.Log("Routing -> " + route);
+            FileManager.Log("Routing -> " + AppShell.setRoute);
             this.Content = null;
-            if (route == "Looking for dinos")
+            if (AppShell.setRoute == "Looking for dinos")
             {
                 if (!showStats) { this.Title = "No dinos around here!"; }
                 UpdateStartContentPage("Looking for dinos =/");
             }
-            else if (route == "ASA")
+            else if (AppShell.setRoute == "ASA")
             {
                 this.Title = "Dino Manager";
                 UpdateStartContentPage("Remember to feed your dinos!!!");
             }
-            else if (route == "Archive")
+            else if (AppShell.setRoute == "Archive")
             {
-                if (!showStats) { this.Title = setRoute; }
+                if (!showStats) { this.Title = AppShell.setRoute; }
                 DataManager.GetDinoArchive();
 
                 if (DataManager.ArchiveTable.Rows.Count < 1)
@@ -733,7 +734,7 @@ namespace ASA_Dino_Manager
             }
             else
             {
-                if (!showStats) { this.Title = setRoute; }
+                if (!showStats) { this.Title = AppShell.setRoute; }
                 if (totalC == 0) 
                 {
                     UpdateStartContentPage("No dinos in here :(");
@@ -752,7 +753,6 @@ namespace ASA_Dino_Manager
             else { RefreshAvg += elapsedMilliseconds; outAVG = RefreshAvg / RefreshCount; }
             FileManager.Log("Refreshed GUI - " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
             FileManager.Log("=====================================================================");
-            AppShell.target = setRoute;
         }
 
         private Grid CreateSidePanel(bool showStats)
@@ -833,7 +833,7 @@ namespace ASA_Dino_Manager
 
 
 
-            if (setRoute != "Archive")
+            if (AppShell.setRoute != "Archive")
             {
                 AddToGrid(grid, topButton0, 0, 0);
                 AddToGrid(grid, topButton1, 1, 0);

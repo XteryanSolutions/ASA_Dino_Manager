@@ -27,13 +27,15 @@ namespace ASA_Dino_Manager
 
         public static readonly object _dbLock = new object();
 
-        public static string target = ""; // wip
+        public static string setRoute = "";
+
+        private bool isNavigationSuspended = false;
 
 
         public AppShell()
         {
             InitializeComponent(); this.Title = version;
-            FileManager.Log("====== Started " + version + " ======"); 
+            FileManager.Log("====== Started " + version + " ======");
             if (!FileManager.InitFileManager())
             {
                 // Exit app here
@@ -46,19 +48,44 @@ namespace ASA_Dino_Manager
                 Application.Current.Quit();
             }
             FileManager.Log("DataManager initialized");
-            DataManager.CleanDataBaseByID();
 
 
+            string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
 
-            UpdateShellContents();
-
+            // if manager initialized and we are not scanning and there is dinos in taglist
+            if (!FileManager.Scanning && tagList.Length > 0) 
+            {
+                DataManager.CleanDataBaseByID();
+                UpdateShellContents();
+            }
+            else
+            {
+                Items.Clear();
+                var shellContent = new ShellContent
+                {
+                    Title = "Looking for dinos",
+                    ContentTemplate = new DataTemplate(typeof(MainPage)),
+                    Route = "Looking for dinos"
+                };
+                Items.Add(shellContent);
+                FileManager.Log("No dinos =(");
+            }
 
             StartTimer();
 
+
+        }
+
+
+        public async Task MenuNavigation()
+        {
+            FileManager.Log($"AppShell -> {setRoute}");
+            await Shell.Current.GoToAsync(setRoute);
         }
 
         public void UpdateShellContents()
         {
+            isNavigationSuspended = true;
             string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
             string[] classList = DataManager.GetAllClasses();
 
@@ -110,6 +137,7 @@ namespace ASA_Dino_Manager
                 Items.Add(shellContent);
             }
             FileManager.Log("Updated tagList");
+            isNavigationSuspended = false;
         }
 
         public void StartProcess()
@@ -122,38 +150,24 @@ namespace ASA_Dino_Manager
                 DataManager.Import();
                 //FileManager.Log("Scanned files");
 
-                if (DataManager.selectedClass != "")
-                {
-                    if (DataManager.ModC > 0 || DataManager.AddC > 0 || DataManager.forceLoad) // Check if we need to reload data
-                    {
-                        FileManager.Log("Updated DataBase");
-                        FileManager.needSave = true;
-                        needUpdate = true;
-                    }
-                }
 
+                if (DataManager.ModC > 0 || DataManager.AddC > 0 || DataManager.forceLoad) // Check if we need to reload data
+                {
+                    FileManager.Log("Updated DataBase");
+                    FileManager.needSave = true;
+                    needUpdate = true;
+                }
 
                 string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
-                if (tagList.Length < 1)
-                {
-                    Items.Clear();
-                    var shellContent = new ShellContent
-                    {
-                        Title = "Looking for dinos",
-                        ContentTemplate = new DataTemplate(typeof(MainPage)),
-                        Route = "Looking for dinos"
-                    };
-
-                    // Add the ShellContent to the Shell
-                    Items.Add(shellContent);
-                    FileManager.Log("No dinos =(");
-                    return; // exit early if the tagList is empty
-                }
                 if (tagList.Length > tagSize)
                 {
-                    UpdateShellContents();
+                   UpdateShellContents();
                 }
-                   
+
+               // UpdateShellContents();
+
+                MenuNavigation();
+
 
                 stopwatch.Stop();
                 var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
@@ -168,10 +182,11 @@ namespace ASA_Dino_Manager
             catch
             {
                 FileManager.Log("Import data failure");
-                
+
             }
             Delay = DefaultDelay; // infinite retries????????
         }
+
 
         public void ProcessAllData()
         {
@@ -207,7 +222,7 @@ namespace ASA_Dino_Manager
                 }
             }
         }
-        
+
         private void StartTimer()
         {
             _isTimerRunning = true; // Flag to control the timer
@@ -248,7 +263,7 @@ namespace ASA_Dino_Manager
                 ProcessAllData();
                 Delay = DefaultDelay;
             }
-           
+
 
         }
 
