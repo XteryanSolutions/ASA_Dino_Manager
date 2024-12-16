@@ -11,9 +11,6 @@ namespace ASA_Dino_Manager
     {
 
 
-        // benchmark stuff
-        private static int ImportCount = 0;
-        private static double ImportAvg = 0; // keep track of average import time
 
         private bool _isTimerRunning = false; // Timer control flag
 
@@ -73,6 +70,7 @@ namespace ASA_Dino_Manager
 
         public void UpdateShellContents()
         {
+            Vars.eventDisabled = true;
             string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
             string[] classList = DataManager.GetAllClasses();
 
@@ -123,6 +121,7 @@ namespace ASA_Dino_Manager
                 // Add the ShellContent to the Shell
                 Items.Add(shellContent);
             }
+            Vars.eventDisabled = false;
             FileManager.Log("Updated tagList");
         }
 
@@ -147,20 +146,17 @@ namespace ASA_Dino_Manager
                 if (tagList.Length > Vars.tagSize)
                 {
                    UpdateShellContents();
+                   MenuNavigation();
                 }
-
-               // UpdateShellContents();
-
-                MenuNavigation();
 
 
                 stopwatch.Stop();
                 var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
 
-                ImportCount++;
+                Vars.ImportCount++;
                 double outAVG = 0;
-                if (ImportCount < 2) { ImportAvg = elapsedMilliseconds; outAVG = ImportAvg; }
-                else { ImportAvg += elapsedMilliseconds; outAVG = ImportAvg / ImportCount; }
+                if (Vars.ImportCount < 2) { Vars.ImportAvg = elapsedMilliseconds; outAVG = Vars.ImportAvg; }
+                else { Vars.ImportAvg += elapsedMilliseconds; outAVG = Vars.ImportAvg / Vars.ImportCount; }
                 FileManager.Log("Imported data in " + elapsedMilliseconds + "ms" + " Avg: " + outAVG);
                 FileManager.Log("=====================================================================");
             }
@@ -248,7 +244,7 @@ namespace ASA_Dino_Manager
                 ProcessAllData();
                 Vars.Delay = Vars.DefaultDelay;
             }
-
+            
             FileManager.WriteLog();
         }
 

@@ -35,8 +35,8 @@ namespace ASA_Dino_Manager
 
 
                 //ToggleExcluded = 0; CurrentStats = false; // reset toggles when navigating
-                RefreshContent(false);
             }
+            RefreshContent(false);
         }
 
         void SelectDino(Label label, string id)

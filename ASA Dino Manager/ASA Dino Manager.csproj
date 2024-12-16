@@ -224,11 +224,11 @@
 	  <Content Include="Platforms\Windows\Assets\DinoWide.scale-150.png" />
 	  <Content Include="Platforms\Windows\Assets\DinoWide.scale-200.png" />
 	  <Content Include="Platforms\Windows\Assets\DinoWide.scale-400.png" />
+	  <Content Include="Resources\Fonts\OpenSans-Regular.ttf" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <EmbeddedResource Include="Resources\Fonts\OpenSans-Regular.ttf" />
-	  <EmbeddedResource Include="Resources\Fonts\OpenSans-Semibold.ttf" />
+	  <Content Include="Resources\Fonts\OpenSans-Semibold.ttf" />
 	  <EmbeddedResource Include="Resources\Images\dino.png" />
 	</ItemGroup>
 
@@ -255,9 +255,5 @@
 	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
 	</ItemGroup>
-
-	<!--<ItemGroup>-->
-	<!--<Folder Include="Properties\PublishProfiles\" />-->
-	<!--</ItemGroup>-->
 
 </Project>
