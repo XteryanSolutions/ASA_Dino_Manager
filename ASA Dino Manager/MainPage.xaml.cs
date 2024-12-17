@@ -26,7 +26,7 @@ namespace ASA_Dino_Manager
             var route = Shell.Current.CurrentState.Location.ToString();
             route = route.Replace("/", "");
 
-            var routeSplit = route.Split(new[] { @";" }, StringSplitOptions.RemoveEmptyEntries);
+            var routeSplit = route.Split(new[] { @"00" }, StringSplitOptions.RemoveEmptyEntries);
 
 
             Shared.setRoute = routeSplit[0];

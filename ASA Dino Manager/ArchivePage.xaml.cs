@@ -15,7 +15,7 @@ public partial class ArchivePage : ContentPage
         route = route.Replace("/", "");
 
 
-        var routeSplit = route.Split(new[] { @";" }, StringSplitOptions.RemoveEmptyEntries);
+        var routeSplit = route.Split(new[] { @"00" }, StringSplitOptions.RemoveEmptyEntries);
 
         Shared.setRoute = routeSplit[0];
 
@@ -24,17 +24,27 @@ public partial class ArchivePage : ContentPage
         CreateContent();
     }
 
-
-    public static void ReloadContent()
+    private async Task test()
     {
-        // Create a new route name
-        string newRoute = $"ArchivePage;{Shared.ReLoad()}";
-
-        // Register the new route
+        string newRoute = $"ArchivePage00{Shared.ReLoad()}"; // Relative route
         Routing.RegisterRoute(newRoute, typeof(ArchivePage));
 
+        await Shell.Current.GoToAsync($"//{newRoute}");
+
+    }
+
+    public void ReloadContent()
+    {
+        test();
+
+        // Create a new route name
+       // string newRoute = $"ArchivePage00{Shared.ReLoad()}";
+
+        // Register the new route
+      //  Routing.RegisterRoute(newRoute, typeof(ArchivePage));
+
         // Navigate to the new route
-        Shell.Current.GoToAsync($"//{newRoute}");
+      //  Shell.Current.GoToAsync($"//{newRoute}");
     }
 
 
