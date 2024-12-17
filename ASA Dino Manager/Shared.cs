@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace ASA_Dino_Manager
 {
 
-    internal class Vars
+    internal class Shared
     {
         // theese might move later to their proper location
 
@@ -52,7 +52,10 @@ namespace ASA_Dino_Manager
         // Navigation
         public static string selectedID = "";
         public static string selectedClass = "";
+
         public static string setRoute = "";
+        public static string setPage = "";
+
         public static bool eventDisabled = false;
 
 

@@ -21,21 +21,21 @@ namespace ASA_Dino_Manager
         {
             try
             {
-                if (Vars.RunOnce) { Vars.TimeStart = DateTime.UtcNow; Vars.RunOnce = false; }
+                if (Shared.RunOnce) { Shared.TimeStart = DateTime.UtcNow; Shared.RunOnce = false; }
 
                 //AppPath = Path.GetDirectoryName(Application.ExecutablePath).ToString();
 
                 string assemblyPath = Assembly.GetExecutingAssembly().Location;
-                Vars.AppPath = Path.GetDirectoryName(assemblyPath);
+                Shared.AppPath = Path.GetDirectoryName(assemblyPath);
 
-                if (!Directory.Exists(Vars.AppPath + @"\Logs")) { Directory.CreateDirectory(Vars.AppPath + @"\Logs"); }
-                if (!Directory.Exists(Vars.AppPath + @"\Data")) { Directory.CreateDirectory(Vars.AppPath + @"\Data"); }
+                if (!Directory.Exists(Shared.AppPath + @"\Logs")) { Directory.CreateDirectory(Shared.AppPath + @"\Logs"); }
+                if (!Directory.Exists(Shared.AppPath + @"\Data")) { Directory.CreateDirectory(Shared.AppPath + @"\Data"); }
 
                 // if (!LoadColorFile()) { return false; }
 
                 if (LoadPath()) // loaded
                 {
-                    if (CheckPath(Vars.GamePath)) { return true; }
+                    if (CheckPath(Shared.GamePath)) { return true; }
                     else
                     {
                         if (ScanPath()) { return true; }
@@ -59,14 +59,14 @@ namespace ASA_Dino_Manager
                 if (Directory.Exists(dir))
                 {
                     string[] exports = Directory.GetFiles(dir + @"\", "*.ini", SearchOption.TopDirectoryOnly);
-                    if (!Vars.ImportEnabled) { Vars.ImportEnabled = true; FileManager.Log("Enabled Importing (Path checks out)", 0); Vars.setRoute = "ASA"; }
+                    if (!Shared.ImportEnabled) { Shared.ImportEnabled = true; FileManager.Log("Enabled Importing (Path checks out)", 0); Shared.setRoute = "ASA"; }
                     return true;
                 }
-                else { if (Vars.ImportEnabled) { Vars.ImportEnabled = false; FileManager.Log("Disabled Importing (Path not found)", 1); } }
+                else { if (Shared.ImportEnabled) { Shared.ImportEnabled = false; FileManager.Log("Disabled Importing (Path not found)", 1); } }
             }
             catch
             {
-                if (Vars.ImportEnabled) { Vars.ImportEnabled = false; FileManager.Log("Disabled Importing (Error)", 2); }
+                if (Shared.ImportEnabled) { Shared.ImportEnabled = false; FileManager.Log("Disabled Importing (Error)", 2); }
             }
             return false;
         }
@@ -75,14 +75,14 @@ namespace ASA_Dino_Manager
         {
             try
             {
-                if (File.Exists(Vars.AppPath + @"\Data\config.hrv"))
+                if (File.Exists(Shared.AppPath + @"\Data\config.hrv"))
                 {
-                    using (StreamReader read = new StreamReader(Vars.AppPath + @"\Data\config.hrv"))
+                    using (StreamReader read = new StreamReader(Shared.AppPath + @"\Data\config.hrv"))
                     {
                         string line;
                         while ((line = read.ReadLine()) != null)
                         {
-                            Vars.GamePath = line;
+                            Shared.GamePath = line;
                         }
                     }
                     //fileManager.log("gamePath Loaded");
@@ -96,7 +96,7 @@ namespace ASA_Dino_Manager
 
         public static bool ScanPath()
         {
-            if (!Vars.Scanning)
+            if (!Shared.Scanning)
             {
                 bool result = true;
                 FileManager.Log("Scanning for gamePath...", 0);
@@ -105,20 +105,20 @@ namespace ASA_Dino_Manager
                 { // start calculation thread
                     try
                     {
-                        Vars.Scanning = true;
+                        Shared.Scanning = true;
 
                         string filepath = FileManager.FindFilePath(@"ShooterGame\Saved\DinoExports");
 
                         if (CheckPath(filepath)) // check if the path we found works
                         {
-                            Vars.GamePath = filepath;
-                            using (StreamWriter writer = new StreamWriter(Vars.AppPath + @"\Data\config.hrv"))
+                            Shared.GamePath = filepath;
+                            using (StreamWriter writer = new StreamWriter(Shared.AppPath + @"\Data\config.hrv"))
                             {
                                 writer.WriteLine(filepath);
                             }
                             FileManager.Log("Set New gamePath", 0);
-                            Vars.Scanning = false;
-                            if (!Vars.ImportEnabled) { Vars.ImportEnabled = true; FileManager.Log("Enabled Importing (Found GamePath)", 0); }
+                            Shared.Scanning = false;
+                            if (!Shared.ImportEnabled) { Shared.ImportEnabled = true; FileManager.Log("Enabled Importing (Found GamePath)", 0); }
                         }
                         else
                         {
@@ -127,7 +127,7 @@ namespace ASA_Dino_Manager
                     }
                     catch
                     {
-                        Vars.Scanning = false;
+                        Shared.Scanning = false;
                         result = false;
                     }
                 });
@@ -142,29 +142,29 @@ namespace ASA_Dino_Manager
             try
             {
                 DataManager.ImportsTable.Clear();
-                DataManager.ImportsTable.ReadXml(Vars.AppPath + @"\Data\dinos.hrv");
+                DataManager.ImportsTable.ReadXml(Shared.AppPath + @"\Data\dinos.hrv");
 
                 DataManager.StatTable.Clear();
-                DataManager.StatTable.ReadXml(Vars.AppPath + @"\Data\data.hrv");
+                DataManager.StatTable.ReadXml(Shared.AppPath + @"\Data\data.hrv");
             }
             catch
             {
                 Console.WriteLine("no import dataBase! creating a new one");
-                Vars.needSave = true; SaveFiles();
+                Shared.needSave = true; SaveFiles();
             }
         }
 
 
         public static void SaveFiles()
         {
-            if (Vars.needSave)
+            if (Shared.needSave)
             {
                 try
                 {
-                    DataManager.ImportsTable.WriteXml(Vars.AppPath + @"\Data\dinos.hrv");
-                    DataManager.StatTable.WriteXml(Vars.AppPath + @"\Data\data.hrv");
+                    DataManager.ImportsTable.WriteXml(Shared.AppPath + @"\Data\dinos.hrv");
+                    DataManager.StatTable.WriteXml(Shared.AppPath + @"\Data\data.hrv");
                     FileManager.Log("==== Saved DataBase ====", 0);
-                    Vars.needSave = false;
+                    Shared.needSave = false;
                 }
                 catch
                 {
@@ -182,7 +182,7 @@ namespace ASA_Dino_Manager
             else if (logLevel == 2) { levelText = "[ERROR] "; }
             else if (logLevel == 3) { levelText = "[CRITICAL] "; }
 
-            if (Monitor.TryEnter(Vars._logLock, TimeSpan.FromSeconds(5)))
+            if (Monitor.TryEnter(Shared._logLock, TimeSpan.FromSeconds(5)))
             {
                 try
                 {
@@ -192,14 +192,14 @@ namespace ASA_Dino_Manager
                     string logString = $"{formattedTime}{levelText}{text}";
 
                     // add logged text to buffer
-                    Vars.LogText += logString + Environment.NewLine;
+                    Shared.LogText += logString + Environment.NewLine;
 
                     // Output logged text in console
                     System.Diagnostics.Debug.WriteLine(logString);
                 }
                 finally
                 {
-                    Monitor.Exit(Vars._logLock);
+                    Monitor.Exit(Shared._logLock);
                 }
             }
             else
@@ -214,15 +214,15 @@ namespace ASA_Dino_Manager
 
         public static void WriteLog(bool critical = false)
         {
-            if (Monitor.TryEnter(Vars._logLock, TimeSpan.FromSeconds(5)))
+            if (Monitor.TryEnter(Shared._logLock, TimeSpan.FromSeconds(5)))
             {
                 try
                 {
-                    if (Vars.LogText != "")
+                    if (Shared.LogText != "")
                     {
                         // empty log buffer to file
-                        File.AppendAllText(Vars.AppPath + @"\Logs\log_" + Vars.TimeStart.ToString().Replace(@"/", ".").Replace(@":", ".") + ".txt", Vars.LogText);
-                        Vars.LogText = "";
+                        File.AppendAllText(Shared.AppPath + @"\Logs\log_" + Shared.TimeStart.ToString().Replace(@"/", ".").Replace(@":", ".") + ".txt", Shared.LogText);
+                        Shared.LogText = "";
                     }
                     if (critical) { Application.Current.Quit(); } // shutdown after logfile has been written even if no new text was added
                 }
@@ -232,7 +232,7 @@ namespace ASA_Dino_Manager
                 }
                 finally
                 {
-                    Monitor.Exit(Vars._logLock);
+                    Monitor.Exit(Shared._logLock);
                 }
             }
             else

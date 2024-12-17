@@ -22,27 +22,44 @@ namespace ASA_Dino_Manager
         {
             InitializeComponent();
 
+            if (Shared.setPage != "MainPage")
+            {
+                // get the route
+                var route = Shell.Current.CurrentState.Location.ToString();
+                route = route.Replace("/", "");
+                Shared.setRoute = route;
+                Shared.setPage = "MainPage";
 
-            if (!Vars.eventDisabled)
+                // unselect any  previously selected dinos
+                if (Shared.selectedID != "")
+                {
+                    FileManager.Log($"Unselected {Shared.selectedID}", 0);
+                    Shared.selectedID = "";
+                    Shared.showStats = false;
+                }
+            }
+
+
+            if (!Shared.eventDisabled)
             {
                 var route = Shell.Current.CurrentState.Location.ToString();
                 route = route.Replace("/", "");
-                Vars.setRoute = route;
+                Shared.setRoute = route;
 
                 FileManager.Log($"setRoute -> {route}", 0);
 
 
-                string dinoTag = DataManager.TagForClass(Vars.setRoute);
-                Vars.selectedClass = dinoTag;
+                string dinoTag = DataManager.TagForClass(Shared.setRoute);
+                Shared.selectedClass = dinoTag;
 
                 // reset toggles when navigating
-                Vars.ToggleExcluded = 0; Vars.CurrentStats = false;
+                Shared.ToggleExcluded = 0; Shared.CurrentStats = false;
 
-                if (Vars.selectedID != "")
+                if (Shared.selectedID != "")
                 {
-                    FileManager.Log($"Unselected {Vars.selectedID}", 0);
-                    Vars.selectedID = "";
-                    Vars.showStats = false;
+                    FileManager.Log($"Unselected {Shared.selectedID}", 0);
+                    Shared.selectedID = "";
+                    Shared.showStats = false;
                 }
             }
 
@@ -58,14 +75,14 @@ namespace ASA_Dino_Manager
             var tapGesture = new TapGestureRecognizer();
             tapGesture.Tapped += (s, e) =>
             {
-                if (Vars.selectedID != id) // dont select the same dino twice
+                if (Shared.selectedID != id) // dont select the same dino twice
                 {
-                    Vars.selectedID = id;
+                    Shared.selectedID = id;
 
-                    string name = DataManager.GetLastColumnData("ID", Vars.selectedID, "Name");
+                    string name = DataManager.GetLastColumnData("ID", Shared.selectedID, "Name");
                     this.Title = $"{name} - {id}"; // set title to dino name
 
-                    FileManager.Log($"Selected {name} ID: {id}", 0); Vars.showStats = true;
+                    FileManager.Log($"Selected {name} ID: {id}", 0); Shared.showStats = true;
 
                     RefreshContent();
                 }
@@ -81,8 +98,8 @@ namespace ASA_Dino_Manager
             var tapGesture = new TapGestureRecognizer();
             tapGesture.Tapped += (s, e) =>
             {
-                FileManager.Log($"Unselected {Vars.selectedID}", 0);
-                Vars.selectedID = ""; Vars.showStats = false; this.Title = Vars.setRoute;
+                FileManager.Log($"Unselected {Shared.selectedID}", 0);
+                Shared.selectedID = ""; Shared.showStats = false; this.Title = Shared.setRoute;
                 // Handle the click event
                 RefreshContent();
             };
@@ -93,38 +110,38 @@ namespace ASA_Dino_Manager
 
         private void ForceUnselect()
         {
-            if (Vars.selectedID != "")
+            if (Shared.selectedID != "")
             {
-                FileManager.Log($"Force Unselected {Vars.selectedID}", 0);
-                Vars.selectedID = ""; Vars.showStats = false; this.Title = Vars.setRoute;
+                FileManager.Log($"Force Unselected {Shared.selectedID}", 0);
+                Shared.selectedID = ""; Shared.showStats = false; this.Title = Shared.setRoute;
             }
         }
 
         private void OnButton0Clicked(object? sender, EventArgs e)
         {
-            Vars.ToggleExcluded++;
-            if (Vars.ToggleExcluded == 4)
+            Shared.ToggleExcluded++;
+            if (Shared.ToggleExcluded == 4)
             {
-                Vars.ToggleExcluded = 0;
+                Shared.ToggleExcluded = 0;
             }
             ForceUnselect();
-            FileManager.Log($"Toggle Exclude {Vars.ToggleExcluded}", 0);
+            FileManager.Log($"Toggle Exclude {Shared.ToggleExcluded}", 0);
             // reload stuff
             RefreshContent();
         }
 
         private void OnButton1Clicked(object? sender, EventArgs e)
         {
-            if (Vars.CurrentStats)
+            if (Shared.CurrentStats)
             {
-                Vars.CurrentStats = false;
+                Shared.CurrentStats = false;
             }
             else
             {
-                Vars.CurrentStats = true;
+                Shared.CurrentStats = true;
             }
             ForceUnselect();
-            FileManager.Log($"Toggle Stats {Vars.CurrentStats}", 0);
+            FileManager.Log($"Toggle Stats {Shared.CurrentStats}", 0);
             // reload stuff
 
             RefreshContent();
@@ -132,15 +149,15 @@ namespace ASA_Dino_Manager
 
         private void OnButton2Clicked(object? sender, EventArgs e)
         {
-            if (Vars.selectedID != "")
+            if (Shared.selectedID != "")
             {
-                string status = DataManager.GetStatus(Vars.selectedID);
+                string status = DataManager.GetStatus(Shared.selectedID);
                 if (status == "Exclude") { status = ""; }
-                else if (status == "") { status = "Exclude"; FileManager.Log($"Excluded ID: {Vars.selectedID}", 0); }
-                DataManager.SetStatus(Vars.selectedID, status);
+                else if (status == "") { status = "Exclude"; FileManager.Log($"Excluded ID: {Shared.selectedID}", 0); }
+                DataManager.SetStatus(Shared.selectedID, status);
 
-                FileManager.Log($"Unselected {Vars.selectedID}", 0);
-                Vars.selectedID = ""; Vars.showStats = false; this.Title = Vars.setRoute;
+                FileManager.Log($"Unselected {Shared.selectedID}", 0);
+                Shared.selectedID = ""; Shared.showStats = false; this.Title = Shared.setRoute;
 
                 RefreshContent();
             }
@@ -148,21 +165,21 @@ namespace ASA_Dino_Manager
 
         private void OnButton3Clicked(object? sender, EventArgs e)
         {
-            if (Vars.selectedID != "")
+            if (Shared.selectedID != "")
             {
                 // Handle the click event
-                string status = DataManager.GetStatus(Vars.selectedID);
-                if (status == "Archived") { status = ""; FileManager.Log($"Restored ID: {Vars.selectedID}", 0); }
-                else if (status == "") { status = "Archived"; FileManager.Log($"Archived ID: {Vars.selectedID}", 0); }
-                else if (status == "Exclude") { status = "Archived"; FileManager.Log($"Archived ID: {Vars.selectedID}", 0); }
-                DataManager.SetStatus(Vars.selectedID, status);
+                string status = DataManager.GetStatus(Shared.selectedID);
+                if (status == "Archived") { status = ""; FileManager.Log($"Restored ID: {Shared.selectedID}", 0); }
+                else if (status == "") { status = "Archived"; FileManager.Log($"Archived ID: {Shared.selectedID}", 0); }
+                else if (status == "Exclude") { status = "Archived"; FileManager.Log($"Archived ID: {Shared.selectedID}", 0); }
+                DataManager.SetStatus(Shared.selectedID, status);
 
 
                 // recompile the archive after archiving or unarchiving
                 DataManager.CompileDinoArchive();
 
-                FileManager.Log($"Unselected {Vars.selectedID}", 0);
-                Vars.selectedID = ""; Vars.showStats = false; this.Title = Vars.setRoute;
+                FileManager.Log($"Unselected {Shared.selectedID}", 0);
+                Shared.selectedID = ""; Shared.showStats = false; this.Title = Shared.setRoute;
 
                 RefreshContent();
             }
@@ -191,19 +208,19 @@ namespace ASA_Dino_Manager
 
             if (answer)
             {
-                if (Monitor.TryEnter(Vars._dbLock, TimeSpan.FromSeconds(5)))
+                if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
                 {
                     try
                     {
-                        Vars.needSave = true;
-                        DataManager.DeleteRowsByID(Vars.selectedID);
+                        Shared.needSave = true;
+                        DataManager.DeleteRowsByID(Shared.selectedID);
                         // recompile archive after deleting a row
                         DataManager.CompileDinoArchive();
                         RefreshContent();
                     }
                     finally
                     {
-                        Monitor.Exit(Vars._dbLock);
+                        Monitor.Exit(Shared._dbLock);
                     }
                 }
                 else
@@ -226,7 +243,7 @@ namespace ASA_Dino_Manager
             if (answer)
             {
                 // User selected "Yes"  
-                if (Monitor.TryEnter(Vars._dbLock, TimeSpan.FromSeconds(5)))
+                if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
                 {
                     try
                     {
@@ -238,7 +255,7 @@ namespace ASA_Dino_Manager
                     }
                     finally
                     {
-                        Monitor.Exit(Vars._dbLock);
+                        Monitor.Exit(Shared._dbLock);
                     }
                 }
                 else
@@ -297,34 +314,34 @@ namespace ASA_Dino_Manager
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 16
 
 
-            Vars.DefaultColor = Vars.maleColor;
+            Shared.DefaultColor = Shared.maleColor;
 
-            if (title == "Male") { Vars.DefaultColor = Vars.maleColor; }
-            else if (title == "Female") { Vars.DefaultColor = Vars.femaleColor; }
-            else { Vars.DefaultColor = Vars.breedColor; }
+            if (title == "Male") { Shared.DefaultColor = Shared.maleColor; }
+            else if (title == "Female") { Shared.DefaultColor = Shared.femaleColor; }
+            else { Shared.DefaultColor = Shared.breedColor; }
 
 
-            Vars.headerColor = Vars.DefaultColor;
+            Shared.headerColor = Shared.DefaultColor;
 
             int fSize = 16;  // header fontsize
 
-            var header0 = new Label { Text = "Name", FontAttributes = FontAttributes.Bold, TextColor = Vars.headerColor, FontSize = fSize };
-            var header1 = new Label { Text = "Level", FontAttributes = FontAttributes.Bold, TextColor = Vars.headerColor, FontSize = fSize };
-            var header2 = new Label { Text = "Hp", FontAttributes = FontAttributes.Bold, TextColor = Vars.headerColor, FontSize = fSize };
-            var header3 = new Label { Text = "Stamina", FontAttributes = FontAttributes.Bold, TextColor = Vars.headerColor, FontSize = fSize };
-            var header4 = new Label { Text = "Oxygen", FontAttributes = FontAttributes.Bold, TextColor = Vars.headerColor, FontSize = fSize };
-            var header5 = new Label { Text = "Food", FontAttributes = FontAttributes.Bold, TextColor = Vars.headerColor, FontSize = fSize };
-            var header6 = new Label { Text = "Weight", FontAttributes = FontAttributes.Bold, TextColor = Vars.headerColor, FontSize = fSize };
-            var header7 = new Label { Text = "Damage", FontAttributes = FontAttributes.Bold, TextColor = Vars.headerColor, FontSize = fSize };
-            var header8 = new Label { Text = "Status", FontAttributes = FontAttributes.Bold, TextColor = Vars.headerColor, FontSize = fSize };
-            var header9 = new Label { Text = "Gen", FontAttributes = FontAttributes.Bold, TextColor = Vars.headerColor, FontSize = fSize };
-            var header10 = new Label { Text = "Papa", FontAttributes = FontAttributes.Bold, TextColor = Vars.maleColor, FontSize = fSize };
-            var header11 = new Label { Text = "Mama", FontAttributes = FontAttributes.Bold, TextColor = Vars.femaleColor, FontSize = fSize };
+            var header0 = new Label { Text = "Name", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
+            var header1 = new Label { Text = "Level", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
+            var header2 = new Label { Text = "Hp", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
+            var header3 = new Label { Text = "Stamina", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
+            var header4 = new Label { Text = "Oxygen", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
+            var header5 = new Label { Text = "Food", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
+            var header6 = new Label { Text = "Weight", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
+            var header7 = new Label { Text = "Damage", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
+            var header8 = new Label { Text = "Status", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
+            var header9 = new Label { Text = "Gen", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
+            var header10 = new Label { Text = "Papa", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleColor, FontSize = fSize };
+            var header11 = new Label { Text = "Mama", FontAttributes = FontAttributes.Bold, TextColor = Shared.femaleColor, FontSize = fSize };
 
-            var header12 = new Label { Text = "PapaMute", FontAttributes = FontAttributes.Bold, TextColor = Vars.headerColor, FontSize = fSize };
-            var header13 = new Label { Text = "MamaMute", FontAttributes = FontAttributes.Bold, TextColor = Vars.headerColor, FontSize = fSize };
-            var header14 = new Label { Text = "Imprint", FontAttributes = FontAttributes.Bold, TextColor = Vars.headerColor, FontSize = fSize };
-            var header15 = new Label { Text = "Imprinter", FontAttributes = FontAttributes.Bold, TextColor = Vars.headerColor, FontSize = fSize };
+            var header12 = new Label { Text = "PapaMute", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
+            var header13 = new Label { Text = "MamaMute", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
+            var header14 = new Label { Text = "Imprint", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
+            var header15 = new Label { Text = "Imprinter", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
 
 
 
@@ -366,7 +383,7 @@ namespace ASA_Dino_Manager
             AddToGrid(grid, header10, 0, 10);
             AddToGrid(grid, header11, 0, 11);
 
-            if (title != "Bottom" || Vars.showStats)
+            if (title != "Bottom" || Shared.showStats)
             {
                 AddToGrid(grid, header12, 0, 12);
                 AddToGrid(grid, header13, 0, 13);
@@ -379,16 +396,16 @@ namespace ASA_Dino_Manager
 
             foreach (DataRow row in table.Rows)
             {
-                var cellColor0 = Vars.DefaultColor;
-                var cellColor1 = Vars.DefaultColor;
-                var cellColor2 = Vars.DefaultColor;
-                var cellColor3 = Vars.DefaultColor;
-                var cellColor4 = Vars.DefaultColor;
-                var cellColor5 = Vars.DefaultColor;
-                var cellColor6 = Vars.DefaultColor;
-                var cellColor7 = Vars.DefaultColor;
+                var cellColor0 = Shared.DefaultColor;
+                var cellColor1 = Shared.DefaultColor;
+                var cellColor2 = Shared.DefaultColor;
+                var cellColor3 = Shared.DefaultColor;
+                var cellColor4 = Shared.DefaultColor;
+                var cellColor5 = Shared.DefaultColor;
+                var cellColor6 = Shared.DefaultColor;
+                var cellColor7 = Shared.DefaultColor;
 
-                var cellColor8 = Vars.DefaultColor;
+                var cellColor8 = Shared.DefaultColor;
 
                 string id = row["ID"].ToString();
 
@@ -413,35 +430,35 @@ namespace ASA_Dino_Manager
                 string imprinter = row["Imprinter"].ToString();
 
 
-                if (Vars.ToggleExcluded == 2)
+                if (Shared.ToggleExcluded == 2)
                 {
                     if (status == "Exclude") { status = ""; }
                 }
 
 
                 //recolor breeding stats
-                if (DataManager.ToDouble(level) >= DataManager.LevelMax) { cellColor1 = Vars.goodColor; }
-                if (DataManager.ToDouble(hp) >= DataManager.HpMax) { cellColor2 = Vars.goodColor; }
-                if (DataManager.ToDouble(stamina) >= DataManager.StaminaMax) { cellColor3 = Vars.goodColor; }
-                if (DataManager.ToDouble(oxygen) >= DataManager.OxygenMax) { cellColor4 = Vars.goodColor; }
-                if (DataManager.ToDouble(food) >= DataManager.FoodMax) { cellColor5 = Vars.goodColor; }
-                if (DataManager.ToDouble(weight) >= DataManager.WeightMax) { cellColor6 = Vars.goodColor; }
-                if (DataManager.ToDouble(damage) >= DataManager.DamageMax) { cellColor7 = Vars.goodColor; }
+                if (DataManager.ToDouble(level) >= DataManager.LevelMax) { cellColor1 = Shared.goodColor; }
+                if (DataManager.ToDouble(hp) >= DataManager.HpMax) { cellColor2 = Shared.goodColor; }
+                if (DataManager.ToDouble(stamina) >= DataManager.StaminaMax) { cellColor3 = Shared.goodColor; }
+                if (DataManager.ToDouble(oxygen) >= DataManager.OxygenMax) { cellColor4 = Shared.goodColor; }
+                if (DataManager.ToDouble(food) >= DataManager.FoodMax) { cellColor5 = Shared.goodColor; }
+                if (DataManager.ToDouble(weight) >= DataManager.WeightMax) { cellColor6 = Shared.goodColor; }
+                if (DataManager.ToDouble(damage) >= DataManager.DamageMax) { cellColor7 = Shared.goodColor; }
 
 
                 // mutation detection overrides normal coloring -> mutaColor
                 string mutes = DataManager.GetMutes(id);
-                if (mutes.Length == 6 && !Vars.CurrentStats) // dont show mutations on current statview
+                if (mutes.Length == 6 && !Shared.CurrentStats) // dont show mutations on current statview
                 {
                     string aC = mutes.Substring(0, 1); string bC = mutes.Substring(1, 1); string cC = mutes.Substring(2, 1);
                     string dC = mutes.Substring(3, 1); string eC = mutes.Substring(4, 1); string fC = mutes.Substring(5, 1);
 
-                    if (aC == "1") { cellColor2 = Vars.mutaColor; }
-                    if (bC == "1") { cellColor3 = Vars.mutaColor; }
-                    if (cC == "1") { cellColor4 = Vars.mutaColor; }
-                    if (dC == "1") { cellColor5 = Vars.mutaColor; }
-                    if (eC == "1") { cellColor6 = Vars.mutaColor; }
-                    if (fC == "1") { cellColor7 = Vars.mutaColor; }
+                    if (aC == "1") { cellColor2 = Shared.mutaColor; }
+                    if (bC == "1") { cellColor3 = Shared.mutaColor; }
+                    if (cC == "1") { cellColor4 = Shared.mutaColor; }
+                    if (dC == "1") { cellColor5 = Shared.mutaColor; }
+                    if (eC == "1") { cellColor6 = Shared.mutaColor; }
+                    if (fC == "1") { cellColor7 = Shared.mutaColor; }
                 }
 
                 // Baby detection
@@ -464,8 +481,8 @@ namespace ASA_Dino_Manager
                 //////////////
                 var statusL = new Label { Text = status, TextColor = cellColor8 };
                 var genL = new Label { Text = gen, TextColor = cellColor8 };
-                var papaL = new Label { Text = papa, TextColor = Vars.maleColor };
-                var mamaL = new Label { Text = mama, TextColor = Vars.femaleColor };
+                var papaL = new Label { Text = papa, TextColor = Shared.maleColor };
+                var mamaL = new Label { Text = mama, TextColor = Shared.femaleColor };
                 var papaML = new Label { Text = papaM, TextColor = cellColor8 };
                 var mamaML = new Label { Text = mamaM, TextColor = cellColor8 };
                 var imprintL = new Label { Text = imprint, TextColor = cellColor8 };
@@ -523,17 +540,17 @@ namespace ASA_Dino_Manager
 
         public void RefreshContent()
         {
-            if (Monitor.TryEnter(Vars._dbLock, TimeSpan.FromSeconds(5)))
+            if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
             {
                 try
                 {
-                    FileManager.Log("Updating GUI -> " + Vars.setRoute, 0);
+                    FileManager.Log("Updating GUI -> " + Shared.setRoute, 0);
                     RouteContent();
-                    AppShell.MenuNavigation();
+                   // AppShell.MenuNavigation();
                 }
                 finally
                 {
-                    Monitor.Exit(Vars._dbLock);
+                    Monitor.Exit(Shared._dbLock);
                 }
             }
             else
@@ -547,12 +564,12 @@ namespace ASA_Dino_Manager
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();    // start timer here
 
             this.Content = null;
-            if (Vars.setRoute == "Looking for dinos")
+            if (Shared.setRoute == "Looking for dinos")
             {
-                if (!Vars.showStats) { this.Title = "No dinos around here!"; }
+                if (!Shared.showStats) { this.Title = "No dinos around here!"; }
                 UpdateStartContentPage("Looking for dinos =/");
             }
-            else if (Vars.setRoute == "ASA")
+            else if (Shared.setRoute == "ASA")
             {
                 this.Title = "Dino Manager";
                 UpdateStartContentPage("Remember to feed your dinos!!!");
@@ -560,13 +577,13 @@ namespace ASA_Dino_Manager
             else
             {
                 // Load necessary data based on toggles
-                if (!string.IsNullOrEmpty(Vars.selectedClass))
+                if (!string.IsNullOrEmpty(Shared.selectedClass))
                 {
-                    if (Vars.showStats)
+                    if (Shared.showStats)
                     {
-                        DataManager.GetOneDinoData(Vars.selectedID);
+                        DataManager.GetOneDinoData(Shared.selectedID);
 
-                        if (Vars.ToggleExcluded != 3)
+                        if (Shared.ToggleExcluded != 3)
                         {
                             DataManager.SetMaxStats();
                         }
@@ -574,15 +591,15 @@ namespace ASA_Dino_Manager
                     else
                     {
                         // sort data based on column clicked
-                        DataManager.GetDinoData(Vars.selectedClass, Vars.sortM, Vars.sortF);
+                        DataManager.GetDinoData(Shared.selectedClass, Shared.sortM, Shared.sortF);
 
 
-                        if (Vars.ToggleExcluded != 3)
+                        if (Shared.ToggleExcluded != 3)
                         {
                             DataManager.SetMaxStats();
                         }
 
-                        if (!Vars.CurrentStats && Vars.ToggleExcluded != 2 && Vars.ToggleExcluded != 3)
+                        if (!Shared.CurrentStats && Shared.ToggleExcluded != 2 && Shared.ToggleExcluded != 3)
                         {
                             DataManager.SetBinaryStats();
                             DataManager.GetBestPartner();
@@ -590,12 +607,12 @@ namespace ASA_Dino_Manager
                     }
                 }
                 // Retrieve female data
-                string[] females = DataManager.GetDistinctFilteredColumnData("Class", Vars.selectedClass, "Sex", "Female", "ID");
+                string[] females = DataManager.GetDistinctFilteredColumnData("Class", Shared.selectedClass, "Sex", "Female", "ID");
                 // Retrieve male data
-                string[] males = DataManager.GetDistinctFilteredColumnData("Class", Vars.selectedClass, "Sex", "Male", "ID");
+                string[] males = DataManager.GetDistinctFilteredColumnData("Class", Shared.selectedClass, "Sex", "Male", "ID");
                 int totalC = females.Length + males.Length;
 
-                if (!Vars.showStats) { this.Title = Vars.setRoute; }
+                if (!Shared.showStats) { this.Title = Shared.setRoute; }
                 if (totalC == 0)
                 {
                     UpdateStartContentPage("No dinos in here :(");
@@ -608,10 +625,10 @@ namespace ASA_Dino_Manager
             stopwatch.Stop(); // stop timer here
 
             var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
-            Vars.RefreshCount++;
+            Shared.RefreshCount++;
             double outAVG = 0;
-            if (Vars.RefreshCount < 2) { Vars.RefreshAvg = elapsedMilliseconds; outAVG = Vars.RefreshAvg; }
-            else { Vars.RefreshAvg += elapsedMilliseconds; outAVG = Vars.RefreshAvg / Vars.RefreshCount; }
+            if (Shared.RefreshCount < 2) { Shared.RefreshAvg = elapsedMilliseconds; outAVG = Shared.RefreshAvg; }
+            else { Shared.RefreshAvg += elapsedMilliseconds; outAVG = Shared.RefreshAvg / Shared.RefreshCount; }
             FileManager.Log("Refreshed GUI - " + elapsedMilliseconds + "ms" + " Avg: " + outAVG, 0);
             FileManager.Log("=====================================================================", 0);
         }
@@ -644,57 +661,57 @@ namespace ASA_Dino_Manager
 
 
 
-            var bColor0 = Vars.noColor;
-            var bColor1 = Vars.okColor;
+            var bColor0 = Shared.noColor;
+            var bColor1 = Shared.okColor;
 
 
-            if (Vars.CurrentStats)
+            if (Shared.CurrentStats)
             {
-                bColor1 = Vars.warnColor;
+                bColor1 = Shared.warnColor;
             }
 
-            if (Vars.ToggleExcluded == 0)
+            if (Shared.ToggleExcluded == 0)
             {
                 bColor0 = Colors.LightBlue;
             }
-            else if (Vars.ToggleExcluded == 1)
+            else if (Shared.ToggleExcluded == 1)
             {
-                bColor0 = Vars.okColor;
+                bColor0 = Shared.okColor;
             }
-            else if (Vars.ToggleExcluded == 2)
+            else if (Shared.ToggleExcluded == 2)
             {
-                bColor0 = Vars.warnColor;
+                bColor0 = Shared.warnColor;
             }
-            else if (Vars.ToggleExcluded == 3)
+            else if (Shared.ToggleExcluded == 3)
             {
-                bColor0 = Vars.dangerColor;
+                bColor0 = Shared.dangerColor;
             }
 
             string btn0Text = "Toggle"; string btn1Text = "Breeding";
-            if (Vars.ToggleExcluded == 0) { btn0Text = "All"; }
-            else if (Vars.ToggleExcluded == 1) { btn0Text = "Included"; }
-            else if (Vars.ToggleExcluded == 2) { btn0Text = "Excluded"; }
-            else if (Vars.ToggleExcluded == 3) { btn0Text = "Archived"; }
+            if (Shared.ToggleExcluded == 0) { btn0Text = "All"; }
+            else if (Shared.ToggleExcluded == 1) { btn0Text = "Included"; }
+            else if (Shared.ToggleExcluded == 2) { btn0Text = "Excluded"; }
+            else if (Shared.ToggleExcluded == 3) { btn0Text = "Archived"; }
 
-            if (Vars.CurrentStats) { btn1Text = "Current"; }
+            if (Shared.CurrentStats) { btn1Text = "Current"; }
 
             var topButton0 = new Button { Text = btn0Text, BackgroundColor = bColor0 };
             var topButton1 = new Button { Text = btn1Text, BackgroundColor = bColor1 };
 
 
-            string status = DataManager.GetStatus(Vars.selectedID);
+            string status = DataManager.GetStatus(Shared.selectedID);
 
 
-            string btn2Text = "Exclude"; var bColor2 = Vars.warnColor;
-            string btn3Text = "Archive"; var bColor3 = Vars.dangerColor;
+            string btn2Text = "Exclude"; var bColor2 = Shared.warnColor;
+            string btn3Text = "Archive"; var bColor3 = Shared.dangerColor;
 
 
-            if (status == "Exclude") { btn2Text = "Include"; bColor2 = Vars.okColor; }
-            if (status == "Archived") { btn3Text = "Restore"; bColor3 = Vars.okColor; }
+            if (status == "Exclude") { btn2Text = "Include"; bColor2 = Shared.okColor; }
+            if (status == "Archived") { btn3Text = "Restore"; bColor3 = Shared.okColor; }
 
 
 
-            if (Vars.setRoute != "Archive")
+            if (Shared.setRoute != "Archive")
             {
                 AddToGrid(grid, topButton0, 0, 0);
                 AddToGrid(grid, topButton1, 1, 0);
@@ -702,7 +719,7 @@ namespace ASA_Dino_Manager
                 topButton0.Clicked += OnButton0Clicked;
                 topButton1.Clicked += OnButton1Clicked;
 
-                if (Vars.showStats) // add theese only if we have a dino selected
+                if (Shared.showStats) // add theese only if we have a dino selected
                 {
                     var topButton2 = new Button { Text = btn2Text, BackgroundColor = bColor2 };
                     topButton2.Clicked += OnButton2Clicked;
@@ -716,19 +733,19 @@ namespace ASA_Dino_Manager
             }
             else // show extra buttons in archive
             {
-                if (Vars.showStats) // add theese only if we have a dino selected
+                if (Shared.showStats) // add theese only if we have a dino selected
                 {
                     var topButton3 = new Button { Text = btn3Text, BackgroundColor = bColor3 };
                     topButton3.Clicked += OnButton3Clicked;
                     AddToGrid(grid, topButton3, 0, 0);
 
 
-                    var topButton4 = new Button { Text = "Purge", BackgroundColor = Vars.dangerColor };
+                    var topButton4 = new Button { Text = "Purge", BackgroundColor = Shared.dangerColor };
                     topButton4.Clicked += OnButton4Clicked;
                     AddToGrid(grid, topButton4, 5, 0);
                 }
 
-                var topButton5 = new Button { Text = "Purge All", BackgroundColor = Vars.dangerColor };
+                var topButton5 = new Button { Text = "Purge All", BackgroundColor = Shared.dangerColor };
                 topButton5.Clicked += OnButton5Clicked;
                 AddToGrid(grid, topButton5, 6, 0);
             }
@@ -755,7 +772,7 @@ namespace ASA_Dino_Manager
             int barH = (rowCount * rowHeight) + rowHeight + 12;
             if (rowCount > 5) { barH = 127; }
 
-            if (((Vars.ToggleExcluded == 3 || Vars.ToggleExcluded == 2) && !Vars.showStats) || DataManager.BottomTable.Rows.Count < 1) { barH = 0; }
+            if (((Shared.ToggleExcluded == 3 || Shared.ToggleExcluded == 2) && !Shared.showStats) || DataManager.BottomTable.Rows.Count < 1) { barH = 0; }
 
 
             // Define row definitions
@@ -822,7 +839,7 @@ namespace ASA_Dino_Manager
 
             var image1 = new Image { Source = "dino.png", HeightRequest = 155, Aspect = Aspect.AspectFit, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start };
 
-            var label1 = new Label { Text = labelText, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start, FontAttributes = FontAttributes.Bold, TextColor = Vars.okColor, FontSize = 22 };
+            var label1 = new Label { Text = labelText, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start, FontAttributes = FontAttributes.Bold, TextColor = Shared.okColor, FontSize = 22 };
 
 
             AddToGrid(mainLayout, image1, 0, 0);
@@ -838,7 +855,7 @@ namespace ASA_Dino_Manager
 
 
             // only attach the tapgesture if we have something selected
-            if (Vars.selectedID != "")
+            if (Shared.selectedID != "")
             {
                 UnSelectDino(mainLayout);
             }
@@ -873,7 +890,7 @@ namespace ASA_Dino_Manager
             AddToGrid(mainLayout, CreateMainPanel(), 0, 1);
 
             // only attach the tapgesture if we have something selected
-            if (Vars.selectedID != "")
+            if (Shared.selectedID != "")
             {
                 UnSelectDino(mainLayout);
             }
@@ -890,8 +907,8 @@ namespace ASA_Dino_Manager
                 // Handle the click event and pass additional data
                 string column = label.Text;
 
-                var splitM = Vars.sortM.Split(new[] { @" " }, StringSplitOptions.RemoveEmptyEntries);
-                var splitF = Vars.sortF.Split(new[] { @" " }, StringSplitOptions.RemoveEmptyEntries);
+                var splitM = Shared.sortM.Split(new[] { @" " }, StringSplitOptions.RemoveEmptyEntries);
+                var splitF = Shared.sortF.Split(new[] { @" " }, StringSplitOptions.RemoveEmptyEntries);
 
                 string outM = "";
                 string outF = "";
@@ -910,18 +927,18 @@ namespace ASA_Dino_Manager
                     // are we clicking the same column then toggle sorting
                     if (outM == column)
                     {
-                        if (Vars.sortM.Contains("ASC"))
+                        if (Shared.sortM.Contains("ASC"))
                         {
-                            Vars.sortM = column + " DESC";
+                            Shared.sortM = column + " DESC";
                         }
-                        else if (Vars.sortM.Contains("DESC"))
+                        else if (Shared.sortM.Contains("DESC"))
                         {
-                            Vars.sortM = "";
+                            Shared.sortM = "";
                         }
                     }
                     else
                     {
-                        Vars.sortM = column + " ASC";
+                        Shared.sortM = column + " ASC";
                     }
                 }
                 else if (sex == "F")
@@ -929,22 +946,22 @@ namespace ASA_Dino_Manager
                     // are we clicking the same column then toggle sorting
                     if (outF == column)
                     {
-                        if (Vars.sortF.Contains("ASC")) // then switch to descending
+                        if (Shared.sortF.Contains("ASC")) // then switch to descending
                         {
-                            Vars.sortF = column + " DESC";
+                            Shared.sortF = column + " DESC";
                         }
-                        else if (Vars.sortF.Contains("DESC")) // finally turn it off
+                        else if (Shared.sortF.Contains("DESC")) // finally turn it off
                         {
-                            Vars.sortF = "";
+                            Shared.sortF = "";
                         }
                     }
                     else // first sort ascending
                     {
-                        Vars.sortF = column + " ASC";
+                        Shared.sortF = column + " ASC";
                     }
                 }
 
-                FileManager.Log($"Sorted: {Vars.sortM} : {Vars.sortF}", 0);
+                FileManager.Log($"Sorted: {Shared.sortM} : {Shared.sortF}", 0);
 
 
                 ForceUnselect();

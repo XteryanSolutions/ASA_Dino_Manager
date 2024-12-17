@@ -505,7 +505,7 @@ namespace ASA_Dino_Manager
                     DataManager.StatTable.Rows.Add(dr);
                 }
                 // request a save after modifying data
-                Vars.needSave = true;
+                Shared.needSave = true;
             }
         }
 
@@ -529,7 +529,7 @@ namespace ASA_Dino_Manager
                 DataManager.StatTable.Rows.Add(dr);
             }
             // request a save after modifying data
-            Vars.needSave = true;
+            Shared.needSave = true;
         }
 
         public static void SetMutes(string id, string mutes)
@@ -607,28 +607,28 @@ namespace ASA_Dino_Manager
 
                 SetMutes(dino, mutes);
                 bool addIT = false;
-                if (Vars.ToggleExcluded == 0)
+                if (Shared.ToggleExcluded == 0)
                 {
                     if (status != "Archived")
                     {
                         addIT = true;
                     }
                 }
-                else if (Vars.ToggleExcluded == 1)
+                else if (Shared.ToggleExcluded == 1)
                 {
                     if (status != "Archived" && status != "Exclude")
                     {
                         addIT = true;
                     }
                 }
-                else if (Vars.ToggleExcluded == 2)
+                else if (Shared.ToggleExcluded == 2)
                 {
                     if (status != "Archived" && status == "Exclude")
                     {
                         addIT = true;
                     }
                 }
-                else if (Vars.ToggleExcluded == 3)
+                else if (Shared.ToggleExcluded == 3)
                 {
                     if (status == "Archived")
                     {
@@ -685,7 +685,7 @@ namespace ASA_Dino_Manager
             string[] males = DataManager.GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Male", "ID");
 
 
-            if (Vars.CurrentStats)
+            if (Shared.CurrentStats)
             {
                 // Process females
                 List<string[]> MainStatsF = DataManager.GetLastStats(females);
@@ -1362,7 +1362,7 @@ namespace ASA_Dino_Manager
                 DataManager.SetStatus(id, "");
                 // maybe delete the file too to prevent reimport
 
-                string file = Vars.GamePath + @"\DinoExport_" + id + ".ini";
+                string file = Shared.GamePath + @"\DinoExport_" + id + ".ini";
                 if (File.Exists(file))
                 {
                     try
@@ -1375,7 +1375,7 @@ namespace ASA_Dino_Manager
 
                 FileManager.Log($"Purged ID: {id}", 0);
                 // request a save after modifying data
-                Vars.needSave = true;
+                Shared.needSave = true;
             }
         }
 
@@ -1391,12 +1391,12 @@ namespace ASA_Dino_Manager
                     DeleteRowsByID(id);
                 }
             }
-            Vars.needSave = true;
+            Shared.needSave = true;
         }
 
         public static void Import()
         {
-            string[] exports = Directory.GetFiles(Vars.GamePath + @"\", "*.ini", SearchOption.TopDirectoryOnly);
+            string[] exports = Directory.GetFiles(Shared.GamePath + @"\", "*.ini", SearchOption.TopDirectoryOnly);
             AddC = 0; ModC = 0;
             foreach (string file in exports) // loop trough each file to look for data in all of them
             {

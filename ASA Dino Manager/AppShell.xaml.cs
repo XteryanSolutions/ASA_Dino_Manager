@@ -14,11 +14,13 @@ namespace ASA_Dino_Manager
 
         private bool _isTimerRunning = false; // Timer control flag
 
+        public DataTemplate ArchivePage = new DataTemplate(typeof(ArchivePage));
+
 
         public AppShell()
         {
-            InitializeComponent(); this.Title = Vars.version;
-            FileManager.Log("====== Started " + Vars.version + " ======", 0);
+            InitializeComponent(); this.Title = Shared.version;
+            FileManager.Log("====== Started " + Shared.version + " ======", 0);
             if (!FileManager.InitFileManager())
             {
                 // Exit app here
@@ -38,7 +40,7 @@ namespace ASA_Dino_Manager
             string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
 
             // if manager initialized and we are not scanning and there is dinos in taglist
-            if (!Vars.Scanning && tagList.Length > 0)
+            if (!Shared.Scanning && tagList.Length > 0)
             {
                 DataManager.CleanDataBaseByID();
                 UpdateShellContents();
@@ -59,19 +61,13 @@ namespace ASA_Dino_Manager
 
         }
 
-        public static async Task MenuNavigation()
-        {
-            FileManager.Log($"Navigating -> {Vars.setRoute}", 0);
-            await Shell.Current.GoToAsync(Vars.setRoute, true);
-        }
-
         public void UpdateShellContents()
         {
-            Vars.eventDisabled = true; FileManager.Log("Disabled Navigation", 0);
+            Shared.eventDisabled = true; FileManager.Log("Disabled Navigation", 0);
             string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
             string[] classList = DataManager.GetAllClasses();
 
-            Vars.tagSize = tagList.Length;
+            Shared.tagSize = tagList.Length;
 
             Items.Clear();
 
@@ -90,7 +86,7 @@ namespace ASA_Dino_Manager
             var shellContent2 = new ShellContent
             {
                 Title = "Dino Archive",
-                ContentTemplate = new DataTemplate(typeof(ArchivePage)), // Replace with the appropriate page
+                ContentTemplate = ArchivePage, // Replace with the appropriate page
                 Route = "Archive"
             };
             // Add the ShellContent to the Shell
@@ -118,19 +114,19 @@ namespace ASA_Dino_Manager
                 // Add the ShellContent to the Shell
                 Items.Add(shellContent);
             }
-            Vars.eventDisabled = false; FileManager.Log("Enabled Navigation", 0);
+            Shared.eventDisabled = false; FileManager.Log("Enabled Navigation", 0);
             FileManager.Log("Updated tagList", 0);
         }
 
         public void ProcessAllData()
         {
-            if (Vars.ImportEnabled)
+            if (Shared.ImportEnabled)
             {
                 // check if the gamepath works
                 // maybe redundant checks???
-                if (FileManager.CheckPath(Vars.GamePath))
+                if (FileManager.CheckPath(Shared.GamePath))
                 {
-                    if (Monitor.TryEnter(Vars._dbLock, TimeSpan.FromSeconds(5)))
+                    if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
                     {
                         try
                         {
@@ -145,23 +141,23 @@ namespace ASA_Dino_Manager
 
 
                             // Check if we need to reload data
-                            if (DataManager.ModC > 0 || DataManager.AddC > 0 || tagList.Length > Vars.tagSize)
+                            if (DataManager.ModC > 0 || DataManager.AddC > 0 || tagList.Length > Shared.tagSize)
                             {
                                 FileManager.Log("Updated DataBase", 0);
 
-                                Vars.needSave = true;
+                                Shared.needSave = true;
                                 UpdateShellContents();
-                                MenuNavigation();
+                                ForceNavigation();
                             }
 
 
                             stopwatch.Stop();
                             var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
 
-                            Vars.ImportCount++;
+                            Shared.ImportCount++;
                             double outAVG = 0;
-                            if (Vars.ImportCount < 2) { Vars.ImportAvg = elapsedMilliseconds; outAVG = Vars.ImportAvg; }
-                            else { Vars.ImportAvg += elapsedMilliseconds; outAVG = Vars.ImportAvg / Vars.ImportCount; }
+                            if (Shared.ImportCount < 2) { Shared.ImportAvg = elapsedMilliseconds; outAVG = Shared.ImportAvg; }
+                            else { Shared.ImportAvg += elapsedMilliseconds; outAVG = Shared.ImportAvg / Shared.ImportCount; }
                             FileManager.Log("Imported data in " + elapsedMilliseconds + "ms" + " Avg: " + outAVG, 0);
                             FileManager.Log("=====================================================================", 0);
                         }
@@ -171,7 +167,7 @@ namespace ASA_Dino_Manager
                         }
                         finally
                         {
-                            Monitor.Exit(Vars._dbLock);
+                            Monitor.Exit(Shared._dbLock);
                         }
                     }
                     else
@@ -203,10 +199,10 @@ namespace ASA_Dino_Manager
 
         private void TriggerFunction()
         {
-            Vars.Delay--;
-            if (Vars.Delay < 0)
+            Shared.Delay--;
+            if (Shared.Delay < 0)
             {
-                Vars.Delay = Vars.DefaultDelay;
+                Shared.Delay = Shared.DefaultDelay;
                 SaveData();
                 ProcessAllData();
             }
@@ -221,7 +217,7 @@ namespace ASA_Dino_Manager
 
         private void SaveData()
         {
-            if (Monitor.TryEnter(Vars._dbLock, TimeSpan.FromSeconds(5)))
+            if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
             {
                 try
                 {
@@ -229,7 +225,7 @@ namespace ASA_Dino_Manager
                 }
                 finally
                 {
-                    Monitor.Exit(Vars._dbLock);
+                    Monitor.Exit(Shared._dbLock);
                 }
             }
             else
@@ -238,23 +234,22 @@ namespace ASA_Dino_Manager
             }
         }
 
-
         public static void SelectDino(Label label, string id)
         {
             // Create a TapGestureRecognizer
             var tapGesture = new TapGestureRecognizer();
             tapGesture.Tapped += (s, e) =>
             {
-                if (Vars.selectedID != id) // dont select the same dino twice
+                if (Shared.selectedID != id) // dont select the same dino twice
                 {
-                    Vars.selectedID = id;
+                    Shared.selectedID = id;
 
-                    string name = DataManager.GetLastColumnData("ID", Vars.selectedID, "Name");
+                    string name = DataManager.GetLastColumnData("ID", Shared.selectedID, "Name");
                     //this.Title = $"{name} - {id}"; // set title to dino name
 
-                    FileManager.Log($"Selected {name} ID: {id}", 0); Vars.showStats = true;
+                    FileManager.Log($"Selected {name} ID: {id}", 0); Shared.showStats = true;
 
-                    ForceRefresh();
+                    ForceNavigation();
                 }
             };
 
@@ -268,10 +263,10 @@ namespace ASA_Dino_Manager
             var tapGesture = new TapGestureRecognizer();
             tapGesture.Tapped += (s, e) =>
             {
-                FileManager.Log($"Unselected {Vars.selectedID}", 0);
-                Vars.selectedID = ""; Vars.showStats = false;
+                FileManager.Log($"Unselected {Shared.selectedID}", 0);
+                Shared.selectedID = ""; Shared.showStats = false;
                 // Handle the click event
-                ForceRefresh();
+                ForceNavigation();
             };
 
             // Attach the TapGestureRecognizer to the label
@@ -280,78 +275,78 @@ namespace ASA_Dino_Manager
 
         public static void ForceUnselect()
         {
-            if (Vars.selectedID != "")
+            if (Shared.selectedID != "")
             {
-                FileManager.Log($"Force Unselected {Vars.selectedID}", 0);
-                Vars.selectedID = ""; Vars.showStats = false;
+                FileManager.Log($"Force Unselected {Shared.selectedID}", 0);
+                Shared.selectedID = ""; Shared.showStats = false;
             }
         }
 
         public static void OnButton0Clicked(object? sender, EventArgs e)
         {
-            Vars.ToggleExcluded++;
-            if (Vars.ToggleExcluded == 4)
+            Shared.ToggleExcluded++;
+            if (Shared.ToggleExcluded == 4)
             {
-                Vars.ToggleExcluded = 0;
+                Shared.ToggleExcluded = 0;
             }
             ForceUnselect();
-            FileManager.Log($"Toggle Exclude {Vars.ToggleExcluded}", 0);
+            FileManager.Log($"Toggle Exclude {Shared.ToggleExcluded}", 0);
             // reload stuff
-            ForceRefresh();
+            ForceNavigation();
         }
 
         public static void OnButton1Clicked(object? sender, EventArgs e)
         {
-            if (Vars.CurrentStats)
+            if (Shared.CurrentStats)
             {
-                Vars.CurrentStats = false;
+                Shared.CurrentStats = false;
             }
             else
             {
-                Vars.CurrentStats = true;
+                Shared.CurrentStats = true;
             }
             ForceUnselect();
-            FileManager.Log($"Toggle Stats {Vars.CurrentStats}", 0);
+            FileManager.Log($"Toggle Stats {Shared.CurrentStats}", 0);
             // reload stuff
 
-            ForceRefresh();
+            ForceNavigation();
         }
 
         public static void OnButton2Clicked(object? sender, EventArgs e)
         {
-            if (Vars.selectedID != "")
+            if (Shared.selectedID != "")
             {
-                string status = DataManager.GetStatus(Vars.selectedID);
+                string status = DataManager.GetStatus(Shared.selectedID);
                 if (status == "Exclude") { status = ""; }
-                else if (status == "") { status = "Exclude"; FileManager.Log($"Excluded ID: {Vars.selectedID}", 0); }
-                DataManager.SetStatus(Vars.selectedID, status);
+                else if (status == "") { status = "Exclude"; FileManager.Log($"Excluded ID: {Shared.selectedID}", 0); }
+                DataManager.SetStatus(Shared.selectedID, status);
 
-                FileManager.Log($"Unselected {Vars.selectedID}", 0);
-                Vars.selectedID = ""; Vars.showStats = false;
+                FileManager.Log($"Unselected {Shared.selectedID}", 0);
+                Shared.selectedID = ""; Shared.showStats = false;
 
-                ForceRefresh();
+                ForceNavigation();
             }
         }
 
         public static void OnButton3Clicked(object? sender, EventArgs e)
         {
-            if (Vars.selectedID != "")
+            if (Shared.selectedID != "")
             {
                 // Handle the click event
-                string status = DataManager.GetStatus(Vars.selectedID);
-                if (status == "Archived") { status = ""; FileManager.Log($"Restored ID: {Vars.selectedID}", 0); }
-                else if (status == "") { status = "Archived"; FileManager.Log($"Archived ID: {Vars.selectedID}", 0); }
-                else if (status == "Exclude") { status = "Archived"; FileManager.Log($"Archived ID: {Vars.selectedID}", 0); }
-                DataManager.SetStatus(Vars.selectedID, status);
+                string status = DataManager.GetStatus(Shared.selectedID);
+                if (status == "Archived") { status = ""; FileManager.Log($"Restored ID: {Shared.selectedID}", 0); }
+                else if (status == "") { status = "Archived"; FileManager.Log($"Archived ID: {Shared.selectedID}", 0); }
+                else if (status == "Exclude") { status = "Archived"; FileManager.Log($"Archived ID: {Shared.selectedID}", 0); }
+                DataManager.SetStatus(Shared.selectedID, status);
 
 
                 // recompile the archive after archiving or unarchiving
                 DataManager.CompileDinoArchive();
 
-                FileManager.Log($"Unselected {Vars.selectedID}", 0);
-                Vars.selectedID = ""; Vars.showStats = false;
+                FileManager.Log($"Unselected {Shared.selectedID}", 0);
+                Shared.selectedID = ""; Shared.showStats = false;
 
-                ForceRefresh();
+                ForceNavigation();
             }
 
         }
@@ -378,19 +373,19 @@ namespace ASA_Dino_Manager
 
             if (answer)
             {
-                if (Monitor.TryEnter(Vars._dbLock, TimeSpan.FromSeconds(5)))
+                if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
                 {
                     try
                     {
-                        Vars.needSave = true;
-                        DataManager.DeleteRowsByID(Vars.selectedID);
+                        Shared.needSave = true;
+                        DataManager.DeleteRowsByID(Shared.selectedID);
                         // recompile archive after deleting a row
                         DataManager.CompileDinoArchive();
-                        ForceRefresh();
+                        ForceNavigation();
                     }
                     finally
                     {
-                        Monitor.Exit(Vars._dbLock);
+                        Monitor.Exit(Shared._dbLock);
                     }
                 }
                 else
@@ -413,7 +408,7 @@ namespace ASA_Dino_Manager
             if (answer)
             {
                 // User selected "Yes"  
-                if (Monitor.TryEnter(Vars._dbLock, TimeSpan.FromSeconds(5)))
+                if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
                 {
                     try
                     {
@@ -421,11 +416,11 @@ namespace ASA_Dino_Manager
                         FileManager.Log("Purged All Dinos", 1);
                         // recompile archive after deleting all rows
                         DataManager.CompileDinoArchive();
-                        ForceRefresh();
+                        ForceNavigation();
                     }
                     finally
                     {
-                        Monitor.Exit(Vars._dbLock);
+                        Monitor.Exit(Shared._dbLock);
                     }
                 }
                 else
@@ -435,9 +430,16 @@ namespace ASA_Dino_Manager
             }
         }
 
-
-        public static void ForceRefresh()
+        public static async Task ForceNavigation()
         {
+            FileManager.Log($"Going ->  {Shared.setPage} -> {Shared.setRoute}", 0);
+
+            FileManager.Log($"Selected -> {Shared.selectedID}", 0);
+
+
+            await AppShell.Current.GoToAsync($"{Shared.setPage}", true);
+
+
 
         }
 

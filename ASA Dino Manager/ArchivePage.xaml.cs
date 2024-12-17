@@ -4,24 +4,33 @@ namespace ASA_Dino_Manager;
 
 public partial class ArchivePage : ContentPage
 {
+
+    private string selectedID = "";
+    public static bool isSelected = false;
+
+
     public ArchivePage()
     {
         InitializeComponent();
 
-        // get the route
-        var route = Shell.Current.CurrentState.Location.ToString();
-        route = route.Replace("/", "");
-        Vars.setRoute = route;
-
-
-        // unselect any dinos
-        if (Vars.selectedID != "")
+        if (Shared.setPage != "Archive")
         {
-            FileManager.Log($"Unselected {Vars.selectedID}", 0);
-            Vars.selectedID = "";
-            Vars.showStats = false;
-        }
+            FileManager.Log($"Entering Archive", 0);
 
+            // get the route
+            var route = Shell.Current.CurrentState.Location.ToString();
+            route = route.Replace("/", "");
+            Shared.setRoute = route;
+            Shared.setPage = "Archive";
+
+            // unselect any  previously selected dinos
+            if (Shared.selectedID != "")
+            {
+                FileManager.Log($"Unselected {Shared.selectedID}", 0);
+                Shared.selectedID = "";
+                Shared.showStats = false;
+            }
+        }
 
         CreateContent();
     }
@@ -29,17 +38,17 @@ public partial class ArchivePage : ContentPage
 
     public void CreateContent()
     {
-        if (Monitor.TryEnter(Vars._dbLock, TimeSpan.FromSeconds(5)))
+        if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
         {
             try
             {
-                FileManager.Log("Updating GUI -> " + Vars.setRoute, 0);
+                FileManager.Log("Updating GUI -> " + Shared.setRoute, 0);
 
 
 
-                if (Vars.setRoute == "Archive")
+                if (Shared.setRoute == "Archive")
                 {
-                    if (!Vars.showStats) { this.Title = Vars.setRoute; }
+                    if (!Shared.showStats) { this.Title = Shared.setRoute; }
 
                     // recompile the archive after archiving or unarchiving
                     DataManager.CompileDinoArchive();
@@ -58,7 +67,7 @@ public partial class ArchivePage : ContentPage
             }
             finally
             {
-                Monitor.Exit(Vars._dbLock);
+                Monitor.Exit(Shared._dbLock);
             }
         }
         else
@@ -83,7 +92,7 @@ public partial class ArchivePage : ContentPage
 
         var image1 = new Image { Source = "dino.png", HeightRequest = 155, Aspect = Aspect.AspectFit, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start };
 
-        var label1 = new Label { Text = labelText, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start, FontAttributes = FontAttributes.Bold, TextColor = Vars.okColor, FontSize = 22 };
+        var label1 = new Label { Text = labelText, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start, FontAttributes = FontAttributes.Bold, TextColor = Shared.okColor, FontSize = 22 };
 
 
         AddToGrid(mainLayout, image1, 0, 0);
@@ -99,7 +108,7 @@ public partial class ArchivePage : ContentPage
 
 
         // only attach the tapgesture if we have something selected
-        if (Vars.selectedID != "")
+        if (Shared.selectedID != "")
         {
             AppShell.UnSelectDino(mainLayout);
         }
@@ -137,9 +146,9 @@ public partial class ArchivePage : ContentPage
 
 
         // only attach the tapgesture if we have something selected
-        if (Vars.selectedID != "")
+        if (selectedID != "")
         {
-            AppShell.UnSelectDino(mainLayout);
+            UnSelectDino(mainLayout);
         }
 
         this.Content = mainLayout;
@@ -171,96 +180,31 @@ public partial class ArchivePage : ContentPage
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
 
 
+        string status = DataManager.GetStatus(Shared.selectedID);
 
 
-        var bColor0 = Vars.noColor;
-        var bColor1 = Vars.okColor;
+        string btn3Text = "Archive"; var bColor3 = Shared.dangerColor;
+
+        if (status == "Archived") { btn3Text = "Restore"; bColor3 = Shared.okColor; }
 
 
-        if (Vars.CurrentStats)
+        // add theese only if we have a dino selected
+        if (Shared.showStats) 
         {
-            bColor1 = Vars.warnColor;
+            var topButton3 = new Button { Text = btn3Text, BackgroundColor = bColor3 };
+            topButton3.Clicked += OnButton3Clicked;
+            AddToGrid(grid, topButton3, 0, 0);
+
+
+            var topButton4 = new Button { Text = "Purge", BackgroundColor = Shared.dangerColor };
+            topButton4.Clicked += OnButton4Clicked;
+            AddToGrid(grid, topButton4, 5, 0);
         }
 
-        if (Vars.ToggleExcluded == 0)
-        {
-            bColor0 = Colors.LightBlue;
-        }
-        else if (Vars.ToggleExcluded == 1)
-        {
-            bColor0 = Vars.okColor;
-        }
-        else if (Vars.ToggleExcluded == 2)
-        {
-            bColor0 = Vars.warnColor;
-        }
-        else if (Vars.ToggleExcluded == 3)
-        {
-            bColor0 = Vars.dangerColor;
-        }
+        var topButton5 = new Button { Text = "Purge All", BackgroundColor = Shared.dangerColor };
+        topButton5.Clicked += OnButton5Clicked;
+        AddToGrid(grid, topButton5, 6, 0);
 
-        string btn0Text = "Toggle"; string btn1Text = "Breeding";
-        if (Vars.ToggleExcluded == 0) { btn0Text = "All"; }
-        else if (Vars.ToggleExcluded == 1) { btn0Text = "Included"; }
-        else if (Vars.ToggleExcluded == 2) { btn0Text = "Excluded"; }
-        else if (Vars.ToggleExcluded == 3) { btn0Text = "Archived"; }
-
-        if (Vars.CurrentStats) { btn1Text = "Current"; }
-
-        var topButton0 = new Button { Text = btn0Text, BackgroundColor = bColor0 };
-        var topButton1 = new Button { Text = btn1Text, BackgroundColor = bColor1 };
-
-
-        string status = DataManager.GetStatus(Vars.selectedID);
-
-
-        string btn2Text = "Exclude"; var bColor2 = Vars.warnColor;
-        string btn3Text = "Archive"; var bColor3 = Vars.dangerColor;
-
-
-        if (status == "Exclude") { btn2Text = "Include"; bColor2 = Vars.okColor; }
-        if (status == "Archived") { btn3Text = "Restore"; bColor3 = Vars.okColor; }
-
-
-
-        if (Vars.setRoute != "Archive")
-        {
-            AddToGrid(grid, topButton0, 0, 0);
-            AddToGrid(grid, topButton1, 1, 0);
-
-            topButton0.Clicked += AppShell.OnButton0Clicked;
-            topButton1.Clicked += AppShell.OnButton1Clicked;
-
-            if (Vars.showStats) // add theese only if we have a dino selected
-            {
-                var topButton2 = new Button { Text = btn2Text, BackgroundColor = bColor2 };
-                topButton2.Clicked += AppShell.OnButton2Clicked;
-                AddToGrid(grid, topButton2, 2, 0);
-
-
-                var topButton3 = new Button { Text = btn3Text, BackgroundColor = bColor3 };
-                topButton3.Clicked += AppShell.OnButton3Clicked;
-                AddToGrid(grid, topButton3, 6, 0);
-            }
-        }
-        else // show extra buttons in archive
-        {
-            if (Vars.showStats) // add theese only if we have a dino selected
-            {
-                var topButton3 = new Button { Text = btn3Text, BackgroundColor = bColor3 };
-                topButton3.Clicked += AppShell.OnButton3Clicked;
-                AddToGrid(grid, topButton3, 0, 0);
-
-
-                var topButton4 = new Button { Text = "Purge", BackgroundColor = Vars.dangerColor };
-                topButton4.Clicked += AppShell.OnButton4Clicked;
-                AddToGrid(grid, topButton4, 5, 0);
-            }
-
-            var topButton5 = new Button { Text = "Purge All", BackgroundColor = Vars.dangerColor };
-            topButton5.Clicked += AppShell.OnButton5Clicked;
-            AddToGrid(grid, topButton5, 6, 0);
-        }
 
         return grid;
     }
@@ -284,8 +228,8 @@ public partial class ArchivePage : ContentPage
         int barH = (rowCount * rowHeight) + rowHeight + 11;
         if (rowCount > 5) { barH = 127; }
 
-        if (Vars.ToggleExcluded == 3 && !Vars.showStats) { barH = 0; }
-        if (Vars.ToggleExcluded == 2 && !Vars.showStats) { barH = 0; }
+        if (Shared.ToggleExcluded == 3 && !Shared.showStats) { barH = 0; }
+        if (Shared.ToggleExcluded == 2 && !Shared.showStats) { barH = 0; }
 
 
         // Define row definitions
@@ -322,22 +266,8 @@ public partial class ArchivePage : ContentPage
         return grid;
     }
 
-    private void AddToGrid(Grid grid, View view, int row, int column)
-    {
-        // Ensure rows exist up to the specified index
-        while (grid.RowDefinitions.Count <= row)
-        {
-            grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
-        }
-
-        // Set the row and column for the view
-        Grid.SetRow(view, row);
-        Grid.SetColumn(view, column);
-
-        // Add the view to the grid
-        grid.Children.Add(view);
-    }
-
+   
+    // Archive Table
     private Grid CreateArchiveGrid(DataTable table, string title)
     {
         var grid = new Grid
@@ -354,15 +284,15 @@ public partial class ArchivePage : ContentPage
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 3
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 4
 
-        Vars.headerColor = Vars.breedColor;
-        Vars.DefaultColor = Vars.breedColor;
+        Shared.headerColor = Shared.breedColor;
+        Shared.DefaultColor = Shared.breedColor;
 
         // Add header row
-        AddToGrid(grid, new Label { Text = "ID", FontAttributes = FontAttributes.Bold, TextColor = Vars.headerColor }, 0, 0);
-        AddToGrid(grid, new Label { Text = "Tag", FontAttributes = FontAttributes.Bold, TextColor = Vars.headerColor }, 0, 1);
-        AddToGrid(grid, new Label { Text = "Name", FontAttributes = FontAttributes.Bold, TextColor = Vars.headerColor }, 0, 2);
-        AddToGrid(grid, new Label { Text = "Level", FontAttributes = FontAttributes.Bold, TextColor = Vars.headerColor }, 0, 3);
-        AddToGrid(grid, new Label { Text = "", FontAttributes = FontAttributes.Bold, TextColor = Vars.headerColor }, 0, 4);
+        AddToGrid(grid, new Label { Text = "ID", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor }, 0, 0);
+        AddToGrid(grid, new Label { Text = "Tag", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor }, 0, 1);
+        AddToGrid(grid, new Label { Text = "Name", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor }, 0, 2);
+        AddToGrid(grid, new Label { Text = "Level", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor }, 0, 3);
+        AddToGrid(grid, new Label { Text = "", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor }, 0, 4);
 
         int rowIndex = 1; // Start adding rows below the header
 
@@ -376,18 +306,18 @@ public partial class ArchivePage : ContentPage
             string sex = DataManager.GetLastColumnData("ID", id, "Sex");
             if (sex == "Female")
             {
-                Vars.DefaultColor = Vars.femaleColor;
+                Shared.DefaultColor = Shared.femaleColor;
             }
             else
             {
-                Vars.DefaultColor = Vars.maleColor;
+                Shared.DefaultColor = Shared.maleColor;
             }
 
-            var cellColor0 = Vars.DefaultColor;
-            var cellColor1 = Vars.DefaultColor;
-            var cellColor2 = Vars.DefaultColor;
-            var cellColor3 = Vars.DefaultColor;
-            var cellColor4 = Vars.DefaultColor;
+            var cellColor0 = Shared.DefaultColor;
+            var cellColor1 = Shared.DefaultColor;
+            var cellColor2 = Shared.DefaultColor;
+            var cellColor3 = Shared.DefaultColor;
+            var cellColor4 = Shared.DefaultColor;
 
             // Create a Label
             var idL = new Label { Text = id, TextColor = cellColor0 };
@@ -396,10 +326,10 @@ public partial class ArchivePage : ContentPage
             var levelL = new Label { Text = level, TextColor = cellColor3 };
 
             // Call the method to create and attach TapGesture
-            AppShell.SelectDino(idL, id);
-            AppShell.SelectDino(tagL, id);
-            AppShell.SelectDino(nameL, id);
-            AppShell.SelectDino(levelL, id);
+            SelectDino(idL, id);
+            SelectDino(tagL, id);
+            SelectDino(nameL, id);
+            SelectDino(levelL, id);
 
             // add items to grid
             AddToGrid(grid, idL, rowIndex, 0);
@@ -413,5 +343,163 @@ public partial class ArchivePage : ContentPage
         return grid;
     }
 
+    private void AddToGrid(Grid grid, View view, int row, int column)
+    {
+        // Ensure rows exist up to the specified index
+        while (grid.RowDefinitions.Count <= row)
+        {
+            grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
+        }
+
+        // Set the row and column for the view
+        Grid.SetRow(view, row);
+        Grid.SetColumn(view, column);
+
+        // Add the view to the grid
+        grid.Children.Add(view);
+    }
+
+    // Button event handlers
+
+    private void SelectDino(Label label, string id)
+    {
+        // Create a TapGestureRecognizer
+        var tapGesture = new TapGestureRecognizer();
+        tapGesture.Tapped += (s, e) =>
+        {
+            if (selectedID != id) // dont select the same dino twice
+            {
+                selectedID = id;
+
+                string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
+                this.Title = $"{name} - {id}"; // set title to dino name
+
+                FileManager.Log($"Selected {name} ID: {id}", 0); isSelected = true;
+
+                CreateContent();
+            }
+        };
+
+        // Attach the TapGestureRecognizer to the label
+        label.GestureRecognizers.Add(tapGesture);
+    }
+
+    private void UnSelectDino(Grid grid)
+    {
+        // Create a TapGestureRecognizer
+        var tapGesture = new TapGestureRecognizer();
+        tapGesture.Tapped += (s, e) =>
+        {
+            FileManager.Log($"Unselected {selectedID}", 0);
+            selectedID = ""; isSelected = false;
+
+            CreateContent();
+        };
+
+        // Attach the TapGestureRecognizer to the label
+        grid.GestureRecognizers.Add(tapGesture);
+    }
+
+    private void OnButton3Clicked(object? sender, EventArgs e)
+    {
+        if (selectedID != "")
+        {
+            // Handle the click event
+            string status = DataManager.GetStatus(selectedID);
+            if (status == "Archived") { status = ""; FileManager.Log($"Restored ID: {selectedID}", 0); }
+            else if (status == "") { status = "Archived"; FileManager.Log($"Archived ID: {selectedID}", 0); }
+            else if (status == "Exclude") { status = "Archived"; FileManager.Log($"Archived ID: {selectedID}", 0); }
+            DataManager.SetStatus(selectedID, status);
+
+
+            // recompile the archive after archiving or unarchiving
+            DataManager.CompileDinoArchive();
+
+            FileManager.Log($"Unselected {selectedID}", 0);
+            selectedID = ""; isSelected = false;
+
+            CreateContent();
+        }
+
+    }
+
+    private void OnButton4Clicked(object? sender, EventArgs e)
+    {
+        PurgeDinoAsync();
+    }
+
+    private void OnButton5Clicked(object? sender, EventArgs e)
+    {
+        PurgeAllAsync();
+    }
+
+    private async Task PurgeDinoAsync()
+    {
+        FileManager.Log("Purge Dino???", 1);
+        bool answer = await Application.Current.MainPage.DisplayAlert(
+"Purge dino from DataBase",         // Title
+"Do you want to proceed?", // Message
+"Yes",                    // Yes button text
+"No"                      // No button text
+);
+
+        if (answer)
+        {
+            if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
+            {
+                try
+                {
+                    Shared.needSave = true;
+                    DataManager.DeleteRowsByID(selectedID);
+                    // recompile archive after deleting a row
+                    DataManager.CompileDinoArchive();
+                    CreateContent();
+                }
+                finally
+                {
+                    Monitor.Exit(Shared._dbLock);
+                }
+            }
+            else
+            {
+                FileManager.Log("Failed to acquire database lock within timeout.", 1);
+            }
+        }
+    }
+
+    private async Task PurgeAllAsync()
+    {
+        FileManager.Log("Purge Dino???", 1);
+        bool answer = await Application.Current.MainPage.DisplayAlert(
+"Purge All dinos from DataBase",         // Title
+"Do you want to proceed?", // Message
+"Yes",                    // Yes button text
+"No"                      // No button text
+);
+
+        if (answer)
+        {
+            // User selected "Yes"  
+            if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
+            {
+                try
+                {
+                    DataManager.PurgeAll();
+                    FileManager.Log("Purged All Dinos", 1);
+                    // recompile archive after deleting all rows
+                    DataManager.CompileDinoArchive();
+                    CreateContent();
+                }
+                finally
+                {
+                    Monitor.Exit(Shared._dbLock);
+                }
+            }
+            else
+            {
+                FileManager.Log("Failed to acquire database lock within timeout.", 1);
+            }
+        }
+    }
 
 }
