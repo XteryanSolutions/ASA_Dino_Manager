@@ -5,37 +5,37 @@ namespace ASA_Dino_Manager;
 public partial class ArchivePage : ContentPage
 {
 
-    private string selectedID = "";
-    public static bool isSelected = false;
-
-
     public ArchivePage()
     {
         InitializeComponent();
 
-        if (Shared.setPage != "Archive")
-        {
-            FileManager.Log($"Entering Archive", 0);
 
-            // get the route
-            var route = Shell.Current.CurrentState.Location.ToString();
-            route = route.Replace("/", "");
-            Shared.setRoute = route;
-            Shared.setPage = "Archive";
+        // get the route
+        var route = Shell.Current.CurrentState.Location.ToString();
+        route = route.Replace("/", "");
 
-            // unselect any  previously selected dinos
-            if (Shared.selectedID != "")
-            {
-                FileManager.Log($"Unselected {Shared.selectedID}", 0);
-                Shared.selectedID = "";
-                Shared.showStats = false;
-            }
-        }
+
+        var routeSplit = route.Split(new[] { @";" }, StringSplitOptions.RemoveEmptyEntries);
+
+        Shared.setRoute = routeSplit[0];
+
+        FileManager.Log($"setRoute -> {Shared.setRoute}", 0);
 
         CreateContent();
-
     }
 
+
+    public static void ReloadContent()
+    {
+        // Create a new route name
+        string newRoute = $"ArchivePage;{Shared.ReLoad()}";
+
+        // Register the new route
+        Routing.RegisterRoute(newRoute, typeof(ArchivePage));
+
+        // Navigate to the new route
+        Shell.Current.GoToAsync($"//{newRoute}");
+    }
 
 
     public void CreateContent()
@@ -46,7 +46,7 @@ public partial class ArchivePage : ContentPage
             {
                 FileManager.Log("Updating GUI -> " + Shared.setRoute, 0);
 
-                if (!isSelected) { this.Title = Shared.setRoute; }
+                if (!Shared.isSelected) { this.Title = Shared.setRoute; }
 
                 // recompile the archive after archiving or unarchiving
                 DataManager.CompileDinoArchive();
@@ -103,7 +103,7 @@ public partial class ArchivePage : ContentPage
 
 
         // only attach the tapgesture if we have something selected
-        if (selectedID != "")
+        if (Shared.selectedID != "")
         {
             UnSelectDino(mainLayout);
         }
@@ -141,7 +141,7 @@ public partial class ArchivePage : ContentPage
 
 
         // only attach the tapgesture if we have something selected
-        if (selectedID != "")
+        if (Shared.selectedID != "")
         {
             UnSelectDino(mainLayout);
         }
@@ -175,7 +175,7 @@ public partial class ArchivePage : ContentPage
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
 
 
-        string status = DataManager.GetStatus(selectedID);
+        string status = DataManager.GetStatus(Shared.selectedID);
 
 
         string btn3Text = "Archive"; var bColor3 = Shared.dangerColor;
@@ -184,7 +184,7 @@ public partial class ArchivePage : ContentPage
 
 
         // add theese only if we have a dino selected
-        if (isSelected) 
+        if (Shared.isSelected)
         {
             var topButton3 = new Button { Text = btn3Text, BackgroundColor = bColor3 };
             topButton3.Clicked += OnButton3Clicked;
@@ -261,7 +261,7 @@ public partial class ArchivePage : ContentPage
         return grid;
     }
 
-   
+
     // Archive Table
     private Grid CreateArchiveGrid(DataTable table, string title)
     {
@@ -362,15 +362,16 @@ public partial class ArchivePage : ContentPage
         var tapGesture = new TapGestureRecognizer();
         tapGesture.Tapped += (s, e) =>
         {
-            if (selectedID != id) // dont select the same dino twice
+            if (Shared.selectedID != id) // dont select the same dino twice
             {
-                selectedID = id;
+                Shared.selectedID = id;
 
-                string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
+                string name = DataManager.GetLastColumnData("ID", Shared.selectedID, "Name");
                 this.Title = $"{name} - {id}"; // set title to dino name
 
-                FileManager.Log($"Selected {name} ID: {id}", 0); isSelected = true;
+                FileManager.Log($"Selected {name} ID: {id}", 0); Shared.isSelected = true;
 
+                //ReloadContent();
                 CreateContent();
             }
         };
@@ -385,9 +386,10 @@ public partial class ArchivePage : ContentPage
         var tapGesture = new TapGestureRecognizer();
         tapGesture.Tapped += (s, e) =>
         {
-            FileManager.Log($"Unselected {selectedID}", 0);
-            selectedID = ""; isSelected = false;
+            FileManager.Log($"Unselected {Shared.selectedID}", 0);
+            Shared.selectedID = ""; Shared.isSelected = false;
 
+            //ReloadContent();
             CreateContent();
         };
 
@@ -397,23 +399,24 @@ public partial class ArchivePage : ContentPage
 
     private void OnButton3Clicked(object? sender, EventArgs e)
     {
-        if (selectedID != "")
+        if (Shared.selectedID != "")
         {
             // Handle the click event
-            string status = DataManager.GetStatus(selectedID);
-            if (status == "Archived") { status = ""; FileManager.Log($"Restored ID: {selectedID}", 0); }
-            else if (status == "") { status = "Archived"; FileManager.Log($"Archived ID: {selectedID}", 0); }
-            else if (status == "Exclude") { status = "Archived"; FileManager.Log($"Archived ID: {selectedID}", 0); }
-            DataManager.SetStatus(selectedID, status);
+            string status = DataManager.GetStatus(Shared.selectedID);
+            if (status == "Archived") { status = ""; FileManager.Log($"Restored ID: {Shared.selectedID}", 0); }
+            else if (status == "") { status = "Archived"; FileManager.Log($"Archived ID: {Shared.selectedID}", 0); }
+            else if (status == "Exclude") { status = "Archived"; FileManager.Log($"Archived ID: {Shared.selectedID}", 0); }
+            DataManager.SetStatus(Shared.selectedID, status);
 
 
             // recompile the archive after archiving or unarchiving
             DataManager.CompileDinoArchive();
 
-            FileManager.Log($"Unselected {selectedID}", 0);
-            selectedID = ""; isSelected = false;
+            FileManager.Log($"Unselected {Shared.selectedID}", 0);
+            Shared.selectedID = ""; Shared.isSelected = false;
 
-            CreateContent();
+            ReloadContent();
+            //CreateContent();
         }
 
     }
@@ -445,10 +448,11 @@ public partial class ArchivePage : ContentPage
                 try
                 {
                     Shared.needSave = true;
-                    DataManager.DeleteRowsByID(selectedID);
+                    DataManager.DeleteRowsByID(Shared.selectedID);
                     // recompile archive after deleting a row
                     DataManager.CompileDinoArchive();
-                    CreateContent();
+                    ReloadContent();
+                    //CreateContent();
                 }
                 finally
                 {
@@ -483,7 +487,8 @@ public partial class ArchivePage : ContentPage
                     FileManager.Log("Purged All Dinos", 1);
                     // recompile archive after deleting all rows
                     DataManager.CompileDinoArchive();
-                    CreateContent();
+                    ReloadContent();
+                    //CreateContent();
                 }
                 finally
                 {

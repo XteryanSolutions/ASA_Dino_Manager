@@ -22,49 +22,27 @@ namespace ASA_Dino_Manager
         {
             InitializeComponent();
 
-            if (Shared.setPage != "MainPage")
-            {
-                // get the route
-                var route = Shell.Current.CurrentState.Location.ToString();
-                route = route.Replace("/", "");
-                Shared.setRoute = route;
-                Shared.setPage = "MainPage";
+            // get the route
+            var route = Shell.Current.CurrentState.Location.ToString();
+            route = route.Replace("/", "");
 
-                // unselect any  previously selected dinos
-                if (Shared.selectedID != "")
-                {
-                    FileManager.Log($"Unselected {Shared.selectedID}", 0);
-                    Shared.selectedID = "";
-                    Shared.showStats = false;
-                }
-            }
+            var routeSplit = route.Split(new[] { @";" }, StringSplitOptions.RemoveEmptyEntries);
 
 
-            if (!Shared.eventDisabled)
-            {
-                var route = Shell.Current.CurrentState.Location.ToString();
-                route = route.Replace("/", "");
-                Shared.setRoute = route;
+            Shared.setRoute = routeSplit[0];
 
-                FileManager.Log($"setRoute -> {route}", 0);
+            FileManager.Log($"setRoute -> {Shared.setRoute}", 0);
 
+            // reset toggles when navigating
+            Shared.ToggleExcluded = 0; Shared.CurrentStats = false;
+            Shared.showStats = false;
 
-                string dinoTag = DataManager.TagForClass(Shared.setRoute);
-                Shared.selectedClass = dinoTag;
-
-                // reset toggles when navigating
-                Shared.ToggleExcluded = 0; Shared.CurrentStats = false;
-
-                if (Shared.selectedID != "")
-                {
-                    FileManager.Log($"Unselected {Shared.selectedID}", 0);
-                    Shared.selectedID = "";
-                    Shared.showStats = false;
-                }
-            }
+            string dinoTag = DataManager.TagForClass(Shared.setRoute);
+            Shared.selectedClass = dinoTag;
 
 
-            RefreshContent();
+
+            CreateContent();
 
         }
 
@@ -84,7 +62,7 @@ namespace ASA_Dino_Manager
 
                     FileManager.Log($"Selected {name} ID: {id}", 0); Shared.showStats = true;
 
-                    RefreshContent();
+                    CreateContent();
                 }
             };
 
@@ -101,7 +79,7 @@ namespace ASA_Dino_Manager
                 FileManager.Log($"Unselected {Shared.selectedID}", 0);
                 Shared.selectedID = ""; Shared.showStats = false; this.Title = Shared.setRoute;
                 // Handle the click event
-                RefreshContent();
+                CreateContent();
             };
 
             // Attach the TapGestureRecognizer to the label
@@ -127,7 +105,7 @@ namespace ASA_Dino_Manager
             ForceUnselect();
             FileManager.Log($"Toggle Exclude {Shared.ToggleExcluded}", 0);
             // reload stuff
-            RefreshContent();
+            CreateContent();
         }
 
         private void OnButton1Clicked(object? sender, EventArgs e)
@@ -144,7 +122,7 @@ namespace ASA_Dino_Manager
             FileManager.Log($"Toggle Stats {Shared.CurrentStats}", 0);
             // reload stuff
 
-            RefreshContent();
+            CreateContent();
         }
 
         private void OnButton2Clicked(object? sender, EventArgs e)
@@ -159,7 +137,7 @@ namespace ASA_Dino_Manager
                 FileManager.Log($"Unselected {Shared.selectedID}", 0);
                 Shared.selectedID = ""; Shared.showStats = false; this.Title = Shared.setRoute;
 
-                RefreshContent();
+                CreateContent();
             }
         }
 
@@ -181,7 +159,7 @@ namespace ASA_Dino_Manager
                 FileManager.Log($"Unselected {Shared.selectedID}", 0);
                 Shared.selectedID = ""; Shared.showStats = false; this.Title = Shared.setRoute;
 
-                RefreshContent();
+                CreateContent();
             }
 
         }
@@ -216,7 +194,7 @@ namespace ASA_Dino_Manager
                         DataManager.DeleteRowsByID(Shared.selectedID);
                         // recompile archive after deleting a row
                         DataManager.CompileDinoArchive();
-                        RefreshContent();
+                        CreateContent();
                     }
                     finally
                     {
@@ -251,7 +229,7 @@ namespace ASA_Dino_Manager
                         FileManager.Log("Purged All Dinos", 1);
                         // recompile archive after deleting all rows
                         DataManager.CompileDinoArchive();
-                        RefreshContent();
+                        CreateContent();
                     }
                     finally
                     {
@@ -538,7 +516,7 @@ namespace ASA_Dino_Manager
             return grid;
         }
 
-        public void RefreshContent()
+        public void CreateContent()
         {
             if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
             {
@@ -965,7 +943,7 @@ namespace ASA_Dino_Manager
 
 
                 ForceUnselect();
-                RefreshContent();
+                CreateContent();
             };
 
             // Attach the TapGestureRecognizer to the label

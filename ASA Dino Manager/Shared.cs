@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -58,7 +59,8 @@ namespace ASA_Dino_Manager
         public static string selectedClass = "";
 
         public static string setRoute = "";
-        public static string setPage = "";
+        public static bool isSelected = false;
+
 
         public static bool eventDisabled = false;
 
@@ -98,9 +100,25 @@ namespace ASA_Dino_Manager
         public static Color headerColor = Colors.White;
 
 
+        public static bool isLoaded = false;
 
 
 
+        // keep refreshing page when new data arrives
+
+        private static int reloadCount = 0;
+
+        public static string ReLoad()
+        {
+            string result = "";
+
+            // Increment the reload counter
+            reloadCount++;
+
+            result = "" + reloadCount;
+
+            return result;
+        }
 
     }
 }

@@ -9,12 +9,7 @@ namespace ASA_Dino_Manager
 {
     public partial class AppShell : Shell
     {
-
-
-
         private bool _isTimerRunning = false; // Timer control flag
-
-        public DataTemplate ArchivePage = new DataTemplate(typeof(ArchivePage));
 
 
         public AppShell()
@@ -61,6 +56,7 @@ namespace ASA_Dino_Manager
 
         }
 
+
         public void UpdateShellContents()
         {
             Shared.eventDisabled = true; FileManager.Log("Disabled Navigation", 0);
@@ -78,7 +74,7 @@ namespace ASA_Dino_Manager
             {
                 Title = "Dino Manager",
                 ContentTemplate = new DataTemplate(typeof(MainPage)), // Replace with the appropriate page
-                Route = "ASA"
+                Route = $"ASA;{Shared.ReLoad()}"
             };
             // Add the ShellContent to the Shell
             Items.Add(shellContent1);
@@ -88,7 +84,7 @@ namespace ASA_Dino_Manager
             {
                 Title = "Dino Archive",
                 ContentTemplate = new DataTemplate(() => new ArchivePage()), // Always a fresh page
-                Route = "Archive"
+                Route = $"Archive;{Shared.ReLoad()}"
             };
 
 
@@ -112,7 +108,7 @@ namespace ASA_Dino_Manager
                 {
                     Title = tag + " (" + totalC + ")",
                     ContentTemplate = new DataTemplate(typeof(MainPage)), // Replace with the appropriate page
-                    Route = tag
+                    Route = $"{tag};{Shared.ReLoad()}"
                 };
 
                 // Add the ShellContent to the Shell
