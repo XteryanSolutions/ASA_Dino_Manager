@@ -29,7 +29,7 @@ namespace ASA_Dino_Manager
                 route = route.Replace("/", "");
                 Vars.setRoute = route;
 
-                FileManager.Log($"MainPage setRoute -> {route}", 0);
+                FileManager.Log($"setRoute -> {route}", 0);
 
 
                 string dinoTag = DataManager.TagForClass(Vars.setRoute);
@@ -37,10 +37,20 @@ namespace ASA_Dino_Manager
 
                 // reset toggles when navigating
                 Vars.ToggleExcluded = 0; Vars.CurrentStats = false;
+
+                if (Vars.selectedID != "")
+                {
+                    FileManager.Log($"Unselected {Vars.selectedID}", 0);
+                    Vars.selectedID = "";
+                    Vars.showStats = false;
+                }
             }
 
-            RefreshContent(false);
+
+            RefreshContent();
+
         }
+
 
         void SelectDino(Label label, string id)
         {
@@ -48,15 +58,17 @@ namespace ASA_Dino_Manager
             var tapGesture = new TapGestureRecognizer();
             tapGesture.Tapped += (s, e) =>
             {
-                // Handle the click event and pass additional data
-                Vars.selectedID = id;
+                if (Vars.selectedID != id) // dont select the same dino twice
+                {
+                    Vars.selectedID = id;
 
-                string name = DataManager.GetLastColumnData("ID", Vars.selectedID, "Name");
+                    string name = DataManager.GetLastColumnData("ID", Vars.selectedID, "Name");
+                    this.Title = $"{name} - {id}"; // set title to dino name
 
-                FileManager.Log($"Showing stats for ID: {id}", 0);
-                RefreshContent(true);
-                this.Title = name;
+                    FileManager.Log($"Selected {name} ID: {id}", 0); Vars.showStats = true;
 
+                    RefreshContent();
+                }
             };
 
             // Attach the TapGestureRecognizer to the label
@@ -69,12 +81,23 @@ namespace ASA_Dino_Manager
             var tapGesture = new TapGestureRecognizer();
             tapGesture.Tapped += (s, e) =>
             {
+                FileManager.Log($"Unselected {Vars.selectedID}", 0);
+                Vars.selectedID = ""; Vars.showStats = false; this.Title = Vars.setRoute;
                 // Handle the click event
-                RefreshContent(false);
+                RefreshContent();
             };
 
             // Attach the TapGestureRecognizer to the label
             grid.GestureRecognizers.Add(tapGesture);
+        }
+
+        private void ForceUnselect()
+        {
+            if (Vars.selectedID != "")
+            {
+                FileManager.Log($"Force Unselected {Vars.selectedID}", 0);
+                Vars.selectedID = ""; Vars.showStats = false; this.Title = Vars.setRoute;
+            }
         }
 
         private void OnButton0Clicked(object? sender, EventArgs e)
@@ -84,8 +107,10 @@ namespace ASA_Dino_Manager
             {
                 Vars.ToggleExcluded = 0;
             }
+            ForceUnselect();
+            FileManager.Log($"Toggle Exclude {Vars.ToggleExcluded}", 0);
             // reload stuff
-            RefreshContent(false);
+            RefreshContent();
         }
 
         private void OnButton1Clicked(object? sender, EventArgs e)
@@ -98,33 +123,50 @@ namespace ASA_Dino_Manager
             {
                 Vars.CurrentStats = true;
             }
+            ForceUnselect();
+            FileManager.Log($"Toggle Stats {Vars.CurrentStats}", 0);
             // reload stuff
-            RefreshContent(false);
+
+            RefreshContent();
         }
 
         private void OnButton2Clicked(object? sender, EventArgs e)
         {
-            // Handle the click event
-            string status = DataManager.GetStatus(Vars.selectedID);
-            if (status == "Exclude") { status = ""; }
-            else if (status == "") { status = "Exclude"; FileManager.Log($"Excluded ID: {Vars.selectedID}", 0); }
-            DataManager.SetStatus(Vars.selectedID, status);
+            if (Vars.selectedID != "")
+            {
+                string status = DataManager.GetStatus(Vars.selectedID);
+                if (status == "Exclude") { status = ""; }
+                else if (status == "") { status = "Exclude"; FileManager.Log($"Excluded ID: {Vars.selectedID}", 0); }
+                DataManager.SetStatus(Vars.selectedID, status);
 
-            RefreshContent(false);
+                FileManager.Log($"Unselected {Vars.selectedID}", 0);
+                Vars.selectedID = ""; Vars.showStats = false; this.Title = Vars.setRoute;
+
+                RefreshContent();
+            }
         }
 
         private void OnButton3Clicked(object? sender, EventArgs e)
         {
-            // Handle the click event
-            string status = DataManager.GetStatus(Vars.selectedID);
-            if (status == "Archived") { status = ""; FileManager.Log($"Restored ID: {Vars.selectedID}", 0); }
-            else if (status == "") { status = "Archived"; FileManager.Log($"Archived ID: {Vars.selectedID}", 0); }
-            else if (status == "Exclude") { status = "Archived"; FileManager.Log($"Archived ID: {Vars.selectedID}", 0); }
-            DataManager.SetStatus(Vars.selectedID, status);
+            if (Vars.selectedID != "")
+            {
+                // Handle the click event
+                string status = DataManager.GetStatus(Vars.selectedID);
+                if (status == "Archived") { status = ""; FileManager.Log($"Restored ID: {Vars.selectedID}", 0); }
+                else if (status == "") { status = "Archived"; FileManager.Log($"Archived ID: {Vars.selectedID}", 0); }
+                else if (status == "Exclude") { status = "Archived"; FileManager.Log($"Archived ID: {Vars.selectedID}", 0); }
+                DataManager.SetStatus(Vars.selectedID, status);
 
-            // recompile the archive after archiving or unarchiving
-            DataManager.CompileDinoArchive();
-            RefreshContent(false);
+
+                // recompile the archive after archiving or unarchiving
+                DataManager.CompileDinoArchive();
+
+                FileManager.Log($"Unselected {Vars.selectedID}", 0);
+                Vars.selectedID = ""; Vars.showStats = false; this.Title = Vars.setRoute;
+
+                RefreshContent();
+            }
+
         }
 
         private void OnButton4Clicked(object? sender, EventArgs e)
@@ -157,7 +199,7 @@ namespace ASA_Dino_Manager
                         DataManager.DeleteRowsByID(Vars.selectedID);
                         // recompile archive after deleting a row
                         DataManager.CompileDinoArchive();
-                        RefreshContent(false);
+                        RefreshContent();
                     }
                     finally
                     {
@@ -192,7 +234,7 @@ namespace ASA_Dino_Manager
                         FileManager.Log("Purged All Dinos", 1);
                         // recompile archive after deleting all rows
                         DataManager.CompileDinoArchive();
-                        RefreshContent(false);
+                        RefreshContent();
                     }
                     finally
                     {
@@ -222,7 +264,7 @@ namespace ASA_Dino_Manager
             grid.Children.Add(view);
         }
 
-        private Grid CreateDinoGrid(DataTable table, string title, bool showStats)
+        private Grid CreateDinoGrid(DataTable table, string title)
         {
             var grid = new Grid
             {
@@ -324,7 +366,7 @@ namespace ASA_Dino_Manager
             AddToGrid(grid, header10, 0, 10);
             AddToGrid(grid, header11, 0, 11);
 
-            if (title != "Bottom" || showStats)
+            if (title != "Bottom" || Vars.showStats)
             {
                 AddToGrid(grid, header12, 0, 12);
                 AddToGrid(grid, header13, 0, 13);
@@ -479,89 +521,15 @@ namespace ASA_Dino_Manager
             return grid;
         }
 
-        private Grid CreateArchiveGrid(DataTable table, string title, bool showStats)
-        {
-            var grid = new Grid
-            {
-                RowSpacing = 0,
-                ColumnSpacing = 20,
-                Padding = 3
-            };
-
-            // Define columns
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 0
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 1
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 2
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 3
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 4
-
-            Vars.headerColor = Vars.breedColor;
-            Vars.DefaultColor = Vars.breedColor;
-
-            // Add header row
-            AddToGrid(grid, new Label { Text = "ID", FontAttributes = FontAttributes.Bold, TextColor = Vars.headerColor }, 0, 0);
-            AddToGrid(grid, new Label { Text = "Tag", FontAttributes = FontAttributes.Bold, TextColor = Vars.headerColor }, 0, 1);
-            AddToGrid(grid, new Label { Text = "Name", FontAttributes = FontAttributes.Bold, TextColor = Vars.headerColor }, 0, 2);
-            AddToGrid(grid, new Label { Text = "Level", FontAttributes = FontAttributes.Bold, TextColor = Vars.headerColor }, 0, 3);
-            AddToGrid(grid, new Label { Text = "", FontAttributes = FontAttributes.Bold, TextColor = Vars.headerColor }, 0, 4);
-
-            int rowIndex = 1; // Start adding rows below the header
-
-            foreach (DataRow row in table.Rows)
-            {
-                string id = row["ID"].ToString();
-                string tag = row["Tag"].ToString();
-                string name = row["Name"].ToString();
-                string level = row["Level"].ToString();
-
-                string sex = DataManager.GetLastColumnData("ID", id, "Sex");
-                if (sex == "Female")
-                {
-                    Vars.DefaultColor = Vars.femaleColor;
-                }
-                else
-                {
-                    Vars.DefaultColor = Vars.maleColor;
-                }
-
-                var cellColor0 = Vars.DefaultColor;
-                var cellColor1 = Vars.DefaultColor;
-                var cellColor2 = Vars.DefaultColor;
-                var cellColor3 = Vars.DefaultColor;
-                var cellColor4 = Vars.DefaultColor;
-
-                // Create a Label
-                var idL = new Label { Text = id, TextColor = cellColor0 };
-                var tagL = new Label { Text = tag, TextColor = cellColor1 };
-                var nameL = new Label { Text = name, TextColor = cellColor2 };
-                var levelL = new Label { Text = level, TextColor = cellColor3 };
-
-                // Call the method to create and attach TapGesture
-                SelectDino(idL, id);
-                SelectDino(tagL, id);
-                SelectDino(nameL, id);
-                SelectDino(levelL, id);
-
-                // add items to grid
-                AddToGrid(grid, idL, rowIndex, 0);
-                AddToGrid(grid, tagL, rowIndex, 1);
-                AddToGrid(grid, nameL, rowIndex, 2);
-                AddToGrid(grid, levelL, rowIndex, 3);
-
-                rowIndex++;
-            }
-
-            return grid;
-        }
-
-        public void RefreshContent(bool stat)
+        public void RefreshContent()
         {
             if (Monitor.TryEnter(Vars._dbLock, TimeSpan.FromSeconds(5)))
             {
                 try
                 {
-                    FileManager.Log("Displaying -> " + Vars.setRoute, 0);
-                    MyDelayedOperationAsync(stat);
+                    FileManager.Log("Updating GUI -> " + Vars.setRoute, 0);
+                    RouteContent();
+                    AppShell.MenuNavigation();
                 }
                 finally
                 {
@@ -574,21 +542,14 @@ namespace ASA_Dino_Manager
             }
         }
 
-        public async Task MyDelayedOperationAsync(bool showStats)
-        {
-            await Task.Delay(10); // Wait for 2 seconds
-
-            RouteContent(showStats);
-        }
-
-        public void RouteContent(bool showStats)
+        public void RouteContent()
         {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();    // start timer here
 
             this.Content = null;
             if (Vars.setRoute == "Looking for dinos")
             {
-                if (!showStats) { this.Title = "No dinos around here!"; }
+                if (!Vars.showStats) { this.Title = "No dinos around here!"; }
                 UpdateStartContentPage("Looking for dinos =/");
             }
             else if (Vars.setRoute == "ASA")
@@ -596,25 +557,12 @@ namespace ASA_Dino_Manager
                 this.Title = "Dino Manager";
                 UpdateStartContentPage("Remember to feed your dinos!!!");
             }
-            else if (Vars.setRoute == "Archive")
-            {
-                if (!showStats) { this.Title = Vars.setRoute; }
-
-                if (DataManager.ArchiveTable.Rows.Count > 0)
-                {
-                    UpdateArchiveContentPage(showStats);
-                }
-                else
-                {
-                    UpdateStartContentPage("No dinos in here :(");
-                }
-            }
             else
             {
                 // Load necessary data based on toggles
                 if (!string.IsNullOrEmpty(Vars.selectedClass))
                 {
-                    if (showStats)
+                    if (Vars.showStats)
                     {
                         DataManager.GetOneDinoData(Vars.selectedID);
 
@@ -647,14 +595,14 @@ namespace ASA_Dino_Manager
                 string[] males = DataManager.GetDistinctFilteredColumnData("Class", Vars.selectedClass, "Sex", "Male", "ID");
                 int totalC = females.Length + males.Length;
 
-                if (!showStats) { this.Title = Vars.setRoute; }
+                if (!Vars.showStats) { this.Title = Vars.setRoute; }
                 if (totalC == 0)
                 {
                     UpdateStartContentPage("No dinos in here :(");
                 }
                 else
                 {
-                    UpdateMainContentPage(showStats);
+                    UpdateMainContentPage();
                 }
             }
             stopwatch.Stop(); // stop timer here
@@ -668,7 +616,7 @@ namespace ASA_Dino_Manager
             FileManager.Log("=====================================================================", 0);
         }
 
-        private Grid CreateSidePanel(bool showStats)
+        private Grid CreateSidePanel()
         {
             var grid = new Grid
             {
@@ -754,7 +702,7 @@ namespace ASA_Dino_Manager
                 topButton0.Clicked += OnButton0Clicked;
                 topButton1.Clicked += OnButton1Clicked;
 
-                if (showStats) // add theese only if we have a dino selected
+                if (Vars.showStats) // add theese only if we have a dino selected
                 {
                     var topButton2 = new Button { Text = btn2Text, BackgroundColor = bColor2 };
                     topButton2.Clicked += OnButton2Clicked;
@@ -768,7 +716,7 @@ namespace ASA_Dino_Manager
             }
             else // show extra buttons in archive
             {
-                if (showStats) // add theese only if we have a dino selected
+                if (Vars.showStats) // add theese only if we have a dino selected
                 {
                     var topButton3 = new Button { Text = btn3Text, BackgroundColor = bColor3 };
                     topButton3.Clicked += OnButton3Clicked;
@@ -788,7 +736,7 @@ namespace ASA_Dino_Manager
             return grid;
         }
 
-        private Grid CreateMainPanel(bool showStats)
+        private Grid CreateMainPanel()
         {
             var grid = new Grid
             {
@@ -807,7 +755,7 @@ namespace ASA_Dino_Manager
             int barH = (rowCount * rowHeight) + rowHeight + 12;
             if (rowCount > 5) { barH = 127; }
 
-            if (((Vars.ToggleExcluded == 3 || Vars.ToggleExcluded == 2) && !showStats) || DataManager.BottomTable.Rows.Count < 1) { barH = 0; }
+            if (((Vars.ToggleExcluded == 3 || Vars.ToggleExcluded == 2) && !Vars.showStats) || DataManager.BottomTable.Rows.Count < 1) { barH = 0; }
 
 
             // Define row definitions
@@ -826,8 +774,8 @@ namespace ASA_Dino_Manager
             };
 
             // Add male and female tables
-            scrollContent.Children.Add(CreateDinoGrid(DataManager.MaleTable, "Male", showStats));
-            scrollContent.Children.Add(CreateDinoGrid(DataManager.FemaleTable, "Female", showStats));
+            scrollContent.Children.Add(CreateDinoGrid(DataManager.MaleTable, "Male"));
+            scrollContent.Children.Add(CreateDinoGrid(DataManager.FemaleTable, "Female"));
 
             // Wrap the scrollable content in a ScrollView and add it to the second row
             var scrollView = new ScrollView { Content = scrollContent };
@@ -844,7 +792,7 @@ namespace ASA_Dino_Manager
                 BackgroundColor = Color.FromArgb("#312f38")
             };
 
-            bottomContent.Children.Add(CreateDinoGrid(DataManager.BottomTable, "Bottom", showStats));
+            bottomContent.Children.Add(CreateDinoGrid(DataManager.BottomTable, "Bottom"));
 
             // Wrap the scrollable content in a ScrollView and add it to the third row
             var bottomPanel = new ScrollView { Content = bottomContent };
@@ -858,67 +806,9 @@ namespace ASA_Dino_Manager
             return grid;
         }
 
-        private Grid CreateArchivePanel(bool showStats)
-        {
-            var grid = new Grid
-            {
-                RowSpacing = 0,
-                ColumnSpacing = 5,
-                Padding = 0,
-            };
-
-            // Define columns
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 0
-
-
-            // dynamically adjust the bottom bar height
-            int rowCount = DataManager.BottomTable.Rows.Count;
-            int rowHeight = 20;
-            int barH = (rowCount * rowHeight) + rowHeight + 11;
-            if (rowCount > 5) { barH = 127; }
-
-            if (Vars.ToggleExcluded == 3 && !showStats) { barH = 0; }
-            if (Vars.ToggleExcluded == 2 && !showStats) { barH = 0; }
-
-
-            // Define row definitions
-            grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // Scrollable content
-
-
-            var bColor1 = Colors.LightBlue;
-            var bColor2 = Colors.LightBlue;
-
-
-
-            ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            // Create scrollable content
-            var scrollContent = new StackLayout
-            {
-                Spacing = 20,
-                Padding = 3
-
-            };
-
-            // Add male and female tables
-            scrollContent.Children.Add(CreateArchiveGrid(DataManager.ArchiveTable, "Archive", showStats));
-
-            // Wrap the scrollable content in a ScrollView and add it to the second row
-            var scrollView = new ScrollView { Content = scrollContent };
-
-            AddToGrid(grid, scrollView, 0, 1);
-
-            ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-            return grid;
-        }
-
         private void UpdateStartContentPage(string labelText)
         {
             var mainLayout = new Grid();
-            UnSelectDino(mainLayout);
 
             mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Fixed button row
             mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // Scrollable content
@@ -946,42 +836,18 @@ namespace ASA_Dino_Manager
 
             AddToGrid(mainLayout, scrollView, 0, 0);
 
+
+            // only attach the tapgesture if we have something selected
+            if (Vars.selectedID != "")
+            {
+                UnSelectDino(mainLayout);
+            }
+
             this.Content = null;
             this.Content = mainLayout;
         }
 
-        private void UpdateArchiveContentPage(bool showStats)
-        {
-            // ==============================================================    Create Archive Layout   =====================================================
-
-            // Create the main layout
-            var mainLayout = new Grid();
-
-
-            // create main layout with 2 columns
-
-            // Define row definitions
-            mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // 0
-
-
-            mainLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = 100 }); // 0
-            mainLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 1
-
-            ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            // Add side panel to left column
-            AddToGrid(mainLayout, CreateSidePanel(showStats), 0, 0);
-
-            // Add main panel to right column
-            AddToGrid(mainLayout, CreateArchivePanel(showStats), 0, 1);
-
-            // attach unselect event after all content has been created
-            UnSelectDino(mainLayout);
-
-            this.Content = mainLayout;
-        }
-
-        public void UpdateMainContentPage(bool showStats)
+        public void UpdateMainContentPage()
         {
             // ==============================================================    Create Dino Layout   =====================================================
 
@@ -1001,13 +867,16 @@ namespace ASA_Dino_Manager
             ////////////////////////////////////////////////////////////////////////////////////////////////////
 
             // Add side panel to left column
-            AddToGrid(mainLayout, CreateSidePanel(showStats), 0, 0);
+            AddToGrid(mainLayout, CreateSidePanel(), 0, 0);
 
             // Add main panel to right column
-            AddToGrid(mainLayout, CreateMainPanel(showStats), 0, 1);
+            AddToGrid(mainLayout, CreateMainPanel(), 0, 1);
 
-            // attach unselect event after all content has been created
-            UnSelectDino(mainLayout);
+            // only attach the tapgesture if we have something selected
+            if (Vars.selectedID != "")
+            {
+                UnSelectDino(mainLayout);
+            }
 
             this.Content = mainLayout;
         }
@@ -1077,7 +946,9 @@ namespace ASA_Dino_Manager
 
                 FileManager.Log($"Sorted: {Vars.sortM} : {Vars.sortF}", 0);
 
-                RefreshContent(false);
+
+                ForceUnselect();
+                RefreshContent();
             };
 
             // Attach the TapGestureRecognizer to the label

@@ -15,6 +15,8 @@ namespace ASA_Dino_Manager
     class FileManager
     {
 
+
+
         public static bool InitFileManager()
         {
             try
@@ -148,8 +150,7 @@ namespace ASA_Dino_Manager
             catch
             {
                 Console.WriteLine("no import dataBase! creating a new one");
-                Vars.needSave = true;
-                SaveFiles();
+                Vars.needSave = true; SaveFiles();
             }
         }
 

@@ -23,13 +23,12 @@ namespace ASA_Dino_Manager
         public static string GamePath = "";
         public static bool Scanning = false;
 
-
         // logging
         public static string LogText = "";
         public static readonly object _logLock = new object();
 
-
         public static bool needSave = false;
+
 
 
         // Toggles for viewing stats
@@ -60,6 +59,7 @@ namespace ASA_Dino_Manager
         // table sorting
         public static string sortM = "";
         public static string sortF = "";
+        public static bool showStats = false;
 
 
         // Benchmark stuff

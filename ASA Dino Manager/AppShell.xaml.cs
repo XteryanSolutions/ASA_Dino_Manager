@@ -56,13 +56,13 @@ namespace ASA_Dino_Manager
                 FileManager.Log("No dinos =(", 0);
             }
             StartTimer();
+
         }
 
-
-        public async Task MenuNavigation()
+        public static async Task MenuNavigation()
         {
-            FileManager.Log($"AppShell -> {Vars.setRoute}", 0);
-            await Shell.Current.GoToAsync(Vars.setRoute);
+            FileManager.Log($"Navigating -> {Vars.setRoute}", 0);
+            await Shell.Current.GoToAsync(Vars.setRoute, true);
         }
 
         public void UpdateShellContents()
@@ -90,7 +90,7 @@ namespace ASA_Dino_Manager
             var shellContent2 = new ShellContent
             {
                 Title = "Dino Archive",
-                ContentTemplate = new DataTemplate(typeof(MainPage)), // Replace with the appropriate page
+                ContentTemplate = new DataTemplate(typeof(ArchivePage)), // Replace with the appropriate page
                 Route = "Archive"
             };
             // Add the ShellContent to the Shell
@@ -121,7 +121,6 @@ namespace ASA_Dino_Manager
             Vars.eventDisabled = false; FileManager.Log("Enabled Navigation", 0);
             FileManager.Log("Updated tagList", 0);
         }
-
 
         public void ProcessAllData()
         {
@@ -238,6 +237,210 @@ namespace ASA_Dino_Manager
                 FileManager.Log("Failed to acquire database lock within timeout.", 1);
             }
         }
+
+
+        public static void SelectDino(Label label, string id)
+        {
+            // Create a TapGestureRecognizer
+            var tapGesture = new TapGestureRecognizer();
+            tapGesture.Tapped += (s, e) =>
+            {
+                if (Vars.selectedID != id) // dont select the same dino twice
+                {
+                    Vars.selectedID = id;
+
+                    string name = DataManager.GetLastColumnData("ID", Vars.selectedID, "Name");
+                    //this.Title = $"{name} - {id}"; // set title to dino name
+
+                    FileManager.Log($"Selected {name} ID: {id}", 0); Vars.showStats = true;
+
+                    ForceRefresh();
+                }
+            };
+
+            // Attach the TapGestureRecognizer to the label
+            label.GestureRecognizers.Add(tapGesture);
+        }
+
+        public static void UnSelectDino(Grid grid)
+        {
+            // Create a TapGestureRecognizer
+            var tapGesture = new TapGestureRecognizer();
+            tapGesture.Tapped += (s, e) =>
+            {
+                FileManager.Log($"Unselected {Vars.selectedID}", 0);
+                Vars.selectedID = ""; Vars.showStats = false;
+                // Handle the click event
+                ForceRefresh();
+            };
+
+            // Attach the TapGestureRecognizer to the label
+            grid.GestureRecognizers.Add(tapGesture);
+        }
+
+        public static void ForceUnselect()
+        {
+            if (Vars.selectedID != "")
+            {
+                FileManager.Log($"Force Unselected {Vars.selectedID}", 0);
+                Vars.selectedID = ""; Vars.showStats = false;
+            }
+        }
+
+        public static void OnButton0Clicked(object? sender, EventArgs e)
+        {
+            Vars.ToggleExcluded++;
+            if (Vars.ToggleExcluded == 4)
+            {
+                Vars.ToggleExcluded = 0;
+            }
+            ForceUnselect();
+            FileManager.Log($"Toggle Exclude {Vars.ToggleExcluded}", 0);
+            // reload stuff
+            ForceRefresh();
+        }
+
+        public static void OnButton1Clicked(object? sender, EventArgs e)
+        {
+            if (Vars.CurrentStats)
+            {
+                Vars.CurrentStats = false;
+            }
+            else
+            {
+                Vars.CurrentStats = true;
+            }
+            ForceUnselect();
+            FileManager.Log($"Toggle Stats {Vars.CurrentStats}", 0);
+            // reload stuff
+
+            ForceRefresh();
+        }
+
+        public static void OnButton2Clicked(object? sender, EventArgs e)
+        {
+            if (Vars.selectedID != "")
+            {
+                string status = DataManager.GetStatus(Vars.selectedID);
+                if (status == "Exclude") { status = ""; }
+                else if (status == "") { status = "Exclude"; FileManager.Log($"Excluded ID: {Vars.selectedID}", 0); }
+                DataManager.SetStatus(Vars.selectedID, status);
+
+                FileManager.Log($"Unselected {Vars.selectedID}", 0);
+                Vars.selectedID = ""; Vars.showStats = false;
+
+                ForceRefresh();
+            }
+        }
+
+        public static void OnButton3Clicked(object? sender, EventArgs e)
+        {
+            if (Vars.selectedID != "")
+            {
+                // Handle the click event
+                string status = DataManager.GetStatus(Vars.selectedID);
+                if (status == "Archived") { status = ""; FileManager.Log($"Restored ID: {Vars.selectedID}", 0); }
+                else if (status == "") { status = "Archived"; FileManager.Log($"Archived ID: {Vars.selectedID}", 0); }
+                else if (status == "Exclude") { status = "Archived"; FileManager.Log($"Archived ID: {Vars.selectedID}", 0); }
+                DataManager.SetStatus(Vars.selectedID, status);
+
+
+                // recompile the archive after archiving or unarchiving
+                DataManager.CompileDinoArchive();
+
+                FileManager.Log($"Unselected {Vars.selectedID}", 0);
+                Vars.selectedID = ""; Vars.showStats = false;
+
+                ForceRefresh();
+            }
+
+        }
+
+        public static void OnButton4Clicked(object? sender, EventArgs e)
+        {
+            PurgeDinoAsync();
+        }
+
+        public static void OnButton5Clicked(object? sender, EventArgs e)
+        {
+            PurgeAllAsync();
+        }
+
+        public static async Task PurgeDinoAsync()
+        {
+            FileManager.Log("Purge Dino???", 1);
+            bool answer = await Application.Current.MainPage.DisplayAlert(
+    "Purge dino from DataBase",         // Title
+    "Do you want to proceed?", // Message
+    "Yes",                    // Yes button text
+    "No"                      // No button text
+);
+
+            if (answer)
+            {
+                if (Monitor.TryEnter(Vars._dbLock, TimeSpan.FromSeconds(5)))
+                {
+                    try
+                    {
+                        Vars.needSave = true;
+                        DataManager.DeleteRowsByID(Vars.selectedID);
+                        // recompile archive after deleting a row
+                        DataManager.CompileDinoArchive();
+                        ForceRefresh();
+                    }
+                    finally
+                    {
+                        Monitor.Exit(Vars._dbLock);
+                    }
+                }
+                else
+                {
+                    FileManager.Log("Failed to acquire database lock within timeout.", 1);
+                }
+            }
+        }
+
+        public static async Task PurgeAllAsync()
+        {
+            FileManager.Log("Purge Dino???", 1);
+            bool answer = await Application.Current.MainPage.DisplayAlert(
+    "Purge All dinos from DataBase",         // Title
+    "Do you want to proceed?", // Message
+    "Yes",                    // Yes button text
+    "No"                      // No button text
+);
+
+            if (answer)
+            {
+                // User selected "Yes"  
+                if (Monitor.TryEnter(Vars._dbLock, TimeSpan.FromSeconds(5)))
+                {
+                    try
+                    {
+                        DataManager.PurgeAll();
+                        FileManager.Log("Purged All Dinos", 1);
+                        // recompile archive after deleting all rows
+                        DataManager.CompileDinoArchive();
+                        ForceRefresh();
+                    }
+                    finally
+                    {
+                        Monitor.Exit(Vars._dbLock);
+                    }
+                }
+                else
+                {
+                    FileManager.Log("Failed to acquire database lock within timeout.", 1);
+                }
+            }
+        }
+
+
+        public static void ForceRefresh()
+        {
+
+        }
+
 
     }
 }
