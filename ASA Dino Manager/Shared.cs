@@ -58,7 +58,11 @@ namespace ASA_Dino_Manager
         public static string selectedID = "";
         public static string selectedClass = "";
 
+
+        public static string setPage = "";
         public static string setRoute = "";
+
+
         public static bool isSelected = false;
 
 

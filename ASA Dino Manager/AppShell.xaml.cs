@@ -11,6 +11,7 @@ namespace ASA_Dino_Manager
     {
         private bool _isTimerRunning = false; // Timer control flag
 
+        private bool disableAuto = false;
 
         public AppShell()
         {
@@ -63,45 +64,94 @@ namespace ASA_Dino_Manager
         }
 
 
-        protected override void OnNavigating(ShellNavigatingEventArgs args)
-        {
-
-            // Check if modification is in progress and cancel navigation
-
-            if (Shared.eventDisabled)
-            {
-             //   args.Cancel();
-            }
-
-
-            base.OnNavigating(args);
-        }
-
-
-
         private void OnShellNavigated(object sender, ShellNavigatedEventArgs e)
         {
-
             FileManager.Log($"Navigated to: {e.Current.Location}", 0);
+            FileManager.Log($"before = {Shared.setPage}", 0);
+
+            // now we should have the new destination
+            // from here route us to the same destination + 1
+
+            // get the route
+            var route = e.Current.Location.ToString();
+
+            var routeSplit = route.Split(new[] { @"." }, StringSplitOptions.RemoveEmptyEntries);
+
+            Shared.setPage = routeSplit[0];
+
+            Shared.setPage = Shared.setPage.Replace("/", "").Trim();
+
+            FileManager.Log($"after = {Shared.setPage}", 0);
+
+            if (!disableAuto) // run once per navigation event to reroute to a new fresh page
+            {
+                disableAuto = true;
+                string newRoute = $"{Shared.setPage}.{Shared.ReLoad()}";
 
 
-            // Create a new route name
-          //  string newRoute = $"ArchivePage;{Shared.ReLoad()}";
 
-            // Register the new route
-         //   Routing.RegisterRoute(newRoute, typeof(ArchivePage));
 
-            // Navigate to the new route
-          //  Shell.Current.GoToAsync($"//{newRoute}");
+
+
+                if (newRoute.Contains("Archive"))
+                {
+                    Routing.RegisterRoute(newRoute, typeof(ArchivePage));
+                }
+                else if (newRoute.Contains("ASA"))
+                {
+                    Routing.RegisterRoute(newRoute, typeof(MainPage));
+                }
+                else
+                {
+                    Routing.RegisterRoute(newRoute, typeof(DinoPage));
+                }
+
+
+
+                FileManager.Log($"Force navigating -> //{newRoute}", 0);
+
+                Shell.Current.GoToAsync($"//{newRoute}");
+
+                _ = UnlockNavigationAfterDelay(1000);
+
+            }
 
         }
+
+        private async Task UnlockNavigationAfterDelay(int delayMilliseconds)
+        {
+            await Task.Delay(delayMilliseconds);
+            disableAuto = false; // Re-enable navigation
+        }
+
 
         // Handle the Navigating event
         private void OnShellNavigating(object sender, ShellNavigatingEventArgs e)
         {
-            FileManager.Log($"Navigating to: {e.Target.Location}", 0);
+            //FileManager.Log($"Navigating to: {e.Target.Location}", 0);
+
+            // set default route
+            if (Shared.setPage == "") 
+            {
+                Shared.setPage = $"ASA";
+            }
 
 
+            /*
+            var routeSplit = route.Split(new[] { @" " }, StringSplitOptions.RemoveEmptyEntries);
+
+
+            Shared.setPage = routeSplit[0];
+
+            Shared.setPage = Shared.setPage.Replace("/", "").Trim();
+
+            if (Shared.setPage == "MainPage")
+            {
+                Shared.setPage = "ASA";
+            }
+            */
+
+            FileManager.Log($"setPage = {Shared.setPage}", 0);
         }
 
 
@@ -122,7 +172,7 @@ namespace ASA_Dino_Manager
             {
                 Title = "Dino Manager",
                 ContentTemplate = new DataTemplate(typeof(MainPage)), // Replace with the appropriate page
-                Route = $"ASA00{Shared.ReLoad()}"
+                Route = $"ASA.{Shared.ReLoad()}"
             };
             // Add the ShellContent to the Shell
             Items.Add(shellContent1);
@@ -133,7 +183,7 @@ namespace ASA_Dino_Manager
             {
                 Title = "Dino Archive",
                 ContentTemplate = new DataTemplate(() => new ArchivePage()), // Always a fresh page
-                Route = $"Archive00{Shared.ReLoad()}"
+                Route = $"Archive.{Shared.ReLoad()}"
             };
 
 
@@ -157,7 +207,7 @@ namespace ASA_Dino_Manager
                 {
                     Title = tag + " (" + totalC + ")",
                     ContentTemplate = new DataTemplate(typeof(MainPage)), // Replace with the appropriate page
-                    Route = $"{tag}00{Shared.ReLoad()}"
+                    Route = $"{tag}.{Shared.ReLoad()}"
                 };
 
                 // Add the ShellContent to the Shell
@@ -248,6 +298,7 @@ namespace ASA_Dino_Manager
 
         private void TriggerFunction()
         {
+
             Shared.Delay--;
             if (Shared.Delay < 0)
             {

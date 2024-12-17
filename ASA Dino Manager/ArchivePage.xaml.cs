@@ -9,54 +9,21 @@ public partial class ArchivePage : ContentPage
     {
         InitializeComponent();
 
-
-        // get the route
-        var route = Shell.Current.CurrentState.Location.ToString();
-        route = route.Replace("/", "");
-
-
-        var routeSplit = route.Split(new[] { @"00" }, StringSplitOptions.RemoveEmptyEntries);
-
-        Shared.setRoute = routeSplit[0];
-
-        FileManager.Log($"setRoute -> {Shared.setRoute}", 0);
+        FileManager.Log($"arrived at archive with page= {Shared.setPage}", 0);
 
         CreateContent();
     }
-
-    private async Task test()
-    {
-        string newRoute = $"ArchivePage00{Shared.ReLoad()}"; // Relative route
-        Routing.RegisterRoute(newRoute, typeof(ArchivePage));
-
-        await Shell.Current.GoToAsync($"//{newRoute}");
-
-    }
-
-    public void ReloadContent()
-    {
-        test();
-
-        // Create a new route name
-       // string newRoute = $"ArchivePage00{Shared.ReLoad()}";
-
-        // Register the new route
-      //  Routing.RegisterRoute(newRoute, typeof(ArchivePage));
-
-        // Navigate to the new route
-      //  Shell.Current.GoToAsync($"//{newRoute}");
-    }
-
 
     public void CreateContent()
     {
         if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
         {
+
             try
             {
                 FileManager.Log("Updating GUI -> " + Shared.setRoute, 0);
 
-                if (!Shared.isSelected) { this.Title = Shared.setRoute; }
+                if (!Shared.isSelected) { this.Title = Shared.setPage; }
 
                 // recompile the archive after archiving or unarchiving
                 DataManager.CompileDinoArchive();
@@ -74,6 +41,7 @@ public partial class ArchivePage : ContentPage
             {
                 Monitor.Exit(Shared._dbLock);
             }
+
         }
         else
         {
