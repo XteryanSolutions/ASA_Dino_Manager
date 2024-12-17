@@ -9,10 +9,10 @@ public partial class DinoPage : ContentPage
 	{
         InitializeComponent();
 
-        FileManager.Log($"arrived at dino with page= {Shared.setPage}", 0);
+        FileManager.Log($"Loading: {Shared.setPage}", 0);
 
+        this.Title = $"{Shared.setPage}";
         CreateContent();
-
     }
 
     public void CreateContent()
@@ -22,6 +22,7 @@ public partial class DinoPage : ContentPage
             try
             {
                 FileManager.Log("Updating GUI -> " + Shared.setRoute, 0);
+
                 if (!string.IsNullOrEmpty(Shared.selectedClass))
                 {
                     if (Shared.showStats)
@@ -120,6 +121,40 @@ public partial class DinoPage : ContentPage
         }
 
         this.Content = null;
+        this.Content = mainLayout;
+    }
+
+    public void DinoView()
+    {
+        // ==============================================================    Create Dino Layout   =====================================================
+
+        // Create the main layout
+        var mainLayout = new Grid();
+
+
+        // create main layout with 2 columns
+
+        // Define row definitions
+        mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // 0
+
+
+        mainLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = 100 }); // 0
+        mainLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 1
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // Add side panel to left column
+        AddToGrid(mainLayout, CreateSidePanel(), 0, 0);
+
+        // Add main panel to right column
+        AddToGrid(mainLayout, CreateMainPanel(), 0, 1);
+
+        // only attach the tapgesture if we have something selected
+        if (Shared.selectedID != "")
+        {
+            UnSelectDino(mainLayout);
+        }
+
         this.Content = mainLayout;
     }
 
@@ -309,40 +344,6 @@ public partial class DinoPage : ContentPage
 
 
         return grid;
-    }
-
-    public void UpdateMainContentPage()
-    {
-        // ==============================================================    Create Dino Layout   =====================================================
-
-        // Create the main layout
-        var mainLayout = new Grid();
-
-
-        // create main layout with 2 columns
-
-        // Define row definitions
-        mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // 0
-
-
-        mainLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = 100 }); // 0
-        mainLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 1
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        // Add side panel to left column
-        AddToGrid(mainLayout, CreateSidePanel(), 0, 0);
-
-        // Add main panel to right column
-        AddToGrid(mainLayout, CreateMainPanel(), 0, 1);
-
-        // only attach the tapgesture if we have something selected
-        if (Shared.selectedID != "")
-        {
-            UnSelectDino(mainLayout);
-        }
-
-        this.Content = mainLayout;
     }
 
     private Grid CreateDinoGrid(DataTable table, string title)
@@ -602,6 +603,8 @@ public partial class DinoPage : ContentPage
         return grid;
     }
 
+
+    // Button event handlers
     void SortColumn(Label label, string sex)
     {
         // Create a TapGestureRecognizer

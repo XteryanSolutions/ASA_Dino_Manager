@@ -22,18 +22,10 @@ namespace ASA_Dino_Manager
         {
             InitializeComponent();
 
+            FileManager.Log($"Loading: {Shared.setPage}", 0);
 
-            // reset toggles when navigating
-            Shared.ToggleExcluded = 0; Shared.CurrentStats = false;
-            Shared.showStats = false;
-
-            string dinoTag = DataManager.TagForClass(Shared.setPage);
-            Shared.selectedClass = dinoTag;
-
-
-
+            this.Title = $"{Shared.setPage}";
             CreateContent();
-
         }
 
         public void CreateContent()

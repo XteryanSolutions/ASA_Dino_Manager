@@ -1,4 +1,5 @@
 using System.Data;
+using System.Xml.Linq;
 
 namespace ASA_Dino_Manager;
 
@@ -9,9 +10,26 @@ public partial class ArchivePage : ContentPage
     {
         InitializeComponent();
 
-        FileManager.Log($"arrived at archive with page= {Shared.setPage}", 0);
+        FileManager.Log($"Loading: {Shared.setPage}", 0);
 
+        this.Title = $"{Shared.setPage}";
         CreateContent();
+    }
+
+    private void AddToGrid(Grid grid, View view, int row, int column)
+    {
+        // Ensure rows exist up to the specified index
+        while (grid.RowDefinitions.Count <= row)
+        {
+            grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
+        }
+
+        // Set the row and column for the view
+        Grid.SetRow(view, row);
+        Grid.SetColumn(view, column);
+
+        // Add the view to the grid
+        grid.Children.Add(view);
     }
 
     public void CreateContent()
@@ -239,8 +257,6 @@ public partial class ArchivePage : ContentPage
         return grid;
     }
 
-
-    // Archive Table
     private Grid CreateArchiveGrid(DataTable table, string title)
     {
         var grid = new Grid
@@ -316,24 +332,8 @@ public partial class ArchivePage : ContentPage
         return grid;
     }
 
-    private void AddToGrid(Grid grid, View view, int row, int column)
-    {
-        // Ensure rows exist up to the specified index
-        while (grid.RowDefinitions.Count <= row)
-        {
-            grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
-        }
-
-        // Set the row and column for the view
-        Grid.SetRow(view, row);
-        Grid.SetColumn(view, column);
-
-        // Add the view to the grid
-        grid.Children.Add(view);
-    }
 
     // Button event handlers
-
     private void SelectDino(Label label, string id)
     {
         // Create a TapGestureRecognizer
@@ -349,7 +349,6 @@ public partial class ArchivePage : ContentPage
 
                 FileManager.Log($"Selected {name} ID: {id}", 0); Shared.isSelected = true;
 
-                //ReloadContent();
                 CreateContent();
             }
         };
@@ -367,7 +366,7 @@ public partial class ArchivePage : ContentPage
             FileManager.Log($"Unselected {Shared.selectedID}", 0);
             Shared.selectedID = ""; Shared.isSelected = false;
 
-            //ReloadContent();
+            this.Title = $"{Shared.setPage}"; 
             CreateContent();
         };
 
@@ -393,8 +392,7 @@ public partial class ArchivePage : ContentPage
             FileManager.Log($"Unselected {Shared.selectedID}", 0);
             Shared.selectedID = ""; Shared.isSelected = false;
 
-            ReloadContent();
-            //CreateContent();
+            CreateContent();
         }
 
     }
@@ -429,8 +427,7 @@ public partial class ArchivePage : ContentPage
                     DataManager.DeleteRowsByID(Shared.selectedID);
                     // recompile archive after deleting a row
                     DataManager.CompileDinoArchive();
-                    ReloadContent();
-                    //CreateContent();
+                    CreateContent();
                 }
                 finally
                 {
@@ -465,8 +462,7 @@ public partial class ArchivePage : ContentPage
                     FileManager.Log("Purged All Dinos", 1);
                     // recompile archive after deleting all rows
                     DataManager.CompileDinoArchive();
-                    ReloadContent();
-                    //CreateContent();
+                    CreateContent();
                 }
                 finally
                 {

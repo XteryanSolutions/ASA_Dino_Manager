@@ -76,9 +76,6 @@ namespace ASA_Dino_Manager
 
 
         // Benchmark stuff
-        public static int RefreshCount = 0;
-        public static double RefreshAvg = 0; // keep track of average import time
-
         public static int ImportCount = 0;
         public static double ImportAvg = 0; // keep track of average import time
 
