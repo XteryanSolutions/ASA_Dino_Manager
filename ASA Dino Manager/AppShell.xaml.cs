@@ -83,12 +83,16 @@ namespace ASA_Dino_Manager
             // Add the ShellContent to the Shell
             Items.Add(shellContent1);
 
+
             var shellContent2 = new ShellContent
             {
                 Title = "Dino Archive",
-                ContentTemplate = ArchivePage, // Replace with the appropriate page
+                ContentTemplate = new DataTemplate(() => new ArchivePage()), // Always a fresh page
                 Route = "Archive"
             };
+
+
+
             // Add the ShellContent to the Shell
             Items.Add(shellContent2);
 
@@ -147,7 +151,7 @@ namespace ASA_Dino_Manager
 
                                 Shared.needSave = true;
                                 UpdateShellContents();
-                                ForceNavigation();
+                                //ForceNavigation();
                             }
 
 
@@ -233,216 +237,6 @@ namespace ASA_Dino_Manager
                 FileManager.Log("Failed to acquire database lock within timeout.", 1);
             }
         }
-
-        public static void SelectDino(Label label, string id)
-        {
-            // Create a TapGestureRecognizer
-            var tapGesture = new TapGestureRecognizer();
-            tapGesture.Tapped += (s, e) =>
-            {
-                if (Shared.selectedID != id) // dont select the same dino twice
-                {
-                    Shared.selectedID = id;
-
-                    string name = DataManager.GetLastColumnData("ID", Shared.selectedID, "Name");
-                    //this.Title = $"{name} - {id}"; // set title to dino name
-
-                    FileManager.Log($"Selected {name} ID: {id}", 0); Shared.showStats = true;
-
-                    ForceNavigation();
-                }
-            };
-
-            // Attach the TapGestureRecognizer to the label
-            label.GestureRecognizers.Add(tapGesture);
-        }
-
-        public static void UnSelectDino(Grid grid)
-        {
-            // Create a TapGestureRecognizer
-            var tapGesture = new TapGestureRecognizer();
-            tapGesture.Tapped += (s, e) =>
-            {
-                FileManager.Log($"Unselected {Shared.selectedID}", 0);
-                Shared.selectedID = ""; Shared.showStats = false;
-                // Handle the click event
-                ForceNavigation();
-            };
-
-            // Attach the TapGestureRecognizer to the label
-            grid.GestureRecognizers.Add(tapGesture);
-        }
-
-        public static void ForceUnselect()
-        {
-            if (Shared.selectedID != "")
-            {
-                FileManager.Log($"Force Unselected {Shared.selectedID}", 0);
-                Shared.selectedID = ""; Shared.showStats = false;
-            }
-        }
-
-        public static void OnButton0Clicked(object? sender, EventArgs e)
-        {
-            Shared.ToggleExcluded++;
-            if (Shared.ToggleExcluded == 4)
-            {
-                Shared.ToggleExcluded = 0;
-            }
-            ForceUnselect();
-            FileManager.Log($"Toggle Exclude {Shared.ToggleExcluded}", 0);
-            // reload stuff
-            ForceNavigation();
-        }
-
-        public static void OnButton1Clicked(object? sender, EventArgs e)
-        {
-            if (Shared.CurrentStats)
-            {
-                Shared.CurrentStats = false;
-            }
-            else
-            {
-                Shared.CurrentStats = true;
-            }
-            ForceUnselect();
-            FileManager.Log($"Toggle Stats {Shared.CurrentStats}", 0);
-            // reload stuff
-
-            ForceNavigation();
-        }
-
-        public static void OnButton2Clicked(object? sender, EventArgs e)
-        {
-            if (Shared.selectedID != "")
-            {
-                string status = DataManager.GetStatus(Shared.selectedID);
-                if (status == "Exclude") { status = ""; }
-                else if (status == "") { status = "Exclude"; FileManager.Log($"Excluded ID: {Shared.selectedID}", 0); }
-                DataManager.SetStatus(Shared.selectedID, status);
-
-                FileManager.Log($"Unselected {Shared.selectedID}", 0);
-                Shared.selectedID = ""; Shared.showStats = false;
-
-                ForceNavigation();
-            }
-        }
-
-        public static void OnButton3Clicked(object? sender, EventArgs e)
-        {
-            if (Shared.selectedID != "")
-            {
-                // Handle the click event
-                string status = DataManager.GetStatus(Shared.selectedID);
-                if (status == "Archived") { status = ""; FileManager.Log($"Restored ID: {Shared.selectedID}", 0); }
-                else if (status == "") { status = "Archived"; FileManager.Log($"Archived ID: {Shared.selectedID}", 0); }
-                else if (status == "Exclude") { status = "Archived"; FileManager.Log($"Archived ID: {Shared.selectedID}", 0); }
-                DataManager.SetStatus(Shared.selectedID, status);
-
-
-                // recompile the archive after archiving or unarchiving
-                DataManager.CompileDinoArchive();
-
-                FileManager.Log($"Unselected {Shared.selectedID}", 0);
-                Shared.selectedID = ""; Shared.showStats = false;
-
-                ForceNavigation();
-            }
-
-        }
-
-        public static void OnButton4Clicked(object? sender, EventArgs e)
-        {
-            PurgeDinoAsync();
-        }
-
-        public static void OnButton5Clicked(object? sender, EventArgs e)
-        {
-            PurgeAllAsync();
-        }
-
-        public static async Task PurgeDinoAsync()
-        {
-            FileManager.Log("Purge Dino???", 1);
-            bool answer = await Application.Current.MainPage.DisplayAlert(
-    "Purge dino from DataBase",         // Title
-    "Do you want to proceed?", // Message
-    "Yes",                    // Yes button text
-    "No"                      // No button text
-);
-
-            if (answer)
-            {
-                if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
-                {
-                    try
-                    {
-                        Shared.needSave = true;
-                        DataManager.DeleteRowsByID(Shared.selectedID);
-                        // recompile archive after deleting a row
-                        DataManager.CompileDinoArchive();
-                        ForceNavigation();
-                    }
-                    finally
-                    {
-                        Monitor.Exit(Shared._dbLock);
-                    }
-                }
-                else
-                {
-                    FileManager.Log("Failed to acquire database lock within timeout.", 1);
-                }
-            }
-        }
-
-        public static async Task PurgeAllAsync()
-        {
-            FileManager.Log("Purge Dino???", 1);
-            bool answer = await Application.Current.MainPage.DisplayAlert(
-    "Purge All dinos from DataBase",         // Title
-    "Do you want to proceed?", // Message
-    "Yes",                    // Yes button text
-    "No"                      // No button text
-);
-
-            if (answer)
-            {
-                // User selected "Yes"  
-                if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
-                {
-                    try
-                    {
-                        DataManager.PurgeAll();
-                        FileManager.Log("Purged All Dinos", 1);
-                        // recompile archive after deleting all rows
-                        DataManager.CompileDinoArchive();
-                        ForceNavigation();
-                    }
-                    finally
-                    {
-                        Monitor.Exit(Shared._dbLock);
-                    }
-                }
-                else
-                {
-                    FileManager.Log("Failed to acquire database lock within timeout.", 1);
-                }
-            }
-        }
-
-        public static async Task ForceNavigation()
-        {
-            FileManager.Log($"Going ->  {Shared.setPage} -> {Shared.setRoute}", 0);
-
-            FileManager.Log($"Selected -> {Shared.selectedID}", 0);
-
-
-            await AppShell.Current.GoToAsync($"{Shared.setPage}", true);
-
-
-
-        }
-
 
     }
 }

@@ -9,6 +9,10 @@ namespace ASA_Dino_Manager
 
     internal class Shared
     {
+        //Shared Variables
+
+
+
         // theese might move later to their proper location
 
         // Title version string

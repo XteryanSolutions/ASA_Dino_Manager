@@ -33,7 +33,9 @@ public partial class ArchivePage : ContentPage
         }
 
         CreateContent();
+
     }
+
 
 
     public void CreateContent()
@@ -44,26 +46,19 @@ public partial class ArchivePage : ContentPage
             {
                 FileManager.Log("Updating GUI -> " + Shared.setRoute, 0);
 
+                if (!isSelected) { this.Title = Shared.setRoute; }
 
+                // recompile the archive after archiving or unarchiving
+                DataManager.CompileDinoArchive();
 
-                if (Shared.setRoute == "Archive")
+                if (DataManager.ArchiveTable.Rows.Count > 0)
                 {
-                    if (!Shared.showStats) { this.Title = Shared.setRoute; }
-
-                    // recompile the archive after archiving or unarchiving
-                    DataManager.CompileDinoArchive();
-
-                    if (DataManager.ArchiveTable.Rows.Count > 0)
-                    {
-                        ArchiveView();
-                    }
-                    else
-                    {
-                        DefaultView("No dinos in here :(");
-                    }
+                    ArchiveView();
                 }
-
-
+                else
+                {
+                    DefaultView("No dinos in here :(");
+                }
             }
             finally
             {
@@ -108,9 +103,9 @@ public partial class ArchivePage : ContentPage
 
 
         // only attach the tapgesture if we have something selected
-        if (Shared.selectedID != "")
+        if (selectedID != "")
         {
-            AppShell.UnSelectDino(mainLayout);
+            UnSelectDino(mainLayout);
         }
 
         this.Content = null;
@@ -180,7 +175,7 @@ public partial class ArchivePage : ContentPage
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
 
 
-        string status = DataManager.GetStatus(Shared.selectedID);
+        string status = DataManager.GetStatus(selectedID);
 
 
         string btn3Text = "Archive"; var bColor3 = Shared.dangerColor;
@@ -189,7 +184,7 @@ public partial class ArchivePage : ContentPage
 
 
         // add theese only if we have a dino selected
-        if (Shared.showStats) 
+        if (isSelected) 
         {
             var topButton3 = new Button { Text = btn3Text, BackgroundColor = bColor3 };
             topButton3.Clicked += OnButton3Clicked;
