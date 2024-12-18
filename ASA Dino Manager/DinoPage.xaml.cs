@@ -290,7 +290,7 @@ public partial class DinoPage : ContentPage
 
         // dynamically adjust the bottom bar height
         int rowCount = DataManager.BottomTable.Rows.Count;
-        int barH = (rowCount * Shared.rowHeight) + Shared.rowHeight + 12;
+        int barH = (rowCount * Shared.rowHeight) + Shared.rowHeight + 13;
         if (rowCount > 5) { barH = (Shared.rowHeight * 5) + Shared.rowHeight + 5; }
 
 

@@ -60,7 +60,7 @@ namespace ASA_Dino_Manager
 
 
         ////////////////////    Scaling        ////////////////////
-        public static int rowHeight = 18;
+        public static int rowHeight = 20;
 
     }
 }
