@@ -10,8 +10,6 @@
     Shell.FlyoutBehavior="Flyout"
     Title="ASA Dino Manager 1.00">
 
-    <ShellContent Title="Dino Archive" ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
-
 
 
 </Shell>
