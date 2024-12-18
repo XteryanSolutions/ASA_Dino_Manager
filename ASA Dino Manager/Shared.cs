@@ -11,7 +11,7 @@ namespace ASA_Dino_Manager
     internal class Shared
     {
         ////////////////////    Title version   ////////////////////
-        public static string version = "ASA Dino Manager 0.04.37";
+        public static string version = "ASA Dino Manager 0.04.38";
 
 
         /////////////////////////////////////////////////////////////
