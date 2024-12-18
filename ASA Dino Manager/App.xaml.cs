@@ -10,6 +10,10 @@ public partial class App : Application
     public App()
     {
         InitializeComponent();
+
+        // Force the app to use Dark Mode
+        UserAppTheme = AppTheme.Dark;
+
         MainPage = new AppShell();
     }
 
