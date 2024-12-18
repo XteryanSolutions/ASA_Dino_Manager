@@ -14,7 +14,7 @@
   <Properties>
     <DisplayName>ASA Dino Manager</DisplayName>
     <PublisherDisplayName>Xteryan Solutions</PublisherDisplayName>
-    <Logo>Platforms\Windows\Assets\DinoPackage.png</Logo>
+    <Logo>Platforms\Windows\Assets\Generated\dino.png</Logo>
   </Properties>
 
   <Dependencies>
@@ -31,15 +31,15 @@
       <uap:VisualElements
         DisplayName="ASA Dino Manager"
         Description="Dino Manager"
-        BackgroundColor="transparent" Square150x150Logo="Platforms\Windows\Assets\DinoMedium.png" Square44x44Logo="Platforms\Windows\Assets\DinoApp.png">
-        <uap:DefaultTile ShortName="DinoManager" Wide310x150Logo="Platforms\Windows\Assets\DinoWide.png" Square310x310Logo="Platforms\Windows\Assets\DinoLarge.png" Square71x71Logo="Platforms\Windows\Assets\DinoSmall.png">
+        BackgroundColor="transparent" Square150x150Logo="Platforms\Windows\Assets\Generated\DinoMedium.png" Square44x44Logo="Platforms\Windows\Assets\Generated\DinoApp.png">
+        <uap:DefaultTile ShortName="DinoManager" Wide310x150Logo="Platforms\Windows\Assets\Generated\DinoWide.png" Square310x310Logo="Platforms\Windows\Assets\Generated\DinoLarge.png" Square71x71Logo="Platforms\Windows\Assets\Generated\DinoSmall.png">
           <uap:ShowNameOnTiles>
             <uap:ShowOn Tile="wide310x150Logo"/>
             <uap:ShowOn Tile="square310x310Logo"/>
             <uap:ShowOn Tile="square150x150Logo"/>
           </uap:ShowNameOnTiles>
         </uap:DefaultTile >
-        <uap:LockScreen BadgeLogo="Platforms\Windows\Assets\DinoBadge.png" Notification="badge"/>
+        <uap:LockScreen BadgeLogo="Platforms\Windows\Assets\Generated\DinoBadge.png" Notification="badge"/>
       </uap:VisualElements>
     </Application>
   </Applications>

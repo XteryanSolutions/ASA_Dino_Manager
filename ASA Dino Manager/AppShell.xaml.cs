@@ -213,16 +213,19 @@
                             // Check if we need to reload data
                             if (DataManager.ModC > 0 || DataManager.AddC > 0 || tagList.Length > DataManager.tagSize)
                             {
+
                                 FileManager.Log("Updated DataBase", 0);
 
                                 FileManager.needSave = true;
-
-                                // UpdateMenuContents();
+                                DataManager.AddC = 0; DataManager.ModC = 0;
+                                //UpdateMenuContents();
                                 //ForceNavigation();
+
                             }
                             if (DataManager.AddC > 0)
                             {
-                              //  UpdateMenuContents();
+                                DataManager.AddC = 0; 
+                                UpdateMenuContents();
                             }
 
 
