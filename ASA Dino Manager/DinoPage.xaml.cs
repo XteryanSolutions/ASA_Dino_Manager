@@ -21,8 +21,6 @@ public partial class DinoPage : ContentPage
         {
             try
             {
-                FileManager.Log("Updating GUI -> " + Shared.setRoute, 0);
-
                 if (!string.IsNullOrEmpty(Shared.selectedClass))
                 {
                     if (Shared.showStats)
@@ -58,6 +56,7 @@ public partial class DinoPage : ContentPage
                 string[] males = DataManager.GetDistinctFilteredColumnData("Class", Shared.selectedClass, "Sex", "Male", "ID");
                 int totalC = females.Length + males.Length;
 
+                FileManager.Log("Updating GUI -> " + Shared.setPage, 0);
 
                 if (!Shared.showStats) { this.Title = Shared.setPage; }
                 if (totalC == 0)
@@ -69,8 +68,6 @@ public partial class DinoPage : ContentPage
                     DinoView();
                    
                 }
-
-
             }
             finally
             {

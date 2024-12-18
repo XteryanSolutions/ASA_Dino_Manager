@@ -119,7 +119,7 @@ namespace ASA_Dino_Manager
                             }
                             FileManager.Log("Set New gamePath", 0);
                             Shared.Scanning = false;
-                            if (!Shared.ImportEnabled) { Shared.ImportEnabled = true; FileManager.Log("Enabled Importing (Found GamePath)", 0); AppShell.ForceNavigate("ASA"); }
+                            if (!Shared.ImportEnabled) { Shared.ImportEnabled = true; FileManager.Log("Enabled Importing (Found GamePath)", 0); }
                         }
                         else
                         {

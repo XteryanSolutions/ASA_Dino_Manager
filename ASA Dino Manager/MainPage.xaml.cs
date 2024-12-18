@@ -36,7 +36,6 @@ namespace ASA_Dino_Manager
                 {
                     FileManager.Log("Updating GUI -> " + Shared.setPage, 0);
 
-
                     string test = Shared.setPage;
                     if (Shared.setPage == @"Looking.for.dinos")
                     {

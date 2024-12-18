@@ -39,12 +39,12 @@ public partial class ArchivePage : ContentPage
 
             try
             {
-                FileManager.Log("Updating GUI -> " + Shared.setRoute, 0);
-
-                if (!Shared.isSelected) { this.Title = Shared.setPage; }
-
                 // recompile the archive after archiving or unarchiving
                 DataManager.CompileDinoArchive();
+
+                FileManager.Log("Updating GUI -> " + Shared.setPage, 0);
+
+                if (!Shared.isSelected) { this.Title = Shared.setPage; }
 
                 if (DataManager.ArchiveTable.Rows.Count > 0)
                 {

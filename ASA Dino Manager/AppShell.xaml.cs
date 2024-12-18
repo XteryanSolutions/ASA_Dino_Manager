@@ -51,7 +51,7 @@ namespace ASA_Dino_Manager
             if (!Shared.Scanning && tagList.Length > 0)
             {
                 DataManager.CleanDataBaseByID();
-                UpdateShellContents();
+                UpdateMenuContents();
             }
             else
             {
@@ -98,9 +98,7 @@ namespace ASA_Dino_Manager
 
         private void OnShellNavigated(object sender, ShellNavigatedEventArgs e)
         {
-            FileManager.Log($"Navigated to: {e.Current.Location}", 0);
-
-
+           // FileManager.Log($"Navigated to: {e.Current.Location}", 0);
         }
 
         private static async Task UnlockNavigationAfterDelay(int delayMilliseconds)
@@ -140,8 +138,7 @@ namespace ASA_Dino_Manager
             }
         }
 
-
-        public void UpdateShellContents()
+        public void UpdateMenuContents()
         {
             disableNavSet = true; FileManager.Log("Disabled setPage", 0);
             string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
@@ -231,7 +228,7 @@ namespace ASA_Dino_Manager
                                 FileManager.Log("Updated DataBase", 0);
 
                                 Shared.needSave = true;
-                                UpdateShellContents();
+                                UpdateMenuContents();
                                 //ForceNavigation();
                             }
 

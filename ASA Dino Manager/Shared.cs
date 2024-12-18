@@ -44,7 +44,7 @@ namespace ASA_Dino_Manager
         // IMPORTING
         public static bool ImportEnabled = false;
         public static int Delay = 5; // initial import delay
-        public static int DefaultDelay = 20; // default import delay in seconds
+        public static int DefaultDelay = 10; // default import delay in seconds
 
 
         // database lock
