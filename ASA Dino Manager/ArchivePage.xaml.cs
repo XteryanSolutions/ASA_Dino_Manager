@@ -99,10 +99,10 @@ public partial class ArchivePage : ContentPage
 
 
         // only attach the tapgesture if we have something selected
-        if (Shared.selectedID != "")
-        {
-            UnSelectDino(mainLayout);
-        }
+        // for now its the only way to force refresh a page
+        // so we attach it to everything so we can click
+        UnSelectDino(mainLayout);
+
 
         this.Content = null;
         this.Content = mainLayout;
@@ -134,13 +134,8 @@ public partial class ArchivePage : ContentPage
         AddToGrid(mainLayout, CreateMainPanel(), 0, 1);
 
         // attach unselect event after all content has been created
+        UnSelectDino(mainLayout);
 
-
-        // only attach the tapgesture if we have something selected
-        if (Shared.selectedID != "")
-        {
-            UnSelectDino(mainLayout);
-        }
 
         this.Content = mainLayout;
     }

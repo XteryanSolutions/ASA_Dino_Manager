@@ -36,9 +36,9 @@ namespace ASA_Dino_Manager
                 {
                     FileManager.Log("Updating GUI -> " + Shared.setPage, 0);
 
-                  
 
-                    if (Shared.setPage == @"Looking for dinos")
+                    string test = Shared.setPage;
+                    if (Shared.setPage == @"Looking.for.dinos")
                     {
                         this.Title = "No dinos around here!";
                         DefaultView("Looking for dinos =/");
@@ -90,6 +90,11 @@ namespace ASA_Dino_Manager
 
             AddToGrid(mainLayout, scrollView, 0, 0);
 
+            // only attach the tapgesture if we have something selected
+            // for now its the only way to force refresh a page
+            // so we attach it to everything so we can click
+            UnSelectAll(mainLayout);
+
 
             this.Content = null;
             this.Content = mainLayout;
@@ -111,6 +116,19 @@ namespace ASA_Dino_Manager
             grid.Children.Add(view);
         }
 
+        void UnSelectAll(Grid grid)
+        {
+            // Create a TapGestureRecognizer
+            var tapGesture = new TapGestureRecognizer();
+            tapGesture.Tapped += (s, e) =>
+            {
+                // Handle the click event
+                CreateContent();
+            };
+
+            // Attach the TapGestureRecognizer to the label
+            grid.GestureRecognizers.Add(tapGesture);
+        }
 
     }
 }

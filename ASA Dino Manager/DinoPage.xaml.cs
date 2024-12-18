@@ -11,7 +11,7 @@ public partial class DinoPage : ContentPage
 
         FileManager.Log($"Loading: {Shared.setPage}", 0);
 
-        this.Title = $"{Shared.setPage}";
+        this.Title = $"{Shared.setPage.Replace("_"," ")}";
         CreateContent();
     }
 
@@ -149,11 +149,12 @@ public partial class DinoPage : ContentPage
         // Add main panel to right column
         AddToGrid(mainLayout, CreateMainPanel(), 0, 1);
 
+
         // only attach the tapgesture if we have something selected
-        if (Shared.selectedID != "")
-        {
-            UnSelectDino(mainLayout);
-        }
+        // for now its the only way to force refresh a page
+        // so we attach it to everything so we can click
+        UnSelectDino(mainLayout);
+
 
         this.Content = mainLayout;
     }

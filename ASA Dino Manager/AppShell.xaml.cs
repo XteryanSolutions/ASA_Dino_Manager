@@ -10,8 +10,8 @@ namespace ASA_Dino_Manager
     public partial class AppShell : Shell
     {
         private bool _isTimerRunning = false; // Timer control flag
-        private bool disableAuto = false;
-
+        private static bool disableAuto = false;
+        private static bool disableNavSet = false;
 
         public AppShell()
         {
@@ -60,54 +60,22 @@ namespace ASA_Dino_Manager
                 {
                     Title = "Looking for dinos",
                     ContentTemplate = new DataTemplate(typeof(MainPage)),
-                    Route = "Looking for dinos"
+                    Route = "Looking.for.dinos"
                 };
                 Items.Add(shellContent);
                 FileManager.Log("No dinos =(", 0);
+                Shared.setPage = $"Looking.for.dinos";
             }
             StartTimer();
         }
 
-        private void OnShellNavigated(object sender, ShellNavigatedEventArgs e)
+        public static void ForceNavigate(string route)
         {
-            FileManager.Log($"Navigated to: {e.Current.Location}", 0);
-            FileManager.Log($"before = {Shared.setPage}", 0);
+            string newRoute = $"{route}.{Shared.ReLoad()}";
 
-            // reset toggles when navigating
-            Shared.ToggleExcluded = 0; Shared.CurrentStats = false;
-            Shared.showStats = false;
-
-
-            // now we should have the new destination
-            // from here route us to the same destination + 1
-
-
-            // get the route
-            var route = e.Current.Location.ToString();
-
-            var routeSplit = route.Split(new[] { @"." }, StringSplitOptions.RemoveEmptyEntries);
-
-            Shared.setPage = routeSplit[0];
-
-            Shared.setPage = Shared.setPage.Replace("/", "").Trim();
-
-            FileManager.Log($"after = {Shared.setPage}", 0);
-
-
-            string dinoTag = DataManager.TagForClass(Shared.setPage);
-            Shared.selectedClass = dinoTag;
-
-
-            if (!disableAuto) // run once per navigation event to reroute to a new fresh page
+            if (!disableAuto)
             {
                 disableAuto = true;
-                string newRoute = $"{Shared.setPage}.{Shared.ReLoad()}";
-
-
-
-
-
-
                 if (newRoute.Contains("Archive"))
                 {
                     Routing.RegisterRoute(newRoute, typeof(ArchivePage));
@@ -122,18 +90,20 @@ namespace ASA_Dino_Manager
                 }
 
 
-
                 FileManager.Log($"Force navigating -> //{newRoute}", 0);
-
                 Shell.Current.GoToAsync($"//{newRoute}");
-
                 _ = UnlockNavigationAfterDelay(1000);
-
             }
+        }
+
+        private void OnShellNavigated(object sender, ShellNavigatedEventArgs e)
+        {
+            FileManager.Log($"Navigated to: {e.Current.Location}", 0);
+
 
         }
 
-        private async Task UnlockNavigationAfterDelay(int delayMilliseconds)
+        private static async Task UnlockNavigationAfterDelay(int delayMilliseconds)
         {
             await Task.Delay(delayMilliseconds);
             disableAuto = false; // Re-enable navigation
@@ -141,20 +111,39 @@ namespace ASA_Dino_Manager
 
         private void OnShellNavigating(object sender, ShellNavigatingEventArgs e)
         {
-            //FileManager.Log($"Navigating to: {e.Target.Location}", 0);
-
-            // set default route
-            if (Shared.setPage == "") 
+            if (!disableNavSet) // make sure we are allowed to set new setPage
             {
-                Shared.setPage = $"ASA";
-            }
+                // reset toggles when navigating
+                Shared.ToggleExcluded = 0; Shared.CurrentStats = false;
+                Shared.showStats = false;
 
-            FileManager.Log($"setPage = {Shared.setPage}", 0);
+
+                // now we should have the new target
+                string target = e.Target.Location.ToString();
+
+
+                // remove .
+                var routeSplit = target.Split(new[] { @"." }, StringSplitOptions.RemoveEmptyEntries);
+
+                // replace all / and trim it
+                Shared.setPage = routeSplit[0].Replace("/", "").Trim();
+
+
+                FileManager.Log($"New setPage = {Shared.setPage}", 0);
+
+                string dinoTag = DataManager.TagForClass(Shared.setPage);
+                Shared.selectedClass = dinoTag;
+            }
+            else
+            {
+                FileManager.Log("setPage is disabled", 1);
+            }
         }
+
 
         public void UpdateShellContents()
         {
-            Shared.eventDisabled = true; FileManager.Log("Disabled Navigation", 0);
+            disableNavSet = true; FileManager.Log("Disabled setPage", 0);
             string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
             string[] classList = DataManager.GetAllClasses();
 
@@ -202,15 +191,15 @@ namespace ASA_Dino_Manager
 
                 var shellContent = new ShellContent
                 {
-                    Title = tag + " (" + totalC + ")",
-                    ContentTemplate = new DataTemplate(typeof(MainPage)), // Replace with the appropriate page
+                    Title = tag.Replace(" ","_") + " (" + totalC + ")",
+                    ContentTemplate = new DataTemplate(typeof(DinoPage)), // Replace with the appropriate page
                     Route = $"{tag}.{Shared.ReLoad()}"
                 };
 
                 // Add the ShellContent to the Shell
                 Items.Add(shellContent);
             }
-            Shared.eventDisabled = false; FileManager.Log("Enabled Navigation", 0);
+            disableNavSet = false; FileManager.Log("Enabled setPage", 0);
             FileManager.Log("Updated tagList", 0);
         }
 
@@ -295,7 +284,6 @@ namespace ASA_Dino_Manager
 
         private void TriggerFunction()
         {
-
             Shared.Delay--;
             if (Shared.Delay < 0)
             {
