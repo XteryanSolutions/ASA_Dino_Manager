@@ -1,7 +1,7 @@
 {
   "profiles": {
     "ASA_Dino_Manager": {
-      "commandName": "Project",
+      "commandName": "MsixPackage",
       "workingDirectory": "."
     }
   }

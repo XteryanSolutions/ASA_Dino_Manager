@@ -1,11 +1,4 @@
-﻿//using Android.Nfc;
-using System;
-using System.Diagnostics;
-using System.Reflection;
-using Microsoft.Maui.Controls;
-using Windows.Devices.Bluetooth.Advertisement;
-
-namespace ASA_Dino_Manager
+﻿namespace ASA_Dino_Manager
 {
     public partial class AppShell : Shell
     {

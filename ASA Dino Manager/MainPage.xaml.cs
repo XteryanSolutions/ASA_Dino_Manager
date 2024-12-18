@@ -1,18 +1,4 @@
-﻿using System.Data;
-//using System.Drawing;
-using Microsoft.Maui.Handlers;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.Maui;
-using Microsoft.Maui.Hosting;
-using Microsoft.UI.Xaml.Documents;
-using Microsoft.Maui.Controls;
-using MauiColor = Microsoft.Maui.Graphics.Color;
-using Microsoft.Maui.Controls.StyleSheets;
-using System.Xml.Linq;
-using Microsoft.Maui.Graphics.Text;
-using System.Text;
-
-namespace ASA_Dino_Manager
+﻿namespace ASA_Dino_Manager
 {
 
 
