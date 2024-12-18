@@ -1,4 +1,4 @@
-Ark Aurvival Ascended Dino Manager
+Ark Survival Ascended Dino Manager
 will help you find dinos to breed
 mutation detection etc.
 
