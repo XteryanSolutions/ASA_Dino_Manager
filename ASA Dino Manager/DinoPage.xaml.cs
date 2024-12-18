@@ -289,11 +289,12 @@ public partial class DinoPage : ContentPage
 
         // dynamically adjust the bottom bar height
         int rowCount = DataManager.BottomTable.Rows.Count;
-        int rowHeight = 21;
+        int rowHeight = 18;
         int barH = (rowCount * rowHeight) + rowHeight + 12;
-        if (rowCount > 5) { barH = 127; }
+        if (rowCount > 5) { barH = (rowHeight * 5) + rowHeight + 5; }
 
-        if (((Shared.ToggleExcluded == 3 || Shared.ToggleExcluded == 2) && !Shared.showStats) || DataManager.BottomTable.Rows.Count < 1) { barH = 0; }
+
+        if (((Shared.ToggleExcluded == 3 || Shared.ToggleExcluded == 2 || Shared.CurrentStats) && !Shared.showStats) || DataManager.BottomTable.Rows.Count < 1) { barH = 0; }
 
 
         // Define row definitions

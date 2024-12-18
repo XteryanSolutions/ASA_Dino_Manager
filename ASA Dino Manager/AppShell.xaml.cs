@@ -228,8 +228,13 @@ namespace ASA_Dino_Manager
                                 FileManager.Log("Updated DataBase", 0);
 
                                 Shared.needSave = true;
-                                UpdateMenuContents();
+
+                                // UpdateMenuContents();
                                 //ForceNavigation();
+                            }
+                            if (DataManager.AddC > 0)
+                            {
+                              //  UpdateMenuContents();
                             }
 
 
