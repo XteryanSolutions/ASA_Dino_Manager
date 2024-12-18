@@ -1,271 +1,107 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	
-	
 	<PropertyGroup>
 		<GenerateSatelliteAssemblies>false</GenerateSatelliteAssemblies>
-	</PropertyGroup>
-
+	</PropertyGroup>	
+	
+	
 	<PropertyGroup>
-		<!--<TargetFrameworks>net9.0-maccatalyst</TargetFrameworks>-->
+		<!-- Frameworks -->
 		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
-		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
-		<!-- <TargetFrameworks>$(TargetFrameworks);net9.0-tizen</TargetFrameworks> -->
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 
-		<!-- Note for MacCatalyst:
-		The default runtime is maccatalyst-x64, except in Release config, in which case the default is maccatalyst-x64;maccatalyst-arm64.
-		When specifying both architectures, use the plural <RuntimeIdentifiers> instead of the singular <RuntimeIdentifier>.
-		The Mac App Store will NOT accept apps with ONLY maccatalyst-arm64 indicated;
-		either BOTH runtimes must be indicated or ONLY macatalyst-x64. -->
-		<!-- For example: <RuntimeIdentifiers>maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers> -->
-
+		<!-- Output -->
 		<OutputType>Exe</OutputType>
 		<RootNamespace>ASA_Dino_Manager</RootNamespace>
 		<UseMaui>true</UseMaui>
 		<SingleProject>true</SingleProject>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<IsPackable>false</IsPackable>
 
 		<!-- Display name -->
 		<ApplicationTitle>ASA Dino Manager</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.asadinomanager</ApplicationId>
+		<ApplicationId>com.xteryansolutions.asadinomanager</ApplicationId>
 
-		<!-- Versions -->
-		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-		<ApplicationVersion>1</ApplicationVersion>
-
-		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
-		<!--<WindowsPackageType>None</WindowsPackageType>-->
-
-		<!--<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>-->
-		<!--<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>-->
-		<!--<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>-->
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
-		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
-		<!--<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>-->
-		<!--<DefaultLanguage>en</DefaultLanguage>-->
+		<!-- Installer Generation -->
 		<GenerateAppInstallerFile>False</GenerateAppInstallerFile>
-		<!--<AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>-->
-		<!--<PackageCertificateThumbprint>D4F410BC8E1854B6312042C51DB1EA7F9005ED65</PackageCertificateThumbprint>-->
-		<!--<AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>-->
-		<!--<AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>-->
-		<!--<AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>-->
-		<!--<GenerateTestArtifacts>True</GenerateTestArtifacts>-->
-		<!--<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>-->
+
+		
 		<SignAssembly>False</SignAssembly>
 		<PackageIcon>dino.png</PackageIcon>
 		<RepositoryType>git</RepositoryType>
 		<WindowsPackageType>None</WindowsPackageType>
-		<BaseOutputPath></BaseOutputPath>
+		<BaseOutputPath></BaseOutputPath>	
 	</PropertyGroup>
 
-	<!-- 
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-maccatalyst|AnyCPU'">
+
+	<!-- Dont know what theese are but they were in old file -->
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-windows10.0.19041.0|AnyCPU'">
 		<ApplicationVersion></ApplicationVersion>
 		<ApplicationDisplayVersion></ApplicationDisplayVersion>
 		<Optimize>False</Optimize>
 	</PropertyGroup>
-	-->
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-windows10.0.19041.0|AnyCPU'">
-	  <ApplicationVersion></ApplicationVersion>
-	  <ApplicationDisplayVersion></ApplicationDisplayVersion>
-	  <Optimize>False</Optimize>
-		<!--<SatelliteResourceLanguages>en</SatelliteResourceLanguages>-->
-	</PropertyGroup>
-
-	<!--
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-maccatalyst|AnyCPU'">
-	  <ApplicationVersion></ApplicationVersion>
-	  <ApplicationDisplayVersion></ApplicationDisplayVersion>
-	</PropertyGroup>
-	-->
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-windows10.0.19041.0|AnyCPU'">
-	  <ApplicationVersion></ApplicationVersion>
-	  <ApplicationDisplayVersion></ApplicationDisplayVersion>
-	</PropertyGroup>
-
-	<ItemGroup>
-		<!-- App Icon -->
-		<!--<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" /> -->
-
-		<!-- Splash Screen -->
-		<!--<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />-->
-
-		<!-- Images -->
-		<MauiImage Include="Resources\Images\*" />
-
-		<!-- Custom Fonts -->
-		<!--<MauiFont Include="Resources\Fonts\*" />-->
-		
-		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
-		<!--<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />-->
-	</ItemGroup>
 
 	
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-windows10.0.19041.0|AnyCPU'">
+		<ApplicationVersion></ApplicationVersion>
+		<ApplicationDisplayVersion></ApplicationDisplayVersion>
+	</PropertyGroup>
+	
+
+	<!-- my custom resource -->
 	<ItemGroup>
-	  <None Remove="Platforms\Windows\Assets\DinoApp.altform-lightunplated_targetsize-16.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoApp.altform-lightunplated_targetsize-24.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoApp.altform-lightunplated_targetsize-256.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoApp.altform-lightunplated_targetsize-32.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoApp.altform-lightunplated_targetsize-48.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoApp.altform-unplated_targetsize-16.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoApp.altform-unplated_targetsize-24.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoApp.altform-unplated_targetsize-256.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoApp.altform-unplated_targetsize-32.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoApp.altform-unplated_targetsize-48.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoApp.scale-100.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoApp.scale-125.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoApp.scale-150.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoApp.scale-200.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoApp.scale-400.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoApp.targetsize-16.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoApp.targetsize-24.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoApp.targetsize-256.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoApp.targetsize-32.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoApp.targetsize-48.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoBadge.scale-100.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoBadge.scale-125.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoBadge.scale-150.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoBadge.scale-200.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoBadge.scale-400.png" />
-	  <None Remove="Platforms\Windows\Assets\dinoIcon.ico" />
-	  <None Remove="Platforms\Windows\Assets\DinoLarge.scale-100.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoLarge.scale-125.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoLarge.scale-150.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoLarge.scale-200.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoLarge.scale-400.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoMedium.scale-100.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoMedium.scale-125.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoMedium.scale-150.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoMedium.scale-200.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoMedium.scale-400.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoPackage.scale-100.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoPackage.scale-125.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoPackage.scale-150.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoPackage.scale-200.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoPackage.scale-400.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoSmall.scale-100.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoSmall.scale-125.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoSmall.scale-150.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoSmall.scale-200.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoSmall.scale-400.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoSplash.scale-100.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoSplash.scale-125.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoSplash.scale-150.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoSplash.scale-200.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoSplash.scale-400.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoWide.scale-100.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoWide.scale-125.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoWide.scale-150.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoWide.scale-200.png" />
-	  <None Remove="Platforms\Windows\Assets\DinoWide.scale-400.png" />
+		<MauiImage Include="Resources\Images\*" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="Platforms\Windows\Assets\DinoApp.altform-lightunplated_targetsize-16.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoApp.altform-lightunplated_targetsize-24.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoApp.altform-lightunplated_targetsize-256.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoApp.altform-lightunplated_targetsize-32.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoApp.altform-lightunplated_targetsize-48.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoApp.altform-unplated_targetsize-16.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoApp.altform-unplated_targetsize-24.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoApp.altform-unplated_targetsize-256.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoApp.altform-unplated_targetsize-32.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoApp.altform-unplated_targetsize-48.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoApp.scale-100.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoApp.scale-125.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoApp.scale-150.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoApp.scale-200.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoApp.scale-400.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoApp.targetsize-16.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoApp.targetsize-24.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoApp.targetsize-256.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoApp.targetsize-32.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoApp.targetsize-48.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoBadge.scale-100.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoBadge.scale-125.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoBadge.scale-150.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoBadge.scale-200.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoBadge.scale-400.png" />
-	  <Content Include="Platforms\Windows\Assets\dinoIcon.ico" />
-	  <Content Include="Platforms\Windows\Assets\DinoLarge.scale-100.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoLarge.scale-125.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoLarge.scale-150.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoLarge.scale-200.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoLarge.scale-400.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoMedium.scale-100.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoMedium.scale-125.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoMedium.scale-150.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoMedium.scale-200.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoMedium.scale-400.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoPackage.scale-100.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoPackage.scale-125.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoPackage.scale-150.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoPackage.scale-200.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoPackage.scale-400.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoSmall.scale-100.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoSmall.scale-125.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoSmall.scale-150.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoSmall.scale-200.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoSmall.scale-400.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoSplash.scale-100.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoSplash.scale-125.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoSplash.scale-150.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoSplash.scale-200.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoSplash.scale-400.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoWide.scale-100.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoWide.scale-125.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoWide.scale-150.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoWide.scale-200.png" />
-	  <Content Include="Platforms\Windows\Assets\DinoWide.scale-400.png" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <EmbeddedResource Include="Resources\Images\dino.png" />
+		<EmbeddedResource Include="Resources\Images\dino.png" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<EmbeddedResource Include="Resources\Images\dino400.png" />
 	</ItemGroup>
 	
+	
+	<!-- something costura added -->
 	<ItemGroup>
 		<PackageReference Include="Costura.Fody" Version="6.0.0">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
 	</ItemGroup>
-	
+
+
 	<ItemGroup>
-	  <Compile Update="ArchivePage.xaml.cs">
-	    <DependentUpon>ArchivePage.xaml</DependentUpon>
-	  </Compile>
-	  <Compile Update="Properties\Resources.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>Resources.resx</DependentUpon>
-	  </Compile>
+		<MauiXaml Update="ArchivePage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="DinoPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
 	</ItemGroup>
-	
+
 	<ItemGroup>
-	  <EmbeddedResource Update="Properties\Resources.resx">
-	    <Generator>ResXFileCodeGenerator</Generator>
-	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
+		<Compile Update="ArchivePage.xaml.cs">
+			<DependentUpon>ArchivePage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="DinoPage.xaml.cs">
+			<DependentUpon>DinoPage.xaml</DependentUpon>
+		</Compile>
 	</ItemGroup>
-	
+
+
 	<ItemGroup>
-	  <MauiXaml Update="ArchivePage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="DinoPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
+		<None Update="Properties\Resources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</None>
 	</ItemGroup>
 
 </Project>
