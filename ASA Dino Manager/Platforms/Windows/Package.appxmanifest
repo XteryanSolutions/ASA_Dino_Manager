@@ -27,7 +27,7 @@
   </Resources>
 
   <Applications>
-    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$" uap18:RuntimeBehavior="packagedClassicApp" uap18:TrustLevel="appContainer">
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$" uap18:RuntimeBehavior="windowsApp" uap18:TrustLevel="mediumIL">
       <uap:VisualElements
         DisplayName="ASA Dino Manager"
         Description="Dino Manager"
@@ -39,6 +39,7 @@
             <uap:ShowOn Tile="square150x150Logo"/>
           </uap:ShowNameOnTiles>
         </uap:DefaultTile >
+        <uap:SplashScreen Image="Platforms\Windows\Assets\Generated\SplashScreen.png"/>
         <uap:LockScreen BadgeLogo="Platforms\Windows\Assets\Generated\DinoBadge.png" Notification="badge"/>
       </uap:VisualElements>
     </Application>

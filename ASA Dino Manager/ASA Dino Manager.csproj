@@ -84,6 +84,62 @@
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
+	
+
+	<ItemGroup>
+	  <None Remove="Platforms\Windows\Assets\Generated\dino.scale-100.png" />
+	  <None Remove="Platforms\Windows\Assets\Generated\dino.scale-200.png" />
+	  <None Remove="Platforms\Windows\Assets\Generated\dino.scale-400.png" />
+	  <None Remove="Platforms\Windows\Assets\Generated\DinoApp.scale-100.png" />
+	  <None Remove="Platforms\Windows\Assets\Generated\DinoApp.scale-200.png" />
+	  <None Remove="Platforms\Windows\Assets\Generated\DinoApp.scale-400.png" />
+	  <None Remove="Platforms\Windows\Assets\Generated\DinoBadge.scale-100.png" />
+	  <None Remove="Platforms\Windows\Assets\Generated\DinoBadge.scale-200.png" />
+	  <None Remove="Platforms\Windows\Assets\Generated\DinoBadge.scale-400.png" />
+	  <None Remove="Platforms\Windows\Assets\Generated\DinoLarge.scale-100.png" />
+	  <None Remove="Platforms\Windows\Assets\Generated\DinoLarge.scale-200.png" />
+	  <None Remove="Platforms\Windows\Assets\Generated\DinoLarge.scale-400.png" />
+	  <None Remove="Platforms\Windows\Assets\Generated\DinoMedium.scale-100.png" />
+	  <None Remove="Platforms\Windows\Assets\Generated\DinoMedium.scale-200.png" />
+	  <None Remove="Platforms\Windows\Assets\Generated\DinoMedium.scale-400.png" />
+	  <None Remove="Platforms\Windows\Assets\Generated\DinoSmall.scale-100.png" />
+	  <None Remove="Platforms\Windows\Assets\Generated\DinoSmall.scale-200.png" />
+	  <None Remove="Platforms\Windows\Assets\Generated\DinoSmall.scale-400.png" />
+	  <None Remove="Platforms\Windows\Assets\Generated\DinoWide.scale-100.png" />
+	  <None Remove="Platforms\Windows\Assets\Generated\DinoWide.scale-200.png" />
+	  <None Remove="Platforms\Windows\Assets\Generated\DinoWide.scale-400.png" />
+	  <None Remove="Platforms\Windows\Assets\Generated\SplashScreen.scale-100.png" />
+	  <None Remove="Platforms\Windows\Assets\Generated\SplashScreen.scale-200.png" />
+	  <None Remove="Platforms\Windows\Assets\Generated\SplashScreen.scale-400.png" />
+	</ItemGroup>
+	
+
+	<ItemGroup>
+	  <Content Include="Platforms\Windows\Assets\Generated\dino.scale-100.png" />
+	  <Content Include="Platforms\Windows\Assets\Generated\dino.scale-200.png" />
+	  <Content Include="Platforms\Windows\Assets\Generated\dino.scale-400.png" />
+	  <Content Include="Platforms\Windows\Assets\Generated\DinoApp.scale-100.png" />
+	  <Content Include="Platforms\Windows\Assets\Generated\DinoApp.scale-200.png" />
+	  <Content Include="Platforms\Windows\Assets\Generated\DinoApp.scale-400.png" />
+	  <Content Include="Platforms\Windows\Assets\Generated\DinoBadge.scale-100.png" />
+	  <Content Include="Platforms\Windows\Assets\Generated\DinoBadge.scale-200.png" />
+	  <Content Include="Platforms\Windows\Assets\Generated\DinoBadge.scale-400.png" />
+	  <Content Include="Platforms\Windows\Assets\Generated\DinoLarge.scale-100.png" />
+	  <Content Include="Platforms\Windows\Assets\Generated\DinoLarge.scale-200.png" />
+	  <Content Include="Platforms\Windows\Assets\Generated\DinoLarge.scale-400.png" />
+	  <Content Include="Platforms\Windows\Assets\Generated\DinoMedium.scale-100.png" />
+	  <Content Include="Platforms\Windows\Assets\Generated\DinoMedium.scale-200.png" />
+	  <Content Include="Platforms\Windows\Assets\Generated\DinoMedium.scale-400.png" />
+	  <Content Include="Platforms\Windows\Assets\Generated\DinoSmall.scale-100.png" />
+	  <Content Include="Platforms\Windows\Assets\Generated\DinoSmall.scale-200.png" />
+	  <Content Include="Platforms\Windows\Assets\Generated\DinoSmall.scale-400.png" />
+	  <Content Include="Platforms\Windows\Assets\Generated\DinoWide.scale-100.png" />
+	  <Content Include="Platforms\Windows\Assets\Generated\DinoWide.scale-200.png" />
+	  <Content Include="Platforms\Windows\Assets\Generated\DinoWide.scale-400.png" />
+	  <Content Include="Platforms\Windows\Assets\Generated\SplashScreen.scale-100.png" />
+	  <Content Include="Platforms\Windows\Assets\Generated\SplashScreen.scale-200.png" />
+	  <Content Include="Platforms\Windows\Assets\Generated\SplashScreen.scale-400.png" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<MauiXaml Update="ArchivePage.xaml">
