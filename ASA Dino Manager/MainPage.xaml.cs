@@ -15,6 +15,7 @@ using System.Text;
 namespace ASA_Dino_Manager
 {
 
+
     public partial class MainPage : ContentPage
     {
 
@@ -22,8 +23,9 @@ namespace ASA_Dino_Manager
         {
             InitializeComponent();
 
-            FileManager.Log($"Loading: {Shared.setPage}", 0);
+            FileManager.Log($"Loaded: {Shared.setPage}", 0);
 
+            // set page title
             this.Title = $"{Shared.setPage}";
             CreateContent();
         }

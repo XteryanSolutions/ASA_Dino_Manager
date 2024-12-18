@@ -15,6 +15,22 @@ namespace ASA_Dino_Manager
 
     class FileManager
     {
+        // Filemanager stuff
+        private static DateTime TimeStart = DateTime.UtcNow;
+        private static bool RunOnce = true; // toggle off at init
+
+        private static string AppPath = "";
+        private static string GamePath = "";
+
+
+        // scanning for Gamepath
+        public static bool Scanning = false;
+
+        // do we need to save files
+        public static bool needSave = false;
+
+        // Logging
+        public static string LogText = "";
 
 
 
@@ -22,21 +38,21 @@ namespace ASA_Dino_Manager
         {
             try
             {
-                if (Shared.RunOnce) { Shared.TimeStart = DateTime.UtcNow; Shared.RunOnce = false; }
+                if (RunOnce) { TimeStart = DateTime.UtcNow; RunOnce = false; }
 
                 //AppPath = Path.GetDirectoryName(Application.ExecutablePath).ToString();
 
                 string assemblyPath = Assembly.GetExecutingAssembly().Location;
-                Shared.AppPath = Path.GetDirectoryName(assemblyPath);
+                AppPath = Path.GetDirectoryName(assemblyPath);
 
-                if (!Directory.Exists(Shared.AppPath + @"\Logs")) { Directory.CreateDirectory(Shared.AppPath + @"\Logs"); }
-                if (!Directory.Exists(Shared.AppPath + @"\Data")) { Directory.CreateDirectory(Shared.AppPath + @"\Data"); }
+                if (!Directory.Exists(AppPath + @"\Logs")) { Directory.CreateDirectory(AppPath + @"\Logs"); }
+                if (!Directory.Exists(AppPath + @"\Data")) { Directory.CreateDirectory(AppPath + @"\Data"); }
 
                 // if (!LoadColorFile()) { return false; }
 
                 if (LoadPath()) // loaded
                 {
-                    if (CheckPath(Shared.GamePath)) { return true; }
+                    if (CheckPath()) { return true; }
                     else
                     {
                         if (ScanPath()) { return true; }
@@ -53,10 +69,11 @@ namespace ASA_Dino_Manager
             return false;
         }
 
-        public static bool CheckPath(string dir)
+        public static bool CheckPath()
         {
             try
             {
+                string dir = GamePath;
                 if (Directory.Exists(dir))
                 {
                     string[] exports = Directory.GetFiles(dir + @"\", "*.ini", SearchOption.TopDirectoryOnly);
@@ -76,14 +93,14 @@ namespace ASA_Dino_Manager
         {
             try
             {
-                if (File.Exists(Shared.AppPath + @"\Data\config.hrv"))
+                if (File.Exists(AppPath + @"\Data\config.hrv"))
                 {
-                    using (StreamReader read = new StreamReader(Shared.AppPath + @"\Data\config.hrv"))
+                    using (StreamReader read = new StreamReader(AppPath + @"\Data\config.hrv"))
                     {
                         string line;
                         while ((line = read.ReadLine()) != null)
                         {
-                            Shared.GamePath = line;
+                            GamePath = line;
                         }
                     }
                     //fileManager.log("gamePath Loaded");
@@ -94,10 +111,39 @@ namespace ASA_Dino_Manager
             return false;
         }
 
+        public static string[] GetExportFiles()
+        {
+            // retrieve all ini files in dinoexport folder
+            string[] exports = Directory.GetFiles(GamePath + @"\", "*.ini", SearchOption.TopDirectoryOnly);
+           
+            return exports;
+        }
+
+        public static bool DeleteFile(string id)
+        {
+            string file = GamePath + @"\DinoExport_" + id + ".ini";
+            if (File.Exists(file))
+            {
+                try
+                {
+                    File.Delete(file);
+                    FileManager.Log($"Deleted: {file}", 1);
+                    return true;
+                }
+                catch 
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         public static bool ScanPath()
         {
-            if (!Shared.Scanning)
+            if (!Scanning)
             {
                 bool result = true;
                 FileManager.Log("Scanning for gamePath...", 0);
@@ -106,29 +152,31 @@ namespace ASA_Dino_Manager
                 { // start calculation thread
                     try
                     {
-                        Shared.Scanning = true;
+                        Scanning = true;
 
                         string filepath = FileManager.FindFilePath(@"ShooterGame\Saved\DinoExports");
+                        GamePath = filepath;
 
-                        if (CheckPath(filepath)) // check if the path we found works
+                        if (CheckPath()) // check if the path we found works
                         {
-                            Shared.GamePath = filepath;
-                            using (StreamWriter writer = new StreamWriter(Shared.AppPath + @"\Data\config.hrv"))
+                            
+                            using (StreamWriter writer = new StreamWriter(AppPath + @"\Data\config.hrv"))
                             {
                                 writer.WriteLine(filepath);
                             }
                             FileManager.Log("Set New gamePath", 0);
-                            Shared.Scanning = false;
+                            Scanning = false;
                             if (!Shared.ImportEnabled) { Shared.ImportEnabled = true; FileManager.Log("Enabled Importing (Found GamePath)", 0); }
                         }
                         else
                         {
+                            Shared.ImportEnabled = false;
                             FileManager.Log("Didnt find gamePath", 3);
                         }
                     }
                     catch
                     {
-                        Shared.Scanning = false;
+                        Scanning = false;
                         result = false;
                     }
                 });
@@ -143,36 +191,34 @@ namespace ASA_Dino_Manager
             try
             {
                 DataManager.ImportsTable.Clear();
-                DataManager.ImportsTable.ReadXml(Shared.AppPath + @"\Data\dinos.hrv");
+                DataManager.ImportsTable.ReadXml(AppPath + @"\Data\dinos.hrv");
 
                 DataManager.StatTable.Clear();
-                DataManager.StatTable.ReadXml(Shared.AppPath + @"\Data\data.hrv");
+                DataManager.StatTable.ReadXml(AppPath + @"\Data\data.hrv");
             }
             catch
             {
                 Console.WriteLine("no import dataBase! creating a new one");
-                Shared.needSave = true; SaveFiles();
+                needSave = true; SaveFiles();
             }
         }
 
-
         public static void SaveFiles()
         {
-            if (Shared.needSave)
+            if (needSave)
             {
                 try
                 {
-                    DataManager.ImportsTable.WriteXml(Shared.AppPath + @"\Data\dinos.hrv");
-                    DataManager.StatTable.WriteXml(Shared.AppPath + @"\Data\data.hrv");
+                    DataManager.ImportsTable.WriteXml(AppPath + @"\Data\dinos.hrv");
+                    DataManager.StatTable.WriteXml(AppPath + @"\Data\data.hrv");
                     FileManager.Log("==== Saved DataBase ====", 0);
-                    Shared.needSave = false;
+                    needSave = false;
                 }
                 catch
                 {
                     Console.WriteLine("File write failure");
                 }
             }
-
         }
 
         public static void Log(string text, int logLevel)
@@ -193,7 +239,7 @@ namespace ASA_Dino_Manager
                     string logString = $"{formattedTime}{levelText}{text}";
 
                     // add logged text to buffer
-                    Shared.LogText += logString + Environment.NewLine;
+                    LogText += logString + Environment.NewLine;
 
                     // Output logged text in console
                     System.Diagnostics.Debug.WriteLine(logString);
@@ -219,11 +265,11 @@ namespace ASA_Dino_Manager
             {
                 try
                 {
-                    if (Shared.LogText != "")
+                    if (LogText != "")
                     {
                         // empty log buffer to file
-                        File.AppendAllText(Shared.AppPath + @"\Logs\log_" + Shared.TimeStart.ToString().Replace(@"/", ".").Replace(@":", ".") + ".txt", Shared.LogText);
-                        Shared.LogText = "";
+                        File.AppendAllText(AppPath + @"\Logs\log_" + TimeStart.ToString().Replace(@"/", ".").Replace(@":", ".") + ".txt", LogText);
+                        LogText = "";
                     }
                     if (critical) { Application.Current.Quit(); } // shutdown after logfile has been written even if no new text was added
                 }

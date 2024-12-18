@@ -19,6 +19,8 @@ namespace ASA_Dino_Manager
 {
     class DataManager
     {
+        // how many different dino classes do we have
+        public static int tagSize = 0;
 
         public static DataSet ImportsDataSet = new DataSet("importsDataSet");
         public static DataTable ImportsTable = new DataTable("importsList");
@@ -44,10 +46,10 @@ namespace ASA_Dino_Manager
         public static int ModC = 0;  // keep track of updated dinos
         public static int AddC = 0;  // keep track of added dinos
 
-        public static string DecimalSeparator = "";
-        public static string ThousandsSeparator = "";
+        private static string DecimalSeparator = "";
+        private static string ThousandsSeparator = "";
 
-        public static CultureInfo Culture = Thread.CurrentThread.CurrentCulture;
+        private static CultureInfo Culture = Thread.CurrentThread.CurrentCulture;
 
         // dino stats
         public static double LevelMax = 0;
@@ -61,8 +63,8 @@ namespace ASA_Dino_Manager
         public static string[] BinaryM = new string[1]; //keeping track of max stats for breeding
         public static string[] BinaryF = new string[1]; //keeping track of max stats for breeding
 
-        public static int StatusID = 0; // id for the status field in table
 
+        private static int StatusID = 0; // id for the status field in table
 
         public static bool InitDataManager()
         {
@@ -282,7 +284,7 @@ namespace ASA_Dino_Manager
             return resultSet.ToArray();
         }
 
-        public static string TagForClass(string DinoClass)
+        public static string ClassForTag(string tag)
         {
             string result = "";
 
@@ -290,8 +292,7 @@ namespace ASA_Dino_Manager
             {
                 string columnValue = row["Class"].ToString();
 
-
-                if (columnValue.Contains(DinoClass.Replace(" ", ".")))
+                if (columnValue.Contains(tag.Replace(" ", ".")))
                 {
                     return row["Class"].ToString();
                 }
@@ -505,7 +506,7 @@ namespace ASA_Dino_Manager
                     DataManager.StatTable.Rows.Add(dr);
                 }
                 // request a save after modifying data
-                Shared.needSave = true;
+                FileManager.needSave = true;
             }
         }
 
@@ -529,7 +530,7 @@ namespace ASA_Dino_Manager
                 DataManager.StatTable.Rows.Add(dr);
             }
             // request a save after modifying data
-            Shared.needSave = true;
+            FileManager.needSave = true;
         }
 
         public static void SetMutes(string id, string mutes)
@@ -607,28 +608,28 @@ namespace ASA_Dino_Manager
 
                 SetMutes(dino, mutes);
                 bool addIT = false;
-                if (Shared.ToggleExcluded == 0)
+                if (DinoPage.ToggleExcluded == 0)
                 {
                     if (status != "Archived")
                     {
                         addIT = true;
                     }
                 }
-                else if (Shared.ToggleExcluded == 1)
+                else if (DinoPage.ToggleExcluded == 1)
                 {
                     if (status != "Archived" && status != "Exclude")
                     {
                         addIT = true;
                     }
                 }
-                else if (Shared.ToggleExcluded == 2)
+                else if (DinoPage.ToggleExcluded == 2)
                 {
                     if (status != "Archived" && status == "Exclude")
                     {
                         addIT = true;
                     }
                 }
-                else if (Shared.ToggleExcluded == 3)
+                else if (DinoPage.ToggleExcluded == 3)
                 {
                     if (status == "Archived")
                     {
@@ -685,7 +686,7 @@ namespace ASA_Dino_Manager
             string[] males = DataManager.GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Male", "ID");
 
 
-            if (Shared.CurrentStats)
+            if (DinoPage.CurrentStats)
             {
                 // Process females
                 List<string[]> MainStatsF = DataManager.GetLastStats(females);
@@ -1362,20 +1363,15 @@ namespace ASA_Dino_Manager
                 DataManager.SetStatus(id, "");
                 // maybe delete the file too to prevent reimport
 
-                string file = Shared.GamePath + @"\DinoExport_" + id + ".ini";
-                if (File.Exists(file))
-                {
-                    try
-                    {
-                        File.Delete(file);
-                        FileManager.Log($"Deleted: {file}", 1);
-                    }
-                    catch { }
-                }
+                // delete associated ini file to prevent reimport
+                // otherwise we have to mark it for exclusion during import
+                // maybe as a failsafe?!?!
+                FileManager.DeleteFile(id);
+
 
                 FileManager.Log($"Purged ID: {id}", 0);
                 // request a save after modifying data
-                Shared.needSave = true;
+                FileManager.needSave = true;
             }
         }
 
@@ -1391,12 +1387,14 @@ namespace ASA_Dino_Manager
                     DeleteRowsByID(id);
                 }
             }
-            Shared.needSave = true;
+            FileManager.needSave = true;
         }
 
         public static void Import()
         {
-            string[] exports = Directory.GetFiles(Shared.GamePath + @"\", "*.ini", SearchOption.TopDirectoryOnly);
+            // get a string array of exported dino files
+            string[] exports = FileManager.GetExportFiles();
+
             AddC = 0; ModC = 0;
             foreach (string file in exports) // loop trough each file to look for data in all of them
             {

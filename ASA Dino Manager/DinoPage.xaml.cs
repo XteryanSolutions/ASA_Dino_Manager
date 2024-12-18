@@ -4,13 +4,25 @@ namespace ASA_Dino_Manager;
 
 public partial class DinoPage : ContentPage
 {
+    ////////////////////    View Toggles    ////////////////////
+    public static int ToggleExcluded = 0;
+    public static bool CurrentStats = false;
 
-	public DinoPage()
+    ////////////////////    Selecting       ////////////////////
+    private string selectedID = "";
+    private bool isSelected = false;
+
+    ////////////////////    Table Sorting   ////////////////////
+    private string sortM = "";
+    private string sortF = "";
+
+    public DinoPage()
 	{
         InitializeComponent();
 
-        FileManager.Log($"Loading: {Shared.setPage}", 0);
+        FileManager.Log($"Loaded: {Shared.setPage}", 0);
 
+        // set page title
         this.Title = $"{Shared.setPage.Replace("_"," ")}";
         CreateContent();
     }
@@ -23,11 +35,11 @@ public partial class DinoPage : ContentPage
             {
                 if (!string.IsNullOrEmpty(Shared.selectedClass))
                 {
-                    if (Shared.showStats)
+                    if (isSelected)
                     {
-                        DataManager.GetOneDinoData(Shared.selectedID);
+                        DataManager.GetOneDinoData(selectedID);
 
-                        if (Shared.ToggleExcluded != 3)
+                        if (ToggleExcluded != 3)
                         {
                             DataManager.SetMaxStats();
                         }
@@ -35,15 +47,15 @@ public partial class DinoPage : ContentPage
                     else
                     {
                         // sort data based on column clicked
-                        DataManager.GetDinoData(Shared.selectedClass, Shared.sortM, Shared.sortF);
+                        DataManager.GetDinoData(Shared.selectedClass, sortM, sortF);
 
 
-                        if (Shared.ToggleExcluded != 3)
+                        if (ToggleExcluded != 3)
                         {
                             DataManager.SetMaxStats();
                         }
 
-                        if (!Shared.CurrentStats && Shared.ToggleExcluded != 2 && Shared.ToggleExcluded != 3)
+                        if (!CurrentStats && ToggleExcluded != 2 && ToggleExcluded != 3)
                         {
                             DataManager.SetBinaryStats();
                             DataManager.GetBestPartner();
@@ -58,7 +70,7 @@ public partial class DinoPage : ContentPage
 
                 FileManager.Log("Updating GUI -> " + Shared.setPage, 0);
 
-                if (!Shared.showStats) { this.Title = Shared.setPage; }
+                if (!isSelected) { this.Title = $"{Shared.setPage.Replace("_", " ")}"; }
                 if (totalC == 0)
                 {
                     DefaultView("No dinos in here :(");
@@ -95,7 +107,6 @@ public partial class DinoPage : ContentPage
         };
 
         var image1 = new Image { Source = "dino.png", HeightRequest = 155, Aspect = Aspect.AspectFit, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start };
-
         var label1 = new Label { Text = labelText, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start, FontAttributes = FontAttributes.Bold, TextColor = Shared.okColor, FontSize = 22 };
 
 
@@ -103,19 +114,15 @@ public partial class DinoPage : ContentPage
         AddToGrid(mainLayout, label1, 1, 0);
 
 
-
-
         // Wrap the scrollable content in a ScrollView and add it to the second row
         var scrollView = new ScrollView { Content = scrollContent };
 
         AddToGrid(mainLayout, scrollView, 0, 0);
 
-
         // only attach the tapgesture if we have something selected
-        if (Shared.selectedID != "")
-        {
-            UnSelectDino(mainLayout);
-        }
+        // for now its the only way to force refresh a page
+        // so we attach it to everything so we can click
+        UnSelectDino(mainLayout);
 
         this.Content = null;
         this.Content = mainLayout;
@@ -182,11 +189,7 @@ public partial class DinoPage : ContentPage
             BackgroundColor = Color.FromArgb("#312f38")
         };
 
-
         // Define columns
-        //grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto}); // 0
-
-
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
 
@@ -198,47 +201,45 @@ public partial class DinoPage : ContentPage
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
 
 
-
-
         var bColor0 = Shared.noColor;
         var bColor1 = Shared.okColor;
 
 
-        if (Shared.CurrentStats)
+        if (CurrentStats)
         {
             bColor1 = Shared.warnColor;
         }
 
-        if (Shared.ToggleExcluded == 0)
+        if (ToggleExcluded == 0)
         {
             bColor0 = Colors.LightBlue;
         }
-        else if (Shared.ToggleExcluded == 1)
+        else if (ToggleExcluded == 1)
         {
             bColor0 = Shared.okColor;
         }
-        else if (Shared.ToggleExcluded == 2)
+        else if (ToggleExcluded == 2)
         {
             bColor0 = Shared.warnColor;
         }
-        else if (Shared.ToggleExcluded == 3)
+        else if (ToggleExcluded == 3)
         {
             bColor0 = Shared.dangerColor;
         }
 
         string btn0Text = "Toggle"; string btn1Text = "Breeding";
-        if (Shared.ToggleExcluded == 0) { btn0Text = "All"; }
-        else if (Shared.ToggleExcluded == 1) { btn0Text = "Included"; }
-        else if (Shared.ToggleExcluded == 2) { btn0Text = "Excluded"; }
-        else if (Shared.ToggleExcluded == 3) { btn0Text = "Archived"; }
+        if (ToggleExcluded == 0) { btn0Text = "All"; }
+        else if (ToggleExcluded == 1) { btn0Text = "Included"; }
+        else if (ToggleExcluded == 2) { btn0Text = "Excluded"; }
+        else if (ToggleExcluded == 3) { btn0Text = "Archived"; }
 
-        if (Shared.CurrentStats) { btn1Text = "Current"; }
+        if (CurrentStats) { btn1Text = "Current"; }
 
         var topButton0 = new Button { Text = btn0Text, BackgroundColor = bColor0 };
         var topButton1 = new Button { Text = btn1Text, BackgroundColor = bColor1 };
 
 
-        string status = DataManager.GetStatus(Shared.selectedID);
+        string status = DataManager.GetStatus(selectedID);
 
 
         string btn2Text = "Exclude"; var bColor2 = Shared.warnColor;
@@ -258,7 +259,7 @@ public partial class DinoPage : ContentPage
             topButton0.Clicked += OnButton0Clicked;
             topButton1.Clicked += OnButton1Clicked;
 
-            if (Shared.showStats) // add theese only if we have a dino selected
+            if (isSelected) // add theese only if we have a dino selected
             {
                 var topButton2 = new Button { Text = btn2Text, BackgroundColor = bColor2 };
                 topButton2.Clicked += OnButton2Clicked;
@@ -289,12 +290,11 @@ public partial class DinoPage : ContentPage
 
         // dynamically adjust the bottom bar height
         int rowCount = DataManager.BottomTable.Rows.Count;
-        int rowHeight = 18;
-        int barH = (rowCount * rowHeight) + rowHeight + 12;
-        if (rowCount > 5) { barH = (rowHeight * 5) + rowHeight + 5; }
+        int barH = (rowCount * Shared.rowHeight) + Shared.rowHeight + 12;
+        if (rowCount > 5) { barH = (Shared.rowHeight * 5) + Shared.rowHeight + 5; }
 
 
-        if (((Shared.ToggleExcluded == 3 || Shared.ToggleExcluded == 2 || Shared.CurrentStats) && !Shared.showStats) || DataManager.BottomTable.Rows.Count < 1) { barH = 0; }
+        if (((ToggleExcluded == 3 || ToggleExcluded == 2 || CurrentStats) && !isSelected) || DataManager.BottomTable.Rows.Count < 1) { barH = 0; }
 
 
         // Define row definitions
@@ -447,7 +447,8 @@ public partial class DinoPage : ContentPage
         AddToGrid(grid, header10, 0, 10);
         AddToGrid(grid, header11, 0, 11);
 
-        if (title != "Bottom" || Shared.showStats)
+        // only show last column headers if we select a dino
+        if (title != "Bottom" || isSelected)
         {
             AddToGrid(grid, header12, 0, 12);
             AddToGrid(grid, header13, 0, 13);
@@ -494,7 +495,7 @@ public partial class DinoPage : ContentPage
             string imprinter = row["Imprinter"].ToString();
 
 
-            if (Shared.ToggleExcluded == 2)
+            if (ToggleExcluded == 2)
             {
                 if (status == "Exclude") { status = ""; }
             }
@@ -512,7 +513,7 @@ public partial class DinoPage : ContentPage
 
             // mutation detection overrides normal coloring -> mutaColor
             string mutes = DataManager.GetMutes(id);
-            if (mutes.Length == 6 && !Shared.CurrentStats) // dont show mutations on current statview
+            if (mutes.Length == 6 && !CurrentStats) // dont show mutations on current statview
             {
                 string aC = mutes.Substring(0, 1); string bC = mutes.Substring(1, 1); string cC = mutes.Substring(2, 1);
                 string dC = mutes.Substring(3, 1); string eC = mutes.Substring(4, 1); string fC = mutes.Substring(5, 1);
@@ -602,6 +603,15 @@ public partial class DinoPage : ContentPage
         return grid;
     }
 
+    private void ClearSelection()
+    {
+        if (selectedID != "")
+        {
+            FileManager.Log($"Unselected {selectedID}", 0);
+            selectedID = ""; isSelected = false; this.Title = $"{Shared.setPage.Replace("_", " ")}";
+        }
+    }
+
 
     // Button event handlers
     void SortColumn(Label label, string sex)
@@ -613,8 +623,8 @@ public partial class DinoPage : ContentPage
             // Handle the click event and pass additional data
             string column = label.Text;
 
-            var splitM = Shared.sortM.Split(new[] { @" " }, StringSplitOptions.RemoveEmptyEntries);
-            var splitF = Shared.sortF.Split(new[] { @" " }, StringSplitOptions.RemoveEmptyEntries);
+            var splitM = sortM.Split(new[] { @" " }, StringSplitOptions.RemoveEmptyEntries);
+            var splitF = sortF.Split(new[] { @" " }, StringSplitOptions.RemoveEmptyEntries);
 
             string outM = "";
             string outF = "";
@@ -633,18 +643,18 @@ public partial class DinoPage : ContentPage
                 // are we clicking the same column then toggle sorting
                 if (outM == column)
                 {
-                    if (Shared.sortM.Contains("ASC"))
+                    if (sortM.Contains("ASC"))
                     {
-                        Shared.sortM = column + " DESC";
+                        sortM = column + " DESC";
                     }
-                    else if (Shared.sortM.Contains("DESC"))
+                    else if (sortM.Contains("DESC"))
                     {
-                        Shared.sortM = "";
+                        sortM = "";
                     }
                 }
                 else
                 {
-                    Shared.sortM = column + " ASC";
+                    sortM = column + " ASC";
                 }
             }
             else if (sex == "F")
@@ -652,25 +662,25 @@ public partial class DinoPage : ContentPage
                 // are we clicking the same column then toggle sorting
                 if (outF == column)
                 {
-                    if (Shared.sortF.Contains("ASC")) // then switch to descending
+                    if (sortF.Contains("ASC")) // then switch to descending
                     {
-                        Shared.sortF = column + " DESC";
+                        sortF = column + " DESC";
                     }
-                    else if (Shared.sortF.Contains("DESC")) // finally turn it off
+                    else if (sortF.Contains("DESC")) // finally turn it off
                     {
-                        Shared.sortF = "";
+                        sortF = "";
                     }
                 }
                 else // first sort ascending
                 {
-                    Shared.sortF = column + " ASC";
+                    sortF = column + " ASC";
                 }
             }
 
-            FileManager.Log($"Sorted: {Shared.sortM} : {Shared.sortF}", 0);
+            FileManager.Log($"Sorted: {sortM} : {sortF}", 0);
 
 
-            ForceUnselect();
+            ClearSelection();
             CreateContent();
         };
 
@@ -684,14 +694,14 @@ public partial class DinoPage : ContentPage
         var tapGesture = new TapGestureRecognizer();
         tapGesture.Tapped += (s, e) =>
         {
-            if (Shared.selectedID != id) // dont select the same dino twice
+            if (selectedID != id) // dont select the same dino twice
             {
-                Shared.selectedID = id;
+                selectedID = id; isSelected = true;
 
-                string name = DataManager.GetLastColumnData("ID", Shared.selectedID, "Name");
+                string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
                 this.Title = $"{name} - {id}"; // set title to dino name
 
-                FileManager.Log($"Selected {name} ID: {id}", 0); Shared.showStats = true;
+                FileManager.Log($"Selected {name} ID: {id}", 0); 
 
                 CreateContent();
             }
@@ -707,9 +717,7 @@ public partial class DinoPage : ContentPage
         var tapGesture = new TapGestureRecognizer();
         tapGesture.Tapped += (s, e) =>
         {
-            FileManager.Log($"Unselected {Shared.selectedID}", 0);
-            Shared.selectedID = ""; Shared.showStats = false; this.Title = Shared.setPage;
-            // Handle the click event
+            ClearSelection();
             CreateContent();
         };
 
@@ -717,84 +725,69 @@ public partial class DinoPage : ContentPage
         grid.GestureRecognizers.Add(tapGesture);
     }
 
-    private void ForceUnselect()
-    {
-        if (Shared.selectedID != "")
-        {
-            FileManager.Log($"Force Unselected {Shared.selectedID}", 0);
-            Shared.selectedID = ""; Shared.showStats = false; this.Title = Shared.setPage;
-        }
-    }
-
     private void OnButton0Clicked(object? sender, EventArgs e)
     {
-        Shared.ToggleExcluded++;
-        if (Shared.ToggleExcluded == 4)
+        ToggleExcluded++;
+        if (ToggleExcluded == 4)
         {
-            Shared.ToggleExcluded = 0;
+            ToggleExcluded = 0;
         }
-        ForceUnselect();
-        FileManager.Log($"Toggle Exclude {Shared.ToggleExcluded}", 0);
-        // reload stuff
+        FileManager.Log($"Toggle Exclude {ToggleExcluded}", 0);
+
+        ClearSelection();
         CreateContent();
     }
 
     private void OnButton1Clicked(object? sender, EventArgs e)
     {
-        if (Shared.CurrentStats)
+        if (CurrentStats)
         {
-            Shared.CurrentStats = false;
+            CurrentStats = false;
         }
         else
         {
-            Shared.CurrentStats = true;
+            CurrentStats = true;
         }
-        ForceUnselect();
-        FileManager.Log($"Toggle Stats {Shared.CurrentStats}", 0);
-        // reload stuff
+        FileManager.Log($"Toggle Stats {CurrentStats}", 0);
 
+        ClearSelection();
         CreateContent();
     }
 
     private void OnButton2Clicked(object? sender, EventArgs e)
     {
-        if (Shared.selectedID != "")
+        if (selectedID != "")
         {
-            string status = DataManager.GetStatus(Shared.selectedID);
+            string status = DataManager.GetStatus(selectedID);
             if (status == "Exclude") { status = ""; }
-            else if (status == "") { status = "Exclude"; FileManager.Log($"Excluded ID: {Shared.selectedID}", 0); }
-            DataManager.SetStatus(Shared.selectedID, status);
+            else if (status == "") { status = "Exclude"; FileManager.Log($"Excluded ID: {selectedID}", 0); }
+            DataManager.SetStatus(selectedID, status);
 
-            FileManager.Log($"Unselected {Shared.selectedID}", 0);
-            Shared.selectedID = ""; Shared.showStats = false; this.Title = Shared.setPage;
-
+            ClearSelection();
             CreateContent();
         }
     }
 
     private void OnButton3Clicked(object? sender, EventArgs e)
     {
-        if (Shared.selectedID != "")
+        if (selectedID != "")
         {
             // Handle the click event
-            string status = DataManager.GetStatus(Shared.selectedID);
-            if (status == "Archived") { status = ""; FileManager.Log($"Restored ID: {Shared.selectedID}", 0); }
-            else if (status == "") { status = "Archived"; FileManager.Log($"Archived ID: {Shared.selectedID}", 0); }
-            else if (status == "Exclude") { status = "Archived"; FileManager.Log($"Archived ID: {Shared.selectedID}", 0); }
-            DataManager.SetStatus(Shared.selectedID, status);
-
+            string status = DataManager.GetStatus(selectedID);
+            if (status == "Archived") { status = ""; FileManager.Log($"Restored ID: {selectedID}", 0); }
+            else if (status == "") { status = "Archived"; FileManager.Log($"Archived ID: {selectedID}", 0); }
+            else if (status == "Exclude") { status = "Archived"; FileManager.Log($"Archived ID: {selectedID}", 0); }
+            DataManager.SetStatus(selectedID, status);
 
             // recompile the archive after archiving or unarchiving
-            DataManager.CompileDinoArchive();
+            // maybe redundant
+            //DataManager.CompileDinoArchive();
 
-            FileManager.Log($"Unselected {Shared.selectedID}", 0);
-            Shared.selectedID = ""; Shared.showStats = false; this.Title = Shared.setPage;
-
+            ClearSelection();
             CreateContent();
         }
 
     }
-
 
 
 }

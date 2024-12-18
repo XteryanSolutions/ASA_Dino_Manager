@@ -18,7 +18,7 @@
 
             <Label
                 x:Name="Label1"
-                Text="Loading..."
+                Text="Oops! Didn't expect to end up here"
                 Style="{StaticResource Headline}"
                 SemanticProperties.HeadingLevel="Level1" />
 

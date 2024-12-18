@@ -10,8 +10,13 @@ namespace ASA_Dino_Manager
     public partial class AppShell : Shell
     {
         private bool _isTimerRunning = false; // Timer control flag
-        private static bool disableAuto = false;
-        private static bool disableNavSet = false;
+        private bool disableAuto = false;
+        private bool disableNavSet = false;
+
+        // Benchmark stuff
+        private int ImportCount = 0;
+        private double ImportAvg = 0; // keep track of average import time
+
 
         public AppShell()
         {
@@ -48,7 +53,7 @@ namespace ASA_Dino_Manager
             string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
 
             // if manager initialized and we are not scanning and there is dinos in taglist
-            if (!Shared.Scanning && tagList.Length > 0)
+            if (!FileManager.Scanning && tagList.Length > 0)
             {
                 DataManager.CleanDataBaseByID();
                 UpdateMenuContents();
@@ -69,9 +74,9 @@ namespace ASA_Dino_Manager
             StartTimer();
         }
 
-        public static void ForceNavigate(string route)
+        public void ForceNavigate(string route)
         {
-            string newRoute = $"{route}.{Shared.ReLoad()}";
+            string newRoute = $"{route}";
 
             if (!disableAuto)
             {
@@ -96,40 +101,30 @@ namespace ASA_Dino_Manager
             }
         }
 
-        private void OnShellNavigated(object sender, ShellNavigatedEventArgs e)
-        {
-           // FileManager.Log($"Navigated to: {e.Current.Location}", 0);
-        }
-
-        private static async Task UnlockNavigationAfterDelay(int delayMilliseconds)
+        private async Task UnlockNavigationAfterDelay(int delayMilliseconds)
         {
             await Task.Delay(delayMilliseconds);
             disableAuto = false; // Re-enable navigation
+        }
+
+        private void OnShellNavigated(object sender, ShellNavigatedEventArgs e)
+        {
+           // FileManager.Log($"Navigated to: {e.Current.Location}", 0);
         }
 
         private void OnShellNavigating(object sender, ShellNavigatingEventArgs e)
         {
             if (!disableNavSet) // make sure we are allowed to set new setPage
             {
-                // reset toggles when navigating
-                Shared.ToggleExcluded = 0; Shared.CurrentStats = false;
-                Shared.showStats = false;
-
-
                 // now we should have the new target
                 string target = e.Target.Location.ToString();
 
-
-                // remove .
-                var routeSplit = target.Split(new[] { @"." }, StringSplitOptions.RemoveEmptyEntries);
-
                 // replace all / and trim it
-                Shared.setPage = routeSplit[0].Replace("/", "").Trim();
-
+                Shared.setPage = target.Replace("/", "").Trim();
 
                 FileManager.Log($"New setPage = {Shared.setPage}", 0);
 
-                string dinoTag = DataManager.TagForClass(Shared.setPage);
+                string dinoTag = DataManager.ClassForTag(Shared.setPage.Replace("_"," "));
                 Shared.selectedClass = dinoTag;
             }
             else
@@ -144,7 +139,7 @@ namespace ASA_Dino_Manager
             string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
             string[] classList = DataManager.GetAllClasses();
 
-            Shared.tagSize = tagList.Length;
+            DataManager.tagSize = tagList.Length;
 
             Items.Clear();
 
@@ -155,7 +150,7 @@ namespace ASA_Dino_Manager
             {
                 Title = "Dino Manager",
                 ContentTemplate = new DataTemplate(typeof(MainPage)), // Replace with the appropriate page
-                Route = $"ASA.{Shared.ReLoad()}"
+                Route = $"ASA"
             };
             // Add the ShellContent to the Shell
             Items.Add(shellContent1);
@@ -166,7 +161,7 @@ namespace ASA_Dino_Manager
             {
                 Title = "Dino Archive",
                 ContentTemplate = new DataTemplate(() => new ArchivePage()), // Always a fresh page
-                Route = $"Archive.{Shared.ReLoad()}"
+                Route = $"Archive"
             };
 
 
@@ -178,7 +173,7 @@ namespace ASA_Dino_Manager
             // Loop through the sorted tags and create ShellContent dynamically
             foreach (var tag in sortedTagList)
             {
-                string dinoTag = DataManager.TagForClass(tag);
+                string dinoTag = DataManager.ClassForTag(tag);
                 // Retrieve female data
                 string[] females = DataManager.GetDistinctFilteredColumnData("Class", dinoTag, "Sex", "Female", "ID");
                 // Retrieve male data
@@ -188,9 +183,9 @@ namespace ASA_Dino_Manager
 
                 var shellContent = new ShellContent
                 {
-                    Title = tag.Replace(" ","_") + " (" + totalC + ")",
+                    Title = tag + " (" + totalC + ")",
                     ContentTemplate = new DataTemplate(typeof(DinoPage)), // Replace with the appropriate page
-                    Route = $"{tag}.{Shared.ReLoad()}"
+                    Route = $"{tag.Replace(" ", "_")}"
                 };
 
                 // Add the ShellContent to the Shell
@@ -206,7 +201,7 @@ namespace ASA_Dino_Manager
             {
                 // check if the gamepath works
                 // maybe redundant checks???
-                if (FileManager.CheckPath(Shared.GamePath))
+                if (FileManager.CheckPath())
                 {
                     if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
                     {
@@ -223,11 +218,11 @@ namespace ASA_Dino_Manager
 
 
                             // Check if we need to reload data
-                            if (DataManager.ModC > 0 || DataManager.AddC > 0 || tagList.Length > Shared.tagSize)
+                            if (DataManager.ModC > 0 || DataManager.AddC > 0 || tagList.Length > DataManager.tagSize)
                             {
                                 FileManager.Log("Updated DataBase", 0);
 
-                                Shared.needSave = true;
+                                FileManager.needSave = true;
 
                                 // UpdateMenuContents();
                                 //ForceNavigation();
@@ -241,10 +236,10 @@ namespace ASA_Dino_Manager
                             stopwatch.Stop();
                             var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
 
-                            Shared.ImportCount++;
+                            ImportCount++;
                             double outAVG = 0;
-                            if (Shared.ImportCount < 2) { Shared.ImportAvg = elapsedMilliseconds; outAVG = Shared.ImportAvg; }
-                            else { Shared.ImportAvg += elapsedMilliseconds; outAVG = Shared.ImportAvg / Shared.ImportCount; }
+                            if (ImportCount < 2) { ImportAvg = elapsedMilliseconds; outAVG = ImportAvg; }
+                            else { ImportAvg += elapsedMilliseconds; outAVG = ImportAvg / ImportCount; }
                             FileManager.Log("Imported data in " + elapsedMilliseconds + "ms" + " Avg: " + outAVG, 0);
                             FileManager.Log("=====================================================================", 0);
                         }
