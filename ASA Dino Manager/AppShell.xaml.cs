@@ -13,10 +13,10 @@
 
         public AppShell()
         {
-            InitializeComponent(); 
+            InitializeComponent();
 
             // set the title of the app to current version
-            this.Title = Shared.version; 
+            this.Title = Shared.version;
 
             FileManager.Log("====== Started " + Shared.version + " ======", 0);
             if (!FileManager.InitFileManager())
@@ -102,7 +102,7 @@
 
         private void OnShellNavigated(object sender, ShellNavigatedEventArgs e)
         {
-           // FileManager.Log($"Navigated to: {e.Current.Location}", 0);
+            // FileManager.Log($"Navigated to: {e.Current.Location}", 0);
         }
 
         private void OnShellNavigating(object sender, ShellNavigatingEventArgs e)
@@ -117,7 +117,7 @@
 
                 FileManager.Log($"New setPage = {Shared.setPage}", 0);
 
-                string dinoTag = DataManager.ClassForTag(Shared.setPage.Replace("_"," "));
+                string dinoTag = DataManager.ClassForTag(Shared.setPage.Replace("_", " "));
                 Shared.selectedClass = dinoTag;
             }
             else
@@ -167,7 +167,7 @@
             foreach (var tag in sortedTagList)
             {
                 string dinoTag = DataManager.ClassForTag(tag);
-               
+
                 int totalC = DataManager.DinoCount(dinoTag);
 
                 var shellContent = new ShellContent
@@ -184,7 +184,7 @@
             FileManager.Log("Updated tagList", 0);
         }
 
-        public void ProcessAllData()
+        public void ProcessAllFiles()
         {
             if (Shared.ImportEnabled)
             {
@@ -198,41 +198,55 @@
                         {
                             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
-                            // import files first
+                            // handle import files first
                             DataManager.Import();
 
-                            // check for changes
+                            // check for changes in dino class
                             string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
+                            if (tagList.Length != DataManager.tagSize)
+                            {
+                                // update tagSize
+                                DataManager.tagSize = tagList.Length;
 
-
-
+                                // update menu because we need to see the new class
+                                UpdateMenuContents();
+                            }
                             // Check if we need to reload data
                             if (DataManager.ModC > 0 || DataManager.AddC > 0 || tagList.Length > DataManager.tagSize)
                             {
+                                // reset counters
+                                DataManager.AddC = 0; DataManager.ModC = 0;
 
                                 FileManager.Log("Updated DataBase", 0);
 
+                                // request a save
                                 FileManager.needSave = true;
-                                DataManager.AddC = 0; DataManager.ModC = 0;
-                                //UpdateMenuContents();
-                                //ForceNavigation();
-
                             }
-                            if (DataManager.AddC > 0)
-                            {
-                                DataManager.AddC = 0; 
-                                UpdateMenuContents();
-                            }
-
-
                             stopwatch.Stop();
                             var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
+
 
                             ImportCount++;
                             double outAVG = 0;
                             if (ImportCount < 2) { ImportAvg = elapsedMilliseconds; outAVG = ImportAvg; }
                             else { ImportAvg += elapsedMilliseconds; outAVG = ImportAvg / ImportCount; }
                             FileManager.Log("Imported data in " + elapsedMilliseconds + "ms" + " Avg: " + outAVG, 0);
+
+                            // dynamicly adjust import time so we dont import when nothing is happening
+                            if (!FileManager.needSave)
+                            {
+                                // add 5 seconds to delay
+                                Shared.CurrentDelay = Shared.CurrentDelay + 5;
+                                if (Shared.CurrentDelay > Shared.MaxDelay) { Shared.CurrentDelay = Shared.MaxDelay; }
+                                else { FileManager.Log($"No change. Increasing delay -> {Shared.CurrentDelay}", 0); }
+                            }
+                            else // and back down to rapid import if we detect a change
+                            {
+                                FileManager.Log($"Change detected. Back to default time {Shared.DefaultDelay}", 0);
+                                Shared.CurrentDelay = Shared.DefaultDelay;
+                                // also set the delay thats already running
+                                Shared.Delay = Shared.DefaultDelay;
+                            }
                             FileManager.Log("=====================================================================", 0);
                         }
                         catch
@@ -273,12 +287,15 @@
 
         private void TriggerFunction()
         {
+            // check for a save request every second
+            // maybe adjust this dynamicly too to not save every change
+            SaveData();
+
             Shared.Delay--;
             if (Shared.Delay < 0)
             {
-                Shared.Delay = Shared.DefaultDelay;
-                SaveData();
-                ProcessAllData();
+                Shared.Delay = Shared.CurrentDelay;
+                ProcessAllFiles();
             }
 
             FileManager.WriteLog();

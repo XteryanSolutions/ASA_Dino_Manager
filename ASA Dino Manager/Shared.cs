@@ -22,7 +22,10 @@
         // initial import delay
         public static int Delay = 5; 
         // default import delay in seconds
-        public static int DefaultDelay = 15; 
+        public static int DefaultDelay = 10;
+        public static int CurrentDelay = 10;
+        public static int MaxDelay = 60;
+
 
 
         ////////////////////    Navigation      ////////////////////

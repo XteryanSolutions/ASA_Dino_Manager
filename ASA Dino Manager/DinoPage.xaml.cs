@@ -290,7 +290,7 @@ public partial class DinoPage : ContentPage
                 {
                     var topButton2 = new Button { Text = btn2Text, BackgroundColor = bColor2 };
                     topButton2.Clicked += OnButton2Clicked;
-                    AddToGrid(grid, topButton2, 2, 0);
+                    AddToGrid(grid, topButton2, 5, 0);
                 }
 
 
