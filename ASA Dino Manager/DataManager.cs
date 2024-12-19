@@ -460,7 +460,7 @@ namespace ASA_Dino_Manager
                 {
                     string status = GetStatus(dino);
                     if (toggle == 0) { count++; }
-                    else if (toggle == 1) { if (status != "Exclude" && status != "Archived") {  count++; } }
+                    else if (toggle == 1) { if (status != "Exclude" && status != "Archived") { count++; } }
                     else if (toggle == 2) { if (status != "" && status != "Archived") { count++; } }
                     else if (toggle == 3) { if (status != "Exclude" && status != "") { count++; } }
                 }
@@ -786,7 +786,7 @@ namespace ASA_Dino_Manager
             FileManager.Log("Archive compiled", 0);
         }
 
-        public static void SetMaxStats()
+        public static void SetMaxStats(int toggle = 0)
         {
             LevelMax = 0;
             HpMax = 0;
@@ -799,19 +799,40 @@ namespace ASA_Dino_Manager
             // look trough males for highest stats
             foreach (DataRow rowM in MaleTable.Rows)
             {
-                double LevelM = ToDouble(rowM["Level"].ToString());
-                double HpM = ToDouble(rowM["HP"].ToString());
-                double StaminaM = ToDouble(rowM["Stamina"].ToString());
-                double OxygenM = ToDouble(rowM["Oxygen"].ToString());
-                double FoodM = ToDouble(rowM["Food"].ToString());
-                double WeightM = ToDouble(rowM["Weight"].ToString());
-                double DamageM = ToDouble(rowM["Damage"].ToString());
-                double SpeedM = ToDouble(rowM["Speed"].ToString());
 
-                string status = rowM["Status"].ToString();
+                string id = rowM["id"].ToString();
+                string status = GetStatus(id);
 
-                if (status != "Exclude")
+                bool include = false;
+                if (toggle == 0)// include dinos only by set toggle
                 {
+                    if (status != "Archived") { include = true; }
+                }
+                else if (toggle == 1)
+                {
+                    if (status != "Archived" && status != "Exclude") { include = true; }
+                }
+                else if (toggle == 2)
+                {
+                    if (status != "Archived" && status != "") { include = true; }
+                }
+                else if (toggle == 3)
+                {
+                    if (status != "" && status != "Exclude") { include = true; }
+                }
+
+
+                if (include)
+                {
+                    double LevelM = ToDouble(rowM["Level"].ToString());
+                    double HpM = ToDouble(rowM["HP"].ToString());
+                    double StaminaM = ToDouble(rowM["Stamina"].ToString());
+                    double OxygenM = ToDouble(rowM["Oxygen"].ToString());
+                    double FoodM = ToDouble(rowM["Food"].ToString());
+                    double WeightM = ToDouble(rowM["Weight"].ToString());
+                    double DamageM = ToDouble(rowM["Damage"].ToString());
+                    double SpeedM = ToDouble(rowM["Speed"].ToString());
+
                     if (LevelM >= LevelMax) { LevelMax = LevelM; }
                     if (HpM >= HpMax) { HpMax = HpM; }
                     if (StaminaM >= StaminaMax) { StaminaMax = StaminaM; }
@@ -821,25 +842,45 @@ namespace ASA_Dino_Manager
                     if (DamageM >= DamageMax) { DamageMax = DamageM; }
                     if (SpeedM >= SpeedMax) { SpeedMax = SpeedM; }
                 }
-
             }
 
             // look trough females for highest stats
             foreach (DataRow rowM in FemaleTable.Rows)
             {
-                double LevelM = ToDouble(rowM["Level"].ToString());
-                double HpM = ToDouble(rowM["HP"].ToString());
-                double StaminaM = ToDouble(rowM["Stamina"].ToString());
-                double OxygenM = ToDouble(rowM["Oxygen"].ToString());
-                double FoodM = ToDouble(rowM["Food"].ToString());
-                double WeightM = ToDouble(rowM["Weight"].ToString());
-                double DamageM = ToDouble(rowM["Damage"].ToString());
-                double SpeedM = ToDouble(rowM["Speed"].ToString());
 
-                string status = rowM["Status"].ToString();
+                string id = rowM["id"].ToString();
+                string status = GetStatus(id);
 
-                if (status != "Exclude")
+                bool include = false;
+                if (toggle == 0)// include dinos only by set toggle
                 {
+                    if (status != "Archived") { include = true; }
+                }
+                else if (toggle == 1)
+                {
+                    if (status != "Archived" && status != "Exclude") { include = true; }
+                }
+                else if (toggle == 2)
+                {
+                    if (status != "Archived" && status != "") { include = true; }
+                }
+                else if (toggle == 3)
+                {
+                    if (status != "" && status != "Exclude") { include = true; }
+                }
+
+
+                if (include)
+                {
+                    double LevelM = ToDouble(rowM["Level"].ToString());
+                    double HpM = ToDouble(rowM["HP"].ToString());
+                    double StaminaM = ToDouble(rowM["Stamina"].ToString());
+                    double OxygenM = ToDouble(rowM["Oxygen"].ToString());
+                    double FoodM = ToDouble(rowM["Food"].ToString());
+                    double WeightM = ToDouble(rowM["Weight"].ToString());
+                    double DamageM = ToDouble(rowM["Damage"].ToString());
+                    double SpeedM = ToDouble(rowM["Speed"].ToString());
+
                     if (LevelM >= LevelMax) { LevelMax = LevelM; }
                     if (HpM >= HpMax) { HpMax = HpM; }
                     if (StaminaM >= StaminaMax) { StaminaMax = StaminaM; }

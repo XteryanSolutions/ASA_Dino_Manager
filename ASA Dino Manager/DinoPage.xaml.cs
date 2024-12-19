@@ -44,10 +44,8 @@ public partial class DinoPage : ContentPage
                     {
                         DataManager.GetOneDinoData(selectedID);
 
-                        if (ToggleExcluded != 3)
-                        {
-                            DataManager.SetMaxStats();
-                        }
+                        DataManager.SetMaxStats(ToggleExcluded);
+                        DataManager.SetBinaryStats();
                     }
                     else
                     {
@@ -55,14 +53,11 @@ public partial class DinoPage : ContentPage
                         DataManager.GetDinoData(Shared.selectedClass, sortM, sortF);
 
 
-                        if (ToggleExcluded != 3)
-                        {
-                            DataManager.SetMaxStats();
-                        }
+                        DataManager.SetMaxStats(ToggleExcluded);
+                        DataManager.SetBinaryStats();
 
-                        if (!CurrentStats && ToggleExcluded != 2 && ToggleExcluded != 3)
+                        if (!CurrentStats)
                         {
-                            DataManager.SetBinaryStats();
                             DataManager.GetBestPartner();
                         }
                     }
@@ -744,7 +739,12 @@ public partial class DinoPage : ContentPage
                                 if ((aC + bC + cC + dC + eC + fC) == "222222")
                                 {
                                     // here is a golden offspring with all the best stats
-
+                                    cellColor2 = Shared.superColor;
+                                    cellColor3 = Shared.superColor;
+                                    cellColor4 = Shared.superColor;
+                                    cellColor5 = Shared.superColor;
+                                    cellColor6 = Shared.superColor;
+                                    cellColor7 = Shared.superColor;
                                 }
                                 break;
                             }
