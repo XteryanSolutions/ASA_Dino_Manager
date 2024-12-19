@@ -116,7 +116,10 @@ public partial class ArchivePage : ContentPage
         // ==============================================================    Create Archive Layout   =====================================================
 
         // Create the main layout
-        var mainLayout = new Grid();
+        var mainLayout = new Grid
+        {
+            BackgroundColor = Shared.MainPanelColor
+        };
 
 
         // create main layout with 2 columns
@@ -150,7 +153,7 @@ public partial class ArchivePage : ContentPage
             RowSpacing = 5,
             ColumnSpacing = 0,
             Padding = 5,
-            BackgroundColor = Color.FromArgb("#312f38")
+            BackgroundColor = Shared.SidePanelColor
         };
 
 

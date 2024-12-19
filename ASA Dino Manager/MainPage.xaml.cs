@@ -49,7 +49,10 @@
 
         private void DefaultView(string labelText)
         {
-            var mainLayout = new Grid();
+            var mainLayout = new Grid
+            {
+                BackgroundColor = Shared.MainPanelColor
+            };
 
             mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Fixed button row
             mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // Scrollable content

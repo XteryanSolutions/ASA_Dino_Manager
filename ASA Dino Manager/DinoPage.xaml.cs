@@ -133,7 +133,10 @@ public partial class DinoPage : ContentPage
         // ==============================================================    Create Dino Layout   =====================================================
 
         // Create the main layout
-        var mainLayout = new Grid();
+        var mainLayout = new Grid 
+        {
+            BackgroundColor = Shared.MainPanelColor
+        };
 
 
         // create main layout with 2 columns
@@ -186,7 +189,7 @@ public partial class DinoPage : ContentPage
             RowSpacing = 5,
             ColumnSpacing = 0,
             Padding = 5,
-            BackgroundColor = Color.FromArgb("#312f38")
+            BackgroundColor = Shared.SidePanelColor
         };
 
         // Define columns
@@ -336,7 +339,7 @@ public partial class DinoPage : ContentPage
         {
             Spacing = 0,
             Padding = 3,
-            BackgroundColor = Color.FromArgb("#312f38")
+            BackgroundColor = Shared.BottomPanelColor
         };
 
         bottomContent.Children.Add(CreateDinoGrid(DataManager.BottomTable, "Bottom"));

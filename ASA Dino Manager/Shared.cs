@@ -51,6 +51,11 @@
         public static Color DefaultColor = Colors.Red;
         public static Color headerColor = Colors.White;
 
+        public static Color MainPanelColor = Color.FromArgb("#222224");
+        public static Color SidePanelColor = Color.FromArgb("#312f38");
+        public static Color BottomPanelColor = Color.FromArgb("#292a32");
+
+
 
         ////////////////////    Scaling        ////////////////////
         public static int headerSize = 16; // font size on table headers
