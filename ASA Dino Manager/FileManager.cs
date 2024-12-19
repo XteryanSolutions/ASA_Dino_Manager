@@ -41,9 +41,18 @@ namespace ASA_Dino_Manager
                 if (RunOnce) { TimeStart = DateTime.UtcNow; RunOnce = false; }
 
                 //AppPath = Path.GetDirectoryName(Application.ExecutablePath).ToString();
+                //AppPath = Path.GetDirectoryName(assemblyPath);
+                //string assemblyPath = Assembly.GetExecutingAssembly().Location;
+                // AppPath = Path.GetDirectoryName(documentsPath);
 
-                string assemblyPath = Assembly.GetExecutingAssembly().Location;
-                AppPath = Path.GetDirectoryName(assemblyPath);
+
+                // get the users document folder and put data in there
+                string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+                if (!Directory.Exists(documentsPath + @"\DinoManager")) { Directory.CreateDirectory(documentsPath + @"\DinoManager"); }
+
+                AppPath = documentsPath + @"\DinoManager";
+
 
                 if (!Directory.Exists(AppPath + @"\Logs")) { Directory.CreateDirectory(AppPath + @"\Logs"); }
                 if (!Directory.Exists(AppPath + @"\Data")) { Directory.CreateDirectory(AppPath + @"\Data"); }

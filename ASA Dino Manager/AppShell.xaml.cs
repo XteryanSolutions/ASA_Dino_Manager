@@ -235,8 +235,8 @@
                             // dynamicly adjust import time so we dont import when nothing is happening
                             if (!FileManager.needSave)
                             {
-                                // add 5 seconds to delay
-                                Shared.CurrentDelay = Shared.CurrentDelay + 5;
+                                // add 1 second to delay
+                                Shared.CurrentDelay = Shared.CurrentDelay + 1;
                                 if (Shared.CurrentDelay > Shared.MaxDelay) { Shared.CurrentDelay = Shared.MaxDelay; }
                                 else { FileManager.Log($"No change. Increasing delay -> {Shared.CurrentDelay}", 0); }
                             }
