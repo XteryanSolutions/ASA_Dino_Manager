@@ -281,18 +281,21 @@ public partial class DinoPage : ContentPage
 
         if (Shared.setRoute != "Archive")
         {
-            AddToGrid(grid, topButton0, 0, 0);
-            AddToGrid(grid, topButton1, 1, 0);
-
-            topButton0.Clicked += OnButton0Clicked;
-            topButton1.Clicked += OnButton1Clicked;
-
             if (isDouble)
             {
                 var topButton4 = new Button { Text = "Back", BackgroundColor = Shared.okColor };
                 topButton4.Clicked += OnButton4Clicked;
-                AddToGrid(grid, topButton4, 2, 0);
+                AddToGrid(grid, topButton4, 0, 0);
             }
+            else
+            {
+                AddToGrid(grid, topButton0, 0, 0);
+                AddToGrid(grid, topButton1, 1, 0);
+
+                topButton0.Clicked += OnButton0Clicked;
+                topButton1.Clicked += OnButton1Clicked;
+            }
+
 
             if (isSelected) // add theese only if we have a dino selected
             {
@@ -710,6 +713,46 @@ public partial class DinoPage : ContentPage
             double ageD = DataManager.ToDouble(age);
             if (ageD < 100 && !name.Contains("Breed #") && status == "") { status = ageD + "% Grown"; }
 
+
+            // override offspring colors based on breed points
+            if (title == "Bottom")
+            {
+                if (name.Contains("Breed #"))
+                {
+                    var nameSplit = name.Split(new[] { @"#" }, StringSplitOptions.RemoveEmptyEntries);
+                    int maxRows = DataManager.ComboTable.Rows.Count;
+                    string nr = nameSplit[1].Trim();
+                    if (maxRows > 0)
+                    {
+                        int rowID = 1;
+                        foreach (DataRow rowC in DataManager.ComboTable.Rows)
+                        {
+                            // locate the right row
+                            if (rowID.ToString() == nr)
+                            {
+                                string IDC = rowC["res"].ToString(); // get the combined stats
+                                string aC = IDC.Substring(0, 1); string bC = IDC.Substring(1, 1); string cC = IDC.Substring(2, 1);
+                                string dC = IDC.Substring(3, 1); string eC = IDC.Substring(4, 1); string fC = IDC.Substring(5, 1);
+
+                                if (aC == "2") { cellColor2 = Shared.greatColor; }
+                                if (bC == "2") { cellColor3 = Shared.greatColor; }
+                                if (cC == "2") { cellColor4 = Shared.greatColor; }
+                                if (dC == "2") { cellColor5 = Shared.greatColor; }
+                                if (eC == "2") { cellColor6 = Shared.greatColor; }
+                                if (fC == "2") { cellColor7 = Shared.greatColor; }
+
+                                if ((aC + bC + cC + dC + eC + fC) == "222222")
+                                {
+                                    // here is a golden offspring with all the best stats
+
+                                }
+                                break;
+                            }
+                            rowID++;
+                        }
+                    }
+                }
+            }
 
             // Create a Labels
             var nameL = new Label { Text = name, TextColor = cellColor0 };

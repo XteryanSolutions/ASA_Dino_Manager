@@ -47,6 +47,7 @@
         // button colors
         public static Color noColor = Colors.LightBlue;
         public static Color okColor = Colors.LightGreen;
+        public static Color greatColor = Colors.Green;
         public static Color warnColor = Colors.LightYellow;
         public static Color dangerColor = Colors.IndianRed;
 
