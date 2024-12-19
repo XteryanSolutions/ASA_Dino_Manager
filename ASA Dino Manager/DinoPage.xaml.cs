@@ -290,12 +290,20 @@ public partial class DinoPage : ContentPage
 
         // dynamically adjust the bottom bar height
         int rowCount = DataManager.BottomTable.Rows.Count;
-        int barH = (rowCount * Shared.rowHeight) + Shared.rowHeight + 13;
-        if (rowCount > 5) { barH = (Shared.rowHeight * 5) + Shared.rowHeight + 5; }
+        int barH = 0;
 
+        Shared.rowHeight = 24;
+        int ofs = 0;
+        if (rowCount > 0) { ofs = 13; barH = ((rowCount * Shared.rowHeight) + Shared.headerSize) + ofs; } // 1 row
+        if (rowCount > 1) { ofs = 9; barH = ((rowCount * Shared.rowHeight) + Shared.headerSize) + ofs; } // 2 rows
+        if (rowCount > 2) { ofs = 4; barH = ((rowCount * Shared.rowHeight) + Shared.headerSize) + ofs; } // 3 rows
+        if (rowCount > 3) { ofs = -1; barH = ((rowCount * Shared.rowHeight) + Shared.headerSize) + ofs; } // 4 rows 
+        if (rowCount > 4) { ofs = -5; barH = ((rowCount * Shared.rowHeight) + Shared.headerSize) + ofs; } // 5 rows needs to be bigger to not activate scrolling
+        if (rowCount > 5) { ofs = -7; barH = ((5 * Shared.rowHeight) + Shared.headerSize) + (ofs); }        // 6+ rows needs to be smaller not to show the 6th row
+
+        // FileManager.Log($"barH: {barH} = {rowCount} * {Shared.rowHeight} + {Shared.headerSize} + {ofs}", 0);
 
         if (((ToggleExcluded == 3 || ToggleExcluded == 2 || CurrentStats) && !isSelected) || DataManager.BottomTable.Rows.Count < 1) { barH = 0; }
-
 
         // Define row definitions
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // Scrollable content
@@ -387,7 +395,7 @@ public partial class DinoPage : ContentPage
 
         Shared.headerColor = Shared.DefaultColor;
 
-        int fSize = 16;  // header fontsize
+        int fSize = Shared.headerSize;  // header fontsize
 
         var header0 = new Label { Text = "Name", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
         var header1 = new Label { Text = "Level", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };

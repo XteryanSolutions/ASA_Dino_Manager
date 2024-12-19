@@ -22,7 +22,7 @@
         // initial import delay
         public static int Delay = 5; 
         // default import delay in seconds
-        public static int DefaultDelay = 10; 
+        public static int DefaultDelay = 15; 
 
 
         ////////////////////    Navigation      ////////////////////
@@ -53,7 +53,11 @@
 
 
         ////////////////////    Scaling        ////////////////////
-        public static int rowHeight = 20;
+        public static int headerSize = 16; // font size on table headers
+        public static int rowHeight = 19; // rowheight to determine bottom panel size
+        public static int sizeOffset = 20; // things
+
+
 
     }
 }
