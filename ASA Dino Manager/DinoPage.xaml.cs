@@ -1,4 +1,5 @@
 using System.Data;
+using System.Xml.Linq;
 using Microsoft.UI.Xaml.Controls.Primitives;
 
 namespace ASA_Dino_Manager;
@@ -12,6 +13,9 @@ public partial class DinoPage : ContentPage
     ////////////////////    Selecting       ////////////////////
     private string selectedID = "";
     private bool isSelected = false;
+    private bool canDouble = false;
+    private bool isDouble = false;
+
 
     ////////////////////    Table Sorting   ////////////////////
     private string sortM = "";
@@ -283,6 +287,13 @@ public partial class DinoPage : ContentPage
             topButton0.Clicked += OnButton0Clicked;
             topButton1.Clicked += OnButton1Clicked;
 
+            if (isDouble)
+            {
+                var topButton4 = new Button { Text = "Back", BackgroundColor = Shared.okColor };
+                topButton4.Clicked += OnButton4Clicked;
+                AddToGrid(grid, topButton4, 2, 0);
+            }
+
             if (isSelected) // add theese only if we have a dino selected
             {
                 // do not show exclude button while in archive view
@@ -339,7 +350,8 @@ public partial class DinoPage : ContentPage
 
         int count = DataManager.DinoCount(Shared.selectedClass, ToggleExcluded);
 
-        if (count > 0)
+
+        if (count > 0 && !isDouble)
         {
             // Create scrollable content
             var scrollContent = new StackLayout
@@ -377,6 +389,70 @@ public partial class DinoPage : ContentPage
             AddToGrid(grid, bottomPanel, 1, 1);
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////
+        }
+        else if (count > 0 && isDouble)
+        {
+            ////////////////////////////////////////////////////////////////////////////////////////////////////
+            // make dino info box
+
+            // Create scrollable content
+            var scrollContent = new StackLayout
+            {
+                Spacing = 20,
+                Padding = 3
+            };
+
+            var grid1 = new Grid
+            {
+                RowSpacing = 0,
+                ColumnSpacing = 20,
+                Padding = 3
+            };
+            // Define columns
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 0
+
+
+            var imageContainer = new Grid
+            {
+                BackgroundColor = Shared.MainPanelColor, // Set the background color here
+                Padding = 0
+            };
+
+            var image = new Image
+            {
+                Source = "dino.png",
+                HeightRequest = 155,
+                Aspect = Aspect.AspectFit
+            };
+
+            // Add the image to the container
+            imageContainer.Children.Add(image);
+
+            var label1 = new Label
+            {
+                Text = "Extended dino info (WIP)",
+                HorizontalOptions = LayoutOptions.Center,
+                VerticalOptions = LayoutOptions.Center,
+                Style = (Style)Application.Current.Resources["Headline"],
+                TextColor = Shared.okColor,
+                FontSize = 22,
+                FontAttributes = FontAttributes.Bold
+            };
+
+
+            AddToGrid(grid1, imageContainer, 0, 0);
+            AddToGrid(grid1, label1, 1, 0);
+
+
+
+            scrollContent.Children.Add(grid1);
+
+            var scrollView = new ScrollView { Content = scrollContent };
+
+            AddToGrid(grid, scrollView, 0, 0);
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////////
+
         }
         else
         {
@@ -709,10 +785,11 @@ public partial class DinoPage : ContentPage
 
     private void ClearSelection()
     {
-        if (selectedID != "")
+        if (selectedID != "" && !isDouble)
         {
             FileManager.Log($"Unselected {selectedID}", 0);
             selectedID = ""; isSelected = false; this.Title = $"{Shared.setPage.Replace("_", " ")}";
+            canDouble = false;
         }
     }
 
@@ -808,11 +885,38 @@ public partial class DinoPage : ContentPage
                 FileManager.Log($"Selected {name} ID: {id}", 0);
 
                 CreateContent();
+
+                // activate double clicking
+                canDouble = true;
+                DisableDoubleClick(500);
+            }
+            else if (selectedID == id && canDouble)
+            {
+                // double click
+                // open the dino extended info window
+                isDouble = true;
+
+                string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
+                this.Title = $"{name} - {id}"; // set title to dino name
+
+                FileManager.Log($"Double click {name} ID: {id}", 0);
+
+                CreateContent();
+            }
+            else
+            {
+                canDouble = false;
             }
         };
 
         // Attach the TapGestureRecognizer to the label
         label.GestureRecognizers.Add(tapGesture);
+    }
+
+    private async Task DisableDoubleClick(int delayMilliseconds)
+    {
+        await Task.Delay(delayMilliseconds);
+        canDouble = false;
     }
 
     void UnSelectDino(Grid grid)
@@ -893,5 +997,11 @@ public partial class DinoPage : ContentPage
 
     }
 
+    private void OnButton4Clicked(object? sender, EventArgs e)
+    {
+        isDouble = false;
+        ClearSelection();
+        CreateContent();
+    }
 
 }
