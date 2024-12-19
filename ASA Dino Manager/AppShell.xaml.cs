@@ -167,12 +167,8 @@
             foreach (var tag in sortedTagList)
             {
                 string dinoTag = DataManager.ClassForTag(tag);
-                // Retrieve female data
-                string[] females = DataManager.GetDistinctFilteredColumnData("Class", dinoTag, "Sex", "Female", "ID");
-                // Retrieve male data
-                string[] males = DataManager.GetDistinctFilteredColumnData("Class", dinoTag, "Sex", "Male", "ID");
-
-                int totalC = females.Length + males.Length;
+               
+                int totalC = DataManager.DinoCount(dinoTag);
 
                 var shellContent = new ShellContent
                 {

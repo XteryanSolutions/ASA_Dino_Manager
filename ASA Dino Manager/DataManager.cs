@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 //using System.Windows.Forms;
 using System.Xml.Linq;
+using Microsoft.Maui.Controls;
 using Microsoft.UI.Xaml.Documents;
 //using Android.Media;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement;
@@ -445,6 +446,38 @@ namespace ASA_Dino_Manager
                 results.Add(stats);
             }
             return results;
+        }
+
+        public static int DinoCount(string dinoTag, int toggle = 0)
+        {
+            // count dinos and only include based on their status and what view is toggled 0 to count all
+            int count = 0;
+            try
+            {
+                // Retrieve female data
+                string[] females = DataManager.GetDistinctFilteredColumnData("Class", dinoTag, "Sex", "Female", "ID");
+                foreach (string dino in females)
+                {
+                    string status = GetStatus(dino);
+                    if (toggle == 0) { count++; }
+                    else if (toggle == 1) { if (status != "Exclude" && status != "Archived") {  count++; } }
+                    else if (toggle == 2) { if (status != "" && status != "Archived") { count++; } }
+                    else if (toggle == 3) { if (status != "Exclude" && status != "") { count++; } }
+                }
+                // Retrieve male data
+                string[] males = DataManager.GetDistinctFilteredColumnData("Class", dinoTag, "Sex", "Male", "ID");
+                foreach (string dino in males)
+                {
+                    string status = GetStatus(dino);
+                    if (toggle == 0) { count++; }
+                    else if (toggle == 1) { if (status != "Exclude" && status != "Archived") { count++; } }
+                    else if (toggle == 2) { if (status != "" && status != "Archived") { count++; } }
+                    else if (toggle == 3) { if (status != "Exclude" && status != "") { count++; } }
+                }
+            }
+            catch { }
+
+            return count;
         }
 
         public static string GetMutes(string id)
@@ -1402,7 +1435,7 @@ namespace ASA_Dino_Manager
                 var split2 = split1[1].Split(new[] { @".ini" }, StringSplitOptions.RemoveEmptyEntries);
                 string id = split2[0].ToString();
 
-                string[] importedNew = FileManager.FilterDinoStats(file);
+                string[] importedNew = FilterDinoStats(file);
                 string Time = File.GetLastWriteTime(file).ToString("dd/MM/yyyy HH:mm:ss");
 
                 if (importedNew.Count() > 0)
@@ -1481,6 +1514,173 @@ namespace ASA_Dino_Manager
                 //Interface.NeedUpdate = true;
                 FileManager.Log("Updated " + ModC + " dinos", 0);
             }
+        }
+
+        private static string[] FilterDinoStats(string filename, string emptyString = "N/A")
+        {
+            string[] resultSet = Enumerable.Repeat(emptyString, 24).ToArray();
+
+            try
+            {
+                var iniData = IniParser.ParseIniFile(filename);
+
+                foreach (var section in iniData)
+                {
+                    if (section.Key.ToUpper() == "DINOANCESTORS") // look for parents here
+                    {
+                        try // catch parents separately to leave empty just incase it fails
+                        {
+                            foreach (var key in section.Value)
+                            {
+                                var split = key.Value.ToString().Split(new[] { @";" }, StringSplitOptions.RemoveEmptyEntries);
+
+                                var id1P = split[1].Split(new[] { @"=" }, StringSplitOptions.RemoveEmptyEntries);
+                                var id2P = split[2].Split(new[] { @"=" }, StringSplitOptions.RemoveEmptyEntries);
+
+                                resultSet[12] = id1P[1] + id2P[1];
+
+                                var id1M = split[4].Split(new[] { @"=" }, StringSplitOptions.RemoveEmptyEntries);
+                                var id2M = split[5].Split(new[] { @"=" }, StringSplitOptions.RemoveEmptyEntries);
+
+                                resultSet[11] = id1M[1] + id2M[1];
+                            }
+                        }
+                        catch
+                        {
+                            resultSet[11] = emptyString;
+                            resultSet[12] = emptyString;
+                        }
+                    }
+                    else if (section.Key.ToUpper() == "COLORIZATION")
+                    {
+                        try // catch parents separately to leave empty just incase it fails
+                        {
+                            string[] outst = new string[section.Value.Count];
+                            int rid = 0;
+                            foreach (var key in section.Value) { outst[rid] = key.Value; rid++; }
+                            rid = 0; string output = "";
+                            foreach (string t in outst) { output += t + ";"; rid++; }
+                            resultSet[23] = output;
+                        }
+                        catch
+                        {
+                            resultSet[23] = emptyString;
+                        }
+                    }
+                    else
+                    {
+                        foreach (var key in section.Value)
+                        {
+                            if (key.Key.ToUpper() == "DINONAMETAG")
+                            {
+                                resultSet[0] = key.Value;
+                            }
+                            else if (key.Key.ToUpper() == "BISFEMALE")
+                            {
+                                if (key.Value.ToUpper() == "TRUE")
+                                {
+                                    resultSet[1] = "Female";
+                                }
+                                else
+                                {
+                                    resultSet[1] = "Male";
+                                }
+                            }
+                            else if (key.Key.ToUpper() == "TAMEDNAME")
+                            {
+                                resultSet[2] = key.Value;
+                            }
+                            else if (key.Key.ToUpper() == "CHARACTERLEVEL")
+                            {
+                                resultSet[3] = key.Value;
+                            }
+                            else if (key.Key.ToUpper() == "HEALTH")
+                            {
+                                resultSet[4] = key.Value;
+                            }
+                            else if (key.Key.ToUpper() == "STAMINA")
+                            {
+                                resultSet[5] = key.Value;
+                            }
+                            else if (key.Key.ToUpper() == "OXYGEN")
+                            {
+                                resultSet[6] = key.Value;
+                            }
+                            else if (key.Key.ToUpper() == "FOOD")
+                            {
+                                resultSet[7] = key.Value;
+                            }
+                            else if (key.Key.ToUpper() == "WEIGHT")
+                            {
+                                resultSet[8] = key.Value;
+                            }
+                            else if (key.Key.ToUpper() == "MELEE DAMAGE")
+                            {
+                                resultSet[9] = key.Value;
+                            }
+                            else if (key.Key.ToUpper() == "MOVEMENT SPEED")
+                            {
+                                resultSet[10] = key.Value;
+                            }
+                            else if (key.Key.ToUpper() == "RANDOMMUTATIONSFEMALE")
+                            {
+                                resultSet[13] = key.Value;
+                            }
+                            else if (key.Key.ToUpper() == "RANDOMMUTATIONSMALE")
+                            {
+                                resultSet[14] = key.Value;
+                            }
+                            else if (key.Key.ToUpper() == "DINOANCESTORSCOUNT")
+                            {
+                                resultSet[15] = key.Value;
+                            }
+                            else if (key.Key.ToUpper() == "DINOANCESTORSMALE")
+                            {
+                                resultSet[16] = key.Value;
+                            }
+                            else if (key.Key.ToUpper() == "BABYAGE")
+                            {
+                                resultSet[17] = key.Value;
+                            }
+                            else if (key.Key.ToUpper() == "BNEUTERED")
+                            {
+                                if (key.Value.ToUpper() == "TRUE")
+                                {
+                                    resultSet[18] = "Y";
+                                }
+                                else
+                                {
+                                    resultSet[18] = "N";
+                                }
+                            }
+                            else if (key.Key.ToUpper() == "DINOIMPRINTINGQUALITY")
+                            {
+                                resultSet[19] = key.Value;
+                            }
+                            else if (key.Key.ToUpper() == "IMPRINTERNAME")
+                            {
+                                resultSet[20] = key.Value;
+                            }
+                            else if (key.Key.ToUpper() == "TAMERSTRING")
+                            {
+                                resultSet[21] = key.Value;
+                            }
+                            else if (key.Key.ToUpper() == "DINOCLASS")
+                            {
+                                resultSet[22] = key.Value;
+                            }
+                        }
+
+                    }
+
+                }
+            }
+            catch
+            {
+                resultSet = new string[0];
+                FileManager.Log("Parse Error!!", 2);
+            }
+            return resultSet;
         }
 
         public static double ToDouble(string input, double def = 0)

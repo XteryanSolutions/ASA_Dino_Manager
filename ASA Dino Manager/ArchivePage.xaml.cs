@@ -81,6 +81,7 @@ public partial class ArchivePage : ContentPage
         }
         else
         {
+            DefaultView("Dinos ran away :(");
             FileManager.Log("Failed to acquire database lock within timeout.", 1);
         }
     }

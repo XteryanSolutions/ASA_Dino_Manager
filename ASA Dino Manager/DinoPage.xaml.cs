@@ -1,4 +1,5 @@
 using System.Data;
+using Microsoft.UI.Xaml.Controls.Primitives;
 
 namespace ASA_Dino_Manager;
 
@@ -62,24 +63,11 @@ public partial class DinoPage : ContentPage
                         }
                     }
                 }
-                // Retrieve female data
-                string[] females = DataManager.GetDistinctFilteredColumnData("Class", Shared.selectedClass, "Sex", "Female", "ID");
-                // Retrieve male data
-                string[] males = DataManager.GetDistinctFilteredColumnData("Class", Shared.selectedClass, "Sex", "Male", "ID");
-                int totalC = females.Length + males.Length;
-
                 FileManager.Log("Updating GUI -> " + Shared.setPage, 0);
 
                 if (!isSelected) { this.Title = $"{Shared.setPage.Replace("_", " ")}"; }
-                if (totalC == 0)
-                {
-                    DefaultView("No dinos in here :(");
-                }
-                else
-                {
-                    DinoView();
 
-                }
+                DinoView();
             }
             finally
             {
@@ -89,6 +77,7 @@ public partial class DinoPage : ContentPage
         else
         {
             FileManager.Log("Failed to acquire database lock within timeout.", 1);
+            DefaultView("Dinos ran away :(");
         }
     }
 
@@ -296,9 +285,13 @@ public partial class DinoPage : ContentPage
 
             if (isSelected) // add theese only if we have a dino selected
             {
-                var topButton2 = new Button { Text = btn2Text, BackgroundColor = bColor2 };
-                topButton2.Clicked += OnButton2Clicked;
-                AddToGrid(grid, topButton2, 2, 0);
+                // do not show exclude button while in archive view
+                if (ToggleExcluded != 3)
+                {
+                    var topButton2 = new Button { Text = btn2Text, BackgroundColor = bColor2 };
+                    topButton2.Clicked += OnButton2Clicked;
+                    AddToGrid(grid, topButton2, 2, 0);
+                }
 
 
                 var topButton3 = new Button { Text = btn3Text, BackgroundColor = bColor3 };
@@ -344,43 +337,111 @@ public partial class DinoPage : ContentPage
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        // Create scrollable content
-        var scrollContent = new StackLayout
+        int count = DataManager.DinoCount(Shared.selectedClass, ToggleExcluded);
+
+        if (count > 0)
         {
-            Spacing = 20,
-            Padding = 3
-        };
+            // Create scrollable content
+            var scrollContent = new StackLayout
+            {
+                Spacing = 20,
+                Padding = 3
+            };
 
-        // Add male and female tables
-        scrollContent.Children.Add(CreateDinoGrid(DataManager.MaleTable, "Male"));
-        scrollContent.Children.Add(CreateDinoGrid(DataManager.FemaleTable, "Female"));
+            // Add male and female tables
+            scrollContent.Children.Add(CreateDinoGrid(DataManager.MaleTable, "Male"));
+            scrollContent.Children.Add(CreateDinoGrid(DataManager.FemaleTable, "Female"));
 
-        // Wrap the scrollable content in a ScrollView and add it to the second row
-        var scrollView = new ScrollView { Content = scrollContent };
 
-        AddToGrid(grid, scrollView, 0, 1);
+            // Wrap the scrollable content in a ScrollView and add it to the second row
+            var scrollView = new ScrollView { Content = scrollContent };
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////
+            AddToGrid(grid, scrollView, 0, 1);
 
-        // Create scrollable content
-        var bottomContent = new StackLayout
+            ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            // Create scrollable content
+            var bottomContent = new StackLayout
+            {
+                Spacing = 0,
+                Padding = 3,
+                BackgroundColor = Shared.BottomPanelColor
+            };
+
+
+            bottomContent.Children.Add(CreateDinoGrid(DataManager.BottomTable, "Bottom"));
+
+            // Wrap the scrollable content in a ScrollView and add it to the third row
+            var bottomPanel = new ScrollView { Content = bottomContent };
+
+            AddToGrid(grid, bottomPanel, 1, 1);
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////////
+        }
+        else
         {
-            Spacing = 0,
-            Padding = 3,
-            BackgroundColor = Shared.BottomPanelColor
-        };
+            ////////////////////////////////////////////////////////////////////////////////////////////////////
+            // create empty table content
+
+            // Create scrollable content
+            var scrollContent = new StackLayout
+            {
+                Spacing = 20,
+                Padding = 3
+            };
+
+            var grid1 = new Grid
+            {
+                RowSpacing = 0,
+                ColumnSpacing = 20,
+                Padding = 3
+            };
+            // Define columns
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 0
 
 
-        bottomContent.Children.Add(CreateDinoGrid(DataManager.BottomTable, "Bottom"));
+            var imageContainer = new Grid
+            {
+                BackgroundColor = Shared.MainPanelColor, // Set the background color here
+                Padding = 0
+            };
 
-        // Wrap the scrollable content in a ScrollView and add it to the third row
-        var bottomPanel = new ScrollView { Content = bottomContent };
+            var image = new Image
+            {
+                Source = "dino.png",
+                HeightRequest = 155,
+                Aspect = Aspect.AspectFit
+            };
 
-        AddToGrid(grid, bottomPanel, 1, 1);
+            // Add the image to the container
+            imageContainer.Children.Add(image);
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////
+            var label1 = new Label
+            {
+                Text = "No dinos in here :/",
+                HorizontalOptions = LayoutOptions.Center,
+                VerticalOptions = LayoutOptions.Center,
+                Style = (Style)Application.Current.Resources["Headline"],
+                TextColor = Shared.okColor,
+                FontSize = 22,
+                FontAttributes = FontAttributes.Bold
+            };
 
 
+            AddToGrid(grid1, imageContainer, 0, 0);
+            AddToGrid(grid1, label1, 1, 0);
+
+
+
+            scrollContent.Children.Add(grid1);
+
+            var scrollView = new ScrollView { Content = scrollContent };
+
+            AddToGrid(grid, scrollView, 0, 0);
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        }
 
         return grid;
     }
@@ -538,7 +599,10 @@ public partial class DinoPage : ContentPage
             {
                 if (status == "Exclude") { status = ""; }
             }
-
+            if (ToggleExcluded == 3)
+            {
+                if (status == "Archived") { status = ""; }
+            }
 
             //recolor breeding stats
             if (DataManager.ToDouble(level) >= DataManager.LevelMax) { cellColor1 = Shared.goodColor; }
@@ -569,7 +633,6 @@ public partial class DinoPage : ContentPage
             string age = row["Age"].ToString();
             double ageD = DataManager.ToDouble(age);
             if (ageD < 100 && !name.Contains("Breed #") && status == "") { status = ageD + "% Grown"; }
-
 
 
             // Create a Labels
