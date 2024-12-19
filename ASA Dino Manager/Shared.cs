@@ -52,6 +52,7 @@
         public static Color headerColor = Colors.White;
 
 
+        public static Color SelectedColor = Color.FromArgb("#545461");
 
         public static Color SidePanelColor = Color.FromArgb("#312f38");
 
@@ -59,16 +60,15 @@
         public static Color OddMPanelColor = Color.FromArgb("#272727");
 
         public static Color BottomPanelColor = Color.FromArgb("#292a32");
-        public static Color OddBPanelColor = Color.FromArgb("#252728");
+        public static Color OddBPanelColor = Color.FromArgb("#2e2f37");
 
-
-
-        
+        public static Color ArchivePanelColor = Color.FromArgb("#222222");
+        public static Color OddAPanelColor = Color.FromArgb("#272727");
 
 
         ////////////////////    Scaling        ////////////////////
         public static int headerSize = 16; // font size on table headers
-        public static int rowHeight = 19; // rowheight to determine bottom panel size
+        public static int rowHeight = 24; // rowheight to determine bottom panel size
         public static int sizeOffset = 20; // things
 
 

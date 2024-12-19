@@ -19,7 +19,7 @@ public partial class ArchivePage : ContentPage
         CreateContent();
     }
 
-    private void AddToGrid(Grid grid, View view, int row, int column)
+    private void AddToGrid(Grid grid, View view, int row, int column, bool selected = false)
     {
         // Ensure rows exist up to the specified index
         while (grid.RowDefinitions.Count <= row)
@@ -28,8 +28,11 @@ public partial class ArchivePage : ContentPage
 
             // Add a background color to every other row
             var rowColor = grid.RowDefinitions.Count % 2 == 0
-                ? Shared.MainPanelColor // Even rows
-                : Shared.OddMPanelColor; // Odd rows
+                ? Shared.ArchivePanelColor // Even rows
+                : Shared.OddAPanelColor; // Odd rows
+
+            // Override if row is selected
+            if (selected) { rowColor = Shared.SelectedColor; }
 
             var rowBackground = new BoxView { Color = rowColor };
             Grid.SetRow(rowBackground, grid.RowDefinitions.Count - 1);
@@ -331,11 +334,14 @@ public partial class ArchivePage : ContentPage
             SelectDino(nameL, id);
             SelectDino(levelL, id);
 
+            bool selected = false;
+            if (id == selectedID) { selected = true; }
+
             // add items to grid
-            AddToGrid(grid, idL, rowIndex, 0);
-            AddToGrid(grid, tagL, rowIndex, 1);
-            AddToGrid(grid, nameL, rowIndex, 2);
-            AddToGrid(grid, levelL, rowIndex, 3);
+            AddToGrid(grid, idL, rowIndex, 0, selected);
+            AddToGrid(grid, tagL, rowIndex, 1, selected);
+            AddToGrid(grid, nameL, rowIndex, 2, selected);
+            AddToGrid(grid, levelL, rowIndex, 3, selected);
 
             rowIndex++;
         }

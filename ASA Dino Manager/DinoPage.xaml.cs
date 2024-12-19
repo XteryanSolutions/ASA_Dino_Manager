@@ -17,13 +17,13 @@ public partial class DinoPage : ContentPage
     private string sortF = "";
 
     public DinoPage()
-	{
+    {
         InitializeComponent();
 
         FileManager.Log($"Loaded: {Shared.setPage}", 0);
 
         // set page title
-        this.Title = $"{Shared.setPage.Replace("_"," ")}";
+        this.Title = $"{Shared.setPage.Replace("_", " ")}";
         CreateContent();
     }
 
@@ -78,7 +78,7 @@ public partial class DinoPage : ContentPage
                 else
                 {
                     DinoView();
-                   
+
                 }
             }
             finally
@@ -133,7 +133,7 @@ public partial class DinoPage : ContentPage
         // ==============================================================    Create Dino Layout   =====================================================
 
         // Create the main layout
-        var mainLayout = new Grid 
+        var mainLayout = new Grid
         {
             BackgroundColor = Shared.MainPanelColor
         };
@@ -166,7 +166,7 @@ public partial class DinoPage : ContentPage
         this.Content = mainLayout;
     }
 
-    private void AddToGrid(Grid grid, View view, int row, int column, string title = "")
+    private void AddToGrid(Grid grid, View view, int row, int column, string title = "", bool selected = false)
     {
         // Ensure rows exist up to the specified index
         while (grid.RowDefinitions.Count <= row)
@@ -189,11 +189,13 @@ public partial class DinoPage : ContentPage
                 _ => Shared.OddMPanelColor // Default color if title doesn't match
             };
 
-
             // Choose the color based on the row index
             var rowColor = grid.RowDefinitions.Count % 2 == 0
                 ? evenRowColor // Even rows
                 : oddRowColor; // Odd rows
+
+            // Override if row is selected
+            if (selected) { rowColor = Shared.SelectedColor; }
 
             // Add a background color to the row
             var rowBackground = new BoxView { Color = rowColor };
@@ -320,19 +322,16 @@ public partial class DinoPage : ContentPage
         // Define columns
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 0
 
-
         // dynamically adjust the bottom bar height
         int rowCount = DataManager.BottomTable.Rows.Count;
         int barH = 0;
 
-        Shared.rowHeight = 24;
-        int ofs = 0;
-        if (rowCount > 0) { ofs = 13; barH = ((rowCount * Shared.rowHeight) + Shared.headerSize) + ofs; } // 1 row
-        if (rowCount > 1) { ofs = 9; barH = ((rowCount * Shared.rowHeight) + Shared.headerSize) + ofs; } // 2 rows
-        if (rowCount > 2) { ofs = 4; barH = ((rowCount * Shared.rowHeight) + Shared.headerSize) + ofs; } // 3 rows
-        if (rowCount > 3) { ofs = -1; barH = ((rowCount * Shared.rowHeight) + Shared.headerSize) + ofs; } // 4 rows 
-        if (rowCount > 4) { ofs = -5; barH = ((rowCount * Shared.rowHeight) + Shared.headerSize) + ofs; } // 5 rows needs to be bigger to not activate scrolling
-        if (rowCount > 5) { ofs = -7; barH = ((5 * Shared.rowHeight) + Shared.headerSize) + (ofs); }        // 6+ rows needs to be smaller not to show the 6th row
+        if (rowCount > 0) { barH = ((rowCount * Shared.rowHeight) + Shared.headerSize) + 13; } // 1 row
+        if (rowCount > 1) { barH = ((rowCount * Shared.rowHeight) + Shared.headerSize) + 9; } // 2 rows
+        if (rowCount > 2) { barH = ((rowCount * Shared.rowHeight) + Shared.headerSize) + 4; } // 3 rows
+        if (rowCount > 3) { barH = ((rowCount * Shared.rowHeight) + Shared.headerSize) + (-1); } // 4 rows 
+        if (rowCount > 4) { barH = ((rowCount * Shared.rowHeight) + Shared.headerSize) + (-5); } // 5 rows needs to be bigger to not activate scrolling
+        if (rowCount > 5) { barH = ((5 * Shared.rowHeight) + Shared.headerSize) + (-7); }        // 6+ rows needs to be smaller not to show the 6th row
 
         // FileManager.Log($"barH: {barH} = {rowCount} * {Shared.rowHeight} + {Shared.headerSize} + {ofs}", 0);
 
@@ -371,7 +370,7 @@ public partial class DinoPage : ContentPage
             BackgroundColor = Shared.BottomPanelColor
         };
 
-       
+
         bottomContent.Children.Add(CreateDinoGrid(DataManager.BottomTable, "Bottom"));
 
         // Wrap the scrollable content in a ScrollView and add it to the third row
@@ -475,8 +474,8 @@ public partial class DinoPage : ContentPage
         }
 
         // Add header row
-        AddToGrid(grid, header0, 0, 0,title);
-        AddToGrid(grid, header1, 0, 1,title);
+        AddToGrid(grid, header0, 0, 0, title);
+        AddToGrid(grid, header1, 0, 1, title);
         AddToGrid(grid, header2, 0, 2, title);
         AddToGrid(grid, header3, 0, 3, title);
         AddToGrid(grid, header4, 0, 4, title);
@@ -495,7 +494,6 @@ public partial class DinoPage : ContentPage
             AddToGrid(grid, header13, 0, 13, title);
             AddToGrid(grid, header14, 0, 14, title);
             AddToGrid(grid, header15, 0, 15, title);
-
         }
 
         int rowIndex = 1; // Start adding rows below the header
@@ -596,7 +594,7 @@ public partial class DinoPage : ContentPage
 
 
 
-
+            bool selected = false;
             if (title != "Bottom") // dont make bottom panel selectable
             {
                 // Attach TapGesture to all labels
@@ -616,26 +614,28 @@ public partial class DinoPage : ContentPage
                 SelectDino(mamaML, id);
                 SelectDino(imprintL, id);
                 SelectDino(imprinterL, id);
+
+                // figure out if we have this dino selected
+                if (id == selectedID) { selected = true; }
             }
 
             // add items to grid
-            AddToGrid(grid, nameL, rowIndex, 0,title);
-            AddToGrid(grid, levelL, rowIndex, 1,title);
-            AddToGrid(grid, hpL, rowIndex, 2, title);
-            AddToGrid(grid, staminaL, rowIndex, 3, title);
-            AddToGrid(grid, oxygenL, rowIndex, 4, title);
-            AddToGrid(grid, foodL, rowIndex, 5, title);
-            AddToGrid(grid, weightL, rowIndex, 6, title);
-            AddToGrid(grid, damageL, rowIndex, 7, title);
-            AddToGrid(grid, statusL, rowIndex, 8, title);
-            AddToGrid(grid, genL, rowIndex, 9, title);
-            AddToGrid(grid, papaL, rowIndex, 10, title);
-            AddToGrid(grid, mamaL, rowIndex, 11, title);
-            AddToGrid(grid, papaML, rowIndex, 12, title);
-            AddToGrid(grid, mamaML, rowIndex, 13, title);
-            AddToGrid(grid, imprintL, rowIndex, 14, title);
-            AddToGrid(grid, imprinterL, rowIndex, 15, title);
-
+            AddToGrid(grid, nameL, rowIndex, 0, title, selected);
+            AddToGrid(grid, levelL, rowIndex, 1, title, selected);
+            AddToGrid(grid, hpL, rowIndex, 2, title, selected);
+            AddToGrid(grid, staminaL, rowIndex, 3, title, selected);
+            AddToGrid(grid, oxygenL, rowIndex, 4, title, selected);
+            AddToGrid(grid, foodL, rowIndex, 5, title, selected);
+            AddToGrid(grid, weightL, rowIndex, 6, title, selected);
+            AddToGrid(grid, damageL, rowIndex, 7, title, selected);
+            AddToGrid(grid, statusL, rowIndex, 8, title, selected);
+            AddToGrid(grid, genL, rowIndex, 9, title, selected);
+            AddToGrid(grid, papaL, rowIndex, 10, title, selected);
+            AddToGrid(grid, mamaL, rowIndex, 11, title, selected);
+            AddToGrid(grid, papaML, rowIndex, 12, title, selected);
+            AddToGrid(grid, mamaML, rowIndex, 13, title, selected);
+            AddToGrid(grid, imprintL, rowIndex, 14, title, selected);
+            AddToGrid(grid, imprinterL, rowIndex, 15, title, selected);
 
 
             rowIndex++;
@@ -742,7 +742,7 @@ public partial class DinoPage : ContentPage
                 string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
                 this.Title = $"{name} - {id}"; // set title to dino name
 
-                FileManager.Log($"Selected {name} ID: {id}", 0); 
+                FileManager.Log($"Selected {name} ID: {id}", 0);
 
                 CreateContent();
             }
