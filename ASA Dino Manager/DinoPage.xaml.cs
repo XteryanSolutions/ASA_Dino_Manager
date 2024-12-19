@@ -166,12 +166,42 @@ public partial class DinoPage : ContentPage
         this.Content = mainLayout;
     }
 
-    private void AddToGrid(Grid grid, View view, int row, int column)
+    private void AddToGrid(Grid grid, View view, int row, int column, string title = "")
     {
         // Ensure rows exist up to the specified index
         while (grid.RowDefinitions.Count <= row)
         {
             grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
+
+            // Determine the even row color based on the title
+            Color evenRowColor = title switch
+            {
+                "Male" => Shared.MainPanelColor,
+                "Bottom" => Shared.BottomPanelColor,
+                _ => Shared.MainPanelColor // Default color if title doesn't match
+            };
+
+            // Determine the even row color based on the title
+            Color oddRowColor = title switch
+            {
+                "Male" => Shared.OddMPanelColor,
+                "Bottom" => Shared.OddBPanelColor,
+                _ => Shared.OddMPanelColor // Default color if title doesn't match
+            };
+
+
+            // Choose the color based on the row index
+            var rowColor = grid.RowDefinitions.Count % 2 == 0
+                ? evenRowColor // Even rows
+                : oddRowColor; // Odd rows
+
+            // Add a background color to the row
+            var rowBackground = new BoxView { Color = rowColor };
+            Grid.SetRow(rowBackground, grid.RowDefinitions.Count - 1);
+            Grid.SetColumnSpan(rowBackground, grid.ColumnDefinitions.Count > 0
+                ? grid.ColumnDefinitions.Count
+                : 1); // Cover all columns
+            grid.Children.Add(rowBackground);
         }
 
         // Set the row and column for the view
@@ -320,7 +350,6 @@ public partial class DinoPage : ContentPage
         {
             Spacing = 20,
             Padding = 3
-
         };
 
         // Add male and female tables
@@ -342,6 +371,7 @@ public partial class DinoPage : ContentPage
             BackgroundColor = Shared.BottomPanelColor
         };
 
+       
         bottomContent.Children.Add(CreateDinoGrid(DataManager.BottomTable, "Bottom"));
 
         // Wrap the scrollable content in a ScrollView and add it to the third row
@@ -445,26 +475,26 @@ public partial class DinoPage : ContentPage
         }
 
         // Add header row
-        AddToGrid(grid, header0, 0, 0);
-        AddToGrid(grid, header1, 0, 1);
-        AddToGrid(grid, header2, 0, 2);
-        AddToGrid(grid, header3, 0, 3);
-        AddToGrid(grid, header4, 0, 4);
-        AddToGrid(grid, header5, 0, 5);
-        AddToGrid(grid, header6, 0, 6);
-        AddToGrid(grid, header7, 0, 7);
-        AddToGrid(grid, header8, 0, 8);
-        AddToGrid(grid, header9, 0, 9);
-        AddToGrid(grid, header10, 0, 10);
-        AddToGrid(grid, header11, 0, 11);
+        AddToGrid(grid, header0, 0, 0,title);
+        AddToGrid(grid, header1, 0, 1,title);
+        AddToGrid(grid, header2, 0, 2, title);
+        AddToGrid(grid, header3, 0, 3, title);
+        AddToGrid(grid, header4, 0, 4, title);
+        AddToGrid(grid, header5, 0, 5, title);
+        AddToGrid(grid, header6, 0, 6, title);
+        AddToGrid(grid, header7, 0, 7, title);
+        AddToGrid(grid, header8, 0, 8, title);
+        AddToGrid(grid, header9, 0, 9, title);
+        AddToGrid(grid, header10, 0, 10, title);
+        AddToGrid(grid, header11, 0, 11, title);
 
         // only show last column headers if we select a dino
         if (title != "Bottom" || isSelected)
         {
-            AddToGrid(grid, header12, 0, 12);
-            AddToGrid(grid, header13, 0, 13);
-            AddToGrid(grid, header14, 0, 14);
-            AddToGrid(grid, header15, 0, 15);
+            AddToGrid(grid, header12, 0, 12, title);
+            AddToGrid(grid, header13, 0, 13, title);
+            AddToGrid(grid, header14, 0, 14, title);
+            AddToGrid(grid, header15, 0, 15, title);
 
         }
 
@@ -589,22 +619,22 @@ public partial class DinoPage : ContentPage
             }
 
             // add items to grid
-            AddToGrid(grid, nameL, rowIndex, 0);
-            AddToGrid(grid, levelL, rowIndex, 1);
-            AddToGrid(grid, hpL, rowIndex, 2);
-            AddToGrid(grid, staminaL, rowIndex, 3);
-            AddToGrid(grid, oxygenL, rowIndex, 4);
-            AddToGrid(grid, foodL, rowIndex, 5);
-            AddToGrid(grid, weightL, rowIndex, 6);
-            AddToGrid(grid, damageL, rowIndex, 7);
-            AddToGrid(grid, statusL, rowIndex, 8);
-            AddToGrid(grid, genL, rowIndex, 9);
-            AddToGrid(grid, papaL, rowIndex, 10);
-            AddToGrid(grid, mamaL, rowIndex, 11);
-            AddToGrid(grid, papaML, rowIndex, 12);
-            AddToGrid(grid, mamaML, rowIndex, 13);
-            AddToGrid(grid, imprintL, rowIndex, 14);
-            AddToGrid(grid, imprinterL, rowIndex, 15);
+            AddToGrid(grid, nameL, rowIndex, 0,title);
+            AddToGrid(grid, levelL, rowIndex, 1,title);
+            AddToGrid(grid, hpL, rowIndex, 2, title);
+            AddToGrid(grid, staminaL, rowIndex, 3, title);
+            AddToGrid(grid, oxygenL, rowIndex, 4, title);
+            AddToGrid(grid, foodL, rowIndex, 5, title);
+            AddToGrid(grid, weightL, rowIndex, 6, title);
+            AddToGrid(grid, damageL, rowIndex, 7, title);
+            AddToGrid(grid, statusL, rowIndex, 8, title);
+            AddToGrid(grid, genL, rowIndex, 9, title);
+            AddToGrid(grid, papaL, rowIndex, 10, title);
+            AddToGrid(grid, mamaL, rowIndex, 11, title);
+            AddToGrid(grid, papaML, rowIndex, 12, title);
+            AddToGrid(grid, mamaML, rowIndex, 13, title);
+            AddToGrid(grid, imprintL, rowIndex, 14, title);
+            AddToGrid(grid, imprinterL, rowIndex, 15, title);
 
 
 

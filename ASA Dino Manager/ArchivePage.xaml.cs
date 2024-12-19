@@ -25,6 +25,18 @@ public partial class ArchivePage : ContentPage
         while (grid.RowDefinitions.Count <= row)
         {
             grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
+
+            // Add a background color to every other row
+            var rowColor = grid.RowDefinitions.Count % 2 == 0
+                ? Shared.MainPanelColor // Even rows
+                : Shared.OddMPanelColor; // Odd rows
+
+            var rowBackground = new BoxView { Color = rowColor };
+            Grid.SetRow(rowBackground, grid.RowDefinitions.Count - 1);
+            Grid.SetColumnSpan(rowBackground, grid.ColumnDefinitions.Count > 0
+                ? grid.ColumnDefinitions.Count
+                : 1); // Cover all columns
+            grid.Children.Add(rowBackground);
         }
 
         // Set the row and column for the view
