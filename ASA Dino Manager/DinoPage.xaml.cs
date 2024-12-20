@@ -918,7 +918,7 @@ public partial class DinoPage : ContentPage
         var tapGesture = new TapGestureRecognizer();
         tapGesture.Tapped += (s, e) =>
         {
-            if (selectedID != id) // dont select the same dino twice
+            if (selectedID != id) // select a new dino
             {
                 selectedID = id; isSelected = true;
 
@@ -927,29 +927,28 @@ public partial class DinoPage : ContentPage
 
                 FileManager.Log($"Selected {name} ID: {id}", 0);
 
-                CreateContent();
-
                 // activate double clicking
                 canDouble = true;
                 DisableDoubleClick(500);
             }
-            else if (selectedID == id && canDouble)
+            else if (selectedID == id && canDouble) // select same dino within time
             {
-                // double click
-                // open the dino extended info window
-                isDouble = true;
+                // double click  // open the dino extended info window
+                isDouble = true; canDouble = false;
 
                 string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
-                this.Title = $"{name} - {id}"; // set title to dino name
+                //this.Title = $"{name} - {id}"; // set title to dino name
 
                 FileManager.Log($"Double click {name} ID: {id}", 0);
 
-                CreateContent();
             }
-            else
+            else if (selectedID == id && !canDouble) // select same dino over time
             {
-                canDouble = false;
+                // re activate double clicking
+                canDouble = true;
+                DisableDoubleClick(500);
             }
+            CreateContent();
         };
 
         // Attach the TapGestureRecognizer to the label
