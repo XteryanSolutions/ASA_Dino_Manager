@@ -115,25 +115,25 @@
                 // replace all / and trim it
                 Shared.setPage = target.Replace("/", "").Trim();
 
-                FileManager.Log($"New setPage = {Shared.setPage}", 0);
+                FileManager.Log($"Navigating -> {Shared.setPage}", 0);
 
                 string dinoTag = DataManager.ClassForTag(Shared.setPage.Replace("_", " "));
                 Shared.selectedClass = dinoTag;
 
                 // reset toggles and unselect dino when navigating
-                DinoPage.CurrentStats = false; DinoPage.ToggleExcluded = 0;
+                DinoPage.CurrentStats = Shared.DefaultStat; DinoPage.ToggleExcluded = Shared.DefaultToggle;
                 DinoPage.isSelected = false;DinoPage.isDouble = false; DinoPage.canDouble = false;DinoPage.selectedID = "";
                 ArchivePage.isSelected = false;ArchivePage.selectedID = "";
             }
             else
             {
-                FileManager.Log("setPage is disabled", 1);
+                // FileManager.Log("setPage is disabled", 1);
             }
         }
 
         public void UpdateMenuContents()
         {
-            disableNavSet = true; FileManager.Log("Disabled setPage", 0);
+            disableNavSet = true; // FileManager.Log("Disabled setPage", 0);
             string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
             string[] classList = DataManager.GetAllClasses();
 
@@ -185,7 +185,7 @@
                 // Add the ShellContent to the Shell
                 Items.Add(shellContent);
             }
-            disableNavSet = false; FileManager.Log("Enabled setPage", 0);
+            disableNavSet = false; // FileManager.Log("Enabled setPage", 0);
             FileManager.Log("Updated tagList", 0);
         }
 
@@ -243,11 +243,11 @@
                                 // add 1 second to delay
                                 Shared.CurrentDelay = Shared.CurrentDelay + 1;
                                 if (Shared.CurrentDelay > Shared.MaxDelay) { Shared.CurrentDelay = Shared.MaxDelay; }
-                                else { FileManager.Log($"No change. Increasing delay -> {Shared.CurrentDelay}", 0); }
+                                // else { FileManager.Log($"No change. Increasing delay -> {Shared.CurrentDelay}", 0); }
                             }
                             else // and back down to rapid import if we detect a change
                             {
-                                FileManager.Log($"Change detected. Back to default time {Shared.DefaultDelay}", 0);
+                                // FileManager.Log($"Change detected. Back to default time {Shared.DefaultDelay}", 0);
                                 Shared.CurrentDelay = Shared.DefaultDelay;
                                 // also set the delay thats already running
                                 Shared.Delay = Shared.DefaultDelay;

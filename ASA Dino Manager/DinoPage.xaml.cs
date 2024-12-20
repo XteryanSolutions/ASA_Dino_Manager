@@ -7,8 +7,8 @@ namespace ASA_Dino_Manager;
 public partial class DinoPage : ContentPage
 {
     ////////////////////    View Toggles    ////////////////////
-    public static int ToggleExcluded = 0;
-    public static bool CurrentStats = false;
+    public static int ToggleExcluded = Shared.DefaultToggle;
+    public static bool CurrentStats = Shared.DefaultStat;
 
     ////////////////////    Selecting       ////////////////////
     public static string selectedID = "";
@@ -563,7 +563,9 @@ public partial class DinoPage : ContentPage
         else if (title == "Female") { DefaultColor = Shared.femaleColor; headerColor = Shared.femaleHeaderColor; }
         else { DefaultColor = Shared.bottomColor; headerColor = Shared.bottomHeaderColor; }
 
+        bool hasO2 = true;
 
+        if (DataManager.OxygenMax == 150) { hasO2 = false; }
 
 
         int fSize = Shared.headerSize;  // header fontsize
@@ -598,7 +600,9 @@ public partial class DinoPage : ContentPage
             SortColumn(header1, sexS);
             SortColumn(header2, sexS);
             SortColumn(header3, sexS);
-            SortColumn(header4, sexS);
+
+            if (hasO2) { SortColumn(header4, sexS); }
+
             SortColumn(header5, sexS);
             SortColumn(header6, sexS);
             SortColumn(header7, sexS);
@@ -612,27 +616,36 @@ public partial class DinoPage : ContentPage
             SortColumn(header15, sexS);
         }
 
-        // Add header row
+        // Add base header row
         AddToGrid(grid, header0, 0, 0, title);
         AddToGrid(grid, header1, 0, 1, title);
         AddToGrid(grid, header2, 0, 2, title);
         AddToGrid(grid, header3, 0, 3, title);
-        AddToGrid(grid, header4, 0, 4, title);
-        AddToGrid(grid, header5, 0, 5, title);
-        AddToGrid(grid, header6, 0, 6, title);
-        AddToGrid(grid, header7, 0, 7, title);
-        AddToGrid(grid, header8, 0, 8, title);
-        AddToGrid(grid, header9, 0, 9, title);
-        AddToGrid(grid, header10, 0, 10, title);
-        AddToGrid(grid, header11, 0, 11, title);
 
-        // only show last column headers if we select a dino
+        int startID = 4;
+
+        // If hasO2, include the O2 column (header4)
+        if (hasO2)
+        {
+            AddToGrid(grid, header4, 0, startID++, title); // Increment startID after adding header4
+        }
+
+        // Add remaining headers
+        AddToGrid(grid, header5, 0, startID++, title);
+        AddToGrid(grid, header6, 0, startID++, title);
+        AddToGrid(grid, header7, 0, startID++, title);
+        AddToGrid(grid, header8, 0, startID++, title);
+        AddToGrid(grid, header9, 0, startID++, title);
+        AddToGrid(grid, header10, 0, startID++, title);
+        AddToGrid(grid, header11, 0, startID++, title);
+
+        // Add last column headers if conditions are met
         if (title != "Bottom" || isSelected)
         {
-            AddToGrid(grid, header12, 0, 12, title);
-            AddToGrid(grid, header13, 0, 13, title);
-            AddToGrid(grid, header14, 0, 14, title);
-            AddToGrid(grid, header15, 0, 15, title);
+            AddToGrid(grid, header12, 0, startID++, title);
+            AddToGrid(grid, header13, 0, startID++, title);
+            AddToGrid(grid, header14, 0, startID++, title);
+            AddToGrid(grid, header15, 0, startID++, title);
         }
 
         int rowIndex = 1; // Start adding rows below the header
@@ -763,6 +776,27 @@ public partial class DinoPage : ContentPage
                 }
             }
 
+            // oxygen breed point override
+            if (!hasO2)
+            {
+                if (title == "Bottom")
+                {
+                    if (name.Contains("Breed #"))
+                    {
+                        string newBP = status.Trim();
+
+                        string gP = newBP.Substring(0, 1); // take first char
+                        string aP = newBP.Substring(2, 1); // take 3rd char
+
+                        double GP = DataManager.ToDouble(gP) - 1;
+                        double AP = DataManager.ToDouble(aP);
+                        double SP = GP + AP;
+
+                        status = $"{GP} + {AP} = {SP}";
+                    }
+                }
+            }
+
             // Create a Labels
             var nameL = new Label { Text = name, TextColor = cellColor0 };
             var levelL = new Label { Text = level, TextColor = cellColor1 };
@@ -784,7 +818,6 @@ public partial class DinoPage : ContentPage
             var imprinterL = new Label { Text = imprinter, TextColor = cellColor8 };
 
 
-
             bool selected = false;
             if (title != "Bottom") // dont make bottom panel selectable
             {
@@ -793,7 +826,7 @@ public partial class DinoPage : ContentPage
                 SelectDino(levelL, id);
                 SelectDino(hpL, id);
                 SelectDino(staminaL, id);
-                SelectDino(oxygenL, id);
+                if (hasO2) { SelectDino(oxygenL, id); }
                 SelectDino(foodL, id);
                 SelectDino(weightL, id);
                 SelectDino(damageL, id);
@@ -811,24 +844,33 @@ public partial class DinoPage : ContentPage
                 if (id == selectedID) { selected = true; }
             }
 
-            // add items to grid
+
+            // Reset startID for new row
+            startID = 4;
+
+            // Add base items to the grid
             AddToGrid(grid, nameL, rowIndex, 0, title, selected);
             AddToGrid(grid, levelL, rowIndex, 1, title, selected);
             AddToGrid(grid, hpL, rowIndex, 2, title, selected);
             AddToGrid(grid, staminaL, rowIndex, 3, title, selected);
-            AddToGrid(grid, oxygenL, rowIndex, 4, title, selected);
-            AddToGrid(grid, foodL, rowIndex, 5, title, selected);
-            AddToGrid(grid, weightL, rowIndex, 6, title, selected);
-            AddToGrid(grid, damageL, rowIndex, 7, title, selected);
-            AddToGrid(grid, statusL, rowIndex, 8, title, selected);
-            AddToGrid(grid, genL, rowIndex, 9, title, selected);
-            AddToGrid(grid, papaL, rowIndex, 10, title, selected);
-            AddToGrid(grid, mamaL, rowIndex, 11, title, selected);
-            AddToGrid(grid, papaML, rowIndex, 12, title, selected);
-            AddToGrid(grid, mamaML, rowIndex, 13, title, selected);
-            AddToGrid(grid, imprintL, rowIndex, 14, title, selected);
-            AddToGrid(grid, imprinterL, rowIndex, 15, title, selected);
 
+            // Add dynamic items starting from the existing startID
+            if (hasO2)
+            {
+                AddToGrid(grid, oxygenL, rowIndex, startID++, title, selected); // Add oxygen if applicable
+            }
+
+            AddToGrid(grid, foodL, rowIndex, startID++, title, selected);
+            AddToGrid(grid, weightL, rowIndex, startID++, title, selected);
+            AddToGrid(grid, damageL, rowIndex, startID++, title, selected);
+            AddToGrid(grid, statusL, rowIndex, startID++, title, selected);
+            AddToGrid(grid, genL, rowIndex, startID++, title, selected);
+            AddToGrid(grid, papaL, rowIndex, startID++, title, selected);
+            AddToGrid(grid, mamaL, rowIndex, startID++, title, selected);
+            AddToGrid(grid, papaML, rowIndex, startID++, title, selected);
+            AddToGrid(grid, mamaML, rowIndex, startID++, title, selected);
+            AddToGrid(grid, imprintL, rowIndex, startID++, title, selected);
+            AddToGrid(grid, imprinterL, rowIndex, startID++, title, selected);
 
             rowIndex++;
         }

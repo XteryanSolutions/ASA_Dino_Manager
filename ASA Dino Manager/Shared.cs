@@ -31,6 +31,8 @@
         public static string selectedClass = "";
         public static bool eventDisabled = false;
         public static bool isLoaded = false;
+        public static int DefaultToggle = 1;
+        public static bool DefaultStat = false;
 
 
         ////////////////////    Scaling         ////////////////////
