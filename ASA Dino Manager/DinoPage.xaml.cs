@@ -18,8 +18,8 @@ public partial class DinoPage : ContentPage
 
 
     ////////////////////    Table Sorting   ////////////////////
-    private string sortM = "";
-    private string sortF = "";
+    public static string sortM = Shared.DefaultSortM;
+    public static string sortF = Shared.DefaultSortF;
 
     public DinoPage()
     {
@@ -68,6 +68,11 @@ public partial class DinoPage : ContentPage
 
                 DinoView();
             }
+            catch
+            {
+                FileManager.Log("Failed updating dinos", 2);
+                DefaultView("Dinos exploded :O");
+            }
             finally
             {
                 Monitor.Exit(Shared._dbLock);
@@ -75,8 +80,8 @@ public partial class DinoPage : ContentPage
         }
         else
         {
-            FileManager.Log("Failed to acquire database lock within timeout.", 1);
-            DefaultView("Dinos ran away :(");
+            FileManager.Log("DinoPage Failed to acquire database lock", 1);
+            DefaultView("Dinos walked away :(");
         }
     }
 

@@ -746,22 +746,22 @@ namespace ASA_Dino_Manager
 
 
 
-            // Sort the BottomTable based on the desired column
+            // Sort the MaleTable based on the desired column
             DataView view1 = new DataView(DataManager.MaleTable);
-            view1.Sort = sortiM; // Replace "Level" with the desired column and sorting order (e.g., "Name ASC", "ID DESC")
+            view1.Sort = sortiM;
             DataManager.MaleTable = view1.ToTable();
 
 
-            // Sort the BottomTable based on the desired column
+            // Sort the FemaleTable based on the desired column
             DataView view2 = new DataView(DataManager.FemaleTable);
-            view2.Sort = sortiF; // Replace "Level" with the desired column and sorting order (e.g., "Name ASC", "ID DESC")
+            view2.Sort = sortiF;
             DataManager.FemaleTable = view2.ToTable();
 
 
             //  FileManager.Log("updated data");
         }
 
-        public static void CompileDinoArchive()
+        public static void CompileDinoArchive(string sortC = "")
         {
             // Retrieve distinct IDs
             string[] idList = DataManager.GetAllDistinctColumnData("ID");
@@ -783,6 +783,12 @@ namespace ASA_Dino_Manager
                     ArchiveTable.Rows.Add(dr);
                 }
             }
+
+            // Sort the MaleTable based on the desired column
+            DataView view1 = new DataView(DataManager.ArchiveTable);
+            view1.Sort = sortC; 
+            DataManager.ArchiveTable = view1.ToTable();
+
             FileManager.Log("Archive compiled", 0);
         }
 

@@ -11,6 +11,16 @@
         ////////////////////    Shared Variables ///////////////////
         ////////////////////////////////////////////////////////////
 
+        ////////////////////    Default values         ////////////////////
+        // Sorting
+        public static string DefaultSortA = "Tag ASC"; // default sorting for archive
+        public static string DefaultSortM = ""; // default sorting for male dinos
+        public static string DefaultSortF = ""; // default sorting for female dinos
+        // Navigation
+        public static int DefaultToggle = 1;
+        public static bool DefaultStat = false;
+
+
 
         ////////////////////    Shared locks    ////////////////////
         public static readonly object _logLock = new object();
@@ -27,12 +37,11 @@
 
         ////////////////////    Navigation      ////////////////////
         public static string setPage = "";
-        public static string setRoute = "";
+        //public static string setRoute = "";
         public static string selectedClass = "";
         public static bool eventDisabled = false;
         public static bool isLoaded = false;
-        public static int DefaultToggle = 1;
-        public static bool DefaultStat = false;
+
 
 
         ////////////////////    Scaling         ////////////////////
@@ -41,10 +50,8 @@
         public static int sizeOffset = 5; // Extra buffer to prevent scrolling
 
 
-
         ////////////////////////////////////////////////////////////
         ////////////////////    Configurable    ////////////////////
-
 
         ////////////////////    Coloring        ////////////////////
         // Table colors
@@ -67,7 +74,6 @@
 
         // Layout colors
         public static Color SelectedColor = Color.FromArgb("#545461");
-
         public static Color SidePanelColor = Color.FromArgb("#312f38");
 
         public static Color MainPanelColor = Color.FromArgb("#222222");

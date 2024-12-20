@@ -122,8 +122,9 @@
 
                 // reset toggles and unselect dino when navigating
                 DinoPage.CurrentStats = Shared.DefaultStat; DinoPage.ToggleExcluded = Shared.DefaultToggle;
-                DinoPage.isSelected = false;DinoPage.isDouble = false; DinoPage.canDouble = false;DinoPage.selectedID = "";
-                ArchivePage.isSelected = false;ArchivePage.selectedID = "";
+                DinoPage.isSelected = false; DinoPage.isDouble = false; DinoPage.canDouble = false; DinoPage.selectedID = "";
+                DinoPage.sortM = Shared.DefaultSortM; DinoPage.sortF = Shared.DefaultSortF;
+                ArchivePage.isSelected = false; ArchivePage.selectedID = ""; ArchivePage.sortA = Shared.DefaultSortA;
             }
             else
             {

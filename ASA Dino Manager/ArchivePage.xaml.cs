@@ -8,6 +8,10 @@ public partial class ArchivePage : ContentPage
     public static string selectedID = "";
     public static bool isSelected = false;
 
+    ////////////////////    Table Sorting   ////////////////////
+    public static string sortA = Shared.DefaultSortA;
+
+
     public ArchivePage()
     {
         InitializeComponent();
@@ -58,7 +62,7 @@ public partial class ArchivePage : ContentPage
             try
             {
                 // recompile the archive after archiving or unarchiving
-                DataManager.CompileDinoArchive();
+                DataManager.CompileDinoArchive(sortA);
 
                 FileManager.Log("Updating GUI -> " + Shared.setPage, 0);
 
@@ -73,16 +77,20 @@ public partial class ArchivePage : ContentPage
                     DefaultView("No dinos in here :(");
                 }
             }
+            catch
+            {
+                FileManager.Log("Failed updating Archive table", 2);
+                DefaultView("Dinos imploded =O");
+            }
             finally
             {
                 Monitor.Exit(Shared._dbLock);
             }
-
         }
         else
         {
             DefaultView("Dinos ran away :(");
-            FileManager.Log("Failed to acquire database lock within timeout.", 1);
+            FileManager.Log("ArchivePage Failed to acquire database lock", 1);
         }
     }
 
@@ -402,7 +410,7 @@ public partial class ArchivePage : ContentPage
             DataManager.SetStatus(selectedID, status);
 
             // recompile the archive after archiving or unarchiving
-            DataManager.CompileDinoArchive();
+            DataManager.CompileDinoArchive(sortA);
 
             ClearSelection();
             CreateContent();
@@ -439,6 +447,7 @@ public partial class ArchivePage : ContentPage
                     ClearSelection();
                     CreateContent();
                 }
+                catch { FileManager.Log("Failed Purging dino", 2); }
                 finally
                 {
                     Monitor.Exit(Shared._dbLock);
@@ -472,6 +481,10 @@ public partial class ArchivePage : ContentPage
                     FileManager.Log("Purged All Dinos", 1);
                     ClearSelection();
                     CreateContent();
+                }
+                catch
+                {
+                    FileManager.Log("Failed Purging all dinos", 2);
                 }
                 finally
                 {
