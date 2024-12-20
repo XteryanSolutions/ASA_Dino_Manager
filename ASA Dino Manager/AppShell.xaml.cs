@@ -119,6 +119,11 @@
 
                 string dinoTag = DataManager.ClassForTag(Shared.setPage.Replace("_", " "));
                 Shared.selectedClass = dinoTag;
+
+                // reset toggles and unselect dino when navigating
+                DinoPage.CurrentStats = false; DinoPage.ToggleExcluded = 0;
+                DinoPage.isSelected = false;DinoPage.isDouble = false; DinoPage.canDouble = false;DinoPage.selectedID = "";
+                ArchivePage.isSelected = false;ArchivePage.selectedID = "";
             }
             else
             {

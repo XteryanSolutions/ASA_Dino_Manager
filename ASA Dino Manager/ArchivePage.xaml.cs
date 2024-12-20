@@ -5,8 +5,8 @@ namespace ASA_Dino_Manager;
 public partial class ArchivePage : ContentPage
 {
     ////////////////////    Selecting       ////////////////////
-    private string selectedID = "";
-    private bool isSelected = false;
+    public static string selectedID = "";
+    public static bool isSelected = false;
 
     public ArchivePage()
     {

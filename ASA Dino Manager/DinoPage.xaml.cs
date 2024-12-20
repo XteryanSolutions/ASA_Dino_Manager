@@ -11,10 +11,10 @@ public partial class DinoPage : ContentPage
     public static bool CurrentStats = false;
 
     ////////////////////    Selecting       ////////////////////
-    private string selectedID = "";
-    private bool isSelected = false;
-    private bool canDouble = false;
-    private bool isDouble = false;
+    public static string selectedID = "";
+    public static bool isSelected = false;
+    public static bool canDouble = false;
+    public static bool isDouble = false;
 
 
     ////////////////////    Table Sorting   ////////////////////
