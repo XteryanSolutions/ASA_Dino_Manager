@@ -331,6 +331,7 @@ public partial class DinoPage : ContentPage
             // Adjust based on row count
             int offset = 13 - Math.Min(rowCount, maxVisibleRows) * 4;
             barH = (Math.Min(rowCount, maxVisibleRows) * Shared.rowHeight) + Shared.headerSize + offset + buffer;
+            if (rowCount > 5) { barH = 127; } // prevent showing the top of the 6th row
         }
         else
         {
@@ -365,7 +366,8 @@ public partial class DinoPage : ContentPage
 
 
             // Wrap the scrollable content in a ScrollView and add it to the second row
-            var scrollView = new ScrollView { Content = scrollContent };
+            // changed to include horizontal scrolling
+            var scrollView = new ScrollView { Content = scrollContent, Orientation = ScrollOrientation.Horizontal };
 
             AddToGrid(grid, scrollView, 0, 1);
 
