@@ -45,7 +45,7 @@ public partial class DinoPage : ContentPage
                         DataManager.GetOneDinoData(selectedID);
 
                         DataManager.SetMaxStats(ToggleExcluded);
-                        DataManager.SetBinaryStats();
+                        DataManager.SetBinaryStats(ToggleExcluded);
                     }
                     else
                     {
@@ -54,7 +54,7 @@ public partial class DinoPage : ContentPage
 
 
                         DataManager.SetMaxStats(ToggleExcluded);
-                        DataManager.SetBinaryStats();
+                        DataManager.SetBinaryStats(ToggleExcluded);
 
                         if (!CurrentStats)
                         {

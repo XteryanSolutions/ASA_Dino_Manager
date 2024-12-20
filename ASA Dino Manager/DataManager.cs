@@ -894,7 +894,7 @@ namespace ASA_Dino_Manager
             //FileManager.Log("updated stats");
         }
 
-        public static void SetBinaryStats()
+        public static void SetBinaryStats(int toggle = 0)
         {
             BinaryM = new string[MaleTable.Rows.Count];
             BinaryF = new string[FemaleTable.Rows.Count];
@@ -903,97 +903,132 @@ namespace ASA_Dino_Manager
             int rowIDC = 0;
             foreach (DataRow rowC in MaleTable.Rows)
             {
-                string aC = "0"; string bC = "0"; string cC = "0";
-                string dC = "0"; string eC = "0"; string fC = "0";
-                string binaryC = "000000";
-
-                double HpC = ToDouble(rowC["HP"].ToString());
-                double StaminaC = ToDouble(rowC["Stamina"].ToString());
-                double OxygenC = ToDouble(rowC["Oxygen"].ToString());
-                double FoodC = ToDouble(rowC["Food"].ToString());
-                double WeightC = ToDouble(rowC["Weight"].ToString());
-                double DamageC = ToDouble(rowC["Damage"].ToString());
-
-                if (HpC >= HpMax) { aC = "1"; }
-                if (StaminaC >= StaminaMax) { bC = "1"; }
-                if (OxygenC >= OxygenMax) { cC = "1"; }
-                if (FoodC >= FoodMax) { dC = "1"; }
-                if (WeightC >= WeightMax) { eC = "1"; }
-                if (DamageC >= DamageMax) { fC = "1"; }
-
+                string compare = rowC["ID"].ToString();
                 string compareStatus = rowC["Status"].ToString();
 
-                binaryC = aC + bC + cC + dC + eC + fC;
-                BinaryM[rowIDC] = binaryC;
-                bool mark = false; string outStatus = "";
-                foreach (DataRow rowW in MaleTable.Rows) // compare males to put useles males in reserve
-                {
-                    string compare = rowC["ID"].ToString();
-                    string with = rowW["ID"].ToString();
-                    string withStatus = rowW["Status"].ToString();
+                string statusC = GetStatus(compare);
 
-                    if (compare != with && withStatus != "Exclude") // not with eachother tho and those marked as exclude
+                bool includeC = false;
+                if (toggle == 0)// include dinos only by set toggle
+                {
+                    if (statusC != "Archived") { includeC = true; }
+                }
+                else if (toggle == 1)
+                {
+                    if (statusC != "Archived" && statusC != "Exclude") { includeC = true; }
+                }
+                else if (toggle == 2)
+                {
+                    if (statusC != "Archived" && statusC != "") { includeC = true; }
+                }
+                else if (toggle == 3)
+                {
+                    if (statusC != "" && statusC != "Exclude") { includeC = true; }
+                }
+
+                if (includeC)
+                {
+                    string aC = "0"; string bC = "0"; string cC = "0";
+                    string dC = "0"; string eC = "0"; string fC = "0";
+                    string binaryC = "000000";
+
+                    double HpC = ToDouble(rowC["HP"].ToString());
+                    double StaminaC = ToDouble(rowC["Stamina"].ToString());
+                    double OxygenC = ToDouble(rowC["Oxygen"].ToString());
+                    double FoodC = ToDouble(rowC["Food"].ToString());
+                    double WeightC = ToDouble(rowC["Weight"].ToString());
+                    double DamageC = ToDouble(rowC["Damage"].ToString());
+
+                    if (HpC >= HpMax) { aC = "1"; }
+                    if (StaminaC >= StaminaMax) { bC = "1"; }
+                    if (OxygenC >= OxygenMax) { cC = "1"; }
+                    if (FoodC >= FoodMax) { dC = "1"; }
+                    if (WeightC >= WeightMax) { eC = "1"; }
+                    if (DamageC >= DamageMax) { fC = "1"; }
+
+                    binaryC = aC + bC + cC + dC + eC + fC;
+                    BinaryM[rowIDC] = binaryC;
+                    string outStatus = "";
+                    foreach (DataRow rowW in MaleTable.Rows) // compare males to put useles males in reserve
                     {
-                        string aW = "0"; string bW = "0"; string cW = "0";
-                        string dW = "0"; string eW = "0"; string fW = "0";
+                        string with = rowW["ID"].ToString();
+                        string withStatus = rowW["Status"].ToString();
 
-                        double HpW = ToDouble(rowW["HP"].ToString());
-                        double StaminaW = ToDouble(rowW["Stamina"].ToString());
-                        double OxygenW = ToDouble(rowW["Oxygen"].ToString());
-                        double FoodW = ToDouble(rowW["Food"].ToString());
-                        double WeightW = ToDouble(rowW["Weight"].ToString());
-                        double DamageW = ToDouble(rowW["Damage"].ToString());
+                        string statusW = GetStatus(with);
 
-                        if (HpW >= DataManager.HpMax) { aW = "1"; }
-                        if (StaminaW >= DataManager.StaminaMax) { bW = "1"; }
-                        if (OxygenW >= DataManager.OxygenMax) { cW = "1"; }
-                        if (FoodW >= DataManager.FoodMax) { dW = "1"; }
-                        if (WeightW >= DataManager.WeightMax) { eW = "1"; }
-                        if (DamageW >= DataManager.DamageMax) { fW = "1"; }
-
-                        string binaryW = aW + bW + cW + dW + eW + fW;
-
-                        // now that we have both binary strings compare them to figure out if the compare is superceeded or not
-                        string aA = "0"; string bA = "0"; string cA = "0";
-                        string dA = "0"; string eA = "0"; string fA = "0";
-
-                        // add up the binary shiz with magical ways known only to the gods of blubs
-                        if (aC == "0" && aW == "0") { aA = "0"; } else if (aC == "0" && aW == "1") { aA = "1"; } else if (aC == "1" && aW == "0") { aA = "2"; } else if (aC == "1" && aW == "1") { aA = "3"; }
-                        if (bC == "0" && bW == "0") { bA = "0"; } else if (bC == "0" && bW == "1") { bA = "1"; } else if (bC == "1" && bW == "0") { bA = "2"; } else if (bC == "1" && bW == "1") { bA = "3"; }
-                        if (cC == "0" && cW == "0") { cA = "0"; } else if (cC == "0" && cW == "1") { cA = "1"; } else if (cC == "1" && cW == "0") { cA = "2"; } else if (cC == "1" && cW == "1") { cA = "3"; }
-                        if (dC == "0" && dW == "0") { dA = "0"; } else if (dC == "0" && dW == "1") { dA = "1"; } else if (dC == "1" && dW == "0") { dA = "2"; } else if (dC == "1" && dW == "1") { dA = "3"; }
-                        if (eC == "0" && eW == "0") { eA = "0"; } else if (eC == "0" && eW == "1") { eA = "1"; } else if (eC == "1" && eW == "0") { eA = "2"; } else if (eC == "1" && eW == "1") { eA = "3"; }
-                        if (fC == "0" && fW == "0") { fA = "0"; } else if (fC == "0" && fW == "1") { fA = "1"; } else if (fC == "1" && fW == "0") { fA = "2"; } else if (fC == "1" && fW == "1") { fA = "3"; }
-
-                        string binaryA = aA + bA + cA + dA + eA + fA;
-
-
-                        if (binaryC == binaryW && !withStatus.Contains("<") && !withStatus.Contains("#"))
+                        bool includeW = false;
+                        if (toggle == 0)// include dinos only by set toggle
                         {
-                            mark = true;// both have same stats   MARK IT
-                            outStatus = "# " + rowW["Name"].ToString();  // identical   #with
+                            if (statusW != "Archived") { includeW = true; }
+                        }
+                        else if (toggle == 1)
+                        {
+                            if (statusW != "Archived" && statusW != "Exclude") { includeW = true; }
+                        }
+                        else if (toggle == 2)
+                        {
+                            if (statusW != "Archived" && statusW != "") { includeW = true; }
+                        }
+                        else if (toggle == 3)
+                        {
+                            if (statusW != "" && statusW != "Exclude") { includeW = true; }
                         }
 
-                        if (binaryA.Contains("1") && binaryA.Contains("3") && !binaryA.Contains("2")) // has 1 and 3 but not 2
+                        if (compare != with && includeW) // not with eachother
                         {
-                            mark = true;
-                            outStatus = "< " + rowW["Name"].ToString();  // superceeded
-                        }
+                            string aW = "0"; string bW = "0"; string cW = "0";
+                            string dW = "0"; string eW = "0"; string fW = "0";
 
+                            double HpW = ToDouble(rowW["HP"].ToString());
+                            double StaminaW = ToDouble(rowW["Stamina"].ToString());
+                            double OxygenW = ToDouble(rowW["Oxygen"].ToString());
+                            double FoodW = ToDouble(rowW["Food"].ToString());
+                            double WeightW = ToDouble(rowW["Weight"].ToString());
+                            double DamageW = ToDouble(rowW["Damage"].ToString());
+
+                            if (HpW >= DataManager.HpMax) { aW = "1"; }
+                            if (StaminaW >= DataManager.StaminaMax) { bW = "1"; }
+                            if (OxygenW >= DataManager.OxygenMax) { cW = "1"; }
+                            if (FoodW >= DataManager.FoodMax) { dW = "1"; }
+                            if (WeightW >= DataManager.WeightMax) { eW = "1"; }
+                            if (DamageW >= DataManager.DamageMax) { fW = "1"; }
+
+                            string binaryW = aW + bW + cW + dW + eW + fW;
+
+                            // now that we have both binary strings compare them to figure out if the compare is superceeded or not
+                            string aA = "0"; string bA = "0"; string cA = "0";
+                            string dA = "0"; string eA = "0"; string fA = "0";
+
+                            // add up the binary shiz with magical ways known only to the gods of blubs
+                            if (aC == "0" && aW == "0") { aA = "0"; } else if (aC == "0" && aW == "1") { aA = "1"; } else if (aC == "1" && aW == "0") { aA = "2"; } else if (aC == "1" && aW == "1") { aA = "3"; }
+                            if (bC == "0" && bW == "0") { bA = "0"; } else if (bC == "0" && bW == "1") { bA = "1"; } else if (bC == "1" && bW == "0") { bA = "2"; } else if (bC == "1" && bW == "1") { bA = "3"; }
+                            if (cC == "0" && cW == "0") { cA = "0"; } else if (cC == "0" && cW == "1") { cA = "1"; } else if (cC == "1" && cW == "0") { cA = "2"; } else if (cC == "1" && cW == "1") { cA = "3"; }
+                            if (dC == "0" && dW == "0") { dA = "0"; } else if (dC == "0" && dW == "1") { dA = "1"; } else if (dC == "1" && dW == "0") { dA = "2"; } else if (dC == "1" && dW == "1") { dA = "3"; }
+                            if (eC == "0" && eW == "0") { eA = "0"; } else if (eC == "0" && eW == "1") { eA = "1"; } else if (eC == "1" && eW == "0") { eA = "2"; } else if (eC == "1" && eW == "1") { eA = "3"; }
+                            if (fC == "0" && fW == "0") { fA = "0"; } else if (fC == "0" && fW == "1") { fA = "1"; } else if (fC == "1" && fW == "0") { fA = "2"; } else if (fC == "1" && fW == "1") { fA = "3"; }
+
+                            string binaryA = aA + bA + cA + dA + eA + fA;
+
+
+                            if (binaryC == binaryW && !withStatus.Contains("<") && !withStatus.Contains("#"))
+                            {
+                                // both have same stats   MARK IT
+                                outStatus = "# " + rowW["Name"].ToString();  // identical   #with
+                            }
+
+                            if (binaryA.Contains("1") && binaryA.Contains("3") && !binaryA.Contains("2")) // has 1 and 3 but not 2
+                            {
+                                // both have same stats   MARK IT
+                                outStatus = "< " + rowW["Name"].ToString();  // superceeded
+                            }
+
+                        }
                     }
-                }
 
+                    // mark as garbage if they have none of the best stats
+                    if (binaryC == "000000") { outStatus = "Garbage"; }
 
-
-                // UNFINISHED STUFF HERE WAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-                if (mark)
-                {
-
-                }
-                if (binaryC == "000000" || compareStatus == "Exclude") { outStatus = "Garbage"; }
-                if (compareStatus != "Exclude" && compareStatus != "Baby")
-                {
-                    // something here to mark them as shiz
+                    // edit the row that we show
                     MaleTable.Rows[rowIDC].SetField(StatusID, outStatus);
                 }
 
@@ -1004,6 +1039,30 @@ namespace ASA_Dino_Manager
             rowIDC = 0;
             foreach (DataRow rowC in FemaleTable.Rows)
             {
+                string compare = rowC["ID"].ToString();
+                string compareStatus = rowC["Status"].ToString();
+
+                string statusC = GetStatus(compare);
+
+                bool includeC = false;
+                if (toggle == 0)// include dinos only by set toggle
+                {
+                    if (statusC != "Archived") { includeC = true; }
+                }
+                else if (toggle == 1)
+                {
+                    if (statusC != "Archived" && statusC != "Exclude") { includeC = true; }
+                }
+                else if (toggle == 2)
+                {
+                    if (statusC != "Archived" && statusC != "") { includeC = true; }
+                }
+                else if (toggle == 3)
+                {
+                    if (statusC != "" && statusC != "Exclude") { includeC = true; }
+                }
+
+
                 string outStatus = "";
                 string aC = "0"; string bC = "0"; string cC = "0";
                 string dC = "0"; string eC = "0"; string fC = "0";
@@ -1016,7 +1075,7 @@ namespace ASA_Dino_Manager
                 double WeightC = ToDouble(rowC["Weight"].ToString());
                 double DamageC = ToDouble(rowC["Damage"].ToString());
 
-                string compareStatus = rowC["Status"].ToString();
+
 
                 if (HpC >= HpMax) { aC = "1"; }
                 if (StaminaC >= StaminaMax) { bC = "1"; }
@@ -1029,12 +1088,13 @@ namespace ASA_Dino_Manager
 
                 BinaryF[rowIDC] = binaryC;
 
-                if (binaryC == "000000" || compareStatus == "Exclude") { outStatus = "Garbage"; }
 
+                // mark as garbage if they have none of the best stats
+                if (binaryC == "000000") { outStatus = "Garbage"; }
 
-                if (compareStatus != "Exclude" && compareStatus != "Baby")
+                if (includeC)
                 {
-                    // something here to mark as garbage
+                    // edit the row we show
                     FemaleTable.Rows[rowIDC].SetField(StatusID, outStatus);
                 }
 
