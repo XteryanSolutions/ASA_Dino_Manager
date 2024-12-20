@@ -288,15 +288,13 @@ public partial class ArchivePage : ContentPage
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 3
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 4
 
-        Shared.headerColor = Shared.breedColor;
-        Shared.DefaultColor = Shared.breedColor;
 
         // Add header row
-        AddToGrid(grid, new Label { Text = "ID", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor }, 0, 0);
-        AddToGrid(grid, new Label { Text = "Tag", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor }, 0, 1);
-        AddToGrid(grid, new Label { Text = "Name", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor }, 0, 2);
-        AddToGrid(grid, new Label { Text = "Level", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor }, 0, 3);
-        AddToGrid(grid, new Label { Text = "", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor }, 0, 4);
+        AddToGrid(grid, new Label { Text = "ID", FontAttributes = FontAttributes.Bold, TextColor = Shared.breedHeaderColor }, 0, 0);
+        AddToGrid(grid, new Label { Text = "Tag", FontAttributes = FontAttributes.Bold, TextColor = Shared.breedHeaderColor }, 0, 1);
+        AddToGrid(grid, new Label { Text = "Name", FontAttributes = FontAttributes.Bold, TextColor = Shared.breedHeaderColor }, 0, 2);
+        AddToGrid(grid, new Label { Text = "Level", FontAttributes = FontAttributes.Bold, TextColor = Shared.breedHeaderColor }, 0, 3);
+        AddToGrid(grid, new Label { Text = "", FontAttributes = FontAttributes.Bold, TextColor = Shared.breedHeaderColor }, 0, 4);
 
         int rowIndex = 1; // Start adding rows below the header
 
@@ -307,21 +305,23 @@ public partial class ArchivePage : ContentPage
             string name = row["Name"].ToString();
             string level = row["Level"].ToString();
 
+            Color DefaultColor = Shared.breedColor;
+
             string sex = DataManager.GetLastColumnData("ID", id, "Sex");
             if (sex == "Female")
             {
-                Shared.DefaultColor = Shared.femaleColor;
+                DefaultColor = Shared.femaleColor;
             }
             else
             {
-                Shared.DefaultColor = Shared.maleColor;
+                DefaultColor = Shared.maleColor;
             }
 
-            var cellColor0 = Shared.DefaultColor;
-            var cellColor1 = Shared.DefaultColor;
-            var cellColor2 = Shared.DefaultColor;
-            var cellColor3 = Shared.DefaultColor;
-            var cellColor4 = Shared.DefaultColor;
+            var cellColor0 = DefaultColor;
+            var cellColor1 = DefaultColor;
+            var cellColor2 = DefaultColor;
+            var cellColor3 = DefaultColor;
+            var cellColor4 = DefaultColor;
 
             // Create a Label
             var idL = new Label { Text = id, TextColor = cellColor0 };

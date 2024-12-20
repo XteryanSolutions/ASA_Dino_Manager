@@ -324,16 +324,21 @@ public partial class DinoPage : ContentPage
         // Define columns
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 0
 
-        // dynamically adjust the bottom bar height
+        // Dynamically adjust the bottom bar height
         int rowCount = DataManager.BottomTable.Rows.Count;
-        int barH = 0;
+        int maxVisibleRows = 5; int barH;
+        int buffer = Shared.sizeOffset; // Extra buffer to prevent scrolling
 
-        if (rowCount > 0) { barH = ((rowCount * Shared.rowHeight) + Shared.headerSize) + 13; } // 1 row
-        if (rowCount > 1) { barH = ((rowCount * Shared.rowHeight) + Shared.headerSize) + 9; } // 2 rows
-        if (rowCount > 2) { barH = ((rowCount * Shared.rowHeight) + Shared.headerSize) + 4; } // 3 rows
-        if (rowCount > 3) { barH = ((rowCount * Shared.rowHeight) + Shared.headerSize) + (-1); } // 4 rows 
-        if (rowCount > 4) { barH = ((rowCount * Shared.rowHeight) + Shared.headerSize) + (-5); } // 5 rows needs to be bigger to not activate scrolling
-        if (rowCount > 5) { barH = ((5 * Shared.rowHeight) + Shared.headerSize) + (-7); }        // 6+ rows needs to be smaller not to show the 6th row
+        if (rowCount > 0)
+        {
+            // Adjust based on row count
+            int offset = 13 - Math.Min(rowCount, maxVisibleRows) * 4;
+            barH = (Math.Min(rowCount, maxVisibleRows) * Shared.rowHeight) + Shared.headerSize + offset + buffer;
+        }
+        else
+        {
+            barH = 0; // No rows, no bar height
+        }
 
         // FileManager.Log($"barH: {barH} = {rowCount} * {Shared.rowHeight} + {Shared.headerSize} + {ofs}", 0);
 
@@ -348,8 +353,7 @@ public partial class DinoPage : ContentPage
 
         int count = DataManager.DinoCount(Shared.selectedClass, ToggleExcluded);
 
-
-        if (count > 0 && !isDouble)
+        if (count > 0 && !isDouble) // more than 0 dinos and not double clicked
         {
             // Create scrollable content
             var scrollContent = new StackLayout
@@ -553,34 +557,35 @@ public partial class DinoPage : ContentPage
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 16
 
 
-        Shared.DefaultColor = Shared.maleColor;
+        Color DefaultColor = Shared.maleColor;
+        Color headerColor = DefaultColor;
 
-        if (title == "Male") { Shared.DefaultColor = Shared.maleColor; }
-        else if (title == "Female") { Shared.DefaultColor = Shared.femaleColor; }
-        else { Shared.DefaultColor = Shared.breedColor; }
+        if (title == "Male") { DefaultColor = Shared.maleColor; headerColor = Shared.maleHeaderColor; }
+        else if (title == "Female") { DefaultColor = Shared.femaleColor; headerColor = Shared.femaleHeaderColor; }
+        else { DefaultColor = Shared.breedColor; headerColor = Shared.breedHeaderColor; }
 
 
-        Shared.headerColor = Shared.DefaultColor;
+        
 
         int fSize = Shared.headerSize;  // header fontsize
 
-        var header0 = new Label { Text = "Name", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
-        var header1 = new Label { Text = "Level", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
-        var header2 = new Label { Text = "Hp", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
-        var header3 = new Label { Text = "Stamina", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
-        var header4 = new Label { Text = "Oxygen", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
-        var header5 = new Label { Text = "Food", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
-        var header6 = new Label { Text = "Weight", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
-        var header7 = new Label { Text = "Damage", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
-        var header8 = new Label { Text = "Status", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
-        var header9 = new Label { Text = "Gen", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
+        var header0 = new Label { Text = "Name", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var header1 = new Label { Text = "Level", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var header2 = new Label { Text = "Hp", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var header3 = new Label { Text = "Stamina", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var header4 = new Label { Text = "Oxygen", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var header5 = new Label { Text = "Food", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var header6 = new Label { Text = "Weight", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var header7 = new Label { Text = "Damage", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var header8 = new Label { Text = "Status", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var header9 = new Label { Text = "Gen", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         var header10 = new Label { Text = "Papa", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleColor, FontSize = fSize };
         var header11 = new Label { Text = "Mama", FontAttributes = FontAttributes.Bold, TextColor = Shared.femaleColor, FontSize = fSize };
 
-        var header12 = new Label { Text = "PapaMute", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
-        var header13 = new Label { Text = "MamaMute", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
-        var header14 = new Label { Text = "Imprint", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
-        var header15 = new Label { Text = "Imprinter", FontAttributes = FontAttributes.Bold, TextColor = Shared.headerColor, FontSize = fSize };
+        var header12 = new Label { Text = "PapaMute", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var header13 = new Label { Text = "MamaMute", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var header14 = new Label { Text = "Imprint", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var header15 = new Label { Text = "Imprinter", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
 
 
@@ -635,16 +640,16 @@ public partial class DinoPage : ContentPage
 
         foreach (DataRow row in table.Rows)
         {
-            var cellColor0 = Shared.DefaultColor;
-            var cellColor1 = Shared.DefaultColor;
-            var cellColor2 = Shared.DefaultColor;
-            var cellColor3 = Shared.DefaultColor;
-            var cellColor4 = Shared.DefaultColor;
-            var cellColor5 = Shared.DefaultColor;
-            var cellColor6 = Shared.DefaultColor;
-            var cellColor7 = Shared.DefaultColor;
+            var cellColor0 = DefaultColor;
+            var cellColor1 = DefaultColor;
+            var cellColor2 = DefaultColor;
+            var cellColor3 = DefaultColor;
+            var cellColor4 = DefaultColor;
+            var cellColor5 = DefaultColor;
+            var cellColor6 = DefaultColor;
+            var cellColor7 = DefaultColor;
 
-            var cellColor8 = Shared.DefaultColor;
+            var cellColor8 = DefaultColor;
 
             string id = row["ID"].ToString();
 
@@ -798,6 +803,7 @@ public partial class DinoPage : ContentPage
                 SelectDino(imprinterL, id);
 
                 // figure out if we have this dino selected
+                // for row coloring purposes
                 if (id == selectedID) { selected = true; }
             }
 

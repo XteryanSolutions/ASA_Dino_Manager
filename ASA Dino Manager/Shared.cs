@@ -7,9 +7,9 @@
         public static string version = "ASA Dino Manager 0.04.41";
 
 
-        /////////////////////////////////////////////////////////////
-        ////////////////////    Shared Variables ////////////////////
-        /////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////
+        ////////////////////    Shared Variables ///////////////////
+        ////////////////////////////////////////////////////////////
 
 
         ////////////////////    Shared locks    ////////////////////
@@ -18,14 +18,11 @@
 
 
         ////////////////////    IMPORTING       ////////////////////
-        public static bool ImportEnabled = false;
-        // initial import delay
+        public static bool ImportEnabled = false; // initial import delay
         public static int Delay = 5; 
-        // default import delay in seconds
-        public static int DefaultDelay = 10;
+        public static int DefaultDelay = 10; // default import delay in seconds
         public static int CurrentDelay = 10;
         public static int MaxDelay = 60;
-
 
 
         ////////////////////    Navigation      ////////////////////
@@ -36,28 +33,37 @@
         public static bool isLoaded = false;
 
 
+        ////////////////////    Scaling         ////////////////////
+        public static int headerSize = 16; // FontSize on table headers
+        public static int rowHeight = 24; // rowheight to determine bottom panel size
+        public static int sizeOffset = 5; // Extra buffer to prevent scrolling
+
+
+
+        ////////////////////////////////////////////////////////////
+        ////////////////////    Configurable    ////////////////////
+
+
         ////////////////////    Coloring        ////////////////////
-        // table colors
-        public static Color maleColor = Colors.LightBlue;
-        public static Color femaleColor = Colors.Pink;
-        public static Color breedColor = Colors.LightYellow;
-        public static Color goodColor = Colors.LightGreen;
-        public static Color greatColor = Colors.Green;
-        public static Color superColor = Colors.Yellow;
-        public static Color mutaColor = Colors.MediumPurple;
+        // Table colors
+        public static Color maleHeaderColor = Color.FromArgb("#ADD8E6"); // LightBlue
+        public static Color maleColor = Color.FromArgb("#ADD8E6"); // LightBlue
+        public static Color femaleHeaderColor = Color.FromArgb("#FFC0CB"); // Pink
+        public static Color femaleColor = Color.FromArgb("#FFC0CB"); // Pink
+        public static Color breedHeaderColor = Color.FromArgb("#FFFFE0"); // LightYellow
+        public static Color breedColor = Color.FromArgb("#FFFFE0"); // LightYellow
+        public static Color goodColor = Color.FromArgb("#90EE90"); // LightGreen
+        public static Color greatColor = Color.FromArgb("#008000"); // Green
+        public static Color superColor = Color.FromArgb("#FFFF00"); // Yellow
+        public static Color mutaColor = Color.FromArgb("#9370DB"); // MediumPurple
 
+        // Button colors
+        public static Color noColor = Color.FromArgb("#ADD8E6"); // LightBlue
+        public static Color okColor = Color.FromArgb("#90EE90"); // LightGreen
+        public static Color warnColor = Color.FromArgb("#FFFFE0"); // LightYellow
+        public static Color dangerColor = Color.FromArgb("#CD5C5C"); // IndianRed
 
-        // button colors
-        public static Color noColor = Colors.LightBlue;
-        public static Color okColor = Colors.LightGreen;
-        public static Color warnColor = Colors.LightYellow;
-        public static Color dangerColor = Colors.IndianRed;
-
-        // placeholder (doesnt need ot be here)
-        public static Color DefaultColor = Colors.Red;
-        public static Color headerColor = Colors.White;
-
-
+        // Layout colors
         public static Color SelectedColor = Color.FromArgb("#545461");
 
         public static Color SidePanelColor = Color.FromArgb("#312f38");
@@ -70,13 +76,6 @@
 
         public static Color ArchivePanelColor = Color.FromArgb("#222222");
         public static Color OddAPanelColor = Color.FromArgb("#272727");
-
-
-        ////////////////////    Scaling        ////////////////////
-        public static int headerSize = 16; // font size on table headers
-        public static int rowHeight = 24; // rowheight to determine bottom panel size
-        public static int sizeOffset = 20; // things
-
 
 
     }
