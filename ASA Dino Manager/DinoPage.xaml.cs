@@ -95,7 +95,7 @@ public partial class DinoPage : ContentPage
         };
 
         var image1 = new Image { Source = "dino.png", HeightRequest = 155, Aspect = Aspect.AspectFit, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start };
-        var label1 = new Label { Text = labelText, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start, FontAttributes = FontAttributes.Bold, TextColor = Shared.okColor, FontSize = 22 };
+        var label1 = new Label { Text = labelText, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start, FontAttributes = FontAttributes.Bold, TextColor = Shared.PrimaryColor, FontSize = 22 };
 
 
         AddToGrid(mainLayout, image1, 0, 0);
@@ -224,13 +224,13 @@ public partial class DinoPage : ContentPage
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
 
 
-        var bColor0 = Shared.noColor;
-        var bColor1 = Shared.okColor;
+        var bColor0 = Shared.DefaultBColor;
+        var bColor1 = Shared.PrimaryColor;
 
 
         if (CurrentStats)
         {
-            bColor1 = Shared.warnColor;
+            bColor1 = Shared.SecondaryColor;
         }
 
         if (ToggleExcluded == 0)
@@ -239,15 +239,15 @@ public partial class DinoPage : ContentPage
         }
         else if (ToggleExcluded == 1)
         {
-            bColor0 = Shared.okColor;
+            bColor0 = Shared.PrimaryColor;
         }
         else if (ToggleExcluded == 2)
         {
-            bColor0 = Shared.warnColor;
+            bColor0 = Shared.SecondaryColor;
         }
         else if (ToggleExcluded == 3)
         {
-            bColor0 = Shared.dangerColor;
+            bColor0 = Shared.TrinaryColor;
         }
 
         string btn0Text = "Toggle"; string btn1Text = "Breeding";
@@ -265,49 +265,46 @@ public partial class DinoPage : ContentPage
         string status = DataManager.GetStatus(selectedID);
 
 
-        string btn2Text = "Exclude"; var bColor2 = Shared.warnColor;
-        string btn3Text = "Archive"; var bColor3 = Shared.dangerColor;
+        string btn2Text = "Exclude"; var bColor2 = Shared.SecondaryColor;
+        string btn3Text = "Archive"; var bColor3 = Shared.TrinaryColor;
 
 
-        if (status == "Exclude") { btn2Text = "Include"; bColor2 = Shared.okColor; }
-        if (status == "Archived") { btn3Text = "Restore"; bColor3 = Shared.okColor; }
+        if (status == "Exclude") { btn2Text = "Include"; bColor2 = Shared.PrimaryColor; }
+        if (status == "Archived") { btn3Text = "Restore"; bColor3 = Shared.PrimaryColor; }
 
 
-
-        if (Shared.setRoute != "Archive")
+        if (isDouble)
         {
-            if (isDouble)
-            {
-                var topButton4 = new Button { Text = "Back", BackgroundColor = Shared.okColor };
-                topButton4.Clicked += OnButton4Clicked;
-                AddToGrid(grid, topButton4, 0, 0);
-            }
-            else
-            {
-                AddToGrid(grid, topButton0, 0, 0);
-                AddToGrid(grid, topButton1, 1, 0);
-
-                topButton0.Clicked += OnButton0Clicked;
-                topButton1.Clicked += OnButton1Clicked;
-            }
-
-
-            if (isSelected) // add theese only if we have a dino selected
-            {
-                // do not show exclude button while in archive view
-                if (ToggleExcluded != 3)
-                {
-                    var topButton2 = new Button { Text = btn2Text, BackgroundColor = bColor2 };
-                    topButton2.Clicked += OnButton2Clicked;
-                    AddToGrid(grid, topButton2, 5, 0);
-                }
-
-
-                var topButton3 = new Button { Text = btn3Text, BackgroundColor = bColor3 };
-                topButton3.Clicked += OnButton3Clicked;
-                AddToGrid(grid, topButton3, 6, 0);
-            }
+            var topButton4 = new Button { Text = "Back", BackgroundColor = Shared.PrimaryColor };
+            topButton4.Clicked += OnButton4Clicked;
+            AddToGrid(grid, topButton4, 0, 0);
         }
+        else
+        {
+            AddToGrid(grid, topButton0, 0, 0);
+            AddToGrid(grid, topButton1, 1, 0);
+
+            topButton0.Clicked += OnButton0Clicked;
+            topButton1.Clicked += OnButton1Clicked;
+        }
+
+
+        if (isSelected) // add theese only if we have a dino selected
+        {
+            // do not show exclude button while in archive view
+            if (ToggleExcluded != 3)
+            {
+                var topButton2 = new Button { Text = btn2Text, BackgroundColor = bColor2 };
+                topButton2.Clicked += OnButton2Clicked;
+                AddToGrid(grid, topButton2, 5, 0);
+            }
+
+
+            var topButton3 = new Button { Text = btn3Text, BackgroundColor = bColor3 };
+            topButton3.Clicked += OnButton3Clicked;
+            AddToGrid(grid, topButton3, 6, 0);
+        }
+
 
         return grid;
     }
@@ -436,7 +433,7 @@ public partial class DinoPage : ContentPage
                 HorizontalOptions = LayoutOptions.Center,
                 VerticalOptions = LayoutOptions.Center,
                 Style = (Style)Application.Current.Resources["Headline"],
-                TextColor = Shared.okColor,
+                TextColor = Shared.goodColor,
                 FontSize = 22,
                 FontAttributes = FontAttributes.Bold
             };
@@ -500,7 +497,7 @@ public partial class DinoPage : ContentPage
                 HorizontalOptions = LayoutOptions.Center,
                 VerticalOptions = LayoutOptions.Center,
                 Style = (Style)Application.Current.Resources["Headline"],
-                TextColor = Shared.okColor,
+                TextColor = Shared.goodColor,
                 FontSize = 22,
                 FontAttributes = FontAttributes.Bold
             };
@@ -562,10 +559,10 @@ public partial class DinoPage : ContentPage
 
         if (title == "Male") { DefaultColor = Shared.maleColor; headerColor = Shared.maleHeaderColor; }
         else if (title == "Female") { DefaultColor = Shared.femaleColor; headerColor = Shared.femaleHeaderColor; }
-        else { DefaultColor = Shared.breedColor; headerColor = Shared.breedHeaderColor; }
+        else { DefaultColor = Shared.bottomColor; headerColor = Shared.bottomHeaderColor; }
 
 
-        
+
 
         int fSize = Shared.headerSize;  // header fontsize
 
@@ -734,22 +731,22 @@ public partial class DinoPage : ContentPage
                                 string aC = IDC.Substring(0, 1); string bC = IDC.Substring(1, 1); string cC = IDC.Substring(2, 1);
                                 string dC = IDC.Substring(3, 1); string eC = IDC.Substring(4, 1); string fC = IDC.Substring(5, 1);
 
-                                if (aC == "2") { cellColor2 = Shared.greatColor; }
-                                if (bC == "2") { cellColor3 = Shared.greatColor; }
-                                if (cC == "2") { cellColor4 = Shared.greatColor; }
-                                if (dC == "2") { cellColor5 = Shared.greatColor; }
-                                if (eC == "2") { cellColor6 = Shared.greatColor; }
-                                if (fC == "2") { cellColor7 = Shared.greatColor; }
+                                if (aC == "2") { cellColor2 = Shared.bestColor; }
+                                if (bC == "2") { cellColor3 = Shared.bestColor; }
+                                if (cC == "2") { cellColor4 = Shared.bestColor; }
+                                if (dC == "2") { cellColor5 = Shared.bestColor; }
+                                if (eC == "2") { cellColor6 = Shared.bestColor; }
+                                if (fC == "2") { cellColor7 = Shared.bestColor; }
 
                                 if ((aC + bC + cC + dC + eC + fC) == "222222")
                                 {
                                     // here is a golden offspring with all the best stats
-                                    cellColor2 = Shared.superColor;
-                                    cellColor3 = Shared.superColor;
-                                    cellColor4 = Shared.superColor;
-                                    cellColor5 = Shared.superColor;
-                                    cellColor6 = Shared.superColor;
-                                    cellColor7 = Shared.superColor;
+                                    cellColor2 = Shared.goldColor;
+                                    cellColor3 = Shared.goldColor;
+                                    cellColor4 = Shared.goldColor;
+                                    cellColor5 = Shared.goldColor;
+                                    cellColor6 = Shared.goldColor;
+                                    cellColor7 = Shared.goldColor;
                                 }
                                 break;
                             }

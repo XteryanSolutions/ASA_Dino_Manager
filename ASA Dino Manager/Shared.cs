@@ -50,18 +50,18 @@
         public static Color maleColor = Color.FromArgb("#ADD8E6"); // LightBlue
         public static Color femaleHeaderColor = Color.FromArgb("#FFC0CB"); // Pink
         public static Color femaleColor = Color.FromArgb("#FFC0CB"); // Pink
-        public static Color breedHeaderColor = Color.FromArgb("#FFFFE0"); // LightYellow
-        public static Color breedColor = Color.FromArgb("#FFFFE0"); // LightYellow
+        public static Color bottomHeaderColor = Color.FromArgb("#FFFFE0"); // LightYellow
+        public static Color bottomColor = Color.FromArgb("#FFFFE0"); // LightYellow
         public static Color goodColor = Color.FromArgb("#90EE90"); // LightGreen
-        public static Color greatColor = Color.FromArgb("#008000"); // Green
-        public static Color superColor = Color.FromArgb("#FFFF00"); // Yellow
+        public static Color bestColor = Color.FromArgb("#008000"); // Green
+        public static Color goldColor = Color.FromArgb("#FFFF00"); // Yellow
         public static Color mutaColor = Color.FromArgb("#9370DB"); // MediumPurple
 
         // Button colors
-        public static Color noColor = Color.FromArgb("#ADD8E6"); // LightBlue
-        public static Color okColor = Color.FromArgb("#90EE90"); // LightGreen
-        public static Color warnColor = Color.FromArgb("#FFFFE0"); // LightYellow
-        public static Color dangerColor = Color.FromArgb("#CD5C5C"); // IndianRed
+        public static Color DefaultBColor = Color.FromArgb("#ADD8E6"); // LightBlue
+        public static Color PrimaryColor = Color.FromArgb("#90EE90"); // LightGreen
+        public static Color SecondaryColor = Color.FromArgb("#FFFFE0"); // LightYellow
+        public static Color TrinaryColor = Color.FromArgb("#CD5C5C"); // IndianRed
 
         // Layout colors
         public static Color SelectedColor = Color.FromArgb("#545461");

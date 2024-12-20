@@ -102,7 +102,7 @@ public partial class ArchivePage : ContentPage
 
         var image1 = new Image { Source = "dino.png", HeightRequest = 155, Aspect = Aspect.AspectFit, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start };
 
-        var label1 = new Label { Text = labelText, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start, FontAttributes = FontAttributes.Bold, TextColor = Shared.okColor, FontSize = 22 };
+        var label1 = new Label { Text = labelText, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start, FontAttributes = FontAttributes.Bold, TextColor = Shared.PrimaryColor, FontSize = 22 };
 
 
         AddToGrid(mainLayout, image1, 0, 0);
@@ -188,28 +188,20 @@ public partial class ArchivePage : ContentPage
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
 
 
-        string status = DataManager.GetStatus(selectedID);
-
-
-        string btn3Text = "Archive"; var bColor3 = Shared.dangerColor;
-
-        if (status == "Archived") { btn3Text = "Restore"; bColor3 = Shared.okColor; }
-
-
         // add theese only if we have a dino selected
         if (isSelected)
         {
-            var topButton3 = new Button { Text = btn3Text, BackgroundColor = bColor3 };
+            var topButton3 = new Button { Text = "Restore", BackgroundColor = Shared.PrimaryColor };
             topButton3.Clicked += OnButton3Clicked;
             AddToGrid(grid, topButton3, 0, 0);
 
 
-            var topButton4 = new Button { Text = "Purge", BackgroundColor = Shared.dangerColor };
+            var topButton4 = new Button { Text = "Purge", BackgroundColor = Shared.TrinaryColor };
             topButton4.Clicked += OnButton4Clicked;
             AddToGrid(grid, topButton4, 5, 0);
         }
 
-        var topButton5 = new Button { Text = "Purge All", BackgroundColor = Shared.dangerColor };
+        var topButton5 = new Button { Text = "Purge All", BackgroundColor = Shared.TrinaryColor };
         topButton5.Clicked += OnButton5Clicked;
         AddToGrid(grid, topButton5, 6, 0);
 
@@ -290,11 +282,11 @@ public partial class ArchivePage : ContentPage
 
 
         // Add header row
-        AddToGrid(grid, new Label { Text = "ID", FontAttributes = FontAttributes.Bold, TextColor = Shared.breedHeaderColor }, 0, 0);
-        AddToGrid(grid, new Label { Text = "Tag", FontAttributes = FontAttributes.Bold, TextColor = Shared.breedHeaderColor }, 0, 1);
-        AddToGrid(grid, new Label { Text = "Name", FontAttributes = FontAttributes.Bold, TextColor = Shared.breedHeaderColor }, 0, 2);
-        AddToGrid(grid, new Label { Text = "Level", FontAttributes = FontAttributes.Bold, TextColor = Shared.breedHeaderColor }, 0, 3);
-        AddToGrid(grid, new Label { Text = "", FontAttributes = FontAttributes.Bold, TextColor = Shared.breedHeaderColor }, 0, 4);
+        AddToGrid(grid, new Label { Text = "ID", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor }, 0, 0);
+        AddToGrid(grid, new Label { Text = "Tag", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor }, 0, 1);
+        AddToGrid(grid, new Label { Text = "Name", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor }, 0, 2);
+        AddToGrid(grid, new Label { Text = "Level", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor }, 0, 3);
+        AddToGrid(grid, new Label { Text = "", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor }, 0, 4);
 
         int rowIndex = 1; // Start adding rows below the header
 
@@ -305,7 +297,7 @@ public partial class ArchivePage : ContentPage
             string name = row["Name"].ToString();
             string level = row["Level"].ToString();
 
-            Color DefaultColor = Shared.breedColor;
+            Color DefaultColor = Shared.bottomColor;
 
             string sex = DataManager.GetLastColumnData("ID", id, "Sex");
             if (sex == "Female")

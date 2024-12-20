@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Maui.Storage;
 //using static System.Net.Mime.MediaTypeNames;
 //using System.Windows.Forms;
 
@@ -15,6 +16,13 @@ namespace ASA_Dino_Manager
 
     class FileManager
     {
+        private static readonly string configLocation = @"\config.ini";
+        private static readonly string dataLocation = @"\Data";
+        private static readonly string logsLocation = @"\Logs";
+
+        private static readonly string exportPattern = @"ShooterGame\Saved\DinoExports";
+
+
         // Filemanager stuff
         private static DateTime TimeStart = DateTime.UtcNow;
         private static bool RunOnce = true; // toggle off at init
@@ -49,17 +57,18 @@ namespace ASA_Dino_Manager
                 // get the users document folder and put data in there
                 string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
+                // root directory of all data
                 if (!Directory.Exists(documentsPath + @"\DinoManager")) { Directory.CreateDirectory(documentsPath + @"\DinoManager"); }
 
                 AppPath = documentsPath + @"\DinoManager";
 
 
-                if (!Directory.Exists(AppPath + @"\Logs")) { Directory.CreateDirectory(AppPath + @"\Logs"); }
-                if (!Directory.Exists(AppPath + @"\Data")) { Directory.CreateDirectory(AppPath + @"\Data"); }
+                if (!Directory.Exists(AppPath + logsLocation)) { Directory.CreateDirectory(AppPath + logsLocation); }
+                if (!Directory.Exists(AppPath + dataLocation)) { Directory.CreateDirectory(AppPath + dataLocation); }
 
                 // if (!LoadColorFile()) { return false; }
 
-                if (LoadPath()) // loaded
+                if (LoadConfig()) // loaded
                 {
                     if (CheckPath()) { return true; }
                     else
@@ -98,22 +107,204 @@ namespace ASA_Dino_Manager
             return false;
         }
 
-        public static bool LoadPath()
+        public static bool SaveConfig()
         {
             try
             {
-                if (File.Exists(AppPath + @"\Data\config.hrv"))
+                string filename = AppPath + configLocation;
+
+                using (StreamWriter writer = new StreamWriter(filename))
                 {
-                    using (StreamReader read = new StreamReader(AppPath + @"\Data\config.hrv"))
+                    // compile ini file from set values
+                    writer.WriteLine("[Game Location]");
+                    writer.WriteLine("GamePath=" + GamePath);
+                    writer.WriteLine("");
+                    writer.WriteLine("[Table Colors]");
+                    writer.WriteLine("MaleHeaderColor=" + ColorToHex(Shared.maleHeaderColor));
+                    writer.WriteLine("MaleColor=" + ColorToHex(Shared.maleColor));
+                    writer.WriteLine("FemaleHeaderColor=" + ColorToHex(Shared.femaleHeaderColor));
+                    writer.WriteLine("FemaleColor=" + ColorToHex(Shared.femaleColor));
+                    writer.WriteLine("BottomHeaderColor=" + ColorToHex(Shared.bottomHeaderColor));
+                    writer.WriteLine("BottomColor=" + ColorToHex(Shared.bottomColor));
+                    writer.WriteLine("GoodStatColor=" + ColorToHex(Shared.goodColor));
+                    writer.WriteLine("BestStatColor=" + ColorToHex(Shared.bestColor));
+                    writer.WriteLine("GoldStatColor=" + ColorToHex(Shared.goldColor));
+                    writer.WriteLine("MutatedColor=" + ColorToHex(Shared.mutaColor));
+                    writer.WriteLine("");
+                    writer.WriteLine("[Button Colors]");
+                    writer.WriteLine("DefaultColor=" + ColorToHex(Shared.DefaultBColor));
+                    writer.WriteLine("PrimaryColor=" + ColorToHex(Shared.PrimaryColor));
+                    writer.WriteLine("SecondaryColor=" + ColorToHex(Shared.SecondaryColor));
+                    writer.WriteLine("TrinaryColor=" + ColorToHex(Shared.TrinaryColor));
+                    writer.WriteLine("");
+                    writer.WriteLine("[Layout Colors]");
+                    writer.WriteLine("SelectedColor=" + ColorToHex(Shared.SelectedColor));
+                    writer.WriteLine("SidePanelColor=" + ColorToHex(Shared.SidePanelColor));
+                    writer.WriteLine("MainPanelColor=" + ColorToHex(Shared.MainPanelColor));
+                    writer.WriteLine("OddMPanelColor=" + ColorToHex(Shared.OddMPanelColor));
+                    writer.WriteLine("BottomPanelColor=" + ColorToHex(Shared.BottomPanelColor));
+                    writer.WriteLine("OddBPanelColor=" + ColorToHex(Shared.OddBPanelColor));
+                    writer.WriteLine("ArchivePanelColor=" + ColorToHex(Shared.ArchivePanelColor));
+                    writer.WriteLine("OddAPanelColor=" + ColorToHex(Shared.OddAPanelColor));
+                }
+
+                return true;
+            }
+            catch { }
+            return false;
+        }
+
+        private static string ColorToHex(Color color)
+        {
+            int r = (int)(color.Red * 255);
+            int g = (int)(color.Green * 255);
+            int b = (int)(color.Blue * 255);
+            return $"#{r:X2}{g:X2}{b:X2}";
+        }
+
+        public static bool LoadConfig()
+        {
+            try
+            {
+                bool fail = false;
+                string filename = AppPath + configLocation;
+                if (File.Exists(filename))
+                {
+                    var iniData = IniParser.ParseIniFile(filename);
+                    foreach (var section in iniData)
                     {
-                        string line;
-                        while ((line = read.ReadLine()) != null)
+                        if (section.Key.ToUpper() == "GAME LOCATION")
                         {
-                            GamePath = line;
+                            foreach (var key in section.Value)
+                            {
+                                if (key.Key.ToUpper() == "GAMEPATH")
+                                {
+                                    GamePath = key.Value;
+                                }
+                            }
                         }
+                        // fail later on once colors are checked
+                        // and loaded default if those fail so we can continue to look for a gamepath
+                        if (GamePath == "") { fail = true; }
+
+                        // try all colors at once for now and return to default if any fails
+                        try
+                        {
+                            if (section.Key.ToUpper() == "[TABLE COLORS]")
+                            {
+                                foreach (var key in section.Value)
+                                {
+                                    if (key.Key.ToUpper() == "MALEHEADERCOLOR")
+                                    {
+                                        Shared.maleHeaderColor = Color.FromArgb(key.Value);
+                                    }
+                                    if (key.Key.ToUpper() == "MALECOLOR")
+                                    {
+                                        Shared.maleColor = Color.FromArgb(key.Value);
+                                    }
+                                    if (key.Key.ToUpper() == "FEMALEHEADERCOLOR")
+                                    {
+                                        Shared.femaleHeaderColor = Color.FromArgb(key.Value);
+                                    }
+                                    if (key.Key.ToUpper() == "FEMALECOLOR")
+                                    {
+                                        Shared.femaleColor = Color.FromArgb(key.Value);
+                                    }
+                                    if (key.Key.ToUpper() == "BOTTOMHEADERCOLOR")
+                                    {
+                                        Shared.bottomHeaderColor = Color.FromArgb(key.Value);
+                                    }
+                                    if (key.Key.ToUpper() == "BOTTOMCOLOR")
+                                    {
+                                        Shared.bottomColor = Color.FromArgb(key.Value);
+                                    }
+                                    if (key.Key.ToUpper() == "GOODSTATCOLOR")
+                                    {
+                                        Shared.goodColor = Color.FromArgb(key.Value);
+                                    }
+                                    if (key.Key.ToUpper() == "BESTSTATCOLOR")
+                                    {
+                                        Shared.bestColor = Color.FromArgb(key.Value);
+                                    }
+                                    if (key.Key.ToUpper() == "GOLDSTATCOLOR")
+                                    {
+                                        Shared.goldColor = Color.FromArgb(key.Value);
+                                    }
+                                    if (key.Key.ToUpper() == "MUTATEDSTATCOLOR")
+                                    {
+                                        Shared.mutaColor = Color.FromArgb(key.Value);
+                                    }
+                                }
+                            }
+                            if (section.Key.ToUpper() == "[BUTTON COLORS]")
+                            {
+                                foreach (var key in section.Value)
+                                {
+                                    if (key.Key.ToUpper() == "DEFAULTCOLOR")
+                                    {
+                                        Shared.DefaultBColor = Color.FromArgb(key.Value);
+                                    }
+                                    if (key.Key.ToUpper() == "PRIMARYCOLOR")
+                                    {
+                                        Shared.PrimaryColor = Color.FromArgb(key.Value);
+                                    }
+                                    if (key.Key.ToUpper() == "SECONDARYCOLOR")
+                                    {
+                                        Shared.SecondaryColor = Color.FromArgb(key.Value);
+                                    }
+                                    if (key.Key.ToUpper() == "TRINARYCOLOR")
+                                    {
+                                        Shared.TrinaryColor = Color.FromArgb(key.Value);
+                                    }
+                                }
+                            }
+                            if (section.Key.ToUpper() == "[LAYOUT COLORS]")
+                            {
+                                foreach (var key in section.Value)
+                                {
+                                    if (key.Key.ToUpper() == "SELECTEDCOLOR")
+                                    {
+                                        Shared.SelectedColor = Color.FromArgb(key.Value);
+                                    }
+                                    if (key.Key.ToUpper() == "SIDEPANELCOLOR")
+                                    {
+                                        Shared.SidePanelColor = Color.FromArgb(key.Value);
+                                    }
+                                    if (key.Key.ToUpper() == "MAINPANELCOLOR")
+                                    {
+                                        Shared.MainPanelColor = Color.FromArgb(key.Value);
+                                    }
+                                    if (key.Key.ToUpper() == "ODDMPANELCOLOR")
+                                    {
+                                        Shared.OddMPanelColor = Color.FromArgb(key.Value);
+                                    }
+                                    if (key.Key.ToUpper() == "BOTTOMPANELCOLOR")
+                                    {
+                                        Shared.BottomPanelColor = Color.FromArgb(key.Value);
+                                    }
+                                    if (key.Key.ToUpper() == "ODDBPANELCOLOR")
+                                    {
+                                        Shared.OddBPanelColor = Color.FromArgb(key.Value);
+                                    }
+                                    if (key.Key.ToUpper() == "ARCHIVEPANELCOLOR")
+                                    {
+                                        Shared.ArchivePanelColor = Color.FromArgb(key.Value);
+                                    }
+                                    if (key.Key.ToUpper() == "ODDAPANELCOLOR")
+                                    {
+                                        Shared.OddAPanelColor = Color.FromArgb(key.Value);
+                                    }
+                                }
+                            }
+                        }
+                        catch {
+                        
+                        } // no need to set false on fail its just simply going to keep hardcoded colors
                     }
-                    //fileManager.log("gamePath Loaded");
-                    return true;
+                    if (!fail)
+                    {
+                        return true;
+                    }
                 }
             }
             catch { }
@@ -124,7 +315,7 @@ namespace ASA_Dino_Manager
         {
             // retrieve all ini files in dinoexport folder
             string[] exports = Directory.GetFiles(GamePath + @"\", "*.ini", SearchOption.TopDirectoryOnly);
-           
+
             return exports;
         }
 
@@ -139,7 +330,7 @@ namespace ASA_Dino_Manager
                     FileManager.Log($"Deleted: {file}", 1);
                     return true;
                 }
-                catch 
+                catch
                 {
                     return false;
                 }
@@ -163,17 +354,15 @@ namespace ASA_Dino_Manager
                     {
                         Scanning = true;
 
-                        string filepath = FileManager.FindFilePath(@"ShooterGame\Saved\DinoExports");
+                        string filepath = FileManager.FindFilePath();
                         GamePath = filepath;
 
                         if (CheckPath()) // check if the path we found works
                         {
-                            
-                            using (StreamWriter writer = new StreamWriter(AppPath + @"\Data\config.hrv"))
-                            {
-                                writer.WriteLine(filepath);
-                            }
-                            FileManager.Log("Set New gamePath", 0);
+
+                            // save config here ======================================================================
+                            SaveConfig();
+
                             Scanning = false;
                             if (!Shared.ImportEnabled) { Shared.ImportEnabled = true; FileManager.Log("Enabled Importing (Found GamePath)", 0); }
                         }
@@ -200,14 +389,14 @@ namespace ASA_Dino_Manager
             try
             {
                 DataManager.ImportsTable.Clear();
-                DataManager.ImportsTable.ReadXml(AppPath + @"\Data\dinos.hrv");
+                DataManager.ImportsTable.ReadXml(AppPath + dataLocation + @"\dinos.hrv");
 
                 DataManager.StatTable.Clear();
-                DataManager.StatTable.ReadXml(AppPath + @"\Data\data.hrv");
+                DataManager.StatTable.ReadXml(AppPath + dataLocation + @"\data.hrv");
             }
             catch
             {
-                Console.WriteLine("no import dataBase! creating a new one");
+                FileManager.Log("==== File Load failure (Creating new files) ====", 2); // error
                 needSave = true; SaveFiles();
             }
         }
@@ -218,13 +407,14 @@ namespace ASA_Dino_Manager
             {
                 try
                 {
-                    DataManager.ImportsTable.WriteXml(AppPath + @"\Data\dinos.hrv");
-                    DataManager.StatTable.WriteXml(AppPath + @"\Data\data.hrv");
+                    DataManager.ImportsTable.WriteXml(AppPath + dataLocation + @"\dinos.hrv");
+                    DataManager.StatTable.WriteXml(AppPath + dataLocation + @"\data.hrv");
                     FileManager.Log("==== Saved DataBase ====", 0);
                     needSave = false;
                 }
                 catch
                 {
+                    FileManager.Log("==== File write failure ====", 2); // error
                     Console.WriteLine("File write failure");
                 }
             }
@@ -277,7 +467,7 @@ namespace ASA_Dino_Manager
                     if (LogText != "")
                     {
                         // empty log buffer to file
-                        File.AppendAllText(AppPath + @"\Logs\log_" + TimeStart.ToString().Replace(@"/", ".").Replace(@":", ".") + ".txt", LogText);
+                        File.AppendAllText(AppPath + logsLocation + @"\log_" + TimeStart.ToString().Replace(@"/", ".").Replace(@":", ".") + ".txt", LogText);
                         LogText = "";
                     }
                     if (critical) { Application.Current.Quit(); } // shutdown after logfile has been written even if no new text was added
@@ -297,7 +487,7 @@ namespace ASA_Dino_Manager
             }
         }
 
-        public static string FindFilePath(string FolderName = @"ShooterGame\Saved\DinoExports")
+        public static string FindFilePath()
         {
             string result = "";
             bool found = false;
@@ -309,7 +499,7 @@ namespace ASA_Dino_Manager
                 foreach (var data in directories)
                 {
                     string dirName = data.ToString();
-                    if (dirName.ToUpper().Contains(FolderName.ToUpper()))
+                    if (dirName.ToUpper().Contains(exportPattern.ToUpper()))
                     {
                         result = dirName; found = true; FileManager.Log("Found GamePath", 0); break;
                     }
