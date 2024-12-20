@@ -1,4 +1,5 @@
 using System.Data;
+using System.Data.Common;
 using System.Xml.Linq;
 using Microsoft.UI.Xaml.Controls.Primitives;
 
@@ -20,6 +21,9 @@ public partial class DinoPage : ContentPage
     ////////////////////    Table Sorting   ////////////////////
     public static string sortM = Shared.DefaultSortM;
     public static string sortF = Shared.DefaultSortF;
+
+    private string upChar = "<";
+    private string downChar = ">";
 
     public DinoPage()
     {
@@ -575,23 +579,57 @@ public partial class DinoPage : ContentPage
 
         int fSize = Shared.headerSize;  // header fontsize
 
-        var header0 = new Label { Text = "Name", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        var header1 = new Label { Text = "Level", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        var header2 = new Label { Text = "Hp", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        var header3 = new Label { Text = "Stamina", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        var header4 = new Label { Text = "Oxygen", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        var header5 = new Label { Text = "Food", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        var header6 = new Label { Text = "Weight", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        var header7 = new Label { Text = "Damage", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        var header8 = new Label { Text = "Status", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        var header9 = new Label { Text = "Gen", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        var header10 = new Label { Text = "Papa", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleColor, FontSize = fSize };
-        var header11 = new Label { Text = "Mama", FontAttributes = FontAttributes.Bold, TextColor = Shared.femaleColor, FontSize = fSize };
+        // add sorting symbol to the sorted column
+        string sortChar = "";
 
-        var header12 = new Label { Text = "PapaMute", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        var header13 = new Label { Text = "MamaMute", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        var header14 = new Label { Text = "Imprint", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        var header15 = new Label { Text = "Imprinter", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        // find out wich table we are sorting
+        string testingSort = "";
+        if (title == "Male") { testingSort = sortM; }
+        else if (title == "Female") { testingSort = sortF; }
+
+        string newTest = "";
+        if (testingSort.Contains("ASC"))
+        {
+            newTest = testingSort.Substring(0, testingSort.Length - 4);
+        }
+        if (testingSort.Contains("DESC"))
+        {
+            newTest = testingSort.Substring(0, testingSort.Length - 5);
+        }
+
+        sortChar = ""; if (testingSort.Contains("Name")) { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var header0 = new Label { Text = $"Name{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (testingSort.Contains("Level")) { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var header1 = new Label { Text = $"Level{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (testingSort.Contains("Hp")) { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var header2 = new Label { Text = $"Hp{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (testingSort.Contains("Stamina")) { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var header3 = new Label { Text = $"Stamina{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (testingSort.Contains("Oxygen")) { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var header4 = new Label { Text = $"Oxygen{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (testingSort.Contains("Food")) { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var header5 = new Label { Text = $"Food{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (testingSort.Contains("Weight")) { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var header6 = new Label { Text = $"Weight{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (testingSort.Contains("Damage")) { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var header7 = new Label { Text = $"Damage{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (testingSort.Contains("Status")) { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var header8 = new Label { Text = $"Status{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (testingSort.Contains("Gen")) { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var header9 = new Label { Text = $"Gen{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        // adjust different logic for last columns that contains the same shiz
+        sortChar = ""; if (newTest == "Papa") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var header10 = new Label { Text = $"Papa{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleColor, FontSize = fSize };
+        sortChar = ""; if (newTest == "Mama") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var header11 = new Label { Text = $"Mama{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.femaleColor, FontSize = fSize };
+        sortChar = ""; if (newTest == "PapaMute") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var header12 = new Label { Text = $"PapaMute{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == "MamaMute") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var header13 = new Label { Text = $"MamaMute{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == "Imprint") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var header14 = new Label { Text = $"Imprint{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == "Imprinter") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var header15 = new Label { Text = $"Imprinter{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
 
 
@@ -900,6 +938,12 @@ public partial class DinoPage : ContentPage
         {
             // Handle the click event and pass additional data
             string column = label.Text;
+
+            if (column.Contains(upChar) || column.Contains(downChar))
+            {
+                column = column.Substring(0, column.Length - 2);
+            }
+
 
             var splitM = sortM.Split(new[] { @" " }, StringSplitOptions.RemoveEmptyEntries);
             var splitF = sortF.Split(new[] { @" " }, StringSplitOptions.RemoveEmptyEntries);
