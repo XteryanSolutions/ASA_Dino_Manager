@@ -779,21 +779,18 @@ public partial class DinoPage : ContentPage
             // oxygen breed point override
             if (!hasO2)
             {
-                if (title == "Bottom")
+                if (title == "Bottom" && status.Length == 9 && name.Contains("Breed #"))
                 {
-                    if (name.Contains("Breed #"))
-                    {
-                        string newBP = status.Trim();
+                    string newBP = status.Trim();
 
-                        string gP = newBP.Substring(0, 1); // take first char
-                        string aP = newBP.Substring(2, 1); // take 3rd char
+                    string gP = newBP.Substring(0, 1); // take first char
+                    string aP = newBP.Substring(2, 1); // take 3rd char
 
-                        double GP = DataManager.ToDouble(gP) - 1;
-                        double AP = DataManager.ToDouble(aP);
-                        double SP = GP + AP;
+                    double GP = DataManager.ToDouble(gP) - 1;
+                    double AP = DataManager.ToDouble(aP);
+                    double SP = GP + AP;
 
-                        status = $"{GP} + {AP} = {SP}";
-                    }
+                    status = $"{GP} + {AP} = {SP}";
                 }
             }
 
