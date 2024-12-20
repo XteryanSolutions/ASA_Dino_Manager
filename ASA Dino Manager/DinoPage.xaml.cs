@@ -671,6 +671,11 @@ public partial class DinoPage : ContentPage
             string imprinter = row["Imprinter"].ToString();
 
 
+
+            if (ToggleExcluded == 0)
+            {
+                status = DataManager.GetStatus(id);
+            }
             if (ToggleExcluded == 2)
             {
                 if (status == "Exclude") { status = ""; }
