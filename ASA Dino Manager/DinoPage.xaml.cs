@@ -548,9 +548,6 @@ public partial class DinoPage : ContentPage
             var textBox6 = new Entry { Text = weight, Placeholder = "Weight", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor6, BackgroundColor = Shared.OddMPanelColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
             var textBox7 = new Entry { Text = damage, Placeholder = "Damage", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor7, BackgroundColor = Shared.OddMPanelColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
 
-            var textBoxN = new Entry { Placeholder = "Notes", WidthRequest = 200, HeightRequest = 200, TextColor = cellColor0, BackgroundColor = Shared.OddMPanelColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
-
-
             textBox1.TextChanged += (sender, e) =>
             {
                 if (!IsValidDouble(e.NewTextValue)) { ((Entry)sender).Text = e.OldTextValue; }
@@ -587,13 +584,6 @@ public partial class DinoPage : ContentPage
                 if (!IsValidDouble(e.NewTextValue)) { ((Entry)sender).Text = e.OldTextValue; }
                 else { damageText = e.NewTextValue; }
             };
-            textBoxN.TextChanged += (sender, e) =>
-            {
-                string newText = e.NewTextValue;
-                // Set notes text here
-            };
-
-
 
 
 
@@ -634,7 +624,7 @@ public partial class DinoPage : ContentPage
 
             DefaultColor = Shared.maleColor;
 
-            cellColor0 = DefaultColor;
+
             cellColor1 = DefaultColor;
             cellColor2 = DefaultColor;
             cellColor3 = DefaultColor;
@@ -688,7 +678,6 @@ public partial class DinoPage : ContentPage
 
             DefaultColor = Shared.femaleColor;
 
-            cellColor0 = DefaultColor;
             cellColor1 = DefaultColor;
             cellColor2 = DefaultColor;
             cellColor3 = DefaultColor;
@@ -731,6 +720,38 @@ public partial class DinoPage : ContentPage
             AddToGrid(grid1, labelM7, rowid++, 2, "", false, true);
 
             scrollContent.Children.Add(grid1);
+
+
+            rowid = 0;
+            var grid2 = new Grid
+            {
+                RowSpacing = 0,
+                ColumnSpacing = 20,
+                Padding = 3
+            };
+            // Define columns
+            grid2.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 0
+
+
+            string notes = DataManager.GetNotes(id);
+
+
+            // notes textbox defined here
+            var textBoxN = new Editor { Text = notes, Placeholder = "Notes", WidthRequest = 500, HeightRequest = 200, TextColor = cellColor0, BackgroundColor = Shared.OddMPanelColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start, Keyboard = Keyboard.Create(KeyboardFlags.None) };
+
+
+
+            textBoxN.TextChanged += (sender, e) =>
+            {
+                editStats = true;
+                notesText = e.NewTextValue;
+            };
+
+
+            AddToGrid(grid2, textBoxN, rowid++, 0, "", false, true);
+
+
+            scrollContent.Children.Add(grid2);
 
             var scrollView = new ScrollView { Content = scrollContent };
 
@@ -1466,7 +1487,7 @@ public partial class DinoPage : ContentPage
     {
         // reset toggles etc.
         levelText = ""; hpText = ""; staminaText = ""; oxygenText = "";
-        foodText = ""; weightText = ""; damageText = "";
+        foodText = ""; weightText = ""; damageText = ""; notesText = "";
         isDouble = false;
         ClearSelection();
         CreateContent();
@@ -1480,12 +1501,12 @@ public partial class DinoPage : ContentPage
         // selectedID
         // and edit them
 
-        DataManager.EditBreedStats(selectedID, levelText, hpText, staminaText, oxygenText, foodText, weightText, damageText);
+        DataManager.EditBreedStats(selectedID, levelText, hpText, staminaText, oxygenText, foodText, weightText, damageText, notesText);
         FileManager.needSave = true;
 
         // reset toggles etc.
         levelText = ""; hpText = ""; staminaText = ""; oxygenText = "";
-        foodText = ""; weightText = ""; damageText = "";
+        foodText = ""; weightText = ""; damageText = ""; notesText = "";
         isDouble = false;
         ClearSelection();
         CreateContent();

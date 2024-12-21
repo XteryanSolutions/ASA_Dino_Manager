@@ -54,8 +54,6 @@ namespace ASA_Dino_Manager
         public static string[] BinaryF = new string[1]; //keeping track of max stats for breeding
 
 
-        private static int StatusID = 0; // id for the status field in table
-
         public static bool InitDataManager()
         {
             try
@@ -102,7 +100,6 @@ namespace ASA_Dino_Manager
                 ImportsTable.Columns.Add("Colors", typeof(string));
 
 
-                StatusID = 0;
 
 
                 FemaleTable.Clear();
@@ -437,10 +434,11 @@ namespace ASA_Dino_Manager
             return results;
         }
 
-        public static void EditBreedStats(string id, string level, string hp, string st, string ox, string fo, string we, string da)
+        public static void EditBreedStats(string id, string level, string hp, string st, string ox, string fo, string we, string da, string notes)
         {
             if (id != "")
             {
+                SetNotes(id, notes);
                 int rowID = 0;
                 foreach (DataRow row in ImportsTable.Rows)
                 {
@@ -523,7 +521,7 @@ namespace ASA_Dino_Manager
             {
                 if (id == row["ID"].ToString()) // did we find our dino in dinoData file
                 {
-                    return row["Status"].ToString();
+                    return row["Notes"].ToString();
                 }
             }
             return "";
@@ -538,7 +536,7 @@ namespace ASA_Dino_Manager
                 {
                     if (id == row["ID"].ToString()) // did we find our dino in dinoData file
                     {
-                        StatTable.Rows[rowid].SetField(1, status);
+                        StatTable.Rows[rowid].SetField("Status", status);
                         FileManager.Log($"Set status for id: {id} to: {status}", 0);
                         found = true; break;
                     }
@@ -563,7 +561,7 @@ namespace ASA_Dino_Manager
             {
                 if (id == row["ID"].ToString()) // did we find our dino in dinoData file
                 {
-                    StatTable.Rows[rowid].SetField(2, notes);
+                    StatTable.Rows[rowid].SetField("Notes", notes);
                     found = true; break;
                 }
                 rowid++;
@@ -586,7 +584,7 @@ namespace ASA_Dino_Manager
             {
                 if (id == row["ID"].ToString()) // did we find our dino in dinoData file
                 {
-                    StatTable.Rows[rowid].SetField(3, mutes);
+                    StatTable.Rows[rowid].SetField("Mutes", mutes);
                     found = true; break;
                 }
                 rowid++;
@@ -595,7 +593,7 @@ namespace ASA_Dino_Manager
             {
                 DataRow dr = DataManager.StatTable.NewRow();
                 dr["ID"] = id;
-                dr["Notes"] = mutes;
+                dr["Mutes"] = mutes;
                 DataManager.StatTable.Rows.Add(dr);
             }
         }
@@ -1051,7 +1049,7 @@ namespace ASA_Dino_Manager
                     if (binaryC == "000000") { outStatus = "Garbage"; }
 
                     // edit the row that we show
-                    MaleTable.Rows[rowIDC].SetField(StatusID, outStatus);
+                    MaleTable.Rows[rowIDC].SetField("Status", outStatus);
                 }
 
                 rowIDC++;
@@ -1117,7 +1115,7 @@ namespace ASA_Dino_Manager
                 if (includeC)
                 {
                     // edit the row we show
-                    FemaleTable.Rows[rowIDC].SetField(StatusID, outStatus);
+                    FemaleTable.Rows[rowIDC].SetField("Status", outStatus);
                 }
 
                 rowIDC++;

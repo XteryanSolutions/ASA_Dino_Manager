@@ -50,6 +50,10 @@
         public static int sizeOffset = 5; // Extra buffer to prevent scrolling
 
 
+        public static int startupX = 1000;
+        public static int startupY = 560;
+
+
         ////////////////////////////////////////////////////////////
         ////////////////////    Configurable    ////////////////////
 

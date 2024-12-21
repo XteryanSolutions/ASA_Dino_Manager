@@ -22,8 +22,8 @@ public partial class App : Application
         var window = base.CreateWindow(activationState);
 
         // Set the default size for Windows or macOS
-        window.Width = 920;  // Desired width
-        window.Height = 520; // Desired height
+        window.Width = Shared.startupX;  // Desired width
+        window.Height = Shared.startupY; // Desired height
 
         return window;
     }
