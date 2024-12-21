@@ -228,7 +228,6 @@ public partial class DinoPage : ContentPage
                 }
             }
 
-
             grid.Children.Add(rowBackground);
         }
 
@@ -313,12 +312,12 @@ public partial class DinoPage : ContentPage
 
         if (isDouble)
         {
-            var topButton5 = new Button { Text = "Save", BackgroundColor = Shared.PrimaryColor };
+            var topButton5 = new Button { Text = "Save", BackgroundColor = Shared.TrinaryColor };
             topButton5.Clicked += OnButton5Clicked;
             AddToGrid(grid, topButton5, 0, 0);
 
 
-            var topButton4 = new Button { Text = "Back", BackgroundColor = Shared.SecondaryColor };
+            var topButton4 = new Button { Text = "Back", BackgroundColor = Shared.PrimaryColor };
             topButton4.Clicked += OnButton4Clicked;
             AddToGrid(grid, topButton4, 1, 0);
         }

@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 
 namespace ASA_Dino_Manager;
@@ -23,7 +24,7 @@ public partial class ArchivePage : ContentPage
         CreateContent();
     }
 
-    private void AddToGrid(Grid grid, View view, int row, int column, bool selected = false)
+    private void AddToGrid(Grid grid, View view, int row, int column, bool selected = false, string id = "")
     {
         // Ensure rows exist up to the specified index
         while (grid.RowDefinitions.Count <= row)
@@ -43,6 +44,13 @@ public partial class ArchivePage : ContentPage
             Grid.SetColumnSpan(rowBackground, grid.ColumnDefinitions.Count > 0
                 ? grid.ColumnDefinitions.Count
                 : 1); // Cover all columns
+
+            // make background on row selectable to increase surface area
+            if (id != "") // only when an id is passed
+            {
+                SelectBG(rowBackground, id);
+            }
+
             grid.Children.Add(rowBackground);
         }
 
@@ -345,11 +353,11 @@ public partial class ArchivePage : ContentPage
             if (id == selectedID) { selected = true; }
 
             // add items to grid
-            AddToGrid(grid, idL, rowIndex, 0, selected);
-            AddToGrid(grid, tagL, rowIndex, 1, selected);
-            AddToGrid(grid, nameL, rowIndex, 2, selected);
-            AddToGrid(grid, levelL, rowIndex, 3, selected);
-            AddToGrid(grid, classL, rowIndex, 4, selected);
+            AddToGrid(grid, idL, rowIndex, 0, selected, id);
+            AddToGrid(grid, tagL, rowIndex, 1, selected, id);
+            AddToGrid(grid, nameL, rowIndex, 2, selected, id);
+            AddToGrid(grid, levelL, rowIndex, 3, selected, id);
+            AddToGrid(grid, classL, rowIndex, 4, selected, id);
 
 
             rowIndex++;
@@ -391,6 +399,30 @@ public partial class ArchivePage : ContentPage
         // Attach the TapGestureRecognizer to the label
         label.GestureRecognizers.Add(tapGesture);
     }
+
+    void SelectBG(BoxView inp, string id)
+    {
+        // Create a TapGestureRecognizer
+        var tapGesture = new TapGestureRecognizer();
+        tapGesture.Tapped += (s, e) =>
+        {
+            if (selectedID != id) // dont select the same dino twice
+            {
+                selectedID = id;
+
+                string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
+                this.Title = $"{name} - {id}"; // set title to dino name
+
+                FileManager.Log($"Selected {name} ID: {id}", 0); isSelected = true;
+
+                CreateContent();
+            }
+        };
+
+        // Attach the TapGestureRecognizer to the label
+        inp.GestureRecognizers.Add(tapGesture);
+    }
+
 
     private void UnSelectDino(Grid grid)
     {
