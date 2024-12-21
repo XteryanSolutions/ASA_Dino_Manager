@@ -23,7 +23,7 @@ public partial class App : Application
 
         // Set the default size for Windows or macOS
         window.Width = 920;  // Desired width
-        window.Height = 500; // Desired height
+        window.Height = 520; // Desired height
 
         return window;
     }

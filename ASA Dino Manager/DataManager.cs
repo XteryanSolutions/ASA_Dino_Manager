@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Data.Common;
 using System.Globalization;
 //using System.Windows.Forms;
 //using Android.Media;
@@ -35,7 +36,7 @@ namespace ASA_Dino_Manager
         public static int ModC = 0;  // keep track of updated dinos
         public static int AddC = 0;  // keep track of added dinos
 
-        private static string DecimalSeparator = "";
+        public static string DecimalSeparator = "";
         private static string ThousandsSeparator = "";
 
         private static readonly CultureInfo Culture = Thread.CurrentThread.CurrentCulture;
@@ -436,6 +437,30 @@ namespace ASA_Dino_Manager
             return results;
         }
 
+        public static void EditBreedStats(string id, string level, string hp, string st, string ox, string fo, string we, string da)
+        {
+            if (id != "")
+            {
+                int rowID = 0;
+                foreach (DataRow row in ImportsTable.Rows)
+                {
+                    if (id == row["ID"].ToString()) // found dino to edit
+                    {
+                        ImportsTable.Rows[rowID].SetField("Level", level);
+                        ImportsTable.Rows[rowID].SetField("Hp", hp);
+                        ImportsTable.Rows[rowID].SetField("Stamina", st);
+                        ImportsTable.Rows[rowID].SetField("Oxygen", ox);
+                        ImportsTable.Rows[rowID].SetField("Food", fo);
+                        ImportsTable.Rows[rowID].SetField("Weight", we);
+                        ImportsTable.Rows[rowID].SetField("Damage", da);
+
+                        break;
+                    }
+                    rowID++;
+                }
+            }
+        }
+
         public static int DinoCount(string dinoTag, int toggle = 0)
         {
             // count dinos and only include based on their status and what view is toggled 0 to count all
@@ -605,22 +630,22 @@ namespace ASA_Dino_Manager
                     double dinoOxygen = Math.Round(ToDouble(MainStats[rowID][4].ToString()));
                     double mamaOxygen = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Oxygen")));
                     double papaOxygen = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Oxygen")));
-                    if ((mamaStamina != 0 && papaStamina != 0) && (dinoStamina != papaStamina && dinoStamina != mamaStamina))
+                    if ((mamaOxygen != 0 && papaOxygen != 0) && (dinoOxygen != papaOxygen && dinoOxygen != mamaOxygen))
                     { c = "1"; }
                     double dinoFood = Math.Round(ToDouble(MainStats[rowID][5].ToString()));
                     double mamaFood = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Food")));
                     double papaFood = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Food")));
-                    if ((mamaStamina != 0 && papaStamina != 0) && (dinoStamina != papaStamina && dinoStamina != mamaStamina))
+                    if ((mamaFood != 0 && papaFood != 0) && (dinoFood != papaFood && dinoFood != mamaFood))
                     { d = "1"; }
                     double dinoWeight = Math.Round(ToDouble(MainStats[rowID][6].ToString()));
                     double mamaWeight = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Weight")));
                     double papaWeight = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Weight")));
-                    if ((mamaStamina != 0 && papaStamina != 0) && (dinoStamina != papaStamina && dinoStamina != mamaStamina))
+                    if ((mamaWeight != 0 && papaWeight != 0) && (dinoWeight != papaWeight && dinoWeight != mamaWeight))
                     { e = "1"; }
                     double dinoDamage = Math.Round(ToDouble(MainStats[rowID][7].ToString()));
                     double mamaDamage = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Damage")));
                     double papaDamage = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Damage")));
-                    if ((mamaStamina != 0 && papaStamina != 0) && (dinoStamina != papaStamina && dinoStamina != mamaStamina))
+                    if ((mamaDamage != 0 && papaDamage != 0) && (dinoDamage != papaDamage && dinoDamage != mamaDamage))
                     {
                         f = "1";
                     }
@@ -1802,7 +1827,5 @@ namespace ASA_Dino_Manager
                 }
             }
         }
-
-
     }
 }
