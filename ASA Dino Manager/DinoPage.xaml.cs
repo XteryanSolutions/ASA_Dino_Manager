@@ -178,7 +178,7 @@ public partial class DinoPage : ContentPage
         this.Content = mainLayout;
     }
 
-    private void AddToGrid(Grid grid, View view, int row, int column, string title = "", bool selected = false, bool isDoubl = false)
+    private void AddToGrid(Grid grid, View view, int row, int column, string title = "", bool selected = false, bool isDoubl = false, string id = "")
     {
         // Ensure rows exist up to the specified index
         while (grid.RowDefinitions.Count <= row)
@@ -218,6 +218,17 @@ public partial class DinoPage : ContentPage
             Grid.SetColumnSpan(rowBackground, grid.ColumnDefinitions.Count > 0
                 ? grid.ColumnDefinitions.Count
                 : 1); // Cover all columns
+
+            // make background on row selectable to increase surface area
+            if (title != "Bottom") // not the bottom panel
+            {
+                if (id != "") // only when an id is passed
+                {
+                    SelectBG(rowBackground, id);
+                }
+            }
+
+
             grid.Children.Add(rowBackground);
         }
 
@@ -452,17 +463,6 @@ public partial class DinoPage : ContentPage
             grid1.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 0
 
 
-            var editLabel = new Label
-            {
-                Text = "Edit breed stats",
-                HorizontalOptions = LayoutOptions.Start,
-                VerticalOptions = LayoutOptions.Start,
-                Style = (Style)Application.Current.Resources["Headline"],
-                TextColor = Shared.goodColor,
-                FontSize = 20,
-                FontAttributes = FontAttributes.Bold
-            };
-
             // get the current breed stats of selected dino
             string id = selectedID;
             string sep = DataManager.DecimalSeparator;
@@ -486,15 +486,70 @@ public partial class DinoPage : ContentPage
             damageText = damage;
 
 
-            var textBox1 = new Entry { Text = level, Placeholder = "Level", WidthRequest = 200, HeightRequest = 10, TextColor = Colors.Black, BackgroundColor = Colors.LightGray, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
-            var textBox2 = new Entry { Text = hp, Placeholder = "Hp", WidthRequest = 200, HeightRequest = 10, TextColor = Colors.Black, BackgroundColor = Colors.LightGray, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
-            var textBox3 = new Entry { Text = stamina, Placeholder = "Stamina", WidthRequest = 200, HeightRequest = 10, TextColor = Colors.Black, BackgroundColor = Colors.LightGray, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
-            var textBox4 = new Entry { Text = oxygen, Placeholder = "Oxygen", WidthRequest = 200, HeightRequest = 10, TextColor = Colors.Black, BackgroundColor = Colors.LightGray, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
-            var textBox5 = new Entry { Text = food, Placeholder = "Food", WidthRequest = 200, HeightRequest = 10, TextColor = Colors.Black, BackgroundColor = Colors.LightGray, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
-            var textBox6 = new Entry { Text = weight, Placeholder = "Weight", WidthRequest = 200, HeightRequest = 10, TextColor = Colors.Black, BackgroundColor = Colors.LightGray, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
-            var textBox7 = new Entry { Text = damage, Placeholder = "Damage", WidthRequest = 200, HeightRequest = 10, TextColor = Colors.Black, BackgroundColor = Colors.LightGray, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
 
-            var textBoxN = new Entry { Placeholder = "Notes", WidthRequest = 200, HeightRequest = 200, TextColor = Colors.Black, BackgroundColor = Colors.LightGray, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
+
+            string sex = DataManager.GetLastColumnData("ID", id, "Sex");
+
+            Color DefaultColor = Shared.maleColor;
+            if (sex == "Male") { DefaultColor = Shared.maleColor; }
+            else if (sex == "Female") { DefaultColor = Shared.femaleColor; }
+
+            var cellColor0 = DefaultColor;
+            var cellColor1 = DefaultColor;
+            var cellColor2 = DefaultColor;
+            var cellColor3 = DefaultColor;
+            var cellColor4 = DefaultColor;
+            var cellColor5 = DefaultColor;
+            var cellColor6 = DefaultColor;
+            var cellColor7 = DefaultColor;
+
+
+            //recolor stats (use -0.1 to account for rounding)
+            if (DataManager.ToDouble(level) >= (DataManager.LevelMax - 0.1)) { cellColor1 = Shared.goodColor; }
+            if (DataManager.ToDouble(hp) >= DataManager.HpMax - 0.1) { cellColor2 = Shared.goodColor; }
+            if (DataManager.ToDouble(stamina) >= DataManager.StaminaMax - 0.1) { cellColor3 = Shared.goodColor; }
+            if (DataManager.ToDouble(oxygen) >= DataManager.OxygenMax - 0.1) { cellColor4 = Shared.goodColor; }
+            if (DataManager.ToDouble(food) >= DataManager.FoodMax - 0.1) { cellColor5 = Shared.goodColor; }
+            if (DataManager.ToDouble(weight) >= DataManager.WeightMax - 0.1) { cellColor6 = Shared.goodColor; }
+            if (DataManager.ToDouble(damage) >= DataManager.DamageMax - 0.1) { cellColor7 = Shared.goodColor; }
+
+
+            // mutation detection overrides normal coloring -> mutaColor
+            string mutes = DataManager.GetMutes(id);
+            if (mutes.Length == 6 && !CurrentStats) // dont show mutations on current statview
+            {
+                string aC = mutes.Substring(0, 1); string bC = mutes.Substring(1, 1); string cC = mutes.Substring(2, 1);
+                string dC = mutes.Substring(3, 1); string eC = mutes.Substring(4, 1); string fC = mutes.Substring(5, 1);
+
+                if (aC == "1") { cellColor2 = Shared.mutaColor; }
+                if (bC == "1") { cellColor3 = Shared.mutaColor; }
+                if (cC == "1") { cellColor4 = Shared.mutaColor; }
+                if (dC == "1") { cellColor5 = Shared.mutaColor; }
+                if (eC == "1") { cellColor6 = Shared.mutaColor; }
+                if (fC == "1") { cellColor7 = Shared.mutaColor; }
+            }
+
+
+            var editLabel = new Label
+            {
+                Text = "Edit breed stats",
+                HorizontalOptions = LayoutOptions.Start,
+                VerticalOptions = LayoutOptions.Start,
+                Style = (Style)Application.Current.Resources["Headline"],
+                TextColor = cellColor0,
+                FontSize = 20,
+                FontAttributes = FontAttributes.Bold
+            };
+
+            var textBox1 = new Entry { Text = level, Placeholder = "Level", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor1, BackgroundColor = Shared.OddMPanelColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
+            var textBox2 = new Entry { Text = hp, Placeholder = "Hp", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor2, BackgroundColor = Shared.OddMPanelColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
+            var textBox3 = new Entry { Text = stamina, Placeholder = "Stamina", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor3, BackgroundColor = Shared.OddMPanelColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
+            var textBox4 = new Entry { Text = oxygen, Placeholder = "Oxygen", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor4, BackgroundColor = Shared.OddMPanelColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
+            var textBox5 = new Entry { Text = food, Placeholder = "Food", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor5, BackgroundColor = Shared.OddMPanelColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
+            var textBox6 = new Entry { Text = weight, Placeholder = "Weight", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor6, BackgroundColor = Shared.OddMPanelColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
+            var textBox7 = new Entry { Text = damage, Placeholder = "Damage", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor7, BackgroundColor = Shared.OddMPanelColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
+
+            var textBoxN = new Entry { Placeholder = "Notes", WidthRequest = 200, HeightRequest = 200, TextColor = cellColor0, BackgroundColor = Shared.OddMPanelColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
 
 
             textBox1.TextChanged += (sender, e) =>
@@ -578,15 +633,37 @@ public partial class DinoPage : ContentPage
             string damageP = DataManager.GetFirstColumnData("ID", papaID, "Damage").Replace(".", sep);
 
 
+            DefaultColor = Shared.maleColor;
+
+            cellColor0 = DefaultColor;
+            cellColor1 = DefaultColor;
+            cellColor2 = DefaultColor;
+            cellColor3 = DefaultColor;
+            cellColor4 = DefaultColor;
+            cellColor5 = DefaultColor;
+            cellColor6 = DefaultColor;
+            cellColor7 = DefaultColor;
+
+
+            //recolor stats (use -0.1 to account for rounding)
+            if (DataManager.ToDouble(levelP) >= (DataManager.LevelMax - 0.1)) { cellColor1 = Shared.goodColor; }
+            if (DataManager.ToDouble(hpP) >= DataManager.HpMax - 0.1) { cellColor2 = Shared.goodColor; }
+            if (DataManager.ToDouble(staminaP) >= DataManager.StaminaMax - 0.1) { cellColor3 = Shared.goodColor; }
+            if (DataManager.ToDouble(oxygenP) >= DataManager.OxygenMax - 0.1) { cellColor4 = Shared.goodColor; }
+            if (DataManager.ToDouble(foodP) >= DataManager.FoodMax - 0.1) { cellColor5 = Shared.goodColor; }
+            if (DataManager.ToDouble(weightP) >= DataManager.WeightMax - 0.1) { cellColor6 = Shared.goodColor; }
+            if (DataManager.ToDouble(damageP) >= DataManager.DamageMax - 0.1) { cellColor7 = Shared.goodColor; }
+
+
             // add papa stats
             var papaH = new Label { Text = papaName, Style = (Style)Application.Current.Resources["Headline"], TextColor = Shared.maleColor, FontSize = 20, FontAttributes = FontAttributes.Bold };
-            var labelP1 = new Label { Text = levelP, TextColor = Shared.maleColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelP2 = new Label { Text = hpP, TextColor = Shared.maleColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelP3 = new Label { Text = staminaP, TextColor = Shared.maleColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelP4 = new Label { Text = oxygenP, TextColor = Shared.maleColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelP5 = new Label { Text = foodP, TextColor = Shared.maleColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelP6 = new Label { Text = weightP, TextColor = Shared.maleColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelP7 = new Label { Text = damageP, TextColor = Shared.maleColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelP1 = new Label { Text = levelP, TextColor = cellColor1, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelP2 = new Label { Text = hpP, TextColor = cellColor2, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelP3 = new Label { Text = staminaP, TextColor = cellColor3, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelP4 = new Label { Text = oxygenP, TextColor = cellColor4, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelP5 = new Label { Text = foodP, TextColor = cellColor5, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelP6 = new Label { Text = weightP, TextColor = cellColor6, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelP7 = new Label { Text = damageP, TextColor = cellColor7, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
 
 
             rowid = 0;
@@ -609,16 +686,39 @@ public partial class DinoPage : ContentPage
             string damageM = DataManager.GetFirstColumnData("ID", mamaID, "Damage").Replace(".", sep);
 
 
+
+            DefaultColor = Shared.femaleColor;
+
+            cellColor0 = DefaultColor;
+            cellColor1 = DefaultColor;
+            cellColor2 = DefaultColor;
+            cellColor3 = DefaultColor;
+            cellColor4 = DefaultColor;
+            cellColor5 = DefaultColor;
+            cellColor6 = DefaultColor;
+            cellColor7 = DefaultColor;
+
+
+            //recolor stats (use -0.1 to account for rounding)
+            if (DataManager.ToDouble(levelM) >= (DataManager.LevelMax - 0.1)) { cellColor1 = Shared.goodColor; }
+            if (DataManager.ToDouble(hpM) >= DataManager.HpMax - 0.1) { cellColor2 = Shared.goodColor; }
+            if (DataManager.ToDouble(staminaM) >= DataManager.StaminaMax - 0.1) { cellColor3 = Shared.goodColor; }
+            if (DataManager.ToDouble(oxygenM) >= DataManager.OxygenMax - 0.1) { cellColor4 = Shared.goodColor; }
+            if (DataManager.ToDouble(foodM) >= DataManager.FoodMax - 0.1) { cellColor5 = Shared.goodColor; }
+            if (DataManager.ToDouble(weightM) >= DataManager.WeightMax - 0.1) { cellColor6 = Shared.goodColor; }
+            if (DataManager.ToDouble(damageM) >= DataManager.DamageMax - 0.1) { cellColor7 = Shared.goodColor; }
+
+
             // add mama stats
             var mamaH = new Label { Text = mamaName, Style = (Style)Application.Current.Resources["Headline"], TextColor = Shared.femaleColor, FontSize = 20, FontAttributes = FontAttributes.Bold };
 
-            var labelM1 = new Label { Text = levelM, TextColor = Shared.femaleColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelM2 = new Label { Text = hpM, TextColor = Shared.femaleColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelM3 = new Label { Text = staminaM, TextColor = Shared.femaleColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelM4 = new Label { Text = oxygenM, TextColor = Shared.femaleColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelM5 = new Label { Text = foodM, TextColor = Shared.femaleColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelM6 = new Label { Text = weightM, TextColor = Shared.femaleColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelM7 = new Label { Text = damageM, TextColor = Shared.femaleColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelM1 = new Label { Text = levelM, TextColor = cellColor1, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelM2 = new Label { Text = hpM, TextColor = cellColor2, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelM3 = new Label { Text = staminaM, TextColor = cellColor3, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelM4 = new Label { Text = oxygenM, TextColor = cellColor4, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelM5 = new Label { Text = foodM, TextColor = cellColor5, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelM6 = new Label { Text = weightM, TextColor = cellColor6, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelM7 = new Label { Text = damageM, TextColor = cellColor7, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
 
 
             rowid = 0;
@@ -1064,28 +1164,28 @@ public partial class DinoPage : ContentPage
             startID = 4;
 
             // Add base items to the grid
-            AddToGrid(grid, nameL, rowIndex, 0, title, selected);
-            AddToGrid(grid, levelL, rowIndex, 1, title, selected);
-            AddToGrid(grid, hpL, rowIndex, 2, title, selected);
-            AddToGrid(grid, staminaL, rowIndex, 3, title, selected);
+            AddToGrid(grid, nameL, rowIndex, 0, title, selected, false, id);
+            AddToGrid(grid, levelL, rowIndex, 1, title, selected, false, id);
+            AddToGrid(grid, hpL, rowIndex, 2, title, selected, false, id);
+            AddToGrid(grid, staminaL, rowIndex, 3, title, selected, false, id);
 
             // Add dynamic items starting from the existing startID
             if (hasO2)
             {
-                AddToGrid(grid, oxygenL, rowIndex, startID++, title, selected); // Add oxygen if applicable
+                AddToGrid(grid, oxygenL, rowIndex, startID++, title, selected, false, id); // Add oxygen if applicable
             }
 
-            AddToGrid(grid, foodL, rowIndex, startID++, title, selected);
-            AddToGrid(grid, weightL, rowIndex, startID++, title, selected);
-            AddToGrid(grid, damageL, rowIndex, startID++, title, selected);
-            AddToGrid(grid, statusL, rowIndex, startID++, title, selected);
-            AddToGrid(grid, genL, rowIndex, startID++, title, selected);
-            AddToGrid(grid, papaL, rowIndex, startID++, title, selected);
-            AddToGrid(grid, mamaL, rowIndex, startID++, title, selected);
-            AddToGrid(grid, papaML, rowIndex, startID++, title, selected);
-            AddToGrid(grid, mamaML, rowIndex, startID++, title, selected);
-            AddToGrid(grid, imprintL, rowIndex, startID++, title, selected);
-            AddToGrid(grid, imprinterL, rowIndex, startID++, title, selected);
+            AddToGrid(grid, foodL, rowIndex, startID++, title, selected, false, id);
+            AddToGrid(grid, weightL, rowIndex, startID++, title, selected, false, id);
+            AddToGrid(grid, damageL, rowIndex, startID++, title, selected, false, id);
+            AddToGrid(grid, statusL, rowIndex, startID++, title, selected, false, id);
+            AddToGrid(grid, genL, rowIndex, startID++, title, selected, false, id);
+            AddToGrid(grid, papaL, rowIndex, startID++, title, selected, false, id);
+            AddToGrid(grid, mamaL, rowIndex, startID++, title, selected, false, id);
+            AddToGrid(grid, papaML, rowIndex, startID++, title, selected, false, id);
+            AddToGrid(grid, mamaML, rowIndex, startID++, title, selected, false, id);
+            AddToGrid(grid, imprintL, rowIndex, startID++, title, selected, false, id);
+            AddToGrid(grid, imprinterL, rowIndex, startID++, title, selected, false, id);
 
             rowIndex++;
         }
@@ -1235,6 +1335,50 @@ public partial class DinoPage : ContentPage
         label.GestureRecognizers.Add(tapGesture);
     }
 
+    void SelectBG(BoxView inp, string id)
+    {
+        // Create a TapGestureRecognizer
+        var tapGesture = new TapGestureRecognizer();
+        tapGesture.Tapped += (s, e) =>
+        {
+            if (selectedID != id) // select a new dino
+            {
+                selectedID = id; isSelected = true;
+
+                string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
+                this.Title = $"{name} - {id}"; // set title to dino name
+
+                FileManager.Log($"Selected. {name} ID: {id}", 0);
+
+                // activate double clicking
+
+                canDouble = true;
+                DisableDoubleClick(500);
+            }
+            else if (selectedID == id && canDouble) // select same dino within time
+            {
+                // double click  // open the dino extended info window
+                isDouble = true; canDouble = false;
+
+                string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
+                //this.Title = $"{name} - {id}"; // set title to dino name
+
+                FileManager.Log($"Double click. {name} ID: {id}", 0);
+
+            }
+            else if (selectedID == id && !canDouble) // select same dino over time
+            {
+                // re activate double clicking
+                canDouble = true;
+                DisableDoubleClick(500);
+            }
+            CreateContent();
+        };
+
+        // Attach the TapGestureRecognizer to the label
+        inp.GestureRecognizers.Add(tapGesture);
+    }
+
     private async Task DisableDoubleClick(int delayMilliseconds)
     {
         await Task.Delay(delayMilliseconds);
@@ -1323,7 +1467,7 @@ public partial class DinoPage : ContentPage
     {
         // reset toggles etc.
         levelText = ""; hpText = ""; staminaText = ""; oxygenText = "";
-        foodText = ""; weightText = "";damageText = "";
+        foodText = ""; weightText = ""; damageText = "";
         isDouble = false;
         ClearSelection();
         CreateContent();

@@ -642,9 +642,9 @@ namespace ASA_Dino_Manager
                     double papaWeight = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Weight")));
                     if ((mamaWeight != 0 && papaWeight != 0) && (dinoWeight != papaWeight && dinoWeight != mamaWeight))
                     { e = "1"; }
-                    double dinoDamage = Math.Round(ToDouble(MainStats[rowID][7].ToString()));
-                    double mamaDamage = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Damage")));
-                    double papaDamage = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Damage")));
+                    double dinoDamage = Math.Round(ToDouble(MainStats[rowID][7].ToString()), 2);
+                    double mamaDamage = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Damage")), 2);
+                    double papaDamage = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Damage")), 2);
                     if ((mamaDamage != 0 && papaDamage != 0) && (dinoDamage != papaDamage && dinoDamage != mamaDamage))
                     {
                         f = "1";
