@@ -1,7 +1,5 @@
-using System.Data;
-using System.Data.Common;
-using System.Xml.Linq;
-using Microsoft.UI.Xaml.Controls.Primitives;
+﻿using System.Data;
+
 
 namespace ASA_Dino_Manager;
 
@@ -22,8 +20,8 @@ public partial class DinoPage : ContentPage
     public static string sortM = Shared.DefaultSortM;
     public static string sortF = Shared.DefaultSortF;
 
-    private string upChar = "<";
-    private string downChar = ">";
+    private string upChar = "▲";
+    private string downChar = "▼";
 
     public DinoPage()
     {
@@ -157,13 +155,17 @@ public partial class DinoPage : ContentPage
         // only attach the tapgesture if we have something selected
         // for now its the only way to force refresh a page
         // so we attach it to everything so we can click
-        UnSelectDino(mainLayout);
+        if (!isDouble)
+        {
+            UnSelectDino(mainLayout);
+        }
+
 
 
         this.Content = mainLayout;
     }
 
-    private void AddToGrid(Grid grid, View view, int row, int column, string title = "", bool selected = false)
+    private void AddToGrid(Grid grid, View view, int row, int column, string title = "", bool selected = false, bool isDoubl = false)
     {
         // Ensure rows exist up to the specified index
         while (grid.RowDefinitions.Count <= row)
@@ -193,6 +195,9 @@ public partial class DinoPage : ContentPage
 
             // Override if row is selected
             if (selected) { rowColor = Shared.SelectedColor; }
+
+            // Override if in dino extended view
+            if (isDoubl) { rowColor = Shared.MainPanelColor; }
 
             // Add a background color to the row
             var rowBackground = new BoxView { Color = rowColor };
@@ -419,7 +424,8 @@ public partial class DinoPage : ContentPage
                 Padding = 3
             };
             // Define columns
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 0
+            grid1.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 0
+            grid1.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 0
 
 
             var imageContainer = new Grid
@@ -440,19 +446,37 @@ public partial class DinoPage : ContentPage
 
             var label1 = new Label
             {
-                Text = "Extended dino info (WIP)",
-                HorizontalOptions = LayoutOptions.Center,
-                VerticalOptions = LayoutOptions.Center,
+                Text = "Edit breed stats",
+                HorizontalOptions = LayoutOptions.Start,
+                VerticalOptions = LayoutOptions.Start,
                 Style = (Style)Application.Current.Resources["Headline"],
                 TextColor = Shared.goodColor,
-                FontSize = 22,
+                FontSize = 20,
                 FontAttributes = FontAttributes.Bold
             };
 
+            var textBox1 = new Entry { Placeholder = "Level", WidthRequest = 200, HeightRequest = 20, TextColor = Colors.Black, BackgroundColor = Colors.LightGray, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
+            var textBox2 = new Entry { Placeholder = "Hp", WidthRequest = 200, HeightRequest = 20, TextColor = Colors.Black, BackgroundColor = Colors.LightGray, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
+            var textBox3 = new Entry { Placeholder = "Stamina", WidthRequest = 200, HeightRequest = 20, TextColor = Colors.Black, BackgroundColor = Colors.LightGray, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
+            var textBox4 = new Entry { Placeholder = "Oxygen", WidthRequest = 200, HeightRequest = 20, TextColor = Colors.Black, BackgroundColor = Colors.LightGray, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
+            var textBox5 = new Entry { Placeholder = "Food", WidthRequest = 200, HeightRequest = 20, TextColor = Colors.Black, BackgroundColor = Colors.LightGray, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
+            var textBox6 = new Entry { Placeholder = "Weight", WidthRequest = 200, HeightRequest = 20, TextColor = Colors.Black, BackgroundColor = Colors.LightGray, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
+            var textBox7 = new Entry { Placeholder = "Damage", WidthRequest = 200, HeightRequest = 20, TextColor = Colors.Black, BackgroundColor = Colors.LightGray, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
 
-            AddToGrid(grid1, imageContainer, 0, 0);
-            AddToGrid(grid1, label1, 1, 0);
+            var textBoxN = new Entry { Placeholder = "Notes", WidthRequest = 200, HeightRequest = 200, TextColor = Colors.Black, BackgroundColor = Colors.LightGray, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
 
+            // AddToGrid(grid1, imageContainer, 0, 1);
+
+            int rowid = 0;
+
+            AddToGrid(grid1, label1, rowid++, 0, "", false, true);
+            AddToGrid(grid1, textBox1, rowid++, 0, "", false, true);
+            AddToGrid(grid1, textBox2, rowid++, 0, "", false, true);
+            AddToGrid(grid1, textBox3, rowid++, 0, "", false, true);
+            AddToGrid(grid1, textBox4, rowid++, 0, "", false, true);
+            AddToGrid(grid1, textBox5, rowid++, 0, "", false, true);
+            AddToGrid(grid1, textBox6, rowid++, 0, "", false, true);
+            AddToGrid(grid1, textBox7, rowid++, 0, "", false, true);
 
 
             scrollContent.Children.Add(grid1);
@@ -460,7 +484,6 @@ public partial class DinoPage : ContentPage
             var scrollView = new ScrollView { Content = scrollContent };
 
             AddToGrid(grid, scrollView, 0, 0);
-
             ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         }
@@ -587,6 +610,7 @@ public partial class DinoPage : ContentPage
         if (title == "Male") { testingSort = sortM; }
         else if (title == "Female") { testingSort = sortF; }
 
+
         string newTest = "";
         if (testingSort.Contains("ASC"))
         {
@@ -597,27 +621,26 @@ public partial class DinoPage : ContentPage
             newTest = testingSort.Substring(0, testingSort.Length - 5);
         }
 
-        sortChar = ""; if (testingSort.Contains("Name")) { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        sortChar = ""; if (newTest == "Name") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header0 = new Label { Text = $"Name{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (testingSort.Contains("Level")) { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        sortChar = ""; if (newTest == "Level") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header1 = new Label { Text = $"Level{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (testingSort.Contains("Hp")) { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        sortChar = ""; if (newTest == "Hp") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header2 = new Label { Text = $"Hp{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (testingSort.Contains("Stamina")) { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        sortChar = ""; if (newTest == "Stamina") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header3 = new Label { Text = $"Stamina{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (testingSort.Contains("Oxygen")) { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        sortChar = ""; if (newTest == "Oxygen") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header4 = new Label { Text = $"Oxygen{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (testingSort.Contains("Food")) { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        sortChar = ""; if (newTest == "Food") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header5 = new Label { Text = $"Food{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (testingSort.Contains("Weight")) { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        sortChar = ""; if (newTest == "Weight") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header6 = new Label { Text = $"Weight{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (testingSort.Contains("Damage")) { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        sortChar = ""; if (newTest == "Damage") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header7 = new Label { Text = $"Damage{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (testingSort.Contains("Status")) { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        sortChar = ""; if (newTest == "Status") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header8 = new Label { Text = $"Status{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (testingSort.Contains("Gen")) { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        sortChar = ""; if (newTest == "Gen") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header9 = new Label { Text = $"Gen{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        // adjust different logic for last columns that contains the same shiz
         sortChar = ""; if (newTest == "Papa") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header10 = new Label { Text = $"Papa{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleColor, FontSize = fSize };
         sortChar = ""; if (newTest == "Mama") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
@@ -664,6 +687,7 @@ public partial class DinoPage : ContentPage
         AddToGrid(grid, header1, 0, 1, title);
         AddToGrid(grid, header2, 0, 2, title);
         AddToGrid(grid, header3, 0, 3, title);
+
 
         int startID = 4;
 
@@ -827,7 +851,7 @@ public partial class DinoPage : ContentPage
                     string newBP = status.Trim();
 
                     string gP = newBP.Substring(0, 1); // take first char
-                    string aP = newBP.Substring(2, 1); // take 3rd char
+                    string aP = newBP.Substring(4, 1); // take 5th char
 
                     double GP = DataManager.ToDouble(gP) - 1;
                     double AP = DataManager.ToDouble(aP);
@@ -1026,6 +1050,7 @@ public partial class DinoPage : ContentPage
                 FileManager.Log($"Selected {name} ID: {id}", 0);
 
                 // activate double clicking
+
                 canDouble = true;
                 DisableDoubleClick(500);
             }

@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Maui.Storage;
-//using static System.Net.Mime.MediaTypeNames;
+﻿//using static System.Net.Mime.MediaTypeNames;
 //using System.Windows.Forms;
 
 namespace ASA_Dino_Manager
@@ -297,8 +287,9 @@ namespace ASA_Dino_Manager
                                 }
                             }
                         }
-                        catch {
-                        
+                        catch
+                        {
+
                         } // no need to set false on fail its just simply going to keep hardcoded colors
                     }
                     if (!fail)

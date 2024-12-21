@@ -294,7 +294,7 @@ public partial class ArchivePage : ContentPage
         AddToGrid(grid, new Label { Text = "Tag", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor }, 0, 1);
         AddToGrid(grid, new Label { Text = "Name", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor }, 0, 2);
         AddToGrid(grid, new Label { Text = "Level", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor }, 0, 3);
-        AddToGrid(grid, new Label { Text = "", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor }, 0, 4);
+        AddToGrid(grid, new Label { Text = "Class", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor }, 0, 4);
 
         int rowIndex = 1; // Start adding rows below the header
 
@@ -304,6 +304,8 @@ public partial class ArchivePage : ContentPage
             string tag = row["Tag"].ToString();
             string name = row["Name"].ToString();
             string level = row["Level"].ToString();
+            string dinoclass = row["Class"].ToString();
+
 
             Color DefaultColor = Shared.bottomColor;
 
@@ -328,12 +330,16 @@ public partial class ArchivePage : ContentPage
             var tagL = new Label { Text = tag, TextColor = cellColor1 };
             var nameL = new Label { Text = name, TextColor = cellColor2 };
             var levelL = new Label { Text = level, TextColor = cellColor3 };
+            var classL = new Label { Text = dinoclass, TextColor = cellColor4 };
+
 
             // Call the method to create and attach TapGesture
             SelectDino(idL, id);
             SelectDino(tagL, id);
             SelectDino(nameL, id);
             SelectDino(levelL, id);
+            SelectDino(classL, id);
+
 
             bool selected = false;
             if (id == selectedID) { selected = true; }
@@ -343,6 +349,8 @@ public partial class ArchivePage : ContentPage
             AddToGrid(grid, tagL, rowIndex, 1, selected);
             AddToGrid(grid, nameL, rowIndex, 2, selected);
             AddToGrid(grid, levelL, rowIndex, 3, selected);
+            AddToGrid(grid, classL, rowIndex, 4, selected);
+
 
             rowIndex++;
         }

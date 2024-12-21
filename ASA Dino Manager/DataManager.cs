@@ -1,18 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
-using System.Diagnostics;
+﻿using System.Data;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 //using System.Windows.Forms;
-using System.Xml.Linq;
-using Microsoft.Maui.Controls;
-using Microsoft.UI.Xaml.Documents;
 //using Android.Media;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
@@ -50,7 +38,7 @@ namespace ASA_Dino_Manager
         private static string DecimalSeparator = "";
         private static string ThousandsSeparator = "";
 
-        private static CultureInfo Culture = Thread.CurrentThread.CurrentCulture;
+        private static readonly CultureInfo Culture = Thread.CurrentThread.CurrentCulture;
 
         // dino stats
         public static double LevelMax = 0;
@@ -219,7 +207,7 @@ namespace ASA_Dino_Manager
                 ArchiveTable.Columns.Add("Tag", typeof(string));
                 ArchiveTable.Columns.Add("Name", typeof(string));
                 ArchiveTable.Columns.Add("Level", typeof(double));
-                //ArchiveTable.Columns.Add("Status", typeof(string));
+                ArchiveTable.Columns.Add("Class", typeof(string));
 
 
 
@@ -779,6 +767,9 @@ namespace ASA_Dino_Manager
                     dr["Tag"] = GetLastColumnData("ID", dino, "Tag");
                     dr["Name"] = GetLastColumnData("ID", dino, "Name");
                     dr["Level"] = GetLastColumnData("ID", dino, "Level");
+                    dr["Class"] = GetLastColumnData("ID", dino, "Class");
+
+
 
                     ArchiveTable.Rows.Add(dr);
                 }
@@ -786,7 +777,7 @@ namespace ASA_Dino_Manager
 
             // Sort the MaleTable based on the desired column
             DataView view1 = new DataView(DataManager.ArchiveTable);
-            view1.Sort = sortC; 
+            view1.Sort = sortC;
             DataManager.ArchiveTable = view1.ToTable();
 
             FileManager.Log("Archive compiled", 0);
