@@ -1,8 +1,30 @@
-Ark Survival Ascended Dino Manager
-will help you find dinos to breed
-mutation detection etc.
+# Ark Survival Ascended Dino Manager
 
-Currently only targeting ASA and windows
+Ark Survival Ascended Dino Manager is a tool designed to assist players in managing their dinos more effectively. Features include breeding support, mutation detection, and more.
+
+Currently, the application targets **Ark: Survival Ascended** and is supported only on **Windows**.
+
+## Installation Instructions
+
+### Prerequisites
+1. **Enable Developer Mode**:
+   - Navigate to **Settings** > **Privacy & Security** > **For Developers**.
+   - Toggle **Developer Mode** to ON.
+
+2. **Allow PowerShell Scripts**:
+   - Open PowerShell as Administrator.
+   - Run the following command to allow scripts:
+     ```powershell
+     Set-ExecutionPolicy RemoteSigned
+     ```
+
+### Steps
+
+#### First-Time Installation
+1. Run the `App-DevPackage.ps1` script in PowerShell to install the application.
+
+#### Updating
+1. Install the latest `.msix` package to update the application.
 
 
 ![image](https://github.com/user-attachments/assets/cf81b726-b615-4f95-9c20-ad937ef0cd93)
