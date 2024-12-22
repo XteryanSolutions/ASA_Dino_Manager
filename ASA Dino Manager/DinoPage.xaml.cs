@@ -444,52 +444,25 @@ public partial class DinoPage : ContentPage
             // make dino info box
 
             // Create scrollable content
-            var scrollContent = new StackLayout
-            {
-                Spacing = 20,
-                Padding = 3,
-            };
+            var scrollContent = new StackLayout { Spacing = 20, Padding = 3, };
 
-            var grid1 = new Grid
-            {
-                RowSpacing = 0,
-                ColumnSpacing = 20,
-                Padding = 3
-            };
+            // Create Grid for stats
+            var statGrid = new Grid { RowSpacing = 0, ColumnSpacing = 20, Padding = 3 };
+
             // Define columns
-            grid1.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 0
-            grid1.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 0
-            grid1.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 0
+            statGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 0
+            statGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 0
+            statGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 0
+            statGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 0
 
+            // Get info about selected dino
+            string currentID = selectedID;
+            string sex = DataManager.GetLastColumnData("ID", currentID, "Sex");
 
-            // get the current breed stats of selected dino
-            string id = selectedID;
-            string sep = DataManager.DecimalSeparator;
-
-            string level = DataManager.GetFirstColumnData("ID", id, "Level").Replace(".", sep);
-            string hp = DataManager.GetFirstColumnData("ID", id, "Hp").Replace(".", sep);
-            string stamina = DataManager.GetFirstColumnData("ID", id, "Stamina").Replace(".", sep);
-            string oxygen = DataManager.GetFirstColumnData("ID", id, "Oxygen").Replace(".", sep);
-            string food = DataManager.GetFirstColumnData("ID", id, "Food").Replace(".", sep);
-            string weight = DataManager.GetFirstColumnData("ID", id, "Weight").Replace(".", sep);
-            string damage = DataManager.GetFirstColumnData("ID", id, "Damage").Replace(".", sep);
-
-
-            //set the temp variables
-            levelText = level;
-            hpText = hp;
-            staminaText = stamina;
-            oxygenText = oxygen;
-            foodText = food;
-            weightText = weight;
-            damageText = damage;
-
-
-
-
-            string sex = DataManager.GetLastColumnData("ID", id, "Sex");
 
             Color DefaultColor = Shared.maleColor;
+
+            DefaultColor = Shared.maleColor;
             if (sex == "Male") { DefaultColor = Shared.maleColor; }
             else if (sex == "Female") { DefaultColor = Shared.femaleColor; }
 
@@ -502,6 +475,27 @@ public partial class DinoPage : ContentPage
             var cellColor6 = DefaultColor;
             var cellColor7 = DefaultColor;
 
+            // get the current breed stats of selected dino
+            string sep = DataManager.DecimalSeparator;
+
+            string level = DataManager.GetFirstColumnData("ID", currentID, "Level").Replace(".", sep);
+            string hp = DataManager.GetFirstColumnData("ID", currentID, "Hp").Replace(".", sep);
+            string stamina = DataManager.GetFirstColumnData("ID", currentID, "Stamina").Replace(".", sep);
+            string oxygen = DataManager.GetFirstColumnData("ID", currentID, "Oxygen").Replace(".", sep);
+            string food = DataManager.GetFirstColumnData("ID", currentID, "Food").Replace(".", sep);
+            string weight = DataManager.GetFirstColumnData("ID", currentID, "Weight").Replace(".", sep);
+            string damage = DataManager.GetFirstColumnData("ID", currentID, "Damage").Replace(".", sep);
+
+
+            //set the temp variables
+            levelText = level;
+            hpText = hp;
+            staminaText = stamina;
+            oxygenText = oxygen;
+            foodText = food;
+            weightText = weight;
+            damageText = damage;
+
 
             //recolor stats (use -0.1 to account for rounding)
             if (DataManager.ToDouble(level) >= (DataManager.LevelMax - 0.1)) { cellColor1 = Shared.goodColor; }
@@ -510,11 +504,11 @@ public partial class DinoPage : ContentPage
             if (DataManager.ToDouble(oxygen) >= DataManager.OxygenMax - 0.1) { cellColor4 = Shared.goodColor; }
             if (DataManager.ToDouble(food) >= DataManager.FoodMax - 0.1) { cellColor5 = Shared.goodColor; }
             if (DataManager.ToDouble(weight) >= DataManager.WeightMax - 0.1) { cellColor6 = Shared.goodColor; }
-            if (DataManager.ToDouble(damage) >= DataManager.DamageMax - 0.1) { cellColor7 = Shared.goodColor; }
+            if ((DataManager.ToDouble(damage) + 1) * 100 >= DataManager.DamageMax - 0.1) { cellColor7 = Shared.goodColor; }
 
 
             // mutation detection overrides normal coloring -> mutaColor
-            string mutes = DataManager.GetMutes(id);
+            string mutes = DataManager.GetMutes(currentID);
             if (mutes.Length == 6 && !CurrentStats) // dont show mutations on current statview
             {
                 string aC = mutes.Substring(0, 1); string bC = mutes.Substring(1, 1); string cC = mutes.Substring(2, 1);
@@ -529,24 +523,51 @@ public partial class DinoPage : ContentPage
             }
 
 
+
+            // add stat text
+            var t0 = new Label { Text = "", Style = (Style)Application.Current.Resources["Headline"], TextColor = Shared.maleColor, FontSize = Shared.fontHSize, FontAttributes = FontAttributes.Bold };
+            var t1 = new Label { Text = "Level", TextColor = cellColor1, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var t2 = new Label { Text = "Hp", TextColor = cellColor2, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var t3 = new Label { Text = "Stamina", TextColor = cellColor3, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var t4 = new Label { Text = "Oxygen", TextColor = cellColor4, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var t5 = new Label { Text = "Food", TextColor = cellColor5, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var t6 = new Label { Text = "Weight", TextColor = cellColor6, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var t7 = new Label { Text = "Damage", TextColor = cellColor7, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+
+
+            int rowid = 0;
+            int colid = 0;
+            AddToGrid(statGrid, t0, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, t1, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, t2, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, t3, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, t4, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, t5, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, t6, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, t7, rowid++, colid, "", false, true);
+
+
+
+
+
             var editLabel = new Label
             {
-                Text = "Edit breed stats",
+                Text = "Breeding Stats",
                 HorizontalOptions = LayoutOptions.Start,
                 VerticalOptions = LayoutOptions.Start,
                 Style = (Style)Application.Current.Resources["Headline"],
                 TextColor = cellColor0,
-                FontSize = 20,
+                FontSize = Shared.fontHSize,
                 FontAttributes = FontAttributes.Bold
             };
 
-            var textBox1 = new Entry { Text = level, Placeholder = "Level", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor1, BackgroundColor = Shared.OddMPanelColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
-            var textBox2 = new Entry { Text = hp, Placeholder = "Hp", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor2, BackgroundColor = Shared.OddMPanelColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
-            var textBox3 = new Entry { Text = stamina, Placeholder = "Stamina", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor3, BackgroundColor = Shared.OddMPanelColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
-            var textBox4 = new Entry { Text = oxygen, Placeholder = "Oxygen", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor4, BackgroundColor = Shared.OddMPanelColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
-            var textBox5 = new Entry { Text = food, Placeholder = "Food", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor5, BackgroundColor = Shared.OddMPanelColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
-            var textBox6 = new Entry { Text = weight, Placeholder = "Weight", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor6, BackgroundColor = Shared.OddMPanelColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
-            var textBox7 = new Entry { Text = damage, Placeholder = "Damage", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor7, BackgroundColor = Shared.OddMPanelColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start };
+            var textBox1 = new Entry { Text = level, Placeholder = "Level", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor1, BackgroundColor = Shared.OddMPanelColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start };
+            var textBox2 = new Entry { Text = hp, Placeholder = "Hp", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor2, BackgroundColor = Shared.OddMPanelColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start };
+            var textBox3 = new Entry { Text = stamina, Placeholder = "Stamina", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor3, BackgroundColor = Shared.OddMPanelColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start };
+            var textBox4 = new Entry { Text = oxygen, Placeholder = "Oxygen", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor4, BackgroundColor = Shared.OddMPanelColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start };
+            var textBox5 = new Entry { Text = food, Placeholder = "Food", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor5, BackgroundColor = Shared.OddMPanelColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start };
+            var textBox6 = new Entry { Text = weight, Placeholder = "Weight", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor6, BackgroundColor = Shared.OddMPanelColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start };
+            var textBox7 = new Entry { Text = damage, Placeholder = "Damage", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor7, BackgroundColor = Shared.OddMPanelColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start };
 
             textBox1.TextChanged += (sender, e) =>
             {
@@ -589,22 +610,23 @@ public partial class DinoPage : ContentPage
 
             // AddToGrid(grid1, imageContainer, 0, 1);
 
-            int rowid = 0;
+            rowid = 0;
+            colid = 1;
 
-            AddToGrid(grid1, editLabel, rowid++, 0, "", false, true);
-            AddToGrid(grid1, textBox1, rowid++, 0, "", false, true);
-            AddToGrid(grid1, textBox2, rowid++, 0, "", false, true);
-            AddToGrid(grid1, textBox3, rowid++, 0, "", false, true);
-            AddToGrid(grid1, textBox4, rowid++, 0, "", false, true);
-            AddToGrid(grid1, textBox5, rowid++, 0, "", false, true);
-            AddToGrid(grid1, textBox6, rowid++, 0, "", false, true);
-            AddToGrid(grid1, textBox7, rowid++, 0, "", false, true);
+            AddToGrid(statGrid, editLabel, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, textBox1, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, textBox2, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, textBox3, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, textBox4, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, textBox5, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, textBox6, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, textBox7, rowid++, colid, "", false, true);
 
 
             // get parents id
 
-            string papaID = DataManager.GetLastColumnData("ID", id, "Papa");
-            string mamaID = DataManager.GetLastColumnData("ID", id, "Mama");
+            string papaID = DataManager.GetLastColumnData("ID", currentID, "Papa");
+            string mamaID = DataManager.GetLastColumnData("ID", currentID, "Mama");
 
             string papaName = DataManager.GetLastColumnData("ID", papaID, "Name");
             string mamaName = DataManager.GetLastColumnData("ID", mamaID, "Name");
@@ -641,29 +663,30 @@ public partial class DinoPage : ContentPage
             if (DataManager.ToDouble(oxygenP) >= DataManager.OxygenMax - 0.1) { cellColor4 = Shared.goodColor; }
             if (DataManager.ToDouble(foodP) >= DataManager.FoodMax - 0.1) { cellColor5 = Shared.goodColor; }
             if (DataManager.ToDouble(weightP) >= DataManager.WeightMax - 0.1) { cellColor6 = Shared.goodColor; }
-            if (DataManager.ToDouble(damageP) >= DataManager.DamageMax - 0.1) { cellColor7 = Shared.goodColor; }
+            if ((DataManager.ToDouble(damageP) + 1) * 100 >= DataManager.DamageMax - 0.1) { cellColor7 = Shared.goodColor; }
 
 
             // add papa stats
-            var papaH = new Label { Text = papaName, Style = (Style)Application.Current.Resources["Headline"], TextColor = Shared.maleColor, FontSize = 20, FontAttributes = FontAttributes.Bold };
-            var labelP1 = new Label { Text = levelP, TextColor = cellColor1, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelP2 = new Label { Text = hpP, TextColor = cellColor2, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelP3 = new Label { Text = staminaP, TextColor = cellColor3, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelP4 = new Label { Text = oxygenP, TextColor = cellColor4, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelP5 = new Label { Text = foodP, TextColor = cellColor5, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelP6 = new Label { Text = weightP, TextColor = cellColor6, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelP7 = new Label { Text = damageP, TextColor = cellColor7, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var papaH = new Label { Text = papaName, Style = (Style)Application.Current.Resources["Headline"], TextColor = Shared.maleColor, FontSize = Shared.fontHSize, FontAttributes = FontAttributes.Bold };
+            var labelP1 = new Label { Text = levelP, TextColor = cellColor1, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelP2 = new Label { Text = hpP, TextColor = cellColor2, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelP3 = new Label { Text = staminaP, TextColor = cellColor3, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelP4 = new Label { Text = oxygenP, TextColor = cellColor4, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelP5 = new Label { Text = foodP, TextColor = cellColor5, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelP6 = new Label { Text = weightP, TextColor = cellColor6, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelP7 = new Label { Text = damageP, TextColor = cellColor7, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
 
 
             rowid = 0;
-            AddToGrid(grid1, papaH, rowid++, 1, "", false, true);
-            AddToGrid(grid1, labelP1, rowid++, 1, "", false, true);
-            AddToGrid(grid1, labelP2, rowid++, 1, "", false, true);
-            AddToGrid(grid1, labelP3, rowid++, 1, "", false, true);
-            AddToGrid(grid1, labelP4, rowid++, 1, "", false, true);
-            AddToGrid(grid1, labelP5, rowid++, 1, "", false, true);
-            AddToGrid(grid1, labelP6, rowid++, 1, "", false, true);
-            AddToGrid(grid1, labelP7, rowid++, 1, "", false, true);
+            colid = 2;
+            AddToGrid(statGrid, papaH, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, labelP1, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, labelP2, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, labelP3, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, labelP4, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, labelP5, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, labelP6, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, labelP7, rowid++, colid, "", false, true);
 
 
             string levelM = DataManager.GetFirstColumnData("ID", mamaID, "Level").Replace(".", sep);
@@ -694,50 +717,51 @@ public partial class DinoPage : ContentPage
             if (DataManager.ToDouble(oxygenM) >= DataManager.OxygenMax - 0.1) { cellColor4 = Shared.goodColor; }
             if (DataManager.ToDouble(foodM) >= DataManager.FoodMax - 0.1) { cellColor5 = Shared.goodColor; }
             if (DataManager.ToDouble(weightM) >= DataManager.WeightMax - 0.1) { cellColor6 = Shared.goodColor; }
-            if (DataManager.ToDouble(damageM) >= DataManager.DamageMax - 0.1) { cellColor7 = Shared.goodColor; }
+            if ((DataManager.ToDouble(damageM) + 1) * 100 >= DataManager.DamageMax - 0.1) { cellColor7 = Shared.goodColor; }
 
 
             // add mama stats
-            var mamaH = new Label { Text = mamaName, Style = (Style)Application.Current.Resources["Headline"], TextColor = Shared.femaleColor, FontSize = 20, FontAttributes = FontAttributes.Bold };
+            var mamaH = new Label { Text = mamaName, Style = (Style)Application.Current.Resources["Headline"], TextColor = Shared.femaleColor, FontSize = Shared.fontHSize, FontAttributes = FontAttributes.Bold };
 
-            var labelM1 = new Label { Text = levelM, TextColor = cellColor1, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelM2 = new Label { Text = hpM, TextColor = cellColor2, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelM3 = new Label { Text = staminaM, TextColor = cellColor3, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelM4 = new Label { Text = oxygenM, TextColor = cellColor4, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelM5 = new Label { Text = foodM, TextColor = cellColor5, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelM6 = new Label { Text = weightM, TextColor = cellColor6, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelM7 = new Label { Text = damageM, TextColor = cellColor7, FontSize = 16, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-
-
-            rowid = 0;
-            AddToGrid(grid1, mamaH, rowid++, 2, "", false, true);
-            AddToGrid(grid1, labelM1, rowid++, 2, "", false, true);
-            AddToGrid(grid1, labelM2, rowid++, 2, "", false, true);
-            AddToGrid(grid1, labelM3, rowid++, 2, "", false, true);
-            AddToGrid(grid1, labelM4, rowid++, 2, "", false, true);
-            AddToGrid(grid1, labelM5, rowid++, 2, "", false, true);
-            AddToGrid(grid1, labelM6, rowid++, 2, "", false, true);
-            AddToGrid(grid1, labelM7, rowid++, 2, "", false, true);
-
-            scrollContent.Children.Add(grid1);
+            var labelM1 = new Label { Text = levelM, TextColor = cellColor1, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelM2 = new Label { Text = hpM, TextColor = cellColor2, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelM3 = new Label { Text = staminaM, TextColor = cellColor3, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelM4 = new Label { Text = oxygenM, TextColor = cellColor4, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelM5 = new Label { Text = foodM, TextColor = cellColor5, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelM6 = new Label { Text = weightM, TextColor = cellColor6, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelM7 = new Label { Text = damageM, TextColor = cellColor7, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
 
 
             rowid = 0;
-            var grid2 = new Grid
+            colid = 3;
+            AddToGrid(statGrid, mamaH, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, labelM1, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, labelM2, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, labelM3, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, labelM4, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, labelM5, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, labelM6, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, labelM7, rowid++, colid, "", false, true);
+
+            scrollContent.Children.Add(statGrid);
+
+
+            rowid = 0;
+            var notesGrid = new Grid
             {
                 RowSpacing = 0,
                 ColumnSpacing = 20,
                 Padding = 3
             };
             // Define columns
-            grid2.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 0
+            notesGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 0
 
 
-            string notes = DataManager.GetNotes(id);
+            string notes = DataManager.GetNotes(currentID);
 
 
             // notes textbox defined here
-            var textBoxN = new Editor { Text = notes, Placeholder = "Notes", WidthRequest = 500, HeightRequest = 200, TextColor = cellColor0, BackgroundColor = Shared.OddMPanelColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start, Keyboard = Keyboard.Create(KeyboardFlags.None) };
+            var textBoxN = new Editor { Text = notes, Placeholder = "Notes", WidthRequest = 600, HeightRequest = 200, TextColor = cellColor0, BackgroundColor = Shared.OddMPanelColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start, Keyboard = Keyboard.Create(KeyboardFlags.None) };
 
 
 
@@ -748,10 +772,10 @@ public partial class DinoPage : ContentPage
             };
 
 
-            AddToGrid(grid2, textBoxN, rowid++, 0, "", false, true);
+            AddToGrid(notesGrid, textBoxN, rowid++, 0, "", false, true);
 
 
-            scrollContent.Children.Add(grid2);
+            scrollContent.Children.Add(notesGrid);
 
             var scrollView = new ScrollView { Content = scrollContent };
 

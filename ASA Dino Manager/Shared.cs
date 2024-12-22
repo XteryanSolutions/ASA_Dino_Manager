@@ -46,6 +46,10 @@
 
         ////////////////////    Scaling         ////////////////////
         public static int headerSize = 16; // FontSize on table headers
+        public static int tableSize = 16; // FontSize on tables
+        public static int fontSize = 16; // General FontSize
+        public static int fontHSize = 20; // General Header FontSize
+
         public static int rowHeight = 24; // rowheight to determine bottom panel size
         public static int sizeOffset = 5; // Extra buffer to prevent scrolling
 
