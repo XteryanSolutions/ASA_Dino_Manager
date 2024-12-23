@@ -779,7 +779,10 @@ public partial class DinoPage : ContentPage
 
             // get aging stuff for dino
             double agingRate = DataManager.GetGrowthRateNew(currentID);
-            if (agingRate > 0 )
+
+            double pLeft = (1 - DataManager.ToDouble(DataManager.GetLastColumnData("ID", currentID, "BabyAge"))) * 100;
+
+            if (pLeft > -1 )
             {
                 DateTime fullGrownDate = DataManager.GetFullGrown(currentID, agingRate);
 
@@ -787,7 +790,9 @@ public partial class DinoPage : ContentPage
 
                 double totalTime = Math.Round((100 / agingRate) / 24, 2);
 
-                if (fullGrownDate > DateTime.Now)
+                double secondDif = (DateTime.Now - fullGrownDate).TotalSeconds;
+
+                if (secondDif > 0 && agingRate > 0)
                 {
                     growColor = Shared.SecondaryColor;
 
@@ -795,27 +800,35 @@ public partial class DinoPage : ContentPage
                     int days = totalMinutes / (24 * 60);
                     int hours = (totalMinutes % (24 * 60)) / 60;
                     int minutes = totalMinutes % 60;
-                    double pLeft = (1 - DataManager.ToDouble(DataManager.GetLastColumnData("ID", currentID, "BabyAge"))) * 100;
+                    
 
                     pLeft = Math.Round(pLeft, 2);
 
-                    if (days < 1)
+                    if (totalMinutes == 0 || pLeft == 0)
                     {
-                        if (hours < 1)
-                        {
-                            ageText = $"FullGrown: {fullGrownDate} in {minutes}m @ {Math.Round(agingRate, 2)}%/hr {pLeft}% to go. TotalTime: {totalTime} days";
-
-                        }
-                        else
-                        {
-                            ageText = $"FullGrown: {fullGrownDate} in {hours}h {minutes}m @ {Math.Round(agingRate, 2)}%/hr {pLeft}% to go. TotalTime: {totalTime} days";
-
-                        }
+                        growColor = Shared.PrimaryColor;
+                        ageText = $"GrowthRate: {Math.Round(agingRate, 2)}%/hr TotalTime: {totalTime} days";
                     }
                     else
                     {
-                        ageText = $"FullGrown: {fullGrownDate} in {days}d {hours}h {minutes}m @ {Math.Round(agingRate, 2)}%/hr {pLeft}% to go. TotalTime: {totalTime} days";
+                        if (days < 1)
+                        {
+                            if (hours < 1)
+                            {
+                                ageText = $"FullGrown: {fullGrownDate} in {minutes}m @ {Math.Round(agingRate, 2)}%/hr {pLeft}% to go. TotalTime: {totalTime} days";
 
+                            }
+                            else
+                            {
+                                ageText = $"FullGrown: {fullGrownDate} in {hours}h {minutes}m @ {Math.Round(agingRate, 2)}%/hr {pLeft}% to go. TotalTime: {totalTime} days";
+
+                            }
+                        }
+                        else
+                        {
+                            ageText = $"FullGrown: {fullGrownDate} in {days}d {hours}h {minutes}m @ {Math.Round(agingRate, 2)}%/hr {pLeft}% to go. TotalTime: {totalTime} days";
+
+                        }
                     }
 
                     //  ageText = $"FullGrown: {fullGrownDate} in {Math.Round(hoursLeft, 1)} hr @ {Math.Round(agingRate, 2)}%/hr TotalTime: {totalTime} days";
@@ -824,10 +837,10 @@ public partial class DinoPage : ContentPage
                 }
                 else
                 {
-                    growColor = Shared.SecondaryColor;
-                    ageText = $"FullGrown: {fullGrownDate} @ {Math.Round(agingRate, 2)}%/hr TotalTime: {totalTime} days";
+                  //  growColor = Shared.SecondaryColor;
+                  //  ageText = $"FullGrown: {fullGrownDate} @ {Math.Round(agingRate, 2)}%/hr TotalTime: {totalTime} days";
 
-                    aging = true;
+                  //  aging = true;
                 }
             }
                 
