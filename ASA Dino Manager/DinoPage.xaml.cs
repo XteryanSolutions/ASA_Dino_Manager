@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Data.Common;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
 
@@ -35,7 +36,6 @@ public partial class DinoPage : ContentPage
     private string notesText = "";
 
     private bool editStats = false;
-    public static double agingRate = 0;
 
 
     public DinoPage()
@@ -47,7 +47,6 @@ public partial class DinoPage : ContentPage
         // reset stuff
         selectedID = ""; isSelected = false;
         canDouble = false; isDouble = false;
-        agingRate = 0;
         ToggleExcluded = Shared.DefaultToggle;
         CurrentStats = Shared.DefaultStat;
 
@@ -90,7 +89,6 @@ public partial class DinoPage : ContentPage
 
                 if (!isSelected) { this.Title = $"{Shared.setPage.Replace("_", " ")}"; }
 
-                DataManager.CheckGrowthRate(Shared.selectedClass);
 
                 DinoView();
             }
@@ -773,24 +771,41 @@ public partial class DinoPage : ContentPage
             string notes = DataManager.GetNotes(currentID);
 
 
-            // get aging stuff for dino
-            string fullGrown = DataManager.GetFullGrown(selectedID).ToString("dd/MM/yyyy HH:mm:ss");
 
-            double hoursLeft = (DataManager.GetFullGrown(selectedID) - DateTime.Now).TotalHours;
+
+            // get aging stuff for dino
+            double agingRate = DataManager.GetGrowthRate(currentID);
+            DateTime fullGrownDate = DataManager.GetFullGrown(currentID, agingRate);
+
+
+            string fullGrown = fullGrownDate.ToString("dd/MM/yyyy HH:mm:ss");
+
+            double hoursLeft = (fullGrownDate - DateTime.Now).TotalHours;
 
             double totalTime = Math.Round((100 / agingRate) / 24, 2);
 
 
             string ageText = ""; bool aging = false;
             Color growColor = Shared.PrimaryColor;
-            
-            if (DataManager.GetFullGrown(selectedID) > DateTime.Now)
+
+
+            if (fullGrownDate > DateTime.Now)
             {
                 if (agingRate > 0)
                 {
                     growColor = Shared.SecondaryColor;
                     ageText = $"FullGrown: {fullGrown} in {Math.Round(hoursLeft, 1)} hr @ {Math.Round(agingRate, 2)}%/hr TotalTime: {totalTime} days";
-                    // disabling age rate for now
+
+                    aging = true;
+                }
+            }
+            else
+            {
+                if (agingRate > 0)
+                {
+                    growColor = Shared.SecondaryColor;
+                    ageText = $"FullGrown: {fullGrown} @ {Math.Round(agingRate, 2)}%/hr TotalTime: {totalTime} days";
+
                     aging = true;
                 }
             }
@@ -1137,22 +1152,22 @@ public partial class DinoPage : ContentPage
             if (ageD < 100 && !name.Contains("Breed #") && status == "") { status = ageD + "% Grown"; }
 
 
-            // Override for full grown baby  (needs a new export)
-            if (status.Contains("Grown"))
+            if (status.Contains("% Grown"))
             {
-                if (DataManager.GetFullGrown(id) > DateTime.Now)
+                // get aging stuff for dino
+                double agingRate = DataManager.GetGrowthRate(id);
+                DateTime fullGrownDate = DataManager.GetFullGrown(id, agingRate);
+
+                if (fullGrownDate > DateTime.Now)
                 {
-                    if (agingRate > 0)
-                    {
-                        status = "100% Grown (Export)";
-                    }
+                    status = "100% Grown (ReImport)";
                 }
             }
+          
 
 
-
-            // override offspring colors based on breed points
-            if (title == "Bottom")
+                // override offspring colors based on breed points
+                if (title == "Bottom")
             {
                 if (name.Contains("Breed #"))
                 {

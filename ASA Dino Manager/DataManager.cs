@@ -436,54 +436,44 @@ namespace ASA_Dino_Manager
             return results;
         }
 
-        public static void CheckGrowthRate(string dinoClass)
+        public static double GetGrowthRate(string id)
         {
+            double result = 0;
+            // create a list to store the Time and BabyAge column
+            List<Tuple<string, string>> dinoData = new List<Tuple<string, string>>();
+
             try
             {
-                List<Tuple<string, string, string>> dinoData = new List<Tuple<string, string, string>>();
-
                 foreach (DataRow row in ImportsTable.Rows)
                 {
-                    // match the class we are looking for
-                    if (row["Class"]?.ToString() == dinoClass)
+                    if (row["ID"]?.ToString() == id)
                     {
-                        // get the id of the first dino in class
-                        string value = row["ID"].ToString();
+                        // add the columns Time and BabyAge to tuple list
+                        string timeValue = row["Time"].ToString();
+                        string ageValue = row["BabyAge"].ToString();
 
-                        // now that we have id we can iterate trough importstable
-                        // matching that id we retrieve the columns Time and BabyAge
-                        foreach (DataRow row2 in ImportsTable.Rows)
+                        // make sure both fields have data
+                        if (timeValue != "" && ageValue != "")
                         {
-                            if (row2["ID"]?.ToString() == value)
+                            DateTime pTime = DateTime.ParseExact(timeValue, "dd/MM/yyyy HH:mm:ss", null);
+
+                            double age = ToDouble(ageValue);
+                            if (age < 1 && age > 0)
                             {
-                                // add the columns Time and BabyAge to tuple list
-                                string timeValue = row2["Time"].ToString();
-                                string ageValue = row2["BabyAge"].ToString();
-
-                                // make sure both fields have data
-                                if (timeValue != "" && ageValue != "")
-                                {
-                                    DateTime pTime = DateTime.ParseExact(timeValue, "dd/MM/yyyy HH:mm:ss", null);
-
-                                    double age = ToDouble(ageValue);
-                                    if (age < 1 && age > 0) 
-                                    {
-                                        dinoData.Add(new Tuple<string, string, string>(value, pTime.ToString(), ageValue));
-                                    }
-                                }
+                                dinoData.Add(new Tuple<string, string>(pTime.ToString(), ageValue));
                             }
                         }
                     }
                 }
 
-                double count = 0; double total = 0;
                 // Now we have a list of tuples with ID, Time, and Age
+                double count = 0; double total = 0;
                 foreach (var data in dinoData)
                 {
-                    if (ToDouble(data.Item3) < 1)
+                    if (ToDouble(data.Item2) < 1)
                     {
                         // Calculate aging rate
-                        double agingRate = ToDouble(data.Item3) / (Convert.ToDateTime(data.Item2) - DateTime.Now).TotalHours;
+                        double agingRate = ToDouble(data.Item2) / (Convert.ToDateTime(data.Item1) - DateTime.Now).TotalHours;
 
                         // add value to toal
                         total += agingRate;
@@ -495,38 +485,45 @@ namespace ASA_Dino_Manager
                 {
                     avg = -avg;
                 }
-                FileManager.Log($"Average Aging Rate: {avg} %/hour", 0);
-                if (avg < 0) { DinoPage.agingRate = 0; FileManager.Log($"Default Aging Rate: 0 %/hour", 1); }
-                DinoPage.agingRate = avg;
+
+                if (avg > 0)
+                {
+                    //  FileManager.Log($"Average Aging Rate: {avg} %/hour", 0);
+                    result = avg;
+                }
             }
-            catch
-            {
-                FileManager.Log($"Default Aging Rate: 0 %/hour", 1);
-                DinoPage.agingRate = 0;
-            }
+            catch { }
+           
+            return result;
         }
 
-        public static DateTime GetFullGrown(string dino)
+        public static DateTime GetFullGrown(string dino, double agingRate)
         {
             DateTime result = DateTime.Now;
             string LastAge = GetLastColumnData("ID", dino, "BabyAge");
-            if (ToDouble(LastAge) < 1) // the dino is under the age of 1 we need its fullgrown time
+            if (agingRate > 0 && LastAge != "") 
             {
-                // get the current age double and multiply by 100 to get %
-                double currentAge = ToDouble(LastAge) * 100;
+                if (ToDouble(LastAge) < 1) // the dino is under the age of 1 we need its fullgrown time
+                {
+                    // get the current age double and multiply by 100 to get %
+                    double currentAge = ToDouble(LastAge) * 100;
 
-                // 100% - currentAge and we get how many % left to grow
-                double AgeLeft = 100 - currentAge;
+                    // 100% - currentAge and we get how many % left to grow
+                    double AgeLeft = 100 - currentAge;
 
-                // get the time left in hours by dividing by growth rate/hr
-                double timeleft = AgeLeft / DinoPage.agingRate;
+                    // get the time left in hours by dividing by growth rate/hr
+                    double timeleft = AgeLeft / agingRate;
 
-                DateTime fullGrown = DateTime.Now - TimeSpan.FromHours(timeleft);
+                    // convert to datetime
+                    DateTime fullGrown = DateTime.Now - TimeSpan.FromHours(timeleft);
 
-                result = fullGrown;
 
-              //  FileManager.Log($"{dino} => fullGrown = {fullGrown}", 0);
+                    result = fullGrown;
+
+                    //  FileManager.Log($"{dino} => fullGrown = {fullGrown}", 0);
+                }
             }
+
 
             return result;
         }
