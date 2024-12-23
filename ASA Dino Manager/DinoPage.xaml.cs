@@ -780,9 +780,11 @@ public partial class DinoPage : ContentPage
             // get aging stuff for dino
             double agingRate = DataManager.GetGrowthRateNew(currentID);
 
-            double pLeft = (1 - DataManager.ToDouble(DataManager.GetLastColumnData("ID", currentID, "BabyAge"))) * 100;
+            double pLeft = 1 - DataManager.ToDouble(DataManager.GetLastColumnData("ID", currentID, "BabyAge"));
 
-            if (pLeft > -1 )
+            pLeft = pLeft * 100;
+
+            if (true)
             {
                 DateTime fullGrownDate = DataManager.GetFullGrown(currentID, agingRate);
 
@@ -792,7 +794,7 @@ public partial class DinoPage : ContentPage
 
                 double secondDif = (DateTime.Now - fullGrownDate).TotalSeconds;
 
-                if (secondDif > 0 && agingRate > 0)
+                if (agingRate > 0)
                 {
                     growColor = Shared.SecondaryColor;
 
