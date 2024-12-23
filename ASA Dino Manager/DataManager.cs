@@ -1,6 +1,8 @@
 ﻿using System.Data;
 using System.Data.Common;
 using System.Globalization;
+using System.Xml.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 //using System.Windows.Forms;
 //using Android.Media;
 //using static System.Windows.Forms.VisualStyles.VisualStyleElement;
@@ -432,6 +434,101 @@ namespace ASA_Dino_Manager
                 results.Add(stats);
             }
             return results;
+        }
+
+        public static void CheckGrowthRate(string dinoClass)
+        {
+            try
+            {
+                List<Tuple<string, string, string>> dinoData = new List<Tuple<string, string, string>>();
+
+                foreach (DataRow row in ImportsTable.Rows)
+                {
+                    // match the class we are looking for
+                    if (row["Class"]?.ToString() == dinoClass)
+                    {
+                        // get the id of the first dino in class
+                        string value = row["ID"].ToString();
+
+                        // now that we have id we can iterate trough importstable
+                        // matching that id we retrieve the columns Time and BabyAge
+                        foreach (DataRow row2 in ImportsTable.Rows)
+                        {
+                            if (row2["ID"]?.ToString() == value)
+                            {
+                                // add the columns Time and BabyAge to tuple list
+                                string timeValue = row2["Time"].ToString();
+                                string ageValue = row2["BabyAge"].ToString();
+
+                                // make sure both fields have data
+                                if (timeValue != "" && ageValue != "")
+                                {
+                                    DateTime pTime = DateTime.ParseExact(timeValue, "dd/MM/yyyy HH:mm:ss", null);
+
+                                    double age = ToDouble(ageValue);
+                                    if (age < 1 && age > 0) 
+                                    {
+                                        dinoData.Add(new Tuple<string, string, string>(value, pTime.ToString(), ageValue));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                double count = 0; double total = 0;
+                // Now we have a list of tuples with ID, Time, and Age
+                foreach (var data in dinoData)
+                {
+                    if (ToDouble(data.Item3) < 1)
+                    {
+                        // Calculate aging rate
+                        double agingRate = ToDouble(data.Item3) / (Convert.ToDateTime(data.Item2) - DateTime.UtcNow).TotalHours;
+
+                        // add value to toal
+                        total += agingRate;
+                        count++;
+                    }
+                }
+                double avg = (total / count) * 100;
+                if (avg < 0)
+                {
+                    avg = -avg;
+                }
+                //FileManager.Log($"Average Aging Rate: {avg} %/hour", 0);
+                if (avg < 0) { DinoPage.agingRate = 0; FileManager.Log($"Default Aging Rate: 0 %/hour", 1); }
+                DinoPage.agingRate = avg;
+            }
+            catch
+            {
+                FileManager.Log($"Default Aging Rate: 0 %/hour", 1);
+                DinoPage.agingRate = 0;
+            }
+        }
+
+        public static DateTime GetFullGrown(string dino)
+        {
+            DateTime result = DateTime.UtcNow;
+            string LastAge = GetLastColumnData("ID", dino, "BabyAge");
+            if (ToDouble(LastAge) < 1) // the dino is under the age of 1 we need its fullgrown time
+            {
+                // get the current age double and multiply by 100 to get %
+                double currentAge = ToDouble(LastAge) * 100;
+
+                // 100% - currentAge and we get how many % left to grow
+                double AgeLeft = 100 - currentAge;
+
+                // get the time left in hours by dividing by growth rate/hr
+                double timeleft = AgeLeft / DinoPage.agingRate;
+
+                DateTime fullGrown = DateTime.UtcNow - TimeSpan.FromHours(timeleft);
+
+                result = fullGrown;
+
+              //  FileManager.Log($"{dino} => fullGrown = {fullGrown}", 0);
+            }
+
+            return result;
         }
 
         public static void EditBreedStats(string id, string level, string hp, string st, string ox, string fo, string we, string da, string notes)

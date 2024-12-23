@@ -35,12 +35,21 @@ public partial class DinoPage : ContentPage
     private string notesText = "";
 
     private bool editStats = false;
+    public static double agingRate = 0;
+
 
     public DinoPage()
     {
         InitializeComponent();
 
         FileManager.Log($"Loaded: {Shared.setPage}", 0);
+
+        // reset stuff
+        selectedID = ""; isSelected = false;
+        canDouble = false; isDouble = false;
+        agingRate = 0;
+        ToggleExcluded = Shared.DefaultToggle;
+        CurrentStats = Shared.DefaultStat;
 
         // set page title
         this.Title = $"{Shared.setPage.Replace("_", " ")}";
@@ -80,6 +89,8 @@ public partial class DinoPage : ContentPage
                 FileManager.Log("Updating GUI -> " + Shared.setPage, 0);
 
                 if (!isSelected) { this.Title = $"{Shared.setPage.Replace("_", " ")}"; }
+
+                DataManager.CheckGrowthRate(Shared.selectedClass);
 
                 DinoView();
             }
@@ -176,6 +187,9 @@ public partial class DinoPage : ContentPage
 
 
         this.Content = mainLayout;
+
+
+        // DataManager.GetAllAges(Shared.selectedClass);
     }
 
     private void AddToGrid(Grid grid, View view, int row, int column, string title = "", bool selected = false, bool isDoubl = false, string id = "")
@@ -549,7 +563,6 @@ public partial class DinoPage : ContentPage
 
 
 
-
             var editLabel = new Label
             {
                 Text = "Breeding Stats",
@@ -760,6 +773,44 @@ public partial class DinoPage : ContentPage
             string notes = DataManager.GetNotes(currentID);
 
 
+            // get aging stuff for dino
+            string fullGrown = DataManager.GetFullGrown(selectedID).ToString("dd/MM/yyyy HH:mm:ss");
+
+            double hoursLeft = (DataManager.GetFullGrown(selectedID) - DateTime.UtcNow).TotalHours;
+
+            double totalTime = Math.Round((100 / agingRate) / 24, 2);
+
+
+
+            string ageText = ""; bool aging = false;
+            Color growColor = Shared.PrimaryColor;
+            
+            if (DataManager.GetFullGrown(selectedID) < DateTime.UtcNow)
+            {
+                if (agingRate > 0)
+                {
+                    ageText = $"FullGrown: {fullGrown} @ {Math.Round(agingRate,2)}%/hr totalTime: {totalTime} days";
+                    aging = true;
+                }
+                else
+                {
+                    ageText = $"FullGrown: {fullGrown}";
+                    aging = true;
+                }
+            }
+            else
+            {
+                growColor = Shared.SecondaryColor;
+                ageText = $"FullGrown: {fullGrown} in {Math.Round(hoursLeft, 1)} hr @ {Math.Round(agingRate,2)}%/hr";
+                aging = true;
+            }
+
+
+
+
+            var grown = new Label { Text = ageText, Style = (Style)Application.Current.Resources["Headline"], TextColor = growColor, FontSize = Shared.fontHSize, FontAttributes = FontAttributes.Bold, HorizontalOptions = LayoutOptions.Start };
+
+
             // notes textbox defined here
             var textBoxN = new Editor { Text = notes, Placeholder = "Notes", WidthRequest = 600, HeightRequest = 200, TextColor = cellColor0, BackgroundColor = Shared.OddMPanelColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start, Keyboard = Keyboard.Create(KeyboardFlags.None) };
 
@@ -771,6 +822,10 @@ public partial class DinoPage : ContentPage
                 notesText = e.NewTextValue;
             };
 
+            if (aging) // only add label if dino is still aging
+            {
+                AddToGrid(notesGrid, grown, rowid++, 0, "", false, true);
+            }
 
             AddToGrid(notesGrid, textBoxN, rowid++, 0, "", false, true);
 

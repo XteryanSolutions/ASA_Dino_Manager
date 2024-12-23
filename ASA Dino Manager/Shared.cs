@@ -4,7 +4,7 @@
     internal class Shared
     {
         ////////////////////    Title version   ////////////////////
-        public static string version = "ASA Dino Manager 0.04.43";
+        public static string version = "ASA Dino Manager 0.04.44";
 
 
         ////////////////////////////////////////////////////////////
@@ -54,8 +54,8 @@
         public static int sizeOffset = 5; // Extra buffer to prevent scrolling
 
 
-        public static int startupX = 1000;
-        public static int startupY = 560;
+        public static int startupX = 1180;   // 16:9
+        public static int startupY = 664;
 
 
         ////////////////////////////////////////////////////////////

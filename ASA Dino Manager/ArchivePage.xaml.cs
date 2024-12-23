@@ -459,7 +459,7 @@ public partial class ArchivePage : ContentPage
 
     private void OnButton4Clicked(object? sender, EventArgs e)
     {
-        PurgeDinoAsync();
+        PurgeDinoAsync(selectedID); // passing id here already to not loose it to updates
     }
 
     private void OnButton5Clicked(object? sender, EventArgs e)
@@ -467,7 +467,7 @@ public partial class ArchivePage : ContentPage
         PurgeAllAsync();
     }
 
-    private async Task PurgeDinoAsync()
+    private async Task PurgeDinoAsync(string dinoID)
     {
         FileManager.Log("Purge Dino???", 1);
         bool answer = await Application.Current.MainPage.DisplayAlert(
@@ -483,7 +483,8 @@ public partial class ArchivePage : ContentPage
             {
                 try
                 {
-                    DataManager.DeleteRowsByID(selectedID);
+
+                    DataManager.DeleteRowsByID(dinoID);
                     ClearSelection();
                     CreateContent();
                 }
