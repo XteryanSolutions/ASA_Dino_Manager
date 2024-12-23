@@ -2,6 +2,7 @@
 using System.Data.Common;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using static Microsoft.Maui.Controls.Internals.Profile;
 
 
 namespace ASA_Dino_Manager;
@@ -773,43 +774,63 @@ public partial class DinoPage : ContentPage
 
 
 
-            // get aging stuff for dino
-            double agingRate = DataManager.GetGrowthRate(currentID);
-            DateTime fullGrownDate = DataManager.GetFullGrown(currentID, agingRate);
-
-
-            string fullGrown = fullGrownDate.ToString("dd/MM/yyyy HH:mm:ss");
-
-            double hoursLeft = (fullGrownDate - DateTime.Now).TotalHours;
-
-            double totalTime = Math.Round((100 / agingRate) / 24, 2);
-
-
             string ageText = ""; bool aging = false;
             Color growColor = Shared.PrimaryColor;
 
-
-            if (fullGrownDate > DateTime.Now)
+            // get aging stuff for dino
+            double agingRate = DataManager.GetGrowthRateNew(currentID);
+            if (agingRate > 0 )
             {
-                if (agingRate > 0)
+                DateTime fullGrownDate = DataManager.GetFullGrown(currentID, agingRate);
+
+                double hoursLeft = (fullGrownDate - DateTime.Now).TotalHours;
+
+                double totalTime = Math.Round((100 / agingRate) / 24, 2);
+
+                if (fullGrownDate > DateTime.Now)
                 {
                     growColor = Shared.SecondaryColor;
-                    ageText = $"FullGrown: {fullGrown} in {Math.Round(hoursLeft, 1)} hr @ {Math.Round(agingRate, 2)}%/hr TotalTime: {totalTime} days";
+
+                    int totalMinutes = (int)(hoursLeft * 60);
+                    int days = totalMinutes / (24 * 60);
+                    int hours = (totalMinutes % (24 * 60)) / 60;
+                    int minutes = totalMinutes % 60;
+                    double pLeft = (1 - DataManager.ToDouble(DataManager.GetLastColumnData("ID", currentID, "BabyAge"))) * 100;
+
+                    pLeft = Math.Round(pLeft, 2);
+
+                    if (days < 1)
+                    {
+                        if (hours < 1)
+                        {
+                            ageText = $"FullGrown: {fullGrownDate} in {minutes}m @ {Math.Round(agingRate, 2)}%/hr {pLeft}% to go. TotalTime: {totalTime} days";
+
+                        }
+                        else
+                        {
+                            ageText = $"FullGrown: {fullGrownDate} in {hours}h {minutes}m @ {Math.Round(agingRate, 2)}%/hr {pLeft}% to go. TotalTime: {totalTime} days";
+
+                        }
+                    }
+                    else
+                    {
+                        ageText = $"FullGrown: {fullGrownDate} in {days}d {hours}h {minutes}m @ {Math.Round(agingRate, 2)}%/hr {pLeft}% to go. TotalTime: {totalTime} days";
+
+                    }
+
+                    //  ageText = $"FullGrown: {fullGrownDate} in {Math.Round(hoursLeft, 1)} hr @ {Math.Round(agingRate, 2)}%/hr TotalTime: {totalTime} days";
+
+                    aging = true;
+                }
+                else
+                {
+                    growColor = Shared.SecondaryColor;
+                    ageText = $"FullGrown: {fullGrownDate} @ {Math.Round(agingRate, 2)}%/hr TotalTime: {totalTime} days";
 
                     aging = true;
                 }
             }
-            else
-            {
-                if (agingRate > 0)
-                {
-                    growColor = Shared.SecondaryColor;
-                    ageText = $"FullGrown: {fullGrown} @ {Math.Round(agingRate, 2)}%/hr TotalTime: {totalTime} days";
-
-                    aging = true;
-                }
-            }
-
+                
 
 
             var grown = new Label { Text = ageText, Style = (Style)Application.Current.Resources["Headline"], TextColor = growColor, FontSize = Shared.fontHSize, FontAttributes = FontAttributes.Bold, HorizontalOptions = LayoutOptions.Start };
@@ -1152,15 +1173,18 @@ public partial class DinoPage : ContentPage
             if (ageD < 100 && !name.Contains("Breed #") && status == "") { status = ageD + "% Grown"; }
 
 
-            if (status.Contains("% Grown"))
+            if (status.Contains("% Grown") && title != "Bottom")
             {
                 // get aging stuff for dino
-                double agingRate = DataManager.GetGrowthRate(id);
+                double agingRate = DataManager.GetGrowthRateNew(id);
                 DateTime fullGrownDate = DataManager.GetFullGrown(id, agingRate);
 
-                if (fullGrownDate > DateTime.Now)
+                status = fullGrownDate.ToString();
+                double secondDif = (DateTime.Now - fullGrownDate).TotalSeconds;
+
+                if (secondDif > 0)
                 {
-                    status = "100% Grown (ReImport)";
+                    status = "100% (ReImport)";
                 }
             }
           

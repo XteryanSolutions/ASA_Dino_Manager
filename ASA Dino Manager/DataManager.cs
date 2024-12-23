@@ -1,7 +1,9 @@
 ﻿using System.Data;
 using System.Data.Common;
 using System.Globalization;
+using System.Runtime.Intrinsics.X86;
 using System.Xml.Linq;
+using Windows.ApplicationModel.Store;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 //using System.Windows.Forms;
 //using Android.Media;
@@ -436,72 +438,71 @@ namespace ASA_Dino_Manager
             return results;
         }
 
-        public static double GetGrowthRate(string id)
+        public static double GetGrowthRateNew(string id)
         {
-            double result = 0;
-            // create a list to store the Time and BabyAge column
-            List<Tuple<string, string>> dinoData = new List<Tuple<string, string>>();
-
             try
             {
+                // get first time and age
+                string FirstTime = "0"; string FirstAge = "0";
+                string LastTime = "0"; string LastAge = "0";
+
+                bool gotFirst = false;
                 foreach (DataRow row in ImportsTable.Rows)
                 {
                     if (row["ID"]?.ToString() == id)
                     {
-                        // add the columns Time and BabyAge to tuple list
                         string timeValue = row["Time"].ToString();
                         string ageValue = row["BabyAge"].ToString();
-
                         // make sure both fields have data
-                        if (timeValue != "" && ageValue != "")
+                        if (timeValue != "" && ageValue != "" && !gotFirst && ToDouble(ageValue) > 0)
                         {
-                            DateTime pTime = DateTime.ParseExact(timeValue, "dd/MM/yyyy HH:mm:ss", null);
-
-                            double age = ToDouble(ageValue);
-                            if (age < 1 && age > 0)
-                            {
-                                dinoData.Add(new Tuple<string, string>(pTime.ToString(), ageValue));
-                            }
+                            gotFirst = true;
+                            FirstTime = row["Time"].ToString();
+                            FirstAge = row["BabyAge"].ToString();
+                        }
+                        else if (timeValue != "" && ageValue != "" && gotFirst && ToDouble(ageValue) < 1)
+                        {
+                            LastTime = row["Time"].ToString();
+                            LastAge = row["BabyAge"].ToString();
                         }
                     }
                 }
 
-                // Now we have a list of tuples with ID, Time, and Age
-                double count = 0; double total = 0;
-                foreach (var data in dinoData)
-                {
-                    if (ToDouble(data.Item2) < 1)
-                    {
-                        // Calculate aging rate
-                        double agingRate = ToDouble(data.Item2) / (Convert.ToDateTime(data.Item1) - DateTime.Now).TotalHours;
 
-                        // add value to toal
-                        total += agingRate;
-                        count++;
-                    }
-                }
-                double avg = (total / count) * 100;
-                if (avg < 0)
-                {
-                    avg = -avg;
-                }
+                // get difference in age and time and calculate growth rate
 
-                if (avg > 0)
+                // parse times to Datetime
+                DateTime fTime = DateTime.ParseExact(FirstTime, "dd/MM/yyyy HH:mm:ss", null);
+                DateTime lTime = DateTime.ParseExact(LastTime, "dd/MM/yyyy HH:mm:ss", null);
+
+                double secondDif = (lTime - fTime).TotalSeconds;
+
+                double ageDif = (ToDouble(LastAge) - ToDouble(FirstAge)) * 100;
+
+                if (secondDif > 0) 
                 {
-                    //  FileManager.Log($"Average Aging Rate: {avg} %/hour", 0);
-                    result = avg;
+                    double ageRateS = (ageDif / secondDif);
+                    double ageRateM = ageRateS * 60;
+                    double ageRateH = ageRateM * 60;
+
+                 //   FileManager.Log($"Aging Rate: {ageRateH} %/hr", 0);
+
+                    return ageRateH;
                 }
+                return 0;
             }
-            catch { }
-           
-            return result;
+            catch
+            {
+                return 1;
+            }
         }
 
         public static DateTime GetFullGrown(string dino, double agingRate)
         {
             DateTime result = DateTime.Now;
             string LastAge = GetLastColumnData("ID", dino, "BabyAge");
-            if (agingRate > 0 && LastAge != "") 
+            string LastTime = GetLastColumnData("ID", dino, "Time");
+            if (agingRate > 0 && LastAge != "")
             {
                 if (ToDouble(LastAge) < 1) // the dino is under the age of 1 we need its fullgrown time
                 {
@@ -514,8 +515,11 @@ namespace ASA_Dino_Manager
                     // get the time left in hours by dividing by growth rate/hr
                     double timeleft = AgeLeft / agingRate;
 
+
+                    DateTime LastTimeD = DateTime.ParseExact(LastTime, "dd/MM/yyyy HH:mm:ss", null);
+
                     // convert to datetime
-                    DateTime fullGrown = DateTime.Now - TimeSpan.FromHours(timeleft);
+                    DateTime fullGrown = LastTimeD + TimeSpan.FromHours(timeleft);
 
 
                     result = fullGrown;
