@@ -776,35 +776,23 @@ public partial class DinoPage : ContentPage
             // get aging stuff for dino
             string fullGrown = DataManager.GetFullGrown(selectedID).ToString("dd/MM/yyyy HH:mm:ss");
 
-            double hoursLeft = (DataManager.GetFullGrown(selectedID) - DateTime.UtcNow).TotalHours;
+            double hoursLeft = (DataManager.GetFullGrown(selectedID) - DateTime.Now).TotalHours;
 
             double totalTime = Math.Round((100 / agingRate) / 24, 2);
-
 
 
             string ageText = ""; bool aging = false;
             Color growColor = Shared.PrimaryColor;
             
-            if (DataManager.GetFullGrown(selectedID) < DateTime.UtcNow)
+            if (DataManager.GetFullGrown(selectedID) > DateTime.Now)
             {
                 if (agingRate > 0)
                 {
-                    ageText = $"FullGrown: {fullGrown} @ {Math.Round(agingRate,2)}%/hr totalTime: {totalTime} days";
-                    aging = true;
-                }
-                else
-                {
-                    ageText = $"FullGrown: {fullGrown}";
+                    growColor = Shared.SecondaryColor;
+                    ageText = $"FullGrown: {fullGrown} in {Math.Round(hoursLeft, 1)} hr @ {Math.Round(agingRate, 2)}%/hr TotalTime: {totalTime} days";
                     aging = true;
                 }
             }
-            else
-            {
-                growColor = Shared.SecondaryColor;
-                ageText = $"FullGrown: {fullGrown} in {Math.Round(hoursLeft, 1)} hr @ {Math.Round(agingRate,2)}%/hr";
-                aging = true;
-            }
-
 
 
 
@@ -1146,6 +1134,20 @@ public partial class DinoPage : ContentPage
             string age = row["Age"].ToString();
             double ageD = DataManager.ToDouble(age);
             if (ageD < 100 && !name.Contains("Breed #") && status == "") { status = ageD + "% Grown"; }
+
+
+            // Override for full grown baby  (needs a new export)
+            if (status.Contains("Grown"))
+            {
+                if (DataManager.GetFullGrown(id) > DateTime.Now)
+                {
+                    if (agingRate > 0)
+                    {
+                        status = "100% Grown (Export)";
+                    }
+                }
+            }
+
 
 
             // override offspring colors based on breed points

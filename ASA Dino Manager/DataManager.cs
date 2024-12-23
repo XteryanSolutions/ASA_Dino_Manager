@@ -483,7 +483,7 @@ namespace ASA_Dino_Manager
                     if (ToDouble(data.Item3) < 1)
                     {
                         // Calculate aging rate
-                        double agingRate = ToDouble(data.Item3) / (Convert.ToDateTime(data.Item2) - DateTime.UtcNow).TotalHours;
+                        double agingRate = ToDouble(data.Item3) / (Convert.ToDateTime(data.Item2) - DateTime.Now).TotalHours;
 
                         // add value to toal
                         total += agingRate;
@@ -508,7 +508,7 @@ namespace ASA_Dino_Manager
 
         public static DateTime GetFullGrown(string dino)
         {
-            DateTime result = DateTime.UtcNow;
+            DateTime result = DateTime.Now;
             string LastAge = GetLastColumnData("ID", dino, "BabyAge");
             if (ToDouble(LastAge) < 1) // the dino is under the age of 1 we need its fullgrown time
             {
@@ -521,7 +521,7 @@ namespace ASA_Dino_Manager
                 // get the time left in hours by dividing by growth rate/hr
                 double timeleft = AgeLeft / DinoPage.agingRate;
 
-                DateTime fullGrown = DateTime.UtcNow - TimeSpan.FromHours(timeleft);
+                DateTime fullGrown = DateTime.Now - TimeSpan.FromHours(timeleft);
 
                 result = fullGrown;
 

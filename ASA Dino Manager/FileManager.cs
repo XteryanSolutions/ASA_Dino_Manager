@@ -14,7 +14,7 @@ namespace ASA_Dino_Manager
 
 
         // Filemanager stuff
-        private static DateTime TimeStart = DateTime.UtcNow;
+        private static DateTime TimeStart = DateTime.Now;
         private static bool RunOnce = true; // toggle off at init
 
         private static string AppPath = "";
@@ -36,7 +36,7 @@ namespace ASA_Dino_Manager
         {
             try
             {
-                if (RunOnce) { TimeStart = DateTime.UtcNow; RunOnce = false; }
+                if (RunOnce) { TimeStart = DateTime.Now; RunOnce = false; }
 
                 //AppPath = Path.GetDirectoryName(Application.ExecutablePath).ToString();
                 //AppPath = Path.GetDirectoryName(assemblyPath);
@@ -424,7 +424,7 @@ namespace ASA_Dino_Manager
                 try
                 {
                     // Format dateTime as string
-                    string formattedTime = "[" + DateTime.UtcNow.ToString("HH:ss:fff") + "]";
+                    string formattedTime = "[" + DateTime.Now.ToString("HH:ss:fff") + "]";
 
                     string logString = $"{formattedTime}{levelText}{text}";
 
