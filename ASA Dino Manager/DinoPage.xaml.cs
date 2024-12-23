@@ -790,6 +790,7 @@ public partial class DinoPage : ContentPage
                 {
                     growColor = Shared.SecondaryColor;
                     ageText = $"FullGrown: {fullGrown} in {Math.Round(hoursLeft, 1)} hr @ {Math.Round(agingRate, 2)}%/hr TotalTime: {totalTime} days";
+                    // disabling age rate for now
                     aging = true;
                 }
             }

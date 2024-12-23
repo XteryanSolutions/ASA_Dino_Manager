@@ -495,7 +495,7 @@ namespace ASA_Dino_Manager
                 {
                     avg = -avg;
                 }
-                //FileManager.Log($"Average Aging Rate: {avg} %/hour", 0);
+                FileManager.Log($"Average Aging Rate: {avg} %/hour", 0);
                 if (avg < 0) { DinoPage.agingRate = 0; FileManager.Log($"Default Aging Rate: 0 %/hour", 1); }
                 DinoPage.agingRate = avg;
             }
