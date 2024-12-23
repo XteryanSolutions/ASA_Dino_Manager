@@ -823,18 +823,15 @@ public partial class DinoPage : ContentPage
                             else
                             {
                                 ageText = $"FullGrown: {fullGrownDate} in {hours}h {minutes}m @ {Math.Round(agingRate, 2)}%/hr {pLeft}% to go. TotalTime: {totalTime} days";
-
                             }
                         }
                         else
                         {
                             ageText = $"FullGrown: {fullGrownDate} in {days}d {hours}h {minutes}m @ {Math.Round(agingRate, 2)}%/hr {pLeft}% to go. TotalTime: {totalTime} days";
-
                         }
                     }
 
                     //  ageText = $"FullGrown: {fullGrownDate} in {Math.Round(hoursLeft, 1)} hr @ {Math.Round(agingRate, 2)}%/hr TotalTime: {totalTime} days";
-
                     aging = true;
                 }
                 else

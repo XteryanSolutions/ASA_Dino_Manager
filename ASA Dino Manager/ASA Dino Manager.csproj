@@ -207,6 +207,9 @@
 		<MauiXaml Update="ArchivePage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
+		<MauiXaml Update="BabyPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
 		<MauiXaml Update="DinoPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>

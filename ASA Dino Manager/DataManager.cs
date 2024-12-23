@@ -442,6 +442,60 @@ namespace ASA_Dino_Manager
         {
             try
             {
+                // Filter rows by ID and ensure valid data
+                var filteredRows = ImportsTable.AsEnumerable()
+                    .Where(row => row["ID"]?.ToString() == id &&
+                                  !string.IsNullOrEmpty(row["Time"]?.ToString()) &&
+                                  !string.IsNullOrEmpty(row["BabyAge"]?.ToString()) &&
+                                  ToDouble(row["BabyAge"].ToString()) > 0)
+                    .OrderBy(row => DateTime.ParseExact(row["Time"].ToString(), "dd/MM/yyyy HH:mm:ss", null))
+                    .ToList();
+
+                if (filteredRows.Count < 2)
+                {
+                    // Not enough data to calculate aging rate
+                    return 0;
+                }
+
+                // Get the last two rows (most recent entries)
+                var secondLastRow = filteredRows[filteredRows.Count - 2];
+                var lastRow = filteredRows[filteredRows.Count - 1];
+
+                // Parse times and ages
+                DateTime secondLastTime = DateTime.ParseExact(secondLastRow["Time"].ToString(), "dd/MM/yyyy HH:mm:ss", null);
+                DateTime lastTime = DateTime.ParseExact(lastRow["Time"].ToString(), "dd/MM/yyyy HH:mm:ss", null);
+
+                double secondLastAge = ToDouble(secondLastRow["BabyAge"].ToString());
+                double lastAge = ToDouble(lastRow["BabyAge"].ToString());
+
+                // Ensure chronological order and valid data
+                if (lastTime > secondLastTime && lastAge >= secondLastAge)
+                {
+                    // Calculate differences
+                    double timeDiffSeconds = (lastTime - secondLastTime).TotalSeconds;
+                    double ageDiff = (lastAge - secondLastAge) * 100;
+
+                    if (timeDiffSeconds > 0)
+                    {
+                        double ageRatePerSecond = ageDiff / timeDiffSeconds;
+                        double ageRatePerHour = ageRatePerSecond * 3600; // Convert to %/hour
+                        return ageRatePerHour;
+                    }
+                }
+
+                // Handle invalid data (e.g., younger age or incorrect time order)
+                return 0;
+            }
+            catch
+            {
+                return 1;
+            }
+        }
+
+        public static double GetGrowthRateNew2(string id)
+        {
+            try
+            {
                 // get first time and age
                 string FirstTime = "0"; string FirstAge = "0";
                 string LastTime = "0"; string LastAge = "0";
