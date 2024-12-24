@@ -438,19 +438,20 @@ namespace ASA_Dino_Manager
             return results;
         }
 
-        public static List<Tuple<double, string, double, bool, bool>> GetDinoAgingData(string id)
+        public static List<Tuple<double, string, double, bool, bool, double>> GetDinoAgingData(string id)
         {
-            var list = new List<Tuple<double, string, double, bool, bool>>();
+            var list = new List<Tuple<double, string, double, bool, bool, double>>();
 
             // all time values are in seconds to retain accuracy
             /////////////////////////////////////////////////////////////////////////
-            // make a tuple containing -> agingRate, fullGrownDate, growUpTime, isBaby, beenBaby,
+            // make a tuple containing -> agingRate, fullGrownDate, growUpTime, isBaby, beenBaby, fullTime
             ////////////////////////////////////////////////////////////////////////
             try
             {
                 double agingRate = GetGrowthRate(id); // get agingRate
                 string fullGrown = "N/A";
                 double growUpTime = 0;
+                double fullTime = 0;
 
                 // get last known age and time
                 double lastAge = ToDouble(GetLastColumnData("ID", id, "BabyAge"));
@@ -496,15 +497,23 @@ namespace ASA_Dino_Manager
                         {
                             // when did it reach fullGrown
                             fullGrown = GrowUpTime(id);
+
+                            DateTime endTime = DateTime.ParseExact(fullGrown, "dd/MM/yyyy HH:mm:ss", null);
+                            DateTime startTime = DateTime.ParseExact(firstTime, "dd/MM/yyyy HH:mm:ss", null);
+
+                            fullTime = (endTime - startTime).TotalSeconds;
+
+                            // output = firstTime
                         }
                     }
                 }
 
-                list.Add(new Tuple<double, string, double, bool, bool>(agingRate, fullGrown, growUpTime, isBaby, beenBaby));
+
+                list.Add(new Tuple<double, string, double, bool, bool, double>(agingRate, fullGrown, growUpTime, isBaby, beenBaby, fullTime));
             }
-            catch 
+            catch
             {
-                list.Add(new Tuple<double, string, double, bool, bool>(0, "N/A", 0, false, false));
+                list.Add(new Tuple<double, string, double, bool, bool, double>(0, "N/A", 0, false, false, 0));
             }
 
             // FileManager.Log($"HUPP", 0);

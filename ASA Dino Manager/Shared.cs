@@ -28,7 +28,10 @@
         public static string breedSym = "🐣";
         public static string grownSym = "🦖";
         public static string errorSym = "💩";
-
+        public static string noteSym = "📋";
+        public static string timeSym = "⌛";
+        public static string dateSym = "📆";
+         public static string starSym = "✨";
 
         ////////////////////    Shared locks    ////////////////////
         public static readonly object _logLock = new object();
@@ -82,7 +85,7 @@
         public static Color goldColor = Color.FromArgb("#FFFF00"); // Yellow
         public static Color mutaColor = Color.FromArgb("#9370DB"); // MediumPurple
 
-        // add theese to config
+        // add theese to config (maybe not yet)
         public static Color tameColor = Color.FromArgb("#9370DB"); // MediumPurple
         public static Color breedColor = Color.FromArgb("#FFFFE0"); // LightYellow
         public static Color grownColor = Color.FromArgb("#90EE90"); // LightGreen

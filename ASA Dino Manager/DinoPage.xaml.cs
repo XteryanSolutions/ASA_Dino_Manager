@@ -775,7 +775,7 @@ public partial class DinoPage : ContentPage
 
 
             //  get aging stuff for dino -> agingRate, fullGrownDate, growUpTime, isBaby, beenBaby,
-            List<Tuple<double, string, double, bool, bool>> dinoAgingData = DataManager.GetDinoAgingData(currentID);
+            List<Tuple<double, string, double, bool, bool, double>> dinoAgingData = DataManager.GetDinoAgingData(currentID);
 
             if (dinoAgingData.Count == 1)
             {
@@ -786,12 +786,13 @@ public partial class DinoPage : ContentPage
                     double growthRate = data.Item3;
                     bool isBaby = data.Item4;
                     bool beenBaby = data.Item5;
+                    double fullTime = data.Item6;
 
-                  //  DateTime firstTime = DateTime.ParseExact(GetFirstColumnData("ID", id, "Time"), "dd/MM/yyyy HH:mm:ss", null);
+                    //  DateTime firstTime = DateTime.ParseExact(GetFirstColumnData("ID", id, "Time"), "dd/MM/yyyy HH:mm:ss", null);
 
                     if (!beenBaby) // its a tame just add info on when it was tamed
                     {
-                        ageText = $"Tamed: {time}";
+                        ageText = $"Tamed: {Shared.dateSym}{time}";
                         validAgeRate = true;
                     }
                     else
@@ -800,7 +801,7 @@ public partial class DinoPage : ContentPage
                         {
                             if (ageRate > 0)
                             {
-                                ageText = $"Estimated: {time}";
+                                ageText = $"Estimated: {Shared.dateSym}{time}";
                                 validAgeRate = true;
                             }
                         }
@@ -808,7 +809,15 @@ public partial class DinoPage : ContentPage
                         {
                             if (time != "N/A")
                             {
-                                ageText = $"FullGrown: {time}";
+
+                                int totalMinutes = (int)(fullTime / 60);
+                                int days = totalMinutes / (24 * 60);
+                                int hours = (totalMinutes % (24 * 60)) / 60;
+                                int minutes = totalMinutes % 60;
+
+
+                                ageText = $"FullGrown: {Shared.dateSym}{time} {Shared.timeSym}{days}d {hours}h {minutes}m";
+
                                 validAgeRate = true;
                             }
                         }
@@ -1267,7 +1276,7 @@ public partial class DinoPage : ContentPage
             if (title != "Bottom" && status != "Garbage")
             {
                 //  get aging stuff for dino -> agingRate, fullGrownDate, growUpTime, isBaby, beenBaby,
-                List<Tuple<double, string, double, bool, bool>> dinoAgingData = DataManager.GetDinoAgingData(id);
+                List<Tuple<double, string, double, bool, bool, double>> dinoAgingData = DataManager.GetDinoAgingData(id);
 
                 if (dinoAgingData.Count > 0)
                 {
@@ -1278,6 +1287,7 @@ public partial class DinoPage : ContentPage
                         double growthRate = data.Item3;
                         bool isBaby = data.Item4;
                         bool beenBaby = data.Item5;
+                        double fullTime = data.Item6;
 
                         if (!beenBaby) // its a tame just add info on when it was tamed
                         {
@@ -1290,7 +1300,7 @@ public partial class DinoPage : ContentPage
                             if (isBaby)
                             {
                                 status = Shared.breedSym + status;
-                                cellColor0 = Shared.breedColor;
+                                //cellColor0 = Shared.breedColor;
                             }
                             else
                             {
@@ -1313,6 +1323,11 @@ public partial class DinoPage : ContentPage
                 }
             }
 
+            string notes = DataManager.GetNotes(id);
+            if (notes != "")
+            {
+                status = Shared.noteSym + status;
+            }
 
             // Create a Labels
             var nameL = new Label { Text = name, TextColor = cellColor0 };
@@ -1399,7 +1414,7 @@ public partial class DinoPage : ContentPage
     {
         if (selectedID != "" && !isDouble)
         {
-            FileManager.Log($"Unselected {selectedID}", 0);
+          //  FileManager.Log($"Unselected {selectedID}", 0);
             selectedID = ""; isSelected = false; this.Title = $"{Shared.setPage.Replace("_", " ")}";
             canDouble = false; editStats = false;
         }
@@ -1506,7 +1521,7 @@ public partial class DinoPage : ContentPage
                 string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
                 this.Title = $"{name} - {id}"; // set title to dino name
 
-                FileManager.Log($"Selected {name} ID: {id}", 0);
+               // FileManager.Log($"Selected {name} ID: {id}", 0);
 
                 // activate double clicking
 
@@ -1521,7 +1536,7 @@ public partial class DinoPage : ContentPage
                 string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
                 //this.Title = $"{name} - {id}"; // set title to dino name
 
-                FileManager.Log($"Double click {name} ID: {id}", 0);
+             //   FileManager.Log($"Double click {name} ID: {id}", 0);
 
             }
             else if (selectedID == id && !canDouble) // select same dino over time
@@ -1550,7 +1565,7 @@ public partial class DinoPage : ContentPage
                 string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
                 this.Title = $"{name} - {id}"; // set title to dino name
 
-                FileManager.Log($"Selected. {name} ID: {id}", 0);
+              //  FileManager.Log($"Selected. {name} ID: {id}", 0);
 
                 // activate double clicking
 
@@ -1565,7 +1580,7 @@ public partial class DinoPage : ContentPage
                 string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
                 //this.Title = $"{name} - {id}"; // set title to dino name
 
-                FileManager.Log($"Double click. {name} ID: {id}", 0);
+             //   FileManager.Log($"Double click. {name} ID: {id}", 0);
 
             }
             else if (selectedID == id && !canDouble) // select same dino over time
