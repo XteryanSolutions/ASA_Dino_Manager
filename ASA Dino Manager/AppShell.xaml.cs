@@ -123,7 +123,7 @@
                 // reset toggles and unselect dino when navigating
                 DinoPage.CurrentStats = Shared.DefaultStat; DinoPage.ToggleExcluded = Shared.DefaultToggle;
                 DinoPage.isSelected = false; DinoPage.isDouble = false; DinoPage.canDouble = false; DinoPage.selectedID = "";
-                DinoPage.sortM = Shared.DefaultSortM; DinoPage.sortF = Shared.DefaultSortF;
+                DinoPage.sortM = Shared.DefaultSortM; DinoPage.sortF = Shared.DefaultSortF; DinoPage.dataValid = false; // invalidate
                 ArchivePage.isSelected = false; ArchivePage.selectedID = ""; ArchivePage.sortA = Shared.DefaultSortA;
             }
             else
@@ -220,6 +220,8 @@
                             // Check if we need to reload data
                             if (DataManager.ModC > 0 || DataManager.AddC > 0 || tagList.Length > DataManager.tagSize)
                             {
+                                DinoPage.dataValid = false; // invalidate
+
                                 // reset counters
                                 DataManager.AddC = 0; DataManager.ModC = 0;
 
@@ -228,6 +230,9 @@
                                 // request a save
                                 FileManager.needSave = true;
                             }
+
+                            
+
                             stopwatch.Stop();
                             var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
 

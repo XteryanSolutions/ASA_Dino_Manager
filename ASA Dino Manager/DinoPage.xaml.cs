@@ -36,6 +36,8 @@ public partial class DinoPage : ContentPage
 
     private bool editStats = false;
 
+    public static bool dataValid = false;
+
 
     public DinoPage()
     {
@@ -48,6 +50,7 @@ public partial class DinoPage : ContentPage
         canDouble = false; isDouble = false;
         ToggleExcluded = Shared.DefaultToggle;
         CurrentStats = Shared.DefaultStat;
+        DinoPage.dataValid = false; // invalidate
 
         // set page title
         this.Title = $"{Shared.setPage.Replace("_", " ")}";
@@ -64,30 +67,40 @@ public partial class DinoPage : ContentPage
                 {
                     if (isSelected)
                     {
-                        DataManager.GetOneDinoData(selectedID);
+                        if (!dataValid)
+                        {
+                            FileManager.Log("Updating Data", 0);
+                            DataManager.GetOneDinoData(selectedID);
 
-                        DataManager.SetMaxStats(ToggleExcluded);
-                        DataManager.SetBinaryStats(ToggleExcluded);
+                            DataManager.SetMaxStats(ToggleExcluded);
+                            DataManager.SetBinaryStats(ToggleExcluded);
+                            dataValid = true;
+                        }
                     }
                     else
                     {
-                        // sort data based on column clicked
-                        DataManager.GetDinoData(Shared.selectedClass, sortM, sortF);
-
-
-                        DataManager.SetMaxStats(ToggleExcluded);
-                        DataManager.SetBinaryStats(ToggleExcluded);
-
-                        if (!CurrentStats)
+                        if (!dataValid)
                         {
-                            DataManager.GetBestPartner();
+                            FileManager.Log("Updating Data", 0);
+                            // sort data based on column clicked
+                            DataManager.GetDinoData(Shared.selectedClass, sortM, sortF);
+
+
+                            DataManager.SetMaxStats(ToggleExcluded);
+                            DataManager.SetBinaryStats(ToggleExcluded);
+
+                            if (!CurrentStats)
+                            {
+                                DataManager.GetBestPartner();
+                            }
+                            dataValid = true;
                         }
                     }
                 }
+
+                
                 FileManager.Log("Updating GUI -> " + Shared.setPage, 0);
-
                 if (!isSelected) { this.Title = $"{Shared.setPage.Replace("_", " ")}"; }
-
 
                 DinoView();
             }
@@ -822,55 +835,14 @@ public partial class DinoPage : ContentPage
                             }
                         }
                     }
-                    //   ageText = $"FullGrown: {fullGrownDate} in {days}d {hours}h {minutes}m @ {Math.Round(agingRate, 2)}%/hr {pLeft}% to go. TotalTime: {totalTime} days";
-
-                    //  Console.WriteLine($"Age: {ageRate}, Time: {time}, Growth Rate: {growthRate}, isBaby: {isBaby}, beenBaby: {beenBaby}");
                 }
             }
-           
-
-            /*
-            DateTime fullGrownDate = DataManager.GetFullGrown(currentID, agingRate);
-
-            double hoursLeft = (fullGrownDate - DateTime.Now).TotalHours;
-
-            double totalTime = Math.Round((100 / agingRate) / 24, 2);
-
-            double secondDif = (DateTime.Now - fullGrownDate).TotalSeconds;
-
-            growColor = Shared.SecondaryColor;
-
-            int totalMinutes = (int)(hoursLeft * 60);
-            int days = totalMinutes / (24 * 60);
-            int hours = (totalMinutes % (24 * 60)) / 60;
-            int minutes = totalMinutes % 60;
-
-            pLeft = Math.Round(pLeft, 2);
-            growColor = Shared.PrimaryColor;
-
-            if (agingRate > 0)
-            {
-                // lastKnowP + (hoursSince * %/hr) = estimatedPerLeft
-
-                ageText = $"FullGrown: {fullGrownDate} in {days}d {hours}h {minutes}m @ {Math.Round(agingRate, 2)}%/hr {pLeft}% to go. TotalTime: {totalTime} days";
-                if (minutes > 0)
-                {
-                    ageText = $"FullGrown: {fullGrownDate} in {days}d {hours}h {minutes}m @ {Math.Round(agingRate, 2)}%/hr {pLeft}% to go. TotalTime: {totalTime} days";
-                }
-
-                aging = true;
-            }
-
-            */
-
 
 
             var grown = new Label { Text = ageText, Style = (Style)Application.Current.Resources["Headline"], TextColor = growColor, FontSize = Shared.fontHSize, FontAttributes = FontAttributes.Bold, HorizontalOptions = LayoutOptions.Start };
 
-
             // notes textbox defined here
             var textBoxN = new Editor { Text = notes, Placeholder = "Notes", WidthRequest = 600, HeightRequest = 200, TextColor = cellColor0, BackgroundColor = Shared.OddMPanelColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start, Keyboard = Keyboard.Create(KeyboardFlags.None) };
-
 
             textBoxN.TextChanged += (sender, e) =>
             {
@@ -1168,15 +1140,15 @@ public partial class DinoPage : ContentPage
 
             if (ToggleExcluded == 0)
             {
-               
+
             }
             if (ToggleExcluded == 2)
             {
-              //  if (group == "Exclude") { status = ""; }
+                //  if (group == "Exclude") { status = ""; }
             }
             if (ToggleExcluded == 3)
             {
-              //  if (group == "Archived") { status = ""; }
+                //  if (group == "Archived") { status = ""; }
             }
 
             //recolor breeding stats
@@ -1292,7 +1264,7 @@ public partial class DinoPage : ContentPage
 
                         if (!beenBaby) // its a tame just add info on when it was tamed
                         {
-                           // cellColor0 = Shared.tameColor;
+                            // cellColor0 = Shared.tameColor;
                             status = time;
                             status = Shared.tameSym + status;
                         }
@@ -1419,9 +1391,9 @@ public partial class DinoPage : ContentPage
     {
         if (selectedID != "" && !isDouble)
         {
-          //  FileManager.Log($"Unselected {selectedID}", 0);
+            //  FileManager.Log($"Unselected {selectedID}", 0);
             selectedID = ""; isSelected = false; this.Title = $"{Shared.setPage.Replace("_", " ")}";
-            canDouble = false; editStats = false;
+            canDouble = false; editStats = false; dataValid = false; // invalidate
         }
     }
 
@@ -1523,12 +1495,12 @@ public partial class DinoPage : ContentPage
         {
             if (selectedID != id) // select a new dino
             {
-                selectedID = id; isSelected = true;
+                selectedID = id; isSelected = true; dataValid = false; // invalidate
 
                 string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
                 this.Title = $"{name} - {id}"; // set title to dino name
 
-               // FileManager.Log($"Selected {name} ID: {id}", 0);
+                // FileManager.Log($"Selected {name} ID: {id}", 0);
 
                 // activate double clicking
 
@@ -1543,7 +1515,7 @@ public partial class DinoPage : ContentPage
                 string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
                 //this.Title = $"{name} - {id}"; // set title to dino name
 
-             //   FileManager.Log($"Double click {name} ID: {id}", 0);
+                //   FileManager.Log($"Double click {name} ID: {id}", 0);
 
             }
             else if (selectedID == id && !canDouble) // select same dino over time
@@ -1568,12 +1540,12 @@ public partial class DinoPage : ContentPage
         {
             if (selectedID != id) // select a new dino
             {
-                selectedID = id; isSelected = true;
+                selectedID = id; isSelected = true; dataValid = false; // invalidate
 
                 string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
                 this.Title = $"{name} - {id}"; // set title to dino name
 
-              //  FileManager.Log($"Selected. {name} ID: {id}", 0);
+                //  FileManager.Log($"Selected. {name} ID: {id}", 0);
 
                 // activate double clicking
 
@@ -1588,7 +1560,7 @@ public partial class DinoPage : ContentPage
                 string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
                 //this.Title = $"{name} - {id}"; // set title to dino name
 
-             //   FileManager.Log($"Double click. {name} ID: {id}", 0);
+                //   FileManager.Log($"Double click. {name} ID: {id}", 0);
 
             }
             else if (selectedID == id && !canDouble) // select same dino over time
@@ -1648,6 +1620,9 @@ public partial class DinoPage : ContentPage
         {
             CurrentStats = true;
         }
+
+        dataValid = false; // invalidate
+
         FileManager.Log($"Toggle Stats {CurrentStats}", 0);
 
         ClearSelection();
@@ -1662,6 +1637,8 @@ public partial class DinoPage : ContentPage
             if (status == "Exclude") { status = ""; }
             else if (status == "") { status = "Exclude"; FileManager.Log($"Excluded ID: {selectedID}", 0); }
             DataManager.SetGroup(selectedID, status);
+
+            dataValid = false; // invalidate
 
             ClearSelection();
             CreateContent();
@@ -1679,9 +1656,7 @@ public partial class DinoPage : ContentPage
             else if (status == "Exclude") { status = "Archived"; FileManager.Log($"Archived ID: {selectedID}", 0); }
             DataManager.SetGroup(selectedID, status);
 
-            // recompile the archive after archiving or unarchiving
-            // maybe redundant
-            //DataManager.CompileDinoArchive();
+            dataValid = false; // invalidate
 
             ClearSelection();
             CreateContent();
@@ -1695,6 +1670,7 @@ public partial class DinoPage : ContentPage
         levelText = ""; hpText = ""; staminaText = ""; oxygenText = "";
         foodText = ""; weightText = ""; damageText = ""; notesText = "";
         isDouble = false;
+        dataValid = false; // invalidate
         ClearSelection();
         CreateContent();
     }
@@ -1711,6 +1687,7 @@ public partial class DinoPage : ContentPage
         {
             DataManager.EditBreedStats(selectedID, levelText, hpText, staminaText, oxygenText, foodText, weightText, damageText, notesText);
             FileManager.needSave = true;
+            dataValid = false; // invalidate
         }
 
         // reset toggles etc.
