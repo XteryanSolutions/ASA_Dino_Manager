@@ -1435,6 +1435,7 @@ public partial class DinoPage : ContentPage
     // Button event handlers
     void SortColumn(Label label, string sex)
     {
+        label.GestureRecognizers.Clear();
         // Create a TapGestureRecognizer
         var tapGesture1 = new TapGestureRecognizer();
         tapGesture1.Tapped += (s, e) =>
@@ -1515,6 +1516,7 @@ public partial class DinoPage : ContentPage
 
     void SelectDino(Label label, string id)
     {
+        label.GestureRecognizers.Clear();
         // Create a TapGestureRecognizer
         var tapGesture = new TapGestureRecognizer();
         tapGesture.Tapped += (s, e) =>
@@ -1559,6 +1561,7 @@ public partial class DinoPage : ContentPage
 
     void SelectBG(BoxView inp, string id)
     {
+        inp.GestureRecognizers.Clear();
         // Create a TapGestureRecognizer
         var tapGesture = new TapGestureRecognizer();
         tapGesture.Tapped += (s, e) =>
@@ -1609,6 +1612,7 @@ public partial class DinoPage : ContentPage
 
     void UnSelectDino(Grid grid)
     {
+        grid.GestureRecognizers.Clear();
         // Create a TapGestureRecognizer
         var tapGesture = new TapGestureRecognizer();
         tapGesture.Tapped += (s, e) =>

@@ -379,6 +379,7 @@ public partial class ArchivePage : ContentPage
     // Button event handlers
     private void SelectDino(Label label, string id)
     {
+        label.GestureRecognizers.Clear();
         // Create a TapGestureRecognizer
         var tapGesture = new TapGestureRecognizer();
         tapGesture.Tapped += (s, e) =>
@@ -402,6 +403,7 @@ public partial class ArchivePage : ContentPage
 
     void SelectBG(BoxView inp, string id)
     {
+        inp.GestureRecognizers.Clear();
         // Create a TapGestureRecognizer
         var tapGesture = new TapGestureRecognizer();
         tapGesture.Tapped += (s, e) =>
@@ -423,9 +425,9 @@ public partial class ArchivePage : ContentPage
         inp.GestureRecognizers.Add(tapGesture);
     }
 
-
     private void UnSelectDino(Grid grid)
     {
+        grid.GestureRecognizers.Clear();
         // Create a TapGestureRecognizer
         var tapGesture = new TapGestureRecognizer();
         tapGesture.Tapped += (s, e) =>
