@@ -438,18 +438,117 @@ namespace ASA_Dino_Manager
             return results;
         }
 
-        public static double GetGrowthRateNew(string id)
+        public static List<Tuple<double, string, double, bool, bool>> GetDinoAgingData(string id)
+        {
+            var list = new List<Tuple<double, string, double, bool, bool>>();
+
+            // all time values are in seconds to retain accuracy
+            /////////////////////////////////////////////////////////////////////////
+            // make a tuple containing -> agingRate, fullGrownDate, growUpTime, isBaby, beenBaby,
+            ////////////////////////////////////////////////////////////////////////
+            try
+            {
+                double agingRate = GetGrowthRate(id); // get agingRate
+                string fullGrown = "N/A";
+                double growUpTime = 0;
+
+                // get last known age and time
+                double lastAge = ToDouble(GetLastColumnData("ID", id, "BabyAge"));
+                string lastTime = GetLastColumnData("ID", id, "Time");
+
+                // get first known age and time
+                double firstAge = ToDouble(GetFirstColumnData("ID", id, "BabyAge"));
+                string firstTime = GetFirstColumnData("ID", id, "Time");
+
+                // do we or do we not have a Xanax detector (baby detector)
+                // figure out if it has ever been a baby or do we just mark it as tamed
+                bool isBaby = false; bool beenBaby = false;
+                if (firstAge < 1) // we have an entry with age younger than one
+                {
+                    beenBaby = true;
+                    if (lastAge < 1) // and the last known age is also under 1
+                    {
+                        isBaby = true; // so baby it is (at this point in time)
+                    }
+                }
+
+                if (!beenBaby) // never been a baby so this is probably a fresh Tame
+                {
+                    fullGrown = firstTime; // set fullgrown to the time it was tamed
+                }
+                else
+                {
+                    // if we have aging rate here we can calculate how long it takes for this dino to grow from 0 to 100%
+                    if (agingRate > 0)
+                    {
+                        growUpTime = 1 / agingRate;
+
+                        // if its still a baby we need to calculate when its about to grow up
+                        if (isBaby) // wich we also need the agingRate for
+                        {
+                            // 100% - currentAge and we get how many % left to grow
+                            double AgeLeft = 1 - lastAge;
+                            double timeleft = AgeLeft / agingRate;
+
+                            fullGrown = (lastTime + TimeSpan.FromSeconds(timeleft)).ToString();
+                        }
+                        else
+                        {
+                            // when did it reach fullGrown
+                            fullGrown = GrowUpTime(id);
+                        }
+                    }
+                }
+
+                list.Add(new Tuple<double, string, double, bool, bool>(agingRate, fullGrown, growUpTime, isBaby, beenBaby));
+            }
+            catch 
+            {
+                list.Add(new Tuple<double, string, double, bool, bool>(0, "N/A", 0, false, false));
+            }
+
+            // FileManager.Log($"HUPP", 0);
+
+            return list;
+        }
+
+        public static string GrowUpTime(string id)
+        {
+            string result = "N/A";
+            foreach (DataRow row in ImportsTable.Rows)
+            {
+                if (row["ID"]?.ToString() == id)
+                {
+                    string timeValue = row["Time"].ToString();
+                    string ageValue = row["BabyAge"].ToString();
+                    // make sure both fields have data
+                    if (timeValue != "" && ToDouble(ageValue) > 0)
+                    {
+                        if (ToDouble(ageValue) == 1)
+                        {
+                            // time when dino reached fullgrown
+                            result = timeValue;
+                            break;
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+        public static double GetGrowthRate(string id)
         {
             try
             {
                 // Filter rows by ID and ensure valid data
                 var filteredRows = ImportsTable.AsEnumerable()
-                    .Where(row => row["ID"]?.ToString() == id &&
-                                  !string.IsNullOrEmpty(row["Time"]?.ToString()) &&
-                                  !string.IsNullOrEmpty(row["BabyAge"]?.ToString()) &&
-                                  ToDouble(row["BabyAge"].ToString()) > 0)
-                    .OrderBy(row => DateTime.ParseExact(row["Time"].ToString(), "dd/MM/yyyy HH:mm:ss", null))
-                    .ToList();
+                .Where(row => row["ID"]?.ToString() == id &&
+                              !string.IsNullOrEmpty(row["Time"]?.ToString()) &&
+                              !string.IsNullOrEmpty(row["BabyAge"]?.ToString()) &&
+                              ToDouble(row["BabyAge"].ToString()) > 0 &&
+                              ToDouble(row["BabyAge"].ToString()) < 1)
+                .OrderBy(row => DateTime.ParseExact(row["Time"].ToString(), "dd/MM/yyyy HH:mm:ss", null))
+                .ToList();
 
                 if (filteredRows.Count < 2)
                 {
@@ -477,9 +576,9 @@ namespace ASA_Dino_Manager
 
                     if (timeDiffSeconds > 0)
                     {
+                        // get accurate unRounded ageRate
                         double ageRatePerSecond = ageDiff / timeDiffSeconds;
-                        double ageRatePerHour = ageRatePerSecond * 3600; // Convert to %/hour
-                        return ageRatePerHour;
+                        return ageRatePerSecond;
                     }
                 }
 
@@ -488,102 +587,8 @@ namespace ASA_Dino_Manager
             }
             catch
             {
-                return 1;
-            }
-        }
-
-        public static double GetGrowthRateNew2(string id)
-        {
-            try
-            {
-                // get first time and age
-                string FirstTime = "0"; string FirstAge = "0";
-                string LastTime = "0"; string LastAge = "0";
-
-                bool gotFirst = false;
-                foreach (DataRow row in ImportsTable.Rows)
-                {
-                    if (row["ID"]?.ToString() == id)
-                    {
-                        string timeValue = row["Time"].ToString();
-                        string ageValue = row["BabyAge"].ToString();
-                        // make sure both fields have data
-                        if (timeValue != "" && ageValue != "" && !gotFirst && ToDouble(ageValue) > 0)
-                        {
-                            gotFirst = true;
-                            FirstTime = row["Time"].ToString();
-                            FirstAge = row["BabyAge"].ToString();
-                        }
-                        else if (timeValue != "" && ageValue != "" && gotFirst && ToDouble(ageValue) < 1)
-                        {
-                            LastTime = row["Time"].ToString();
-                            LastAge = row["BabyAge"].ToString();
-                        }
-                    }
-                }
-
-
-                // get difference in age and time and calculate growth rate
-
-                // parse times to Datetime
-                DateTime fTime = DateTime.ParseExact(FirstTime, "dd/MM/yyyy HH:mm:ss", null);
-                DateTime lTime = DateTime.ParseExact(LastTime, "dd/MM/yyyy HH:mm:ss", null);
-
-                double secondDif = (lTime - fTime).TotalSeconds;
-
-                double ageDif = (ToDouble(LastAge) - ToDouble(FirstAge)) * 100;
-
-                if (secondDif > 0) 
-                {
-                    double ageRateS = (ageDif / secondDif);
-                    double ageRateM = ageRateS * 60;
-                    double ageRateH = ageRateM * 60;
-
-                 //   FileManager.Log($"Aging Rate: {ageRateH} %/hr", 0);
-
-                    return ageRateH;
-                }
                 return 0;
             }
-            catch
-            {
-                return 1;
-            }
-        }
-
-        public static DateTime GetFullGrown(string dino, double agingRate)
-        {
-            DateTime result = DateTime.Now;
-            string LastAge = GetLastColumnData("ID", dino, "BabyAge");
-            string LastTime = GetLastColumnData("ID", dino, "Time");
-            if (agingRate > 0 && LastAge != "")
-            {
-                if (ToDouble(LastAge) < 1) // the dino is under the age of 1 we need its fullgrown time
-                {
-                    // get the current age double and multiply by 100 to get %
-                    double currentAge = ToDouble(LastAge) * 100;
-
-                    // 100% - currentAge and we get how many % left to grow
-                    double AgeLeft = 100 - currentAge;
-
-                    // get the time left in hours by dividing by growth rate/hr
-                    double timeleft = AgeLeft / agingRate;
-
-
-                    DateTime LastTimeD = DateTime.ParseExact(LastTime, "dd/MM/yyyy HH:mm:ss", null);
-
-                    // convert to datetime
-                    DateTime fullGrown = LastTimeD + TimeSpan.FromHours(timeleft);
-
-
-                    result = fullGrown;
-
-                    //  FileManager.Log($"{dino} => fullGrown = {fullGrown}", 0);
-                }
-            }
-
-
-            return result;
         }
 
         public static void EditBreedStats(string id, string level, string hp, string st, string ox, string fo, string we, string da, string notes)
@@ -621,21 +626,21 @@ namespace ASA_Dino_Manager
                 string[] females = DataManager.GetDistinctFilteredColumnData("Class", dinoTag, "Sex", "Female", "ID");
                 foreach (string dino in females)
                 {
-                    string status = GetStatus(dino);
+                    string group = GetGroup(dino);
                     if (toggle == 0) { count++; }
-                    else if (toggle == 1) { if (status != "Exclude" && status != "Archived") { count++; } }
-                    else if (toggle == 2) { if (status != "" && status != "Archived") { count++; } }
-                    else if (toggle == 3) { if (status != "Exclude" && status != "") { count++; } }
+                    else if (toggle == 1) { if (group != "Exclude" && group != "Archived") { count++; } }
+                    else if (toggle == 2) { if (group != "" && group != "Archived") { count++; } }
+                    else if (toggle == 3) { if (group != "Exclude" && group != "") { count++; } }
                 }
                 // Retrieve male data
                 string[] males = DataManager.GetDistinctFilteredColumnData("Class", dinoTag, "Sex", "Male", "ID");
                 foreach (string dino in males)
                 {
-                    string status = GetStatus(dino);
+                    string group = GetGroup(dino);
                     if (toggle == 0) { count++; }
-                    else if (toggle == 1) { if (status != "Exclude" && status != "Archived") { count++; } }
-                    else if (toggle == 2) { if (status != "" && status != "Archived") { count++; } }
-                    else if (toggle == 3) { if (status != "Exclude" && status != "") { count++; } }
+                    else if (toggle == 1) { if (group != "Exclude" && group != "Archived") { count++; } }
+                    else if (toggle == 2) { if (group != "" && group != "Archived") { count++; } }
+                    else if (toggle == 3) { if (group != "Exclude" && group != "") { count++; } }
                 }
             }
             catch { }
@@ -655,7 +660,7 @@ namespace ASA_Dino_Manager
             return "";
         }
 
-        public static string GetStatus(string id)
+        public static string GetGroup(string id)
         {
             foreach (DataRow row in DataManager.StatTable.Rows)
             {
@@ -679,7 +684,7 @@ namespace ASA_Dino_Manager
             return "";
         }
 
-        public static void SetStatus(string id, string status)
+        public static void SetGroup(string id, string status)
         {
             if (id != "")
             {
@@ -689,7 +694,7 @@ namespace ASA_Dino_Manager
                     if (id == row["ID"].ToString()) // did we find our dino in dinoData file
                     {
                         StatTable.Rows[rowid].SetField("Status", status);
-                        FileManager.Log($"Set status for id: {id} to: {status}", 0);
+                        FileManager.Log($"Set group for id: {id} to: {status}", 0);
                         found = true; break;
                     }
                     rowid++;
@@ -755,7 +760,7 @@ namespace ASA_Dino_Manager
             int rowID = 0;
             foreach (var dino in dinos)
             {
-                string status = GetStatus(dino);
+                string status = GetGroup(dino);
 
 
                 //MUTATION DETECTION SYSTEM HERE
@@ -934,7 +939,7 @@ namespace ASA_Dino_Manager
             // now check the status of each id and add them to ArchiveTable if status = Archived
             foreach (string dino in idList)
             {
-                string status = GetStatus(dino);
+                string status = GetGroup(dino);
                 if (status == "Archived")
                 {
                     DataRow dr = ArchiveTable.NewRow();
@@ -973,24 +978,24 @@ namespace ASA_Dino_Manager
             {
 
                 string id = rowM["id"].ToString();
-                string status = GetStatus(id);
+                string group = GetGroup(id);
 
                 bool include = false;
                 if (toggle == 0)// include dinos only by set toggle
                 {
-                    if (status != "Archived") { include = true; }
+                    if (group != "Archived") { include = true; }
                 }
                 else if (toggle == 1)
                 {
-                    if (status != "Archived" && status != "Exclude") { include = true; }
+                    if (group != "Archived" && group != "Exclude") { include = true; }
                 }
                 else if (toggle == 2)
                 {
-                    if (status != "Archived" && status != "") { include = true; }
+                    if (group != "Archived" && group != "") { include = true; }
                 }
                 else if (toggle == 3)
                 {
-                    if (status != "" && status != "Exclude") { include = true; }
+                    if (group != "" && group != "Exclude") { include = true; }
                 }
 
 
@@ -1021,24 +1026,24 @@ namespace ASA_Dino_Manager
             {
 
                 string id = rowM["id"].ToString();
-                string status = GetStatus(id);
+                string group = GetGroup(id);
 
                 bool include = false;
                 if (toggle == 0)// include dinos only by set toggle
                 {
-                    if (status != "Archived") { include = true; }
+                    if (group != "Archived") { include = true; }
                 }
                 else if (toggle == 1)
                 {
-                    if (status != "Archived" && status != "Exclude") { include = true; }
+                    if (group != "Archived" && group != "Exclude") { include = true; }
                 }
                 else if (toggle == 2)
                 {
-                    if (status != "Archived" && status != "") { include = true; }
+                    if (group != "Archived" && group != "") { include = true; }
                 }
                 else if (toggle == 3)
                 {
-                    if (status != "" && status != "Exclude") { include = true; }
+                    if (group != "" && group != "Exclude") { include = true; }
                 }
 
 
@@ -1078,24 +1083,24 @@ namespace ASA_Dino_Manager
                 string compare = rowC["ID"].ToString();
                 string compareStatus = rowC["Status"].ToString();
 
-                string statusC = GetStatus(compare);
+                string groupC = GetGroup(compare);
 
                 bool includeC = false;
                 if (toggle == 0)// include dinos only by set toggle
                 {
-                    if (statusC != "Archived") { includeC = true; }
+                    if (groupC != "Archived") { includeC = true; }
                 }
                 else if (toggle == 1)
                 {
-                    if (statusC != "Archived" && statusC != "Exclude") { includeC = true; }
+                    if (groupC != "Archived" && groupC != "Exclude") { includeC = true; }
                 }
                 else if (toggle == 2)
                 {
-                    if (statusC != "Archived" && statusC != "") { includeC = true; }
+                    if (groupC != "Archived" && groupC != "") { includeC = true; }
                 }
                 else if (toggle == 3)
                 {
-                    if (statusC != "" && statusC != "Exclude") { includeC = true; }
+                    if (groupC != "" && groupC != "Exclude") { includeC = true; }
                 }
 
                 if (includeC)
@@ -1126,24 +1131,24 @@ namespace ASA_Dino_Manager
                         string with = rowW["ID"].ToString();
                         string withStatus = rowW["Status"].ToString();
 
-                        string statusW = GetStatus(with);
+                        string groupW = GetGroup(with);
 
                         bool includeW = false;
                         if (toggle == 0)// include dinos only by set toggle
                         {
-                            if (statusW != "Archived") { includeW = true; }
+                            if (groupW != "Archived") { includeW = true; }
                         }
                         else if (toggle == 1)
                         {
-                            if (statusW != "Archived" && statusW != "Exclude") { includeW = true; }
+                            if (groupW != "Archived" && groupW != "Exclude") { includeW = true; }
                         }
                         else if (toggle == 2)
                         {
-                            if (statusW != "Archived" && statusW != "") { includeW = true; }
+                            if (groupW != "Archived" && groupW != "") { includeW = true; }
                         }
                         else if (toggle == 3)
                         {
-                            if (statusW != "" && statusW != "Exclude") { includeW = true; }
+                            if (groupW != "" && groupW != "Exclude") { includeW = true; }
                         }
 
                         if (compare != with && includeW) // not with eachother
@@ -1214,24 +1219,24 @@ namespace ASA_Dino_Manager
                 string compare = rowC["ID"].ToString();
                 string compareStatus = rowC["Status"].ToString();
 
-                string statusC = GetStatus(compare);
+                string groupC = GetGroup(compare);
 
                 bool includeC = false;
                 if (toggle == 0)// include dinos only by set toggle
                 {
-                    if (statusC != "Archived") { includeC = true; }
+                    if (groupC != "Archived") { includeC = true; }
                 }
                 else if (toggle == 1)
                 {
-                    if (statusC != "Archived" && statusC != "Exclude") { includeC = true; }
+                    if (groupC != "Archived" && groupC != "Exclude") { includeC = true; }
                 }
                 else if (toggle == 2)
                 {
-                    if (statusC != "Archived" && statusC != "") { includeC = true; }
+                    if (groupC != "Archived" && groupC != "") { includeC = true; }
                 }
                 else if (toggle == 3)
                 {
-                    if (statusC != "" && statusC != "Exclude") { includeC = true; }
+                    if (groupC != "" && groupC != "Exclude") { includeC = true; }
                 }
 
 
@@ -1666,7 +1671,7 @@ namespace ASA_Dino_Manager
             {
                 //Console.WriteLine($"Deleted {deletedCount} rows for ID: {id}");
 
-                DataManager.SetStatus(id, "");
+                DataManager.SetGroup(id, "");
                 // maybe delete the file too to prevent reimport
 
                 // delete associated ini file to prevent reimport
@@ -1687,8 +1692,8 @@ namespace ASA_Dino_Manager
 
             foreach (string id in idList)
             {
-                string status = GetStatus(id);
-                if (status == "Archived")
+                string group = GetGroup(id);
+                if (group == "Archived")
                 {
                     DeleteRowsByID(id);
                 }

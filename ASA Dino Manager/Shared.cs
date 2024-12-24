@@ -20,6 +20,14 @@
         public static int DefaultToggle = 1;
         public static bool DefaultStat = false;
 
+        // symbols
+        public static string sortUp = "▲";
+        public static string sortDown = "▼";
+
+        public static string tameSym = "🧬";
+        public static string breedSym = "🐣";
+        public static string grownSym = "🦖";
+        public static string errorSym = "💩";
 
 
         ////////////////////    Shared locks    ////////////////////
@@ -73,6 +81,13 @@
         public static Color bestColor = Color.FromArgb("#008000"); // Green
         public static Color goldColor = Color.FromArgb("#FFFF00"); // Yellow
         public static Color mutaColor = Color.FromArgb("#9370DB"); // MediumPurple
+
+        // add theese to config
+        public static Color tameColor = Color.FromArgb("#9370DB"); // MediumPurple
+        public static Color breedColor = Color.FromArgb("#FFFFE0"); // LightYellow
+        public static Color grownColor = Color.FromArgb("#90EE90"); // LightGreen
+        // 3 values
+
 
         // Button colors
         public static Color DefaultBColor = Color.FromArgb("#ADD8E6"); // LightBlue

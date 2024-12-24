@@ -443,11 +443,11 @@ public partial class ArchivePage : ContentPage
         if (selectedID != "")
         {
             // Handle the click event
-            string status = DataManager.GetStatus(selectedID);
+            string status = DataManager.GetGroup(selectedID);
             if (status == "Archived") { status = ""; FileManager.Log($"Restored ID: {selectedID}", 0); }
             else if (status == "") { status = "Archived"; FileManager.Log($"Archived ID: {selectedID}", 0); }
             else if (status == "Exclude") { status = "Archived"; FileManager.Log($"Archived ID: {selectedID}", 0); }
-            DataManager.SetStatus(selectedID, status);
+            DataManager.SetGroup(selectedID, status);
 
             // recompile the archive after archiving or unarchiving
             DataManager.CompileDinoArchive(sortA);

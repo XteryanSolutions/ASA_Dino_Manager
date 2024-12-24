@@ -24,8 +24,6 @@ public partial class DinoPage : ContentPage
     public static string sortM = Shared.DefaultSortM;
     public static string sortF = Shared.DefaultSortF;
 
-    private string upChar = "▲";
-    private string downChar = "▼";
 
     private string levelText = "";
     private string hpText = "";
@@ -312,15 +310,15 @@ public partial class DinoPage : ContentPage
         var topButton1 = new Button { Text = btn1Text, BackgroundColor = bColor1 };
 
 
-        string status = DataManager.GetStatus(selectedID);
+        string group = DataManager.GetGroup(selectedID);
 
 
         string btn2Text = "Exclude"; var bColor2 = Shared.SecondaryColor;
         string btn3Text = "Archive"; var bColor3 = Shared.TrinaryColor;
 
 
-        if (status == "Exclude") { btn2Text = "Include"; bColor2 = Shared.PrimaryColor; }
-        if (status == "Archived") { btn3Text = "Restore"; bColor3 = Shared.PrimaryColor; }
+        if (group == "Exclude") { btn2Text = "Include"; bColor2 = Shared.PrimaryColor; }
+        if (group == "Archived") { btn3Text = "Restore"; bColor3 = Shared.PrimaryColor; }
 
 
         if (isDouble)
@@ -772,77 +770,90 @@ public partial class DinoPage : ContentPage
             string notes = DataManager.GetNotes(currentID);
 
 
-
-
-            string ageText = ""; bool aging = false;
+            string ageText = ""; bool validAgeRate = false;
             Color growColor = Shared.PrimaryColor;
 
-            // get aging stuff for dino
-            double agingRate = DataManager.GetGrowthRateNew(currentID);
 
-            double pLeft = 1 - DataManager.ToDouble(DataManager.GetLastColumnData("ID", currentID, "BabyAge"));
+            //  get aging stuff for dino -> agingRate, fullGrownDate, growUpTime, isBaby, beenBaby,
+            List<Tuple<double, string, double, bool, bool>> dinoAgingData = DataManager.GetDinoAgingData(currentID);
 
-            pLeft = pLeft * 100;
-
-            if (true)
+            if (dinoAgingData.Count == 1)
             {
-                DateTime fullGrownDate = DataManager.GetFullGrown(currentID, agingRate);
-
-                double hoursLeft = (fullGrownDate - DateTime.Now).TotalHours;
-
-                double totalTime = Math.Round((100 / agingRate) / 24, 2);
-
-                double secondDif = (DateTime.Now - fullGrownDate).TotalSeconds;
-
-                if (agingRate > 0)
+                foreach (var data in dinoAgingData)
                 {
-                    growColor = Shared.SecondaryColor;
+                    double ageRate = data.Item1;
+                    string time = data.Item2;
+                    double growthRate = data.Item3;
+                    bool isBaby = data.Item4;
+                    bool beenBaby = data.Item5;
 
-                    int totalMinutes = (int)(hoursLeft * 60);
-                    int days = totalMinutes / (24 * 60);
-                    int hours = (totalMinutes % (24 * 60)) / 60;
-                    int minutes = totalMinutes % 60;
-                    
+                  //  DateTime firstTime = DateTime.ParseExact(GetFirstColumnData("ID", id, "Time"), "dd/MM/yyyy HH:mm:ss", null);
 
-                    pLeft = Math.Round(pLeft, 2);
-
-                    if (totalMinutes == 0 || pLeft == 0)
+                    if (!beenBaby) // its a tame just add info on when it was tamed
                     {
-                        growColor = Shared.PrimaryColor;
-                        ageText = $"GrowthRate: {Math.Round(agingRate, 2)}%/hr TotalTime: {totalTime} days";
+                        ageText = $"Tamed: {time}";
+                        validAgeRate = true;
                     }
                     else
                     {
-                        if (days < 1)
+                        if (isBaby)
                         {
-                            if (hours < 1)
+                            if (ageRate > 0)
                             {
-                                ageText = $"FullGrown: {fullGrownDate} in {minutes}m @ {Math.Round(agingRate, 2)}%/hr {pLeft}% to go. TotalTime: {totalTime} days";
-
-                            }
-                            else
-                            {
-                                ageText = $"FullGrown: {fullGrownDate} in {hours}h {minutes}m @ {Math.Round(agingRate, 2)}%/hr {pLeft}% to go. TotalTime: {totalTime} days";
+                                ageText = $"Estimated: {time}";
+                                validAgeRate = true;
                             }
                         }
                         else
                         {
-                            ageText = $"FullGrown: {fullGrownDate} in {days}d {hours}h {minutes}m @ {Math.Round(agingRate, 2)}%/hr {pLeft}% to go. TotalTime: {totalTime} days";
+                            if (time != "N/A")
+                            {
+                                ageText = $"FullGrown: {time}";
+                                validAgeRate = true;
+                            }
                         }
                     }
+                    //   ageText = $"FullGrown: {fullGrownDate} in {days}d {hours}h {minutes}m @ {Math.Round(agingRate, 2)}%/hr {pLeft}% to go. TotalTime: {totalTime} days";
 
-                    //  ageText = $"FullGrown: {fullGrownDate} in {Math.Round(hoursLeft, 1)} hr @ {Math.Round(agingRate, 2)}%/hr TotalTime: {totalTime} days";
-                    aging = true;
-                }
-                else
-                {
-                  //  growColor = Shared.SecondaryColor;
-                  //  ageText = $"FullGrown: {fullGrownDate} @ {Math.Round(agingRate, 2)}%/hr TotalTime: {totalTime} days";
-
-                  //  aging = true;
+                    //  Console.WriteLine($"Age: {ageRate}, Time: {time}, Growth Rate: {growthRate}, isBaby: {isBaby}, beenBaby: {beenBaby}");
                 }
             }
-                
+           
+
+            /*
+            DateTime fullGrownDate = DataManager.GetFullGrown(currentID, agingRate);
+
+            double hoursLeft = (fullGrownDate - DateTime.Now).TotalHours;
+
+            double totalTime = Math.Round((100 / agingRate) / 24, 2);
+
+            double secondDif = (DateTime.Now - fullGrownDate).TotalSeconds;
+
+            growColor = Shared.SecondaryColor;
+
+            int totalMinutes = (int)(hoursLeft * 60);
+            int days = totalMinutes / (24 * 60);
+            int hours = (totalMinutes % (24 * 60)) / 60;
+            int minutes = totalMinutes % 60;
+
+            pLeft = Math.Round(pLeft, 2);
+            growColor = Shared.PrimaryColor;
+
+            if (agingRate > 0)
+            {
+                // lastKnowP + (hoursSince * %/hr) = estimatedPerLeft
+
+                ageText = $"FullGrown: {fullGrownDate} in {days}d {hours}h {minutes}m @ {Math.Round(agingRate, 2)}%/hr {pLeft}% to go. TotalTime: {totalTime} days";
+                if (minutes > 0)
+                {
+                    ageText = $"FullGrown: {fullGrownDate} in {days}d {hours}h {minutes}m @ {Math.Round(agingRate, 2)}%/hr {pLeft}% to go. TotalTime: {totalTime} days";
+                }
+
+                aging = true;
+            }
+
+            */
+
 
 
             var grown = new Label { Text = ageText, Style = (Style)Application.Current.Resources["Headline"], TextColor = growColor, FontSize = Shared.fontHSize, FontAttributes = FontAttributes.Bold, HorizontalOptions = LayoutOptions.Start };
@@ -852,14 +863,13 @@ public partial class DinoPage : ContentPage
             var textBoxN = new Editor { Text = notes, Placeholder = "Notes", WidthRequest = 600, HeightRequest = 200, TextColor = cellColor0, BackgroundColor = Shared.OddMPanelColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start, Keyboard = Keyboard.Create(KeyboardFlags.None) };
 
 
-
             textBoxN.TextChanged += (sender, e) =>
             {
                 editStats = true;
                 notesText = e.NewTextValue;
             };
 
-            if (aging) // only add label if dino is still aging
+            if (validAgeRate) // only add label if dino is still aging
             {
                 AddToGrid(notesGrid, grown, rowid++, 0, "", false, true);
             }
@@ -1008,6 +1018,10 @@ public partial class DinoPage : ContentPage
             newTest = testingSort.Substring(0, testingSort.Length - 5);
         }
 
+        string upChar = Shared.sortUp;
+        string downChar = Shared.sortDown;
+
+
         sortChar = ""; if (newTest == "Name") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header0 = new Label { Text = $"Name{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         sortChar = ""; if (newTest == "Level") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
@@ -1139,19 +1153,21 @@ public partial class DinoPage : ContentPage
             string imprint = row["Imprint"].ToString();
             string imprinter = row["Imprinter"].ToString();
 
+            string group = "";
 
+            group = DataManager.GetGroup(id);
 
             if (ToggleExcluded == 0)
             {
-                status = DataManager.GetStatus(id);
+               
             }
             if (ToggleExcluded == 2)
             {
-                if (status == "Exclude") { status = ""; }
+              //  if (group == "Exclude") { status = ""; }
             }
             if (ToggleExcluded == 3)
             {
-                if (status == "Archived") { status = ""; }
+              //  if (group == "Archived") { status = ""; }
             }
 
             //recolor breeding stats
@@ -1185,25 +1201,8 @@ public partial class DinoPage : ContentPage
             if (ageD < 100 && !name.Contains("Breed #") && status == "") { status = ageD + "% Grown"; }
 
 
-            if (status.Contains("% Grown") && title != "Bottom")
-            {
-                // get aging stuff for dino
-                double agingRate = DataManager.GetGrowthRateNew(id);
-                DateTime fullGrownDate = DataManager.GetFullGrown(id, agingRate);
-
-                status = fullGrownDate.ToString();
-                double secondDif = (DateTime.Now - fullGrownDate).TotalSeconds;
-
-                if (secondDif > 0)
-                {
-                    status = "100% (ReImport)";
-                }
-            }
-          
-
-
-                // override offspring colors based on breed points
-                if (title == "Bottom")
+            // override offspring colors based on breed points
+            if (title == "Bottom")
             {
                 if (name.Contains("Breed #"))
                 {
@@ -1264,6 +1263,56 @@ public partial class DinoPage : ContentPage
                     status = $"{GP} + {AP} = {SP}";
                 }
             }
+            cellColor0 = DefaultColor;
+            if (title != "Bottom" && status != "Garbage")
+            {
+                //  get aging stuff for dino -> agingRate, fullGrownDate, growUpTime, isBaby, beenBaby,
+                List<Tuple<double, string, double, bool, bool>> dinoAgingData = DataManager.GetDinoAgingData(id);
+
+                if (dinoAgingData.Count > 0)
+                {
+                    foreach (var data in dinoAgingData)
+                    {
+                        double ageRate = data.Item1;
+                        string time = data.Item2;
+                        double growthRate = data.Item3;
+                        bool isBaby = data.Item4;
+                        bool beenBaby = data.Item5;
+
+                        if (!beenBaby) // its a tame just add info on when it was tamed
+                        {
+                           // cellColor0 = Shared.tameColor;
+                            status = time;
+                            status = Shared.tameSym + status;
+                        }
+                        else
+                        {
+                            if (isBaby)
+                            {
+                                status = Shared.breedSym + status;
+                                cellColor0 = Shared.breedColor;
+                            }
+                            else
+                            {
+                                //  cellColor0 = Shared.grownColor;
+                                if (status == "" && time != "N/A")
+                                {
+                                    status = time.ToString();
+                                }
+                                status = Shared.grownSym + status;
+                            }
+                        }
+                    }
+                }
+            }
+            else if (title != "Bottom")
+            {
+                if (status == "Garbage")
+                {
+                    status = Shared.errorSym + status;
+                }
+            }
+
 
             // Create a Labels
             var nameL = new Label { Text = name, TextColor = cellColor0 };
@@ -1352,7 +1401,7 @@ public partial class DinoPage : ContentPage
         {
             FileManager.Log($"Unselected {selectedID}", 0);
             selectedID = ""; isSelected = false; this.Title = $"{Shared.setPage.Replace("_", " ")}";
-            canDouble = false;
+            canDouble = false; editStats = false;
         }
     }
 
@@ -1373,7 +1422,7 @@ public partial class DinoPage : ContentPage
             // Handle the click event and pass additional data
             string column = label.Text;
 
-            if (column.Contains(upChar) || column.Contains(downChar))
+            if (column.Contains(Shared.sortUp) || column.Contains(Shared.sortDown))
             {
                 column = column.Substring(0, column.Length - 2);
             }
@@ -1585,10 +1634,10 @@ public partial class DinoPage : ContentPage
     {
         if (selectedID != "")
         {
-            string status = DataManager.GetStatus(selectedID);
+            string status = DataManager.GetGroup(selectedID);
             if (status == "Exclude") { status = ""; }
             else if (status == "") { status = "Exclude"; FileManager.Log($"Excluded ID: {selectedID}", 0); }
-            DataManager.SetStatus(selectedID, status);
+            DataManager.SetGroup(selectedID, status);
 
             ClearSelection();
             CreateContent();
@@ -1600,11 +1649,11 @@ public partial class DinoPage : ContentPage
         if (selectedID != "")
         {
             // Handle the click event
-            string status = DataManager.GetStatus(selectedID);
+            string status = DataManager.GetGroup(selectedID);
             if (status == "Archived") { status = ""; FileManager.Log($"Restored ID: {selectedID}", 0); }
             else if (status == "") { status = "Archived"; FileManager.Log($"Archived ID: {selectedID}", 0); }
             else if (status == "Exclude") { status = "Archived"; FileManager.Log($"Archived ID: {selectedID}", 0); }
-            DataManager.SetStatus(selectedID, status);
+            DataManager.SetGroup(selectedID, status);
 
             // recompile the archive after archiving or unarchiving
             // maybe redundant
@@ -1634,8 +1683,11 @@ public partial class DinoPage : ContentPage
         // selectedID
         // and edit them
 
-        DataManager.EditBreedStats(selectedID, levelText, hpText, staminaText, oxygenText, foodText, weightText, damageText, notesText);
-        FileManager.needSave = true;
+        if (editStats)
+        {
+            DataManager.EditBreedStats(selectedID, levelText, hpText, staminaText, oxygenText, foodText, weightText, damageText, notesText);
+            FileManager.needSave = true;
+        }
 
         // reset toggles etc.
         levelText = ""; hpText = ""; staminaText = ""; oxygenText = "";
