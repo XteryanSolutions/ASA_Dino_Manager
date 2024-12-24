@@ -1273,6 +1273,7 @@ public partial class DinoPage : ContentPage
                 }
             }
             cellColor0 = DefaultColor;
+
             if (title != "Bottom" && status != "Garbage")
             {
                 //  get aging stuff for dino -> agingRate, fullGrownDate, growUpTime, isBaby, beenBaby,
@@ -1308,8 +1309,12 @@ public partial class DinoPage : ContentPage
                                 if (status == "" && time != "N/A")
                                 {
                                     status = time.ToString();
+                                    status = Shared.grownSym + status;
                                 }
-                                status = Shared.grownSym + status;
+                                else
+                                {
+                                    status = Shared.noSym + status;
+                                }
                             }
                         }
                     }
