@@ -69,7 +69,7 @@ public partial class DinoPage : ContentPage
                     {
                         if (!dataValid)
                         {
-                            FileManager.Log("Updating Data", 0);
+                            FileManager.Log("Loading Selected Dino Data", 0);
                             DataManager.GetOneDinoData(selectedID);
 
                             DataManager.SetMaxStats(ToggleExcluded);
@@ -81,7 +81,7 @@ public partial class DinoPage : ContentPage
                     {
                         if (!dataValid)
                         {
-                            FileManager.Log("Updating Data", 0);
+                            FileManager.Log("Loading All Data", 0);
                             // sort data based on column clicked
                             DataManager.GetDinoData(Shared.selectedClass, sortM, sortF);
 
@@ -98,7 +98,7 @@ public partial class DinoPage : ContentPage
                     }
                 }
 
-                
+
                 FileManager.Log("Updating GUI -> " + Shared.setPage, 0);
                 if (!isSelected) { this.Title = $"{Shared.setPage.Replace("_", " ")}"; }
 
@@ -787,6 +787,13 @@ public partial class DinoPage : ContentPage
             Color growColor = Shared.PrimaryColor;
 
 
+            // get some stats for validation
+            string papaMute = DataManager.GetLastColumnData("ID", currentID, "PapaMute");
+            string mamaMute = DataManager.GetLastColumnData("ID", currentID, "MamaMute");
+            string imprint = DataManager.GetLastColumnData("ID", currentID, "Imprint");
+            string imprinter = DataManager.GetLastColumnData("ID", currentID, "Imprinter");
+
+
             //  get aging stuff for dino -> agingRate, fullGrownDate, growUpTime, isBaby, beenBaby,
             List<Tuple<double, string, double, bool, bool, double>> dinoAgingData = DataManager.GetDinoAgingData(currentID);
 
@@ -805,12 +812,23 @@ public partial class DinoPage : ContentPage
 
                     if (!beenBaby) // its a tame just add info on when it was tamed
                     {
-                        ageText = $"Tamed: {Shared.dateSym}{time}";
-                        validAgeRate = true;
+                        // if it has a mama or papa its not a tame we just dont have enough info on dino
+                        // check for any stuff a wild tame shouldnt have like imprint etc..
+                        if (mamaID != "" || papaID != "" || imprinter != "" || DataManager.ToDouble(imprint) > 0 || DataManager.ToDouble(papaMute) > 0 || DataManager.ToDouble(mamaMute) > 0)
+                        {
+                            ageText = $"First Record: {Shared.dateSym}{time}";
+                            validAgeRate = true;
+                        }
+                        else
+                        {
+
+                            ageText = $"Tamed: {Shared.dateSym}{time}";
+                            validAgeRate = true;
+                        }
                     }
-                    else
+                    else // it been a baby at some point
                     {
-                        if (isBaby)
+                        if (isBaby) // its still a baby
                         {
                             if (ageRate > 0)
                             {
@@ -818,9 +836,9 @@ public partial class DinoPage : ContentPage
                                 validAgeRate = true;
                             }
                         }
-                        else
+                        else // it grew up
                         {
-                            if (time != "N/A")
+                            if (time != "N/A") // and we know when
                             {
 
                                 int totalMinutes = (int)(fullTime / 60);
@@ -829,7 +847,19 @@ public partial class DinoPage : ContentPage
                                 int minutes = totalMinutes % 60;
 
 
-                                ageText = $"FullGrown: {Shared.dateSym}{time} {Shared.timeSym}{days}d {hours}h {minutes}m";
+
+                                double totHr = totalMinutes / 60;
+
+                                double ageHr = 100 / totHr;
+
+                                ageText = $"FullGrown: {Shared.dateSym}{time} {Shared.timeSym}{days}d {hours}h {minutes}m {Shared.speedSym}{Math.Round(ageHr, 2)}%/hr";
+
+                                validAgeRate = true;
+                            }
+                            else
+                            {
+                                string ut = DataManager.GetFirstColumnData("ID", currentID, "Time");
+                                ageText = $"First Record: {Shared.dateSym}{ut}";
 
                                 validAgeRate = true;
                             }
@@ -1265,8 +1295,16 @@ public partial class DinoPage : ContentPage
                         if (!beenBaby) // its a tame just add info on when it was tamed
                         {
                             // cellColor0 = Shared.tameColor;
-                            status = time;
-                            status = Shared.tameSym + status;
+                            // if it has a mama or papa its not a tame we just dont have enough info on dino
+                            // check for any stuff a wild tame shouldnt have like imprint etc..
+                            if (mama != "" || papa != "" || imprinter != "" || DataManager.ToDouble(gen) > 0 || DataManager.ToDouble(imprint) > 0 || DataManager.ToDouble(mamaM) > 0 || DataManager.ToDouble(papaM) > 0)
+                            {
+                                status = Shared.noSym + time;
+                            }
+                            else
+                            {
+                                status = Shared.tameSym + time;
+                            }
                         }
                         else
                         {
@@ -1285,7 +1323,24 @@ public partial class DinoPage : ContentPage
                                 }
                                 else
                                 {
-                                    status = Shared.noSym + status;
+
+                                    if (status.Contains("<") || status.Contains("#"))
+                                    {
+                                        status = Shared.worseSym + status;
+                                    }
+                                    else
+                                    {
+                                       
+                                        if (status == "")
+                                        {
+                                            string ut = DataManager.GetFirstColumnData("ID", id, "Time");
+                                            status = Shared.noSym + ut;
+                                        }
+                                        else
+                                        {
+                                            status = Shared.noSym + status;
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -1604,6 +1659,7 @@ public partial class DinoPage : ContentPage
         {
             ToggleExcluded = 0;
         }
+        dataValid = false; // invalidate
         FileManager.Log($"Toggle Exclude {ToggleExcluded}", 0);
 
         ClearSelection();

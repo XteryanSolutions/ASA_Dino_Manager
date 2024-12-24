@@ -28,8 +28,10 @@
         public static string breedSym = "🐣";
         public static string grownSym = "🦖";
         public static string errorSym = "💩";
+        public static string worseSym = "📉";
         public static string noteSym = "📋";
         public static string timeSym = "⌛";
+        public static string speedSym = "📶";
         public static string dateSym = "📆";
         public static string starSym = "✨";
         public static string noSym = "❓";

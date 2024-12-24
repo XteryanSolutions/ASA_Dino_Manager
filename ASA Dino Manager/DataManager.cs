@@ -502,8 +502,6 @@ namespace ASA_Dino_Manager
                             DateTime startTime = DateTime.ParseExact(firstTime, "dd/MM/yyyy HH:mm:ss", null);
 
                             fullTime = (endTime - startTime).TotalSeconds;
-
-                            // output = firstTime
                         }
                     }
                 }
