@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Linq;
 
 
 namespace ASA_Dino_Manager;
@@ -791,7 +792,7 @@ public partial class DinoPage : ContentPage
 
 
             //  get aging stuff for dino -> agingRate, fullGrownDate, growUpTime, isBaby, beenBaby,
-            List<Tuple<double, string, double, bool, bool, double>> dinoAgingData = DataManager.GetDinoAgingData(currentID);
+            List<Tuple<double, string, double, bool, bool, double, double>> dinoAgingData = DataManager.GetDinoAgingData(currentID);
 
             if (dinoAgingData.Count == 1)
             {
@@ -804,7 +805,7 @@ public partial class DinoPage : ContentPage
                     bool beenBaby = data.Item5;
                     double fullTime = data.Item6;
 
-                   
+
 
                     //  DateTime firstTime = DateTime.ParseExact(GetFirstColumnData("ID", id, "Time"), "dd/MM/yyyy HH:mm:ss", null);
 
@@ -830,9 +831,13 @@ public partial class DinoPage : ContentPage
                         {
                             if (ageRate > 0)
                             {
+                                int totalMinutes = (int)(fullTime / 60);
+                                int days = totalMinutes / (24 * 60);
+                                int hours = (totalMinutes % (24 * 60)) / 60;
+                                int minutes = totalMinutes % 60;
 
-                                DateTime outTime = DateTime.ParseExact(time, "dd/MM/yyyy HH:mm:ss", null);
-                                ageText = $"Estimated: {Shared.dateSym}{outTime}";
+                                double ageRateHr = Math.Round(ageRate * 3600, 2);
+                                ageText = $"Estimated: {Shared.dateSym}{time} {Shared.timeSym}{days}d {hours}h {minutes}m {Shared.speedSym}{ageRateHr}%/Hr";
                                 validAgeRate = true;
                             }
                         }
@@ -845,7 +850,6 @@ public partial class DinoPage : ContentPage
                                 int days = totalMinutes / (24 * 60);
                                 int hours = (totalMinutes % (24 * 60)) / 60;
                                 int minutes = totalMinutes % 60;
-
 
 
                                 double totHr = totalMinutes / 60;
@@ -1276,10 +1280,17 @@ public partial class DinoPage : ContentPage
             }
             cellColor0 = DefaultColor;
 
-            if (title != "Bottom" && status != "Garbage")
+            bool isGarbage = false;
+            if (status == "Garbage")
+            {
+                isGarbage = true;
+                status = "";
+            }
+
+            if (title != "Bottom")
             {
                 //  get aging stuff for dino -> agingRate, fullGrownDate, growUpTime, isBaby, beenBaby,
-                List<Tuple<double, string, double, bool, bool, double>> dinoAgingData = DataManager.GetDinoAgingData(id);
+                List<Tuple<double, string, double, bool, bool, double, double>> dinoAgingData = DataManager.GetDinoAgingData(id);
 
                 if (dinoAgingData.Count > 0)
                 {
@@ -1291,6 +1302,7 @@ public partial class DinoPage : ContentPage
                         bool isBaby = data.Item4;
                         bool beenBaby = data.Item5;
                         double fullTime = data.Item6;
+                        double currentAge = Math.Round(data.Item7, 1);
 
                         if (!beenBaby) // its a tame just add info on when it was tamed
                         {
@@ -1319,33 +1331,35 @@ public partial class DinoPage : ContentPage
                                     }
                                     else
                                     {
-                                        status = Shared.breedSym + time;
+                                        int totalMinutes = (int)(fullTime / 60);
+                                        int days = totalMinutes / (24 * 60);
+                                        int hours = (totalMinutes % (24 * 60)) / 60;
+                                        int minutes = totalMinutes % 60;
+
+                                        double ageRateHr = Math.Round(ageRate * 3600, 2);
+
+                                        status = Shared.breedSym + $"{currentAge}%{Shared.timeSym}{days}d {hours}h {minutes}m";
                                     }
                                 }
                                 else
                                 {
                                     status = Shared.breedSym + status;
                                 }
-                               
-                                //cellColor0 = Shared.breedColor;
                             }
                             else
                             {
-                                //  cellColor0 = Shared.grownColor;
                                 if (status == "" && time != "N/A")
                                 {
                                     status = Shared.grownSym + time;
                                 }
                                 else
                                 {
-
                                     if (status.Contains("<") || status.Contains("#"))
                                     {
                                         status = Shared.worseSym + status;
                                     }
                                     else
                                     {
-                                       
                                         if (status == "")
                                         {
                                             status = Shared.missingSym + "Incomplete Data";
@@ -1361,12 +1375,9 @@ public partial class DinoPage : ContentPage
                     }
                 }
             }
-            else if (title != "Bottom")
+            if (isGarbage && !status.Contains("Incomplete"))
             {
-                if (status == "Garbage")
-                {
-                    status = Shared.errorSym + status;
-                }
+                status = Shared.garbageSym + status;
             }
 
             string notes = DataManager.GetNotes(id);
