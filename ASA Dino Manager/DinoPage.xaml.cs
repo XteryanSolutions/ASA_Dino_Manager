@@ -1,8 +1,4 @@
 ﻿using System.Data;
-using System.Data.Common;
-using System.Text.RegularExpressions;
-using System.Xml.Linq;
-using static Microsoft.Maui.Controls.Internals.Profile;
 
 
 namespace ASA_Dino_Manager;
@@ -808,6 +804,8 @@ public partial class DinoPage : ContentPage
                     bool beenBaby = data.Item5;
                     double fullTime = data.Item6;
 
+                   
+
                     //  DateTime firstTime = DateTime.ParseExact(GetFirstColumnData("ID", id, "Time"), "dd/MM/yyyy HH:mm:ss", null);
 
                     if (!beenBaby) // its a tame just add info on when it was tamed
@@ -832,7 +830,9 @@ public partial class DinoPage : ContentPage
                         {
                             if (ageRate > 0)
                             {
-                                ageText = $"Estimated: {Shared.dateSym}{time}";
+
+                                DateTime outTime = DateTime.ParseExact(time, "dd/MM/yyyy HH:mm:ss", null);
+                                ageText = $"Estimated: {Shared.dateSym}{outTime}";
                                 validAgeRate = true;
                             }
                         }
@@ -1299,7 +1299,7 @@ public partial class DinoPage : ContentPage
                             // check for any stuff a wild tame shouldnt have like imprint etc..
                             if (mama != "" || papa != "" || imprinter != "" || DataManager.ToDouble(gen) > 0 || DataManager.ToDouble(imprint) > 0 || DataManager.ToDouble(mamaM) > 0 || DataManager.ToDouble(papaM) > 0)
                             {
-                                status = Shared.noSym + time;
+                                status = Shared.missingSym + "Incomplete Data";
                             }
                             else
                             {
@@ -1310,7 +1310,23 @@ public partial class DinoPage : ContentPage
                         {
                             if (isBaby)
                             {
-                                status = Shared.breedSym + status;
+                                if (time != "N/A")
+                                {
+                                    DateTime endTime = DateTime.ParseExact(time, "dd/MM/yyyy HH:mm:ss", null);
+                                    if (endTime < DateTime.Now)
+                                    {
+                                        status = Shared.noBabySym + "ReImport";
+                                    }
+                                    else
+                                    {
+                                        status = Shared.breedSym + time;
+                                    }
+                                }
+                                else
+                                {
+                                    status = Shared.breedSym + status;
+                                }
+                               
                                 //cellColor0 = Shared.breedColor;
                             }
                             else
@@ -1318,8 +1334,7 @@ public partial class DinoPage : ContentPage
                                 //  cellColor0 = Shared.grownColor;
                                 if (status == "" && time != "N/A")
                                 {
-                                    status = time.ToString();
-                                    status = Shared.grownSym + status;
+                                    status = Shared.grownSym + time;
                                 }
                                 else
                                 {
@@ -1333,8 +1348,7 @@ public partial class DinoPage : ContentPage
                                        
                                         if (status == "")
                                         {
-                                            string ut = DataManager.GetFirstColumnData("ID", id, "Time");
-                                            status = Shared.noSym + ut;
+                                            status = Shared.missingSym + "Incomplete Data";
                                         }
                                         else
                                         {

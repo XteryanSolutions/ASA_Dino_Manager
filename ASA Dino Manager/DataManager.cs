@@ -1,13 +1,5 @@
 ﻿using System.Data;
-using System.Data.Common;
 using System.Globalization;
-using System.Runtime.Intrinsics.X86;
-using System.Xml.Linq;
-using Windows.ApplicationModel.Store;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-//using System.Windows.Forms;
-//using Android.Media;
-//using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace ASA_Dino_Manager
 {
@@ -489,9 +481,27 @@ namespace ASA_Dino_Manager
                         {
                             // 100% - currentAge and we get how many % left to grow
                             double AgeLeft = 1 - lastAge;
+
                             double timeleft = AgeLeft / agingRate;
 
-                            fullGrown = (lastTime + TimeSpan.FromSeconds(timeleft)).ToString();
+                            if (timeleft < 0)
+                            {
+                                timeleft = -timeleft;
+                            }
+
+                            // Convert seconds to TimeSpan
+                            TimeSpan timeL = TimeSpan.FromSeconds(timeleft);
+
+                            // Parse lastTime string to DateTime using the exact known format
+                            DateTime lastTimeD = DateTime.ParseExact(lastTime, "dd/MM/yyyy HH:mm:ss", null);
+
+                            // Add the TimeSpan to DateTime
+                            DateTime fullGrownDate = lastTimeD.Add(timeL);
+                            DateTime fullGrownDate2 = lastTimeD.AddSeconds(timeleft);
+
+                            // Convert the result back to a string in the same format
+                            fullGrown = fullGrownDate2.ToString("dd/MM/yyyy HH:mm:ss");
+
                         }
                         else
                         {

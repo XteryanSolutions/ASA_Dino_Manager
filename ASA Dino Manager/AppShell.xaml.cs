@@ -187,6 +187,7 @@
                 Items.Add(shellContent);
             }
             disableNavSet = false; // FileManager.Log("Enabled setPage", 0);
+            DinoPage.dataValid = false; // invalidate
             FileManager.Log("Updated tagList", 0);
         }
 

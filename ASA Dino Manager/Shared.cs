@@ -26,8 +26,10 @@
 
         public static string tameSym = "🧬";
         public static string breedSym = "🐣";
+        public static string noBabySym = "🐤";
         public static string grownSym = "🦖";
         public static string errorSym = "💩";
+        public static string missingSym = "❗";
         public static string worseSym = "📉";
         public static string noteSym = "📋";
         public static string timeSym = "⌛";
