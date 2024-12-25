@@ -62,10 +62,12 @@ public partial class DinoPage : ContentPage
             {
                 if (!string.IsNullOrEmpty(Shared.selectedClass))
                 {
-                    if (isSelected)
+                    bool deactivate = false;
+                    if (deactivate)
                     {
                         if (!dataValid)
                         {
+
                             FileManager.Log("Loading Selected Dino Data", 0);
                             DataManager.GetOneDinoData(selectedID);
 
@@ -1123,7 +1125,7 @@ public partial class DinoPage : ContentPage
         AddToGrid(grid, header11, 0, startID++, title);
 
         // Add last column headers if conditions are met
-        if (title != "Bottom" || isSelected)
+        if (title != "Bottom")
         {
             AddToGrid(grid, header12, 0, startID++, title);
             AddToGrid(grid, header13, 0, startID++, title);
@@ -1575,7 +1577,9 @@ public partial class DinoPage : ContentPage
         {
             if (selectedID != id) // select a new dino
             {
-                selectedID = id; isSelected = true; dataValid = false; // invalidate
+                selectedID = id; isSelected = true;
+
+                // dataValid = false; // invalidate
 
                 string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
                 this.Title = $"{name} - {id}"; // set title to dino name
@@ -1620,7 +1624,9 @@ public partial class DinoPage : ContentPage
         {
             if (selectedID != id) // select a new dino
             {
-                selectedID = id; isSelected = true; dataValid = false; // invalidate
+                selectedID = id; isSelected = true;
+
+                // dataValid = false; // invalidate
 
                 string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
                 this.Title = $"{name} - {id}"; // set title to dino name
