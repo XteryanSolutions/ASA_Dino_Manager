@@ -19,6 +19,8 @@
         // Navigation
         public static int DefaultToggle = 1;
         public static bool DefaultStat = false;
+        public static int doubleClick = 500;
+
 
         // symbols
         public static string sortUp = "▲";

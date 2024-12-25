@@ -124,6 +124,11 @@
                 DinoPage.CurrentStats = Shared.DefaultStat; DinoPage.ToggleExcluded = Shared.DefaultToggle;
                 DinoPage.isSelected = false; DinoPage.isDouble = false; DinoPage.canDouble = false; DinoPage.selectedID = "";
                 DinoPage.sortM = Shared.DefaultSortM; DinoPage.sortF = Shared.DefaultSortF; DinoPage.dataValid = false; // invalidate
+
+                BabyPage.CurrentStats = Shared.DefaultStat; BabyPage.ToggleExcluded = Shared.DefaultToggle;
+                BabyPage.isSelected = false; BabyPage.isDouble = false; BabyPage.canDouble = false; BabyPage.selectedID = "";
+                BabyPage.sortM = Shared.DefaultSortM; BabyPage.sortF = Shared.DefaultSortF; BabyPage.dataValid = false; // invalidate
+
                 ArchivePage.isSelected = false; ArchivePage.selectedID = ""; ArchivePage.sortA = Shared.DefaultSortA;
             }
             else
@@ -148,26 +153,28 @@
             var shellContent1 = new ShellContent
             {
                 Title = "Dino Manager",
-                ContentTemplate = new DataTemplate(typeof(MainPage)), // Replace with the appropriate page
+                ContentTemplate = new DataTemplate(typeof(MainPage)),
                 Route = $"ASA"
             };
-            // Add the ShellContent to the Shell
-            Items.Add(shellContent1);
-
-
 
             var shellContent2 = new ShellContent
             {
                 Title = "Dino Archive",
-                ContentTemplate = new DataTemplate(() => new ArchivePage()), // Always a fresh page
+                ContentTemplate = new DataTemplate(() => new ArchivePage()),
                 Route = $"Archive"
             };
 
-
+            var shellContent3 = new ShellContent
+            {
+                Title = "Dino Babies",
+                ContentTemplate = new DataTemplate(() => new BabyPage()),
+                Route = $"Baby"
+            };
 
             // Add the ShellContent to the Shell
+            Items.Add(shellContent1);
             Items.Add(shellContent2);
-
+            Items.Add(shellContent3);
 
             // Loop through the sorted tags and create ShellContent dynamically
             foreach (var tag in sortedTagList)
@@ -179,7 +186,7 @@
                 var shellContent = new ShellContent
                 {
                     Title = tag + " (" + totalC + ")",
-                    ContentTemplate = new DataTemplate(typeof(DinoPage)), // Replace with the appropriate page
+                    ContentTemplate = new DataTemplate(typeof(DinoPage)),
                     Route = $"{tag.Replace(" ", "_")}"
                 };
 
@@ -188,6 +195,7 @@
             }
             disableNavSet = false; // FileManager.Log("Enabled setPage", 0);
             DinoPage.dataValid = false; // invalidate
+            BabyPage.dataValid = false; // invalidate
             FileManager.Log("Updated tagList", 0);
         }
 
@@ -222,6 +230,7 @@
                             if (DataManager.ModC > 0 || DataManager.AddC > 0 || tagList.Length > DataManager.tagSize)
                             {
                                 DinoPage.dataValid = false; // invalidate
+                                BabyPage.dataValid = false; // invalidate
 
                                 // reset counters
                                 DataManager.AddC = 0; DataManager.ModC = 0;

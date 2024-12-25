@@ -62,6 +62,8 @@ public partial class DinoPage : ContentPage
             {
                 if (!string.IsNullOrEmpty(Shared.selectedClass))
                 {
+                    // do something with this at some point
+                    // maybe add it to the double click menu instead
                     bool deactivate = false;
                     if (deactivate)
                     {
@@ -295,7 +297,7 @@ public partial class DinoPage : ContentPage
 
         if (ToggleExcluded == 0)
         {
-            bColor0 = Colors.LightBlue;
+            bColor0 = Shared.DefaultBColor;
         }
         else if (ToggleExcluded == 1)
         {
@@ -1559,7 +1561,7 @@ public partial class DinoPage : ContentPage
 
             FileManager.Log($"Sorted: {sortM} : {sortF}", 0);
 
-
+            dataValid = false; // invalidate
             ClearSelection();
             CreateContent();
         };
@@ -1589,7 +1591,7 @@ public partial class DinoPage : ContentPage
                 // activate double clicking
 
                 canDouble = true;
-                DisableDoubleClick(500);
+                DisableDoubleClick();
             }
             else if (selectedID == id && canDouble) // select same dino within time
             {
@@ -1606,7 +1608,7 @@ public partial class DinoPage : ContentPage
             {
                 // re activate double clicking
                 canDouble = true;
-                DisableDoubleClick(500);
+                DisableDoubleClick();
             }
             CreateContent();
         };
@@ -1636,7 +1638,7 @@ public partial class DinoPage : ContentPage
                 // activate double clicking
 
                 canDouble = true;
-                DisableDoubleClick(500);
+                DisableDoubleClick();
             }
             else if (selectedID == id && canDouble) // select same dino within time
             {
@@ -1653,7 +1655,7 @@ public partial class DinoPage : ContentPage
             {
                 // re activate double clicking
                 canDouble = true;
-                DisableDoubleClick(500);
+                DisableDoubleClick();
             }
             CreateContent();
         };
@@ -1662,9 +1664,9 @@ public partial class DinoPage : ContentPage
         inp.GestureRecognizers.Add(tapGesture);
     }
 
-    private async Task DisableDoubleClick(int delayMilliseconds)
+    private async Task DisableDoubleClick()
     {
-        await Task.Delay(delayMilliseconds);
+        await Task.Delay(Shared.doubleClick);
         canDouble = false;
     }
 

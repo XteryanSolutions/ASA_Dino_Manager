@@ -315,6 +315,75 @@ namespace ASA_Dino_Manager
             return resultSet.ToArray();
         }
 
+        public static string[] GetDistinctFilteredColumnDataFull(string outData, string exclude = "")
+        {
+            // Define exclusions
+            string[] excludes = { "N/A", "#", exclude };
+
+            // Use a HashSet to store distinct values
+            HashSet<string> resultSet = new HashSet<string>();
+
+            // Iterate through the rows of the table
+            foreach (DataRow row in ImportsTable.Rows)
+            {
+                // Retrieve the values from the columns
+                string value1 = row["BabyAge"]?.ToString();
+                string outputValue = row[outData]?.ToString();
+
+                // Apply the filtering conditions
+                if (ToDouble(value1) == 1) // get the fullgrowns
+                {
+                    if (!string.IsNullOrWhiteSpace(outputValue))  // Ensure output is not empty or null
+                    {
+                        // Add the output value to the result set (distinct)
+                        resultSet.Add(outputValue);
+                    }
+                }
+            }
+
+            // Return the distinct values as an array
+            return resultSet.ToArray();
+        }
+
+        public static string[] GetDistinctFilteredColumnDataB(string inColumn2, string inData2, string outData, string exclude = "")
+        {
+            // Define exclusions
+            string[] excludes = { "N/A", "#", exclude };
+
+            // Use a HashSet to store distinct values
+            HashSet<string> resultSet = new HashSet<string>();
+
+
+            // make a list of id's to exclude that has fullgrown
+            string[] grownUps = DataManager.GetDistinctFilteredColumnDataFull("ID");
+
+
+            // Iterate through the rows of the table
+            foreach (DataRow row in ImportsTable.Rows)
+            {
+                // Retrieve the values from the columns
+                string value1 = row["BabyAge"]?.ToString();
+                string value2 = row[inColumn2]?.ToString();
+                string outputValue = row[outData]?.ToString();
+
+                // Apply the filtering conditions
+                if (ToDouble(value1) < 1) // get only the babies
+                {
+                    if (value2 == inData2 &&
+                        !excludes.Contains(value2) &&
+                        !grownUps.Contains(outputValue) && // make sure we exclude grownUps
+                        !string.IsNullOrWhiteSpace(outputValue))  // Ensure output is not empty or null
+                    {
+                        // Add the output value to the result set (distinct)
+                        resultSet.Add(outputValue);
+                    }
+                }
+            }
+
+            // Return the distinct values as an array
+            return resultSet.ToArray();
+        }
+
         public static string[] GetAllDistinctColumnData(string inColumn, string exclude = "")
         {
             // Define exclusions
@@ -528,6 +597,14 @@ namespace ASA_Dino_Manager
 
                             fullTime = (endTime - startTime).TotalSeconds;
                         }
+                    }
+                    else // if we dont have aging rate we can atleast show the last known % and calc from there
+                    {
+                        currentAge = lastAgeP;
+
+                        DateTime lastTimeD = DateTime.ParseExact(lastTime, "dd/MM/yyyy HH:mm:ss", null);
+                        fullGrown = lastTimeD.ToString("dd/MM/yyyy HH:mm:ss");
+
                     }
                 }
 
@@ -792,7 +869,7 @@ namespace ASA_Dino_Manager
             int rowID = 0;
             foreach (var dino in dinos)
             {
-                string status = GetGroup(dino);
+                string group = GetGroup(dino);
 
 
                 //MUTATION DETECTION SYSTEM HERE
@@ -840,31 +917,41 @@ namespace ASA_Dino_Manager
                 string mutes = a + b + c + d + e + f;
 
                 SetMutes(dino, mutes);
+                int toggle = 0;
+                if (Shared.setPage == "Baby")
+                {
+                    toggle = BabyPage.ToggleExcluded;
+                }
+                else
+                {
+                    toggle = DinoPage.ToggleExcluded;
+                }
+
                 bool addIT = false;
-                if (DinoPage.ToggleExcluded == 0)
+                if (toggle == 0)
                 {
-                    if (status != "Archived")
+                    if (group != "Archived")
                     {
                         addIT = true;
                     }
                 }
-                else if (DinoPage.ToggleExcluded == 1)
+                else if (toggle == 1)
                 {
-                    if (status != "Archived" && status != "Exclude")
+                    if (group != "Archived" && group != "Exclude")
                     {
                         addIT = true;
                     }
                 }
-                else if (DinoPage.ToggleExcluded == 2)
+                else if (toggle == 2)
                 {
-                    if (status != "Archived" && status == "Exclude")
+                    if (group != "Archived" && group == "Exclude")
                     {
                         addIT = true;
                     }
                 }
-                else if (DinoPage.ToggleExcluded == 3)
+                else if (toggle == 3)
                 {
-                    if (status == "Archived")
+                    if (group == "Archived")
                     {
                         addIT = true;
                     }
@@ -892,7 +979,7 @@ namespace ASA_Dino_Manager
                     dr["PapaMute"] = ToDouble(BrStats[rowID][12].ToString());
                     dr["Age"] = Math.Round(ToDouble(BrStats[rowID][15].ToString()) * 100);
                     dr["Imprint"] = Math.Round(ToDouble(BrStats[rowID][17].ToString()) * 100);
-                    dr["Status"] = status;
+                    dr["Status"] = group;
 
                     table.Rows.Add(dr);
                 }
@@ -917,6 +1004,61 @@ namespace ASA_Dino_Manager
 
             // Retrieve male data
             string[] males = DataManager.GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Male", "ID");
+
+
+            if (DinoPage.CurrentStats)
+            {
+                // Process females
+                List<string[]> MainStatsF = DataManager.GetLastStats(females);
+                List<string[]> BrStatsF = DataManager.GetLastStats(females);
+                ProcessDinos(females, MainStatsF, BrStatsF, DataManager.FemaleTable);
+
+                // Process males
+                List<string[]> MainStatsM = DataManager.GetLastStats(males);
+                List<string[]> BrStatsM = DataManager.GetLastStats(males);
+                ProcessDinos(males, MainStatsM, BrStatsM, DataManager.MaleTable);
+            }
+            else
+            {
+                // Process females
+                List<string[]> MainStatsF = DataManager.GetFirstStats(females);
+                List<string[]> BrStatsF = DataManager.GetLastStats(females);
+                ProcessDinos(females, MainStatsF, BrStatsF, DataManager.FemaleTable);
+
+                // Process males
+                List<string[]> MainStatsM = DataManager.GetFirstStats(males);
+                List<string[]> BrStatsM = DataManager.GetLastStats(males);
+                ProcessDinos(males, MainStatsM, BrStatsM, DataManager.MaleTable);
+            }
+
+
+
+            // Sort the MaleTable based on the desired column
+            DataView view1 = new DataView(DataManager.MaleTable);
+            view1.Sort = sortiM;
+            DataManager.MaleTable = view1.ToTable();
+
+
+            // Sort the FemaleTable based on the desired column
+            DataView view2 = new DataView(DataManager.FemaleTable);
+            view2.Sort = sortiF;
+            DataManager.FemaleTable = view2.ToTable();
+
+
+            //  FileManager.Log("updated data");
+        }
+
+        public static void GetDinoBabies(string sortiM = "", string sortiF = "")
+        {
+            // Clear the tables before populating them
+            DataManager.MaleTable.Clear();
+            DataManager.FemaleTable.Clear();
+
+            // Retrieve female babies data
+            string[] females = DataManager.GetDistinctFilteredColumnDataB("Sex", "Female", "ID");
+
+            // Retrieve male babies data
+            string[] males = DataManager.GetDistinctFilteredColumnDataB("Sex", "Male", "ID");
 
 
             if (DinoPage.CurrentStats)
