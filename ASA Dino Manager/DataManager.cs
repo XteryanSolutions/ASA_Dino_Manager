@@ -866,7 +866,7 @@ namespace ASA_Dino_Manager
             return "";
         }
 
-        public static void SetGroup(string id, string status)
+        public static void SetGroup(string id, string group)
         {
             if (id != "")
             {
@@ -875,8 +875,8 @@ namespace ASA_Dino_Manager
                 {
                     if (id == row["ID"].ToString()) // did we find our dino in dinoData file
                     {
-                        StatTable.Rows[rowid].SetField("Status", status);
-                        FileManager.Log($"Set group for id: {id} to: {status}", 0);
+                        StatTable.Rows[rowid].SetField("Status", group);
+                        FileManager.Log($"Set group for id: {id} to: {group}", 0);
                         found = true; break;
                     }
                     rowid++;
@@ -885,7 +885,7 @@ namespace ASA_Dino_Manager
                 {
                     DataRow dr = DataManager.StatTable.NewRow();
                     dr["ID"] = id;
-                    dr["Status"] = status;
+                    dr["Status"] = group;
                     DataManager.StatTable.Rows.Add(dr);
                 }
                 // request a save after modifying data
@@ -933,6 +933,7 @@ namespace ASA_Dino_Manager
                 DataRow dr = DataManager.StatTable.NewRow();
                 dr["ID"] = id;
                 dr["Mutes"] = mutes;
+                dr["Status"] = "";
                 DataManager.StatTable.Rows.Add(dr);
             }
         }
@@ -2029,14 +2030,10 @@ namespace ASA_Dino_Manager
             }
             if (AddC > 0)
             {
-                //Interface.timeS = Interface.timeSD;
-                //Interface.NeedUpdate = true;
                 FileManager.Log("Added " + AddC + " dinos", 0);
             }
             if (ModC > 0)
             {
-                //Interface.timeS = Interface.timeSD;
-                //Interface.NeedUpdate = true;
                 FileManager.Log("Updated " + ModC + " dinos", 0);
             }
         }

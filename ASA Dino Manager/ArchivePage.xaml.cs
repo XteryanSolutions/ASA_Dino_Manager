@@ -208,17 +208,17 @@ public partial class ArchivePage : ContentPage
         if (isSelected)
         {
             var topButton3 = new Button { Text = "Restore", BackgroundColor = Shared.PrimaryColor };
-            topButton3.Clicked += OnButton3Clicked;
+            topButton3.Clicked += ArchiveBtnClicked;
             AddToGrid(grid, topButton3, 0, 0);
 
 
             var topButton4 = new Button { Text = "Purge", BackgroundColor = Shared.TrinaryColor };
-            topButton4.Clicked += OnButton4Clicked;
+            topButton4.Clicked += PurgeBtnClicked;
             AddToGrid(grid, topButton4, 5, 0);
         }
 
         var topButton5 = new Button { Text = "Purge All", BackgroundColor = Shared.TrinaryColor };
-        topButton5.Clicked += OnButton5Clicked;
+        topButton5.Clicked += PurgeAllBtnClicked;
         AddToGrid(grid, topButton5, 6, 0);
 
 
@@ -435,7 +435,7 @@ public partial class ArchivePage : ContentPage
         grid.GestureRecognizers.Add(tapGesture);
     }
 
-    private void OnButton3Clicked(object? sender, EventArgs e)
+    private void ArchiveBtnClicked(object? sender, EventArgs e)
     {
         if (selectedID != "")
         {
@@ -454,12 +454,12 @@ public partial class ArchivePage : ContentPage
         }
     }
 
-    private void OnButton4Clicked(object? sender, EventArgs e)
+    private void PurgeBtnClicked(object? sender, EventArgs e)
     {
         PurgeDinoAsync(selectedID); // passing id here already to not loose it to updates
     }
 
-    private void OnButton5Clicked(object? sender, EventArgs e)
+    private void PurgeAllBtnClicked(object? sender, EventArgs e)
     {
         PurgeAllAsync();
     }

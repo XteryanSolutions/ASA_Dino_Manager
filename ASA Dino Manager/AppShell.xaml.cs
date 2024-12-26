@@ -168,7 +168,7 @@
 
             var shellContent3 = new ShellContent
             {
-                Title = "Dino Babies",
+                Title = "Baby Dinos",
                 ContentTemplate = new DataTemplate(() => new BabyPage()),
                 Route = $"Baby dinos"
             };
@@ -224,6 +224,9 @@
                             // Check if we need to reload data
                             if (DataManager.ModC > 0 || DataManager.AddC > 0)
                             {
+                                // reset counters
+                                DataManager.AddC = 0; DataManager.ModC = 0;
+
                                 if (classList.Length != DataManager.classSize)
                                 {
                                     // update menu because we need to see the new class
@@ -232,9 +235,6 @@
 
                                 DinoPage.dataValid = false; // invalidate data
                                 BabyPage.dataValid = false; // invalidate data
-
-                                // reset counters
-                                DataManager.AddC = 0; DataManager.ModC = 0;
 
                                 FileManager.Log("Updated DataBase", 0);
 

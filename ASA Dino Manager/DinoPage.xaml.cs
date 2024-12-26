@@ -338,12 +338,12 @@ public partial class DinoPage : ContentPage
         if (isDouble)
         {
             var topButton5 = new Button { Text = "Save", BackgroundColor = Shared.TrinaryColor };
-            topButton5.Clicked += OnButton5Clicked;
+            topButton5.Clicked += SaveBtnClicked;
             AddToGrid(grid, topButton5, 0, 0);
 
 
             var topButton4 = new Button { Text = "Back", BackgroundColor = Shared.PrimaryColor };
-            topButton4.Clicked += OnButton4Clicked;
+            topButton4.Clicked += BackBtnClicked;
             AddToGrid(grid, topButton4, 1, 0);
         }
         else
@@ -351,8 +351,8 @@ public partial class DinoPage : ContentPage
             AddToGrid(grid, topButton0, 0, 0);
             AddToGrid(grid, topButton1, 1, 0);
 
-            topButton0.Clicked += OnButton0Clicked;
-            topButton1.Clicked += OnButton1Clicked;
+            topButton0.Clicked += ToggleBtnClicked;
+            topButton1.Clicked += StatsBtnClicked;
         }
 
 
@@ -362,13 +362,13 @@ public partial class DinoPage : ContentPage
             if (ToggleExcluded != 3)
             {
                 var topButton2 = new Button { Text = btn2Text, BackgroundColor = bColor2 };
-                topButton2.Clicked += OnButton2Clicked;
+                topButton2.Clicked += ExcludeBtnClicked;
                 AddToGrid(grid, topButton2, 5, 0);
             }
 
 
             var topButton3 = new Button { Text = btn3Text, BackgroundColor = bColor3 };
-            topButton3.Clicked += OnButton3Clicked;
+            topButton3.Clicked += ArchiveBtnClicked;
             AddToGrid(grid, topButton3, 6, 0);
         }
 
@@ -1687,7 +1687,7 @@ public partial class DinoPage : ContentPage
         grid.GestureRecognizers.Add(tapGesture);
     }
 
-    private void OnButton0Clicked(object? sender, EventArgs e)
+    private void ToggleBtnClicked(object? sender, EventArgs e)
     {
         ToggleExcluded++;
         if (ToggleExcluded == 4)
@@ -1701,7 +1701,7 @@ public partial class DinoPage : ContentPage
         CreateContent();
     }
 
-    private void OnButton1Clicked(object? sender, EventArgs e)
+    private void StatsBtnClicked(object? sender, EventArgs e)
     {
         if (CurrentStats)
         {
@@ -1720,14 +1720,14 @@ public partial class DinoPage : ContentPage
         CreateContent();
     }
 
-    private void OnButton2Clicked(object? sender, EventArgs e)
+    private void ExcludeBtnClicked(object? sender, EventArgs e)
     {
         if (selectedID != "")
         {
-            string status = DataManager.GetGroup(selectedID);
-            if (status == "Exclude") { status = ""; }
-            else if (status == "") { status = "Exclude"; FileManager.Log($"Excluded ID: {selectedID}", 0); }
-            DataManager.SetGroup(selectedID, status);
+            string group = DataManager.GetGroup(selectedID);
+            if (group == "Exclude") { group = ""; }
+            else if (group == "") { group = "Exclude"; FileManager.Log($"Excluded ID: {selectedID}", 0); }
+            DataManager.SetGroup(selectedID, group);
 
             dataValid = false; // invalidate
 
@@ -1736,7 +1736,7 @@ public partial class DinoPage : ContentPage
         }
     }
 
-    private void OnButton3Clicked(object? sender, EventArgs e)
+    private void ArchiveBtnClicked(object? sender, EventArgs e)
     {
         if (selectedID != "")
         {
@@ -1755,7 +1755,7 @@ public partial class DinoPage : ContentPage
 
     }
 
-    private void OnButton4Clicked(object? sender, EventArgs e)
+    private void BackBtnClicked(object? sender, EventArgs e)
     {
         // reset toggles etc.
         levelText = ""; hpText = ""; staminaText = ""; oxygenText = "";
@@ -1766,7 +1766,7 @@ public partial class DinoPage : ContentPage
         CreateContent();
     }
 
-    private void OnButton5Clicked(object? sender, EventArgs e)
+    private void SaveBtnClicked(object? sender, EventArgs e)
     {
         // save data here
 
