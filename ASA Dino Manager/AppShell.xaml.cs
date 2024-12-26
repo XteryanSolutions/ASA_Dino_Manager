@@ -43,7 +43,7 @@
 
         private void CreateContent()
         {
-            string[] classList = DataManager.GetAllClasses();
+            string[] classList = DataManager.GetAllClassesShort();
 
             // if manager initialized and we are not scanning and there is dinos in taglist
             if (!FileManager.Scanning && classList.Length > 0)
@@ -119,7 +119,7 @@
 
                 // set the selected class to the entire class string
                 // so we need to translate readable back to unreadable
-                Shared.selectedClass = DataManager.ClassForHalfClass(Shared.setPage);
+                Shared.selectedClass = DataManager.ShortClassToLong(Shared.setPage);
 
 
                 // reset toggles and unselect dino when navigating
@@ -142,7 +142,7 @@
         public void UpdateMenuContents()
         {
             disableNavSet = true; // FileManager.Log("Disabled setPage", 0);
-            string[] classList = DataManager.GetAllClasses();
+            string[] classList = DataManager.GetAllClassesShort();
 
             DataManager.classSize = classList.Length;
 
@@ -219,7 +219,7 @@
                             DataManager.Import();
 
                             // check for changes in dino class
-                            string[] classList = DataManager.GetAllClasses();
+                            string[] classList = DataManager.GetAllClassesShort();
 
                             // Check if we need to reload data
                             if (DataManager.ModC > 0 || DataManager.AddC > 0)

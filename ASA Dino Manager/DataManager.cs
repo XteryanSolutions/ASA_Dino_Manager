@@ -217,15 +217,15 @@ namespace ASA_Dino_Manager
             }
         }
 
-        public static string LongClassToShort(string rawClass)
+        public static string LongClassToShort(string longClass)
         {
             string dinoClass = "";
-            if (rawClass.ToUpper().Contains("MAGIC"))
+            if (longClass.ToUpper().Contains("MAGIC"))
             {
                 // magicland stuff
                 // <Class>/Forglar/Forglar_All/Dinos/MagicLand/Therizino_Character_BP_Magic.Therizino_Character_BP_Magic_C</Class>
 
-                var split = rawClass.Split(new[] { @"_Character_BP" }, StringSplitOptions.RemoveEmptyEntries);
+                var split = longClass.Split(new[] { @"_Character_BP" }, StringSplitOptions.RemoveEmptyEntries);
 
                 // <Class>/Forglar/Forglar_All/Dinos/MagicLand/Therizino    _Magic.Therizino_       _Magic_C</Class>
 
@@ -233,11 +233,11 @@ namespace ASA_Dino_Manager
                 dinoClass = dinoClass.Replace(".", "_");// Magic_Therizino
 
             }
-            else if (rawClass.ToUpper().Contains("BIONIC"))
+            else if (longClass.ToUpper().Contains("BIONIC"))
             {
                 // bionic stuff (TEK)
                 // <Class>/Game/PrimalEarth/Dinos/Stego/BionicStego_Character_BP.BionicStego_Character_BP_C</Class>
-                var classSplit = rawClass.Split(new[] { @"/" }, StringSplitOptions.RemoveEmptyEntries);
+                var classSplit = longClass.Split(new[] { @"/" }, StringSplitOptions.RemoveEmptyEntries);
 
                 // <Class>  Game    PrimalEarth     Dinos   Stego   BionicStego_Character_BP.BionicStego_Character_BP_C<    Class>
                 if (classSplit.Length > 2)
@@ -245,12 +245,12 @@ namespace ASA_Dino_Manager
                     dinoClass = $"TEK_{classSplit[3].Trim()}";
                 }
             }
-            else if (rawClass.ToUpper().Contains("ABERRANT"))
+            else if (longClass.ToUpper().Contains("ABERRANT"))
             {
                 // aberrant stuff
                 // <Class>/Game/PrimalEarth/Dinos/Lystrosaurus/Lystro_Character_BP_Aberrant.Lystro_Character_BP_Aberrant_C</Class>
 
-                var classSplit = rawClass.Split(new[] { @"/" }, StringSplitOptions.RemoveEmptyEntries);
+                var classSplit = longClass.Split(new[] { @"/" }, StringSplitOptions.RemoveEmptyEntries);
 
                 // <Class>  Game    PrimalEarth     Dinos   Lystrosaurus    Lystro_Character_BP_Aberrant.Lystro_Character_BP_Aberrant_C<    Class>
 
@@ -266,7 +266,7 @@ namespace ASA_Dino_Manager
                 // <Class>/Game/PrimalEarth/Dinos/Lystrosaurus/Lystro_Character_BP.Lystro_Character_BP_C</Class>
                 // <Class>/Game/PrimalEarth/Dinos/Ankylo/Ankylo_Character_BP.Ankylo_Character_BP_C</Class>
 
-                var classSplit = rawClass.Split(new[] { @"/" }, StringSplitOptions.RemoveEmptyEntries);
+                var classSplit = longClass.Split(new[] { @"/" }, StringSplitOptions.RemoveEmptyEntries);
 
                 // <Class>  Game    PrimalEarth     Dinos   Doedicurus      Doed_Character_BP.Doed_Character_BP_C<      Class>
                 // <Class>  Game    PrimalEarth     Dinos   Lystrosaurus    Lystro_Character_BP.Lystro_Character_BP_C<  Class>
@@ -280,7 +280,7 @@ namespace ASA_Dino_Manager
             return dinoClass;
         }
 
-        public static string[] GetAllClasses(string exclude = "")
+        public static string[] GetAllClassesShort(string exclude = "")
         {
             // get the raw unprocessed classlist
             string[] classList = DataManager.GetAllDistinctColumnData("Class");
@@ -308,7 +308,7 @@ namespace ASA_Dino_Manager
             return resultSet.ToArray();
         }
 
-        public static string ClassForHalfClass(string halfClass)
+        public static string ShortClassToLong(string shortClass)
         {
             string result = "";
 
@@ -317,28 +317,28 @@ namespace ASA_Dino_Manager
                 string longClass = row["Class"].ToString();
 
 
-                if (halfClass.ToUpper().Contains("MAGIC"))
+                if (shortClass.ToUpper().Contains("MAGIC"))
                 {
                     // <Class>/Forglar/Forglar_All/Dinos/MagicLand/Therizino_Character_BP_Magic.Therizino_Character_BP_Magic_C</Class>
-                    if (longClass.Contains(halfClass.Replace("_", ".")))
+                    if (longClass.Contains(shortClass.Replace("_", ".")))
                     {
                         return row["Class"].ToString();
                     }
                 }
-                else if (halfClass.ToUpper().Contains("TEK"))
+                else if (shortClass.ToUpper().Contains("TEK"))
                 {
                     // <Class>/Game/PrimalEarth/Dinos/Stego/BionicStego_Character_BP.BionicStego_Character_BP_C</Class>
-                    if (longClass.Contains(halfClass.Replace("TEK_", "Bionic")))
+                    if (longClass.Contains(shortClass.Replace("TEK_", "Bionic")))
                     {
                         return row["Class"].ToString();
                     }
                 }
-                else if (halfClass.ToUpper().Contains("ABERRANT"))
+                else if (shortClass.ToUpper().Contains("ABERRANT"))
                 {
                     // <Class>/Game/PrimalEarth/Dinos/Lystrosaurus/Lystro_Character_BP_Aberrant.Lystro_Character_BP_Aberrant_C</Class>
                     if (longClass.Contains("Aberrant"))
                     {
-                        if (longClass.Contains(halfClass.Replace("Aberrant_", "")))
+                        if (longClass.Contains(shortClass.Replace("Aberrant_", "")))
                         {
                             return row["Class"].ToString();
                         }
@@ -347,7 +347,7 @@ namespace ASA_Dino_Manager
                 else
                 {
                     // <Class>/Game/PrimalEarth/Dinos/Doedicurus/Doed_Character_BP.Doed_Character_BP_C</Class>
-                    if (longClass.Contains(halfClass))
+                    if (longClass.Contains(shortClass))
                     {
                         return row["Class"].ToString();
                     }
