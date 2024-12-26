@@ -919,12 +919,7 @@ public partial class BabyPage : ContentPage
 
     private Grid CreateDinoGrid(DataTable table, string title)
     {
-        var grid = new Grid
-        {
-            RowSpacing = 0,
-            ColumnSpacing = 20,
-            Padding = 3
-        };
+        var grid = new Grid { RowSpacing = 0, ColumnSpacing = 20, Padding = 3 };
 
         // Define columns
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 0
@@ -939,40 +934,21 @@ public partial class BabyPage : ContentPage
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 9
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 10
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 11
-
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 12
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 13
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 14
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 15
-
-
-
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 16
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 14
 
 
         Color DefaultColor = Shared.maleColor;
         Color headerColor = DefaultColor;
 
-        if (title == "Male") { DefaultColor = Shared.maleColor; headerColor = Shared.maleHeaderColor; }
-        else if (title == "Female") { DefaultColor = Shared.femaleColor; headerColor = Shared.femaleHeaderColor; }
-        else { DefaultColor = Shared.bottomColor; headerColor = Shared.bottomHeaderColor; }
-
-        bool hasO2 = true;
-
-        if (DataManager.OxygenMax == 150) { hasO2 = false; }
-
-
-        int fSize = Shared.headerSize;  // header fontsize
-
-        // add sorting symbol to the sorted column
-        string sortChar = "";
-
         // find out wich table we are sorting
         string testingSort = "";
-        if (title == "Male") { testingSort = sortM; }
-        else if (title == "Female") { testingSort = sortF; }
+        if (title == "Male") { DefaultColor = Shared.maleColor; headerColor = Shared.maleHeaderColor; testingSort = sortM; }
+        else if (title == "Female") { DefaultColor = Shared.femaleColor; headerColor = Shared.femaleHeaderColor; testingSort = sortF; }
+        else { DefaultColor = Shared.bottomColor; headerColor = Shared.bottomHeaderColor; }
 
-
+        // sorting direction
         string newTest = "";
         if (testingSort.Contains("ASC"))
         {
@@ -983,44 +959,44 @@ public partial class BabyPage : ContentPage
             newTest = testingSort.Substring(0, testingSort.Length - 5);
         }
 
+        // header fontsize
+        int fSize = Shared.headerSize;
+
+        // sorting symbols
         string upChar = Shared.sortUp;
         string downChar = Shared.sortDown;
 
-        sortChar = ""; if (newTest == "Tag") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var headerTag = new Label { Text = $"Tag{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        string sortChar = "";
+
+        sortChar = ""; if (newTest == "Class") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var headerTag = new Label { Text = $"Class{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         sortChar = ""; if (newTest == "Name") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header0 = new Label { Text = $"Name{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         sortChar = ""; if (newTest == "Level") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header1 = new Label { Text = $"Level{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-
 
         sortChar = "";
         var header2 = new Label { Text = $"{Shared.breedSym}Age", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         var header3 = new Label { Text = $"{Shared.timeSym}Time", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         var header4 = new Label { Text = $"{Shared.speedSym}Rate", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         var header5 = new Label { Text = $"{Shared.dateSym}Date", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        //  var header6 = new Label { Text = $"Weight{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        //  var header7 = new Label { Text = $"Damage{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        var header8 = new Label { Text = $"Status{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        var header9 = new Label { Text = $"Gen{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        var header10 = new Label { Text = $"Papa{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleHeaderColor, FontSize = fSize };
-        var header11 = new Label { Text = $"Mama{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.femaleHeaderColor, FontSize = fSize };
-        var header12 = new Label { Text = $"PapaMute{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleHeaderColor, FontSize = fSize };
-        var header13 = new Label { Text = $"MamaMute{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.femaleHeaderColor, FontSize = fSize };
-        var header14 = new Label { Text = $"Imprint{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        var header15 = new Label { Text = $"Imprinter{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var header6 = new Label { Text = $"Status{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var header7 = new Label { Text = $"Gen{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var header8 = new Label { Text = $"Papa{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleHeaderColor, FontSize = fSize };
+        var header9 = new Label { Text = $"Mama{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.femaleHeaderColor, FontSize = fSize };
+        var header10 = new Label { Text = $"PapaMute{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleHeaderColor, FontSize = fSize };
+        var header11 = new Label { Text = $"MamaMute{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.femaleHeaderColor, FontSize = fSize };
+        var header12 = new Label { Text = $"Imprint{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var header13 = new Label { Text = $"Imprinter{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
 
 
-        string sexS = "T";
-        if (title == "Male") { sexS = "M"; }
-        else { sexS = "F"; }
+        // make columns sortable
+        SortColumn(header0, title);
+        SortColumn(header1, title);
 
-        SortColumn(header0, sexS);
-        SortColumn(header1, sexS);
 
         int startID = 0;
-
         // Add base header row
         AddToGrid(grid, headerTag, 0, startID++, title);
         AddToGrid(grid, header0, 0, startID++, title);
@@ -1029,16 +1005,14 @@ public partial class BabyPage : ContentPage
         AddToGrid(grid, header3, 0, startID++, title);
         AddToGrid(grid, header4, 0, startID++, title);
         AddToGrid(grid, header5, 0, startID++, title);
-        //   AddToGrid(grid, header6, 0, startID++, title);
-        //   AddToGrid(grid, header7, 0, startID++, title);
+        AddToGrid(grid, header6, 0, startID++, title);
+        AddToGrid(grid, header7, 0, startID++, title);
         AddToGrid(grid, header8, 0, startID++, title);
         AddToGrid(grid, header9, 0, startID++, title);
         AddToGrid(grid, header10, 0, startID++, title);
         AddToGrid(grid, header11, 0, startID++, title);
         AddToGrid(grid, header12, 0, startID++, title);
         AddToGrid(grid, header13, 0, startID++, title);
-        AddToGrid(grid, header14, 0, startID++, title);
-        AddToGrid(grid, header15, 0, startID++, title);
 
 
         int rowIndex = 1; // Start adding rows below the header
@@ -1051,14 +1025,14 @@ public partial class BabyPage : ContentPage
             var cellColor3 = DefaultColor;
             var cellColor4 = DefaultColor;
             var cellColor5 = DefaultColor;
-            var cellColor6 = DefaultColor;
-            var cellColor7 = DefaultColor;
 
             var cellColor8 = DefaultColor;
+
+
             string id = row["ID"].ToString();
 
             string rawClass = DataManager.GetFirstColumnData("ID", id, "Class");
-            string dinoClass = DataManager.LongClassToShort(rawClass).Replace("_"," ");
+            string dinoClass = DataManager.LongClassToShort(rawClass).Replace("_", " ");
 
 
             string name = row["Name"].ToString();
@@ -1273,7 +1247,7 @@ public partial class BabyPage : ContentPage
                 outF = splitF[0];
             }
 
-            if (sex == "M")
+            if (sex == "Male")
             {
                 // are we clicking the same column then toggle sorting
                 if (outM == column)
@@ -1292,7 +1266,7 @@ public partial class BabyPage : ContentPage
                     sortM = column + " ASC";
                 }
             }
-            else if (sex == "F")
+            else if (sex == "Female")
             {
                 // are we clicking the same column then toggle sorting
                 if (outF == column)

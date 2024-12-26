@@ -315,17 +315,11 @@ public partial class ArchivePage : ContentPage
             string dinoclass = row["Class"].ToString();
 
 
+            // set color based on sex
             Color DefaultColor = Shared.bottomColor;
-
             string sex = DataManager.GetLastColumnData("ID", id, "Sex");
-            if (sex == "Female")
-            {
-                DefaultColor = Shared.femaleColor;
-            }
-            else
-            {
-                DefaultColor = Shared.maleColor;
-            }
+            if (sex == "Female") { DefaultColor = Shared.femaleColor; }
+            else { DefaultColor = Shared.maleColor; }
 
             var cellColor0 = DefaultColor;
             var cellColor1 = DefaultColor;
@@ -333,21 +327,22 @@ public partial class ArchivePage : ContentPage
             var cellColor3 = DefaultColor;
             var cellColor4 = DefaultColor;
 
+            // translate the long class to a short readable class
+            string shortClass = DataManager.LongClassToShort(dinoclass);
+
             // Create a Label
             var idL = new Label { Text = id, TextColor = cellColor0 };
             var tagL = new Label { Text = tag, TextColor = cellColor1 };
             var nameL = new Label { Text = name, TextColor = cellColor2 };
             var levelL = new Label { Text = level, TextColor = cellColor3 };
-            var classL = new Label { Text = dinoclass, TextColor = cellColor4 };
+            var classL = new Label { Text = shortClass, TextColor = cellColor4 };
 
-
-            // Call the method to create and attach TapGesture
+            // Make labels selectable
             SelectDino(idL, id);
             SelectDino(tagL, id);
             SelectDino(nameL, id);
             SelectDino(levelL, id);
             SelectDino(classL, id);
-
 
             bool selected = false;
             if (id == selectedID) { selected = true; }
