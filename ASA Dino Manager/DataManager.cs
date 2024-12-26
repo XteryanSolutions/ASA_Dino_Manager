@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Formats.Asn1;
 using System.Globalization;
 
 namespace ASA_Dino_Manager
@@ -7,6 +8,8 @@ namespace ASA_Dino_Manager
     {
         // how many different dino classes do we have
         public static int tagSize = 0;
+        public static int classSize = 0;
+
 
         public static DataSet ImportsDataSet = new DataSet("importsDataSet");
         public static DataTable ImportsTable = new DataTable("importsList");
@@ -231,27 +234,65 @@ namespace ASA_Dino_Manager
             foreach (string rawClass in classList)
             {
                 // split the string into a readable class
-
-                //  "/Game/PrimalEarth/Dinos/Daeodon/Daeodon_Character_BP.Daeodon_Character_BP_C"
                 string dinoClass = "";
 
                 if (rawClass.ToUpper().Contains("MAGIC"))
                 {
+                    // magicland stuff
+                    // <Class>/Forglar/Forglar_All/Dinos/MagicLand/Therizino_Character_BP_Magic.Therizino_Character_BP_Magic_C</Class>
+
                     var split = rawClass.Split(new[] { @"_Character_BP" }, StringSplitOptions.RemoveEmptyEntries);
-                    dinoClass = split[1].Replace(".", " ");
-                    dinoClass = dinoClass.Replace("_", " ").Trim();
+
+                    // <Class>/Forglar/Forglar_All/Dinos/MagicLand/Therizino    _Magic.Therizino_       _Magic_C</Class>
+
+                    dinoClass = split[1].Replace("_", "").Trim();// Magic.Therizino
+                    dinoClass = dinoClass.Replace(".", "_");// Magic_Therizino
+
+                }
+                else if (rawClass.ToUpper().Contains("BIONIC"))
+                {
+                    // bionic stuff (TEK)
+                    // <Class>/Game/PrimalEarth/Dinos/Stego/BionicStego_Character_BP.BionicStego_Character_BP_C</Class>
+                    var classSplit = rawClass.Split(new[] { @"/" }, StringSplitOptions.RemoveEmptyEntries);
+
+                    // <Class>  Game    PrimalEarth     Dinos   Stego   BionicStego_Character_BP.BionicStego_Character_BP_C<    Class>
+                    if (classSplit.Length > 2)
+                    {
+                        dinoClass = $"TEK_{classSplit[3].Trim()}";
+                    }
+                }
+                else if (rawClass.ToUpper().Contains("ABERRANT"))
+                {
+                    // aberrant stuff
+                    // <Class>/Game/PrimalEarth/Dinos/Lystrosaurus/Lystro_Character_BP_Aberrant.Lystro_Character_BP_Aberrant_C</Class>
+
+                    var classSplit = rawClass.Split(new[] { @"/" }, StringSplitOptions.RemoveEmptyEntries);
+
+                    // <Class>  Game    PrimalEarth     Dinos   Lystrosaurus    Lystro_Character_BP_Aberrant.Lystro_Character_BP_Aberrant_C<    Class>
+
+                    if (classSplit.Length > 2)
+                    {
+                        dinoClass = $"Aberrant_{classSplit[3].Trim()}";
+                    }
                 }
                 else
                 {
-                    var split = rawClass.Split(new[] { @"/" }, StringSplitOptions.RemoveEmptyEntries);
+                    // normal stuff
+                    // <Class>/Game/PrimalEarth/Dinos/Doedicurus/Doed_Character_BP.Doed_Character_BP_C</Class>
+                    // <Class>/Game/PrimalEarth/Dinos/Lystrosaurus/Lystro_Character_BP.Lystro_Character_BP_C</Class>
+                    // <Class>/Game/PrimalEarth/Dinos/Ankylo/Ankylo_Character_BP.Ankylo_Character_BP_C</Class>
 
-                    dinoClass = split[3].Replace(".", " ");
-                    dinoClass = dinoClass.Replace("_", " ").Trim();
+                    var classSplit = rawClass.Split(new[] { @"/" }, StringSplitOptions.RemoveEmptyEntries);
+
+                    // <Class>  Game    PrimalEarth     Dinos   Doedicurus      Doed_Character_BP.Doed_Character_BP_C<      Class>
+                    // <Class>  Game    PrimalEarth     Dinos   Lystrosaurus    Lystro_Character_BP.Lystro_Character_BP_C<  Class>
+                    // <Class>  Game    PrimalEarth     Dinos   Ankylo          Ankylo_Character_BP.Ankylo_Character_BP_C<  Class>
+
+                    if (classSplit.Length > 2)
+                    {
+                        dinoClass = classSplit[3].Trim();
+                    }
                 }
-
-                //  "/Game/PrimalEarth/Dinos/Daeodon/Daeodon_Character_BP   .Daeodon    _Character_BP_C"
-                //  "/Forglar/Forglar_All/Dinos/MagicLand/Therizino_Character_BP    _Magic.Therizino    _Character_BP_Magic_C"
-                //  <Class>/Game/PrimalEarth/Dinos/Doedicurus/Doed_Character_BP.Doed_Character_BP_C</Class>
 
 
                 // Check if the value is not excluded and is not null/empty
@@ -267,17 +308,49 @@ namespace ASA_Dino_Manager
             return resultSet.ToArray();
         }
 
-        public static string ClassForTag(string tag)
+        public static string ClassForHalfClass(string halfClass)
         {
             string result = "";
 
             foreach (DataRow row in ImportsTable.Rows)
             {
-                string columnValue = row["Class"].ToString();
+                string longClass = row["Class"].ToString();
 
-                if (columnValue.Contains(tag.Replace(" ", ".")))
+
+                if (halfClass.ToUpper().Contains("MAGIC"))
                 {
-                    return row["Class"].ToString();
+                    // <Class>/Forglar/Forglar_All/Dinos/MagicLand/Therizino_Character_BP_Magic.Therizino_Character_BP_Magic_C</Class>
+                    if (longClass.Contains(halfClass.Replace("_", ".")))
+                    {
+                        return row["Class"].ToString();
+                    }
+                }
+                else if (halfClass.ToUpper().Contains("TEK"))
+                {
+                    // <Class>/Game/PrimalEarth/Dinos/Stego/BionicStego_Character_BP.BionicStego_Character_BP_C</Class>
+                    if (longClass.Contains(halfClass.Replace("TEK_", "Bionic")))
+                    {
+                        return row["Class"].ToString();
+                    }
+                }
+                else if (halfClass.ToUpper().Contains("ABERRANT"))
+                {
+                    // <Class>/Game/PrimalEarth/Dinos/Lystrosaurus/Lystro_Character_BP_Aberrant.Lystro_Character_BP_Aberrant_C</Class>
+                    if (longClass.Contains("Aberrant"))
+                    {
+                        if (longClass.Contains(halfClass.Replace("Aberrant_", "")))
+                        {
+                            return row["Class"].ToString();
+                        }
+                    } 
+                }
+                else
+                {
+                    // <Class>/Game/PrimalEarth/Dinos/Doedicurus/Doed_Character_BP.Doed_Character_BP_C</Class>
+                    if (longClass.Contains(halfClass))
+                    {
+                        return row["Class"].ToString();
+                    }
                 }
             }
             return result;
@@ -918,7 +991,7 @@ namespace ASA_Dino_Manager
 
                 SetMutes(dino, mutes);
                 int toggle = 0;
-                if (Shared.setPage == "Baby")
+                if (Shared.setPage == "Baby dinos")
                 {
                     toggle = BabyPage.ToggleExcluded;
                 }

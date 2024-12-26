@@ -117,8 +117,10 @@
 
                 FileManager.Log($"Navigating -> {Shared.setPage}", 0);
 
-                string dinoTag = DataManager.ClassForTag(Shared.setPage.Replace("_", " "));
-                Shared.selectedClass = dinoTag;
+                // set the selected class to the entire class string
+                // so we need to translate readable back to unreadable
+                Shared.selectedClass = DataManager.ClassForHalfClass(Shared.setPage);
+
 
                 // reset toggles and unselect dino when navigating
                 DinoPage.CurrentStats = Shared.DefaultStat; DinoPage.ToggleExcluded = Shared.DefaultToggle;
@@ -144,11 +146,13 @@
             string[] classList = DataManager.GetAllClasses();
 
             DataManager.tagSize = tagList.Length;
+            DataManager.classSize = classList.Length;
+
 
             Items.Clear();
 
             // Retrieve the tag list from DataManager and sort alphabetically
-            var sortedTagList = classList.OrderBy(tag => tag).ToArray();
+            var sortedClassList = classList.OrderBy(tag => tag).ToArray();
 
             var shellContent1 = new ShellContent
             {
@@ -168,7 +172,7 @@
             {
                 Title = "Dino Babies",
                 ContentTemplate = new DataTemplate(() => new BabyPage()),
-                Route = $"Baby"
+                Route = $"Baby dinos"
             };
 
             // Add the ShellContent to the Shell
@@ -177,26 +181,26 @@
             Items.Add(shellContent3);
 
             // Loop through the sorted tags and create ShellContent dynamically
-            foreach (var tag in sortedTagList)
+            foreach (var dinoClass in sortedClassList)
             {
-                string dinoTag = DataManager.ClassForTag(tag);
+                // string dinoTag = DataManager.ClassForTag(dinoClass);
 
-                int totalC = DataManager.DinoCount(dinoTag);
+                // int totalC = DataManager.DinoCount(dinoTag);
 
                 var shellContent = new ShellContent
                 {
-                    Title = tag + " (" + totalC + ")",
+                    Title = dinoClass.Replace("_"," "),
                     ContentTemplate = new DataTemplate(typeof(DinoPage)),
-                    Route = $"{tag.Replace(" ", "_")}"
+                    Route = $"{dinoClass}"
                 };
 
                 // Add the ShellContent to the Shell
                 Items.Add(shellContent);
             }
             disableNavSet = false; // FileManager.Log("Enabled setPage", 0);
-            DinoPage.dataValid = false; // invalidate
-            BabyPage.dataValid = false; // invalidate
-            FileManager.Log("Updated tagList", 0);
+            DinoPage.dataValid = false; // invalidate data
+            BabyPage.dataValid = false; // invalidate data
+            FileManager.Log("Updated classList", 0);
         }
 
         public void ProcessAllFiles()
@@ -217,20 +221,19 @@
                             DataManager.Import();
 
                             // check for changes in dino class
-                            string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
-                            if (tagList.Length != DataManager.tagSize)
-                            {
-                                // update tagSize
-                                DataManager.tagSize = tagList.Length;
+                            string[] classList = DataManager.GetAllClasses();
 
-                                // update menu because we need to see the new class
-                                UpdateMenuContents();
-                            }
                             // Check if we need to reload data
-                            if (DataManager.ModC > 0 || DataManager.AddC > 0 || tagList.Length > DataManager.tagSize)
+                            if (DataManager.ModC > 0 || DataManager.AddC > 0)
                             {
-                                DinoPage.dataValid = false; // invalidate
-                                BabyPage.dataValid = false; // invalidate
+                                if (classList.Length != DataManager.classSize)
+                                {
+                                    // update menu because we need to see the new class
+                                    UpdateMenuContents();
+                                }
+
+                                DinoPage.dataValid = false; // invalidate data
+                                BabyPage.dataValid = false; // invalidate data
 
                                 // reset counters
                                 DataManager.AddC = 0; DataManager.ModC = 0;
@@ -240,8 +243,6 @@
                                 // request a save
                                 FileManager.needSave = true;
                             }
-
-                            
 
                             stopwatch.Stop();
                             var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;

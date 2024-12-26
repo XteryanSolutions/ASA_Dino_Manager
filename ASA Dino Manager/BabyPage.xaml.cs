@@ -146,12 +146,8 @@ public partial class BabyPage : ContentPage
             BackgroundColor = Shared.MainPanelColor
         };
 
-
-        // create main layout with 2 columns
-
         // Define row definitions
         mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // 0
-
 
         mainLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = 100 }); // 0
         mainLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 1
@@ -164,16 +160,11 @@ public partial class BabyPage : ContentPage
         // Add main panel to right column
         AddToGrid(mainLayout, CreateMainPanel(), 0, 1);
 
-
-        // only attach the tapgesture if we have something selected
-        // for now its the only way to force refresh a page
-        // so we attach it to everything so we can click
+        // don't unselect dino while editing stats
         if (!isDouble)
         {
             UnSelectDino(mainLayout);
         }
-
-
 
         this.Content = mainLayout;
     }
@@ -250,103 +241,81 @@ public partial class BabyPage : ContentPage
         };
 
         // Define columns
-        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
-        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
+        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
-        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
-        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
-        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // Scrollable content
+        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // extra columns to put anchor bottom buttons
 
-        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
-        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
+        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
-
-        var bColor0 = Shared.DefaultBColor;
-        var bColor1 = Shared.PrimaryColor;
-
-
-        if (CurrentStats)
-        {
-            bColor1 = Shared.SecondaryColor;
-        }
+        // Define button colors
+        var toggleBtnColor = Shared.DefaultBColor;
 
         if (ToggleExcluded == 0)
         {
-            bColor0 = Shared.DefaultBColor;
+            toggleBtnColor = Shared.DefaultBColor;
         }
         else if (ToggleExcluded == 1)
         {
-            bColor0 = Shared.PrimaryColor;
+            toggleBtnColor = Shared.PrimaryColor;
         }
         else if (ToggleExcluded == 2)
         {
-            bColor0 = Shared.SecondaryColor;
+            toggleBtnColor = Shared.SecondaryColor;
         }
         else if (ToggleExcluded == 3)
         {
-            bColor0 = Shared.TrinaryColor;
+            toggleBtnColor = Shared.TrinaryColor;
         }
 
-        string btn0Text = "Toggle"; string btn1Text = "Breeding";
-        if (ToggleExcluded == 0) { btn0Text = "All"; }
-        else if (ToggleExcluded == 1) { btn0Text = "Included"; }
-        else if (ToggleExcluded == 2) { btn0Text = "Excluded"; }
-        else if (ToggleExcluded == 3) { btn0Text = "Archived"; }
+        string toggleBtnText = "Toggle";
+        if (ToggleExcluded == 0) { toggleBtnText = "All"; }
+        else if (ToggleExcluded == 1) { toggleBtnText = "Included"; }
+        else if (ToggleExcluded == 2) { toggleBtnText = "Excluded"; }
+        else if (ToggleExcluded == 3) { toggleBtnText = "Archived"; }
 
-        if (CurrentStats) { btn1Text = "Current"; }
-
-        var topButton0 = new Button { Text = btn0Text, BackgroundColor = bColor0 };
-        var topButton1 = new Button { Text = btn1Text, BackgroundColor = bColor1 };
-
+        string excludeBtnText = "Exclude"; var excludeBtnColor = Shared.SecondaryColor;
+        string archiveBtnText = "Archive"; var archiveBtnColor = Shared.TrinaryColor;
 
         string group = DataManager.GetGroup(selectedID);
-
-
-        string btn2Text = "Exclude"; var bColor2 = Shared.SecondaryColor;
-        string btn3Text = "Archive"; var bColor3 = Shared.TrinaryColor;
-
-
-        if (group == "Exclude") { btn2Text = "Include"; bColor2 = Shared.PrimaryColor; }
-        if (group == "Archived") { btn3Text = "Restore"; bColor3 = Shared.PrimaryColor; }
-
+        if (group == "Exclude") { excludeBtnText = "Include"; excludeBtnColor = Shared.PrimaryColor; }
+        if (group == "Archived") { archiveBtnText = "Restore"; archiveBtnColor = Shared.PrimaryColor; }
 
         if (isDouble)
         {
-            var topButton5 = new Button { Text = "Save", BackgroundColor = Shared.TrinaryColor };
-            topButton5.Clicked += OnButton5Clicked;
-            AddToGrid(grid, topButton5, 0, 0);
+            var saveBtn = new Button { Text = "Save", BackgroundColor = Shared.TrinaryColor };
+            saveBtn.Clicked += SaveBtnClicked;
+            AddToGrid(grid, saveBtn, 0, 0);
 
 
-            var topButton4 = new Button { Text = "Back", BackgroundColor = Shared.PrimaryColor };
-            topButton4.Clicked += OnButton4Clicked;
-            AddToGrid(grid, topButton4, 1, 0);
+            var backBtn = new Button { Text = "Back", BackgroundColor = Shared.PrimaryColor };
+            backBtn.Clicked += BackBtnClicked;
+            AddToGrid(grid, backBtn, 1, 0);
         }
         else
         {
-            AddToGrid(grid, topButton0, 0, 0);
-          //  AddToGrid(grid, topButton1, 1, 0);
-
-            topButton0.Clicked += OnButton0Clicked;
-         //   topButton1.Clicked += OnButton1Clicked;
+            var toggleBtn = new Button { Text = toggleBtnText, BackgroundColor = toggleBtnColor };
+            AddToGrid(grid, toggleBtn, 0, 0);
+            toggleBtn.Clicked += ToggleBtnClicked;
         }
-
 
         if (isSelected) // add theese only if we have a dino selected
         {
             // do not show exclude button while in archive view
             if (ToggleExcluded != 3)
             {
-                var topButton2 = new Button { Text = btn2Text, BackgroundColor = bColor2 };
-                topButton2.Clicked += OnButton2Clicked;
-                AddToGrid(grid, topButton2, 5, 0);
+                var excludeBtn = new Button { Text = excludeBtnText, BackgroundColor = excludeBtnColor };
+                excludeBtn.Clicked += ExcludeBtnClicked;
+                AddToGrid(grid, excludeBtn, 5, 0);
             }
 
-
-            var topButton3 = new Button { Text = btn3Text, BackgroundColor = bColor3 };
-            topButton3.Clicked += OnButton3Clicked;
-            AddToGrid(grid, topButton3, 6, 0);
+            var archiveBtn = new Button { Text = archiveBtnText, BackgroundColor = archiveBtnColor };
+            archiveBtn.Clicked += ArchiveBtnClicked;
+            AddToGrid(grid, archiveBtn, 6, 0);
         }
-
 
         return grid;
     }
@@ -1107,6 +1076,7 @@ public partial class BabyPage : ContentPage
 
 
             string name = row["Name"].ToString();
+            if (name == "") { name = "I need a name"; }
             string level = row["Level"].ToString();
             //////////////
             string hp = "N/A";
@@ -1137,62 +1107,57 @@ public partial class BabyPage : ContentPage
                 status = "";
             }
 
-            if (title != "Bottom")
+            //  get aging stuff for dino -> agingRate, fullGrownDate, growUpTime, isBaby, beenBaby,
+            List<Tuple<double, string, double, bool, bool, double, double>> dinoAgingData = DataManager.GetDinoAgingData(id);
+
+            if (dinoAgingData.Count > 0)
             {
-                //  get aging stuff for dino -> agingRate, fullGrownDate, growUpTime, isBaby, beenBaby,
-                List<Tuple<double, string, double, bool, bool, double, double>> dinoAgingData = DataManager.GetDinoAgingData(id);
-
-                if (dinoAgingData.Count > 0)
+                foreach (var data in dinoAgingData)
                 {
-                    foreach (var data in dinoAgingData)
+                    double ageRate = data.Item1;
+                    string time = data.Item2;
+                    double growthRate = data.Item3;
+                    bool isBaby = data.Item4;
+                    bool beenBaby = data.Item5;
+                    double fullTime = data.Item6;
+                    double currentAge = Math.Round(data.Item7, 1);
+
+                    if (isBaby)
                     {
-                        double ageRate = data.Item1;
-                        string time = data.Item2;
-                        double growthRate = data.Item3;
-                        bool isBaby = data.Item4;
-                        bool beenBaby = data.Item5;
-                        double fullTime = data.Item6;
-                        double currentAge = Math.Round(data.Item7, 1);
+                        int totalMinutes = (int)(fullTime / 60);
+                        int days = totalMinutes / (24 * 60);
+                        int hours = (totalMinutes % (24 * 60)) / 60;
+                        int minutes = totalMinutes % 60;
 
-                        if (isBaby)
+                        double ageRateHr = 0;
+
+                        hp = $"{currentAge}%";
+
+                        if (ageRate > 0)
                         {
-                            int totalMinutes = (int)(fullTime / 60);
-                            int days = totalMinutes / (24 * 60);
-                            int hours = (totalMinutes % (24 * 60)) / 60;
-                            int minutes = totalMinutes % 60;
+                            ageRateHr = Math.Round(ageRate * 3600, 2);
+                            oxygen = $"{ageRateHr}%/hr";
+                            stamina = $"{days}d {hours}h {minutes}m";
+                        }
+                        else
+                        {
+                            oxygen = $"{Shared.noSym}";
+                            stamina = $"{Shared.noSym}";
 
-                            double ageRateHr = 0;
+                            status = Shared.missingSym + "Incomplete Data";
+                        }
 
-                            hp = $"{currentAge}%";
-
-                            if (ageRate > 0)
-                            {
-                                ageRateHr = Math.Round(ageRate * 3600, 2);
-                                oxygen = $"{ageRateHr}%/hr";
-                                stamina = $"{days}d {hours}h {minutes}m";
-                            }
-                            else
-                            {
-                                oxygen = $"{Shared.noSym}";
-                                stamina = $"{Shared.noSym}";
-
-                                status = Shared.missingSym + "Incomplete Data";
-                            }
-
-                            food = $"{time}";
+                        food = $"{time}";
 
 
 
-                            if (time == "N/A")
-                            {
-                                status = Shared.missingSym + "Incomplete Data";
-                            }
+                        if (time == "N/A")
+                        {
+                            status = Shared.missingSym + "Incomplete Data";
                         }
                     }
                 }
             }
-
-
 
 
             if (isGarbage)
@@ -1215,8 +1180,6 @@ public partial class BabyPage : ContentPage
             var staminaL = new Label { Text = stamina, TextColor = cellColor3 };
             var oxygenL = new Label { Text = oxygen, TextColor = cellColor4 };
             var foodL = new Label { Text = food, TextColor = cellColor5 };
-            //      var weightL = new Label { Text = weight, TextColor = cellColor6 };
-            //      var damageL = new Label { Text = damage, TextColor = cellColor7 };
             //////////////
             var statusL = new Label { Text = status, TextColor = cellColor8 };
             var genL = new Label { Text = gen, TextColor = cellColor8 };
@@ -1229,32 +1192,27 @@ public partial class BabyPage : ContentPage
 
 
             bool selected = false;
-            if (title != "Bottom") // dont make bottom panel selectable
-            {
-                // Attach TapGesture to all labels
-                SelectDino(tagL, id);
-                SelectDino(nameL, id);
-                SelectDino(levelL, id);
-                SelectDino(hpL, id);
-                SelectDino(staminaL, id);
-                SelectDino(oxygenL, id);
-                SelectDino(foodL, id);
-                //  SelectDino(weightL, id);
-                //  SelectDino(damageL, id);
-                SelectDino(statusL, id);
-                SelectDino(genL, id);
-                SelectDino(papaL, id);
-                SelectDino(mamaL, id);
-                SelectDino(papaML, id);
-                SelectDino(mamaML, id);
-                SelectDino(imprintL, id);
-                SelectDino(imprinterL, id);
 
-                // figure out if we have this dino selected
-                // for row coloring purposes
-                if (id == selectedID) { selected = true; }
-            }
+            // Attach TapGesture to all labels
+            SelectDino(tagL, id);
+            SelectDino(nameL, id);
+            SelectDino(levelL, id);
+            SelectDino(hpL, id);
+            SelectDino(staminaL, id);
+            SelectDino(oxygenL, id);
+            SelectDino(foodL, id);
+            SelectDino(statusL, id);
+            SelectDino(genL, id);
+            SelectDino(papaL, id);
+            SelectDino(mamaL, id);
+            SelectDino(papaML, id);
+            SelectDino(mamaML, id);
+            SelectDino(imprintL, id);
+            SelectDino(imprinterL, id);
 
+            // figure out if we have this dino selected
+            // for row coloring purposes
+            if (id == selectedID) { selected = true; }
 
             // Reset startID for new row
             startID = 0;
@@ -1267,8 +1225,6 @@ public partial class BabyPage : ContentPage
             AddToGrid(grid, staminaL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, oxygenL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, foodL, rowIndex, startID++, title, selected, false, id);
-            //     AddToGrid(grid, weightL, rowIndex, startID++, title, selected, false, id);
-            //     AddToGrid(grid, damageL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, statusL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, genL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, papaL, rowIndex, startID++, title, selected, false, id);
@@ -1301,7 +1257,7 @@ public partial class BabyPage : ContentPage
     }
 
 
-    // Button event handlers
+    // Some event handlers
     void SortColumn(Label label, string sex)
     {
         label.GestureRecognizers.Clear();
@@ -1494,7 +1450,8 @@ public partial class BabyPage : ContentPage
         grid.GestureRecognizers.Add(tapGesture);
     }
 
-    private void OnButton0Clicked(object? sender, EventArgs e)
+    // Button event handlers
+    private void ToggleBtnClicked(object? sender, EventArgs e)
     {
         ToggleExcluded++;
         if (ToggleExcluded == 4)
@@ -1508,26 +1465,7 @@ public partial class BabyPage : ContentPage
         CreateContent();
     }
 
-    private void OnButton1Clicked(object? sender, EventArgs e)
-    {
-        if (CurrentStats)
-        {
-            CurrentStats = false;
-        }
-        else
-        {
-            CurrentStats = true;
-        }
-
-        BabyPage.dataValid = false; // invalidate
-
-        FileManager.Log($"Toggle Stats {CurrentStats}", 0);
-
-        ClearSelection();
-        CreateContent();
-    }
-
-    private void OnButton2Clicked(object? sender, EventArgs e)
+    private void ExcludeBtnClicked(object? sender, EventArgs e)
     {
         if (selectedID != "")
         {
@@ -1543,7 +1481,7 @@ public partial class BabyPage : ContentPage
         }
     }
 
-    private void OnButton3Clicked(object? sender, EventArgs e)
+    private void ArchiveBtnClicked(object? sender, EventArgs e)
     {
         if (selectedID != "")
         {
@@ -1562,7 +1500,7 @@ public partial class BabyPage : ContentPage
 
     }
 
-    private void OnButton4Clicked(object? sender, EventArgs e)
+    private void BackBtnClicked(object? sender, EventArgs e)
     {
         // reset toggles etc.
         levelText = ""; hpText = ""; staminaText = ""; oxygenText = "";
@@ -1573,7 +1511,7 @@ public partial class BabyPage : ContentPage
         CreateContent();
     }
 
-    private void OnButton5Clicked(object? sender, EventArgs e)
+    private void SaveBtnClicked(object? sender, EventArgs e)
     {
         // save data here
 

@@ -420,6 +420,7 @@ public partial class DinoPage : ContentPage
 
         int count = DataManager.DinoCount(Shared.selectedClass, ToggleExcluded);
 
+        string test = Shared.selectedClass;
         if (count > 0 && !isDouble) // more than 0 dinos and not double clicked
         {
             // create the row for bottompanel if not in dinoEview
@@ -1154,6 +1155,7 @@ public partial class DinoPage : ContentPage
 
 
             string name = row["Name"].ToString();
+            if (name == "") { name = "ReName me"; }
             string level = row["Level"].ToString();
             //////////////
             string hp = row["Hp"].ToString();
