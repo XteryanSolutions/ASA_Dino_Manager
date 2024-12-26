@@ -886,6 +886,8 @@ namespace ASA_Dino_Manager
                     DataRow dr = DataManager.StatTable.NewRow();
                     dr["ID"] = id;
                     dr["Status"] = group;
+                    dr["Mutes"] = "";
+                    dr["Notes"] = "";
                     DataManager.StatTable.Rows.Add(dr);
                 }
                 // request a save after modifying data
@@ -910,6 +912,8 @@ namespace ASA_Dino_Manager
                 DataRow dr = DataManager.StatTable.NewRow();
                 dr["ID"] = id;
                 dr["Notes"] = notes;
+                dr["Status"] = "";
+                dr["Mutes"] = "";
                 DataManager.StatTable.Rows.Add(dr);
             }
             // request a save after modifying data
@@ -934,6 +938,7 @@ namespace ASA_Dino_Manager
                 dr["ID"] = id;
                 dr["Mutes"] = mutes;
                 dr["Status"] = "";
+                dr["Notes"] = "";
                 DataManager.StatTable.Rows.Add(dr);
             }
         }

@@ -58,11 +58,11 @@
                 {
                     Title = "Looking for dinos",
                     ContentTemplate = new DataTemplate(typeof(MainPage)),
-                    Route = "Looking.for.dinos"
+                    Route = "Looking_for_dinos"
                 };
                 Items.Add(shellContent);
                 FileManager.Log("No dinos =(", 0);
-                Shared.setPage = $"Looking.for.dinos";
+                Shared.setPage = $"Looking_for_dinos";
             }
             StartTimer();
         }

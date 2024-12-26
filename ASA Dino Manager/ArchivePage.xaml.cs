@@ -370,6 +370,78 @@ public partial class ArchivePage : ContentPage
         }
     }
 
+    private async Task PurgeDinoAsync(string dinoID)
+    {
+        FileManager.Log("Purge Dino???", 1);
+        bool answer = await Application.Current.MainPage.DisplayAlert(
+"Purge dino from DataBase",         // Title
+"Do you want to proceed?", // Message
+"Yes",                    // Yes button text
+"No"                      // No button text
+);
+
+        if (answer)
+        {
+            if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
+            {
+                try
+                {
+
+                    DataManager.DeleteRowsByID(dinoID);
+                    ClearSelection();
+                    CreateContent();
+                }
+                catch { FileManager.Log("Failed Purging dino", 2); }
+                finally
+                {
+                    Monitor.Exit(Shared._dbLock);
+                }
+            }
+            else
+            {
+                FileManager.Log("Failed to acquire database lock within timeout.", 1);
+            }
+        }
+    }
+
+    private async Task PurgeAllAsync()
+    {
+        FileManager.Log("Purge Dino???", 1);
+        bool answer = await Application.Current.MainPage.DisplayAlert(
+"Purge All dinos from DataBase",         // Title
+"Do you want to proceed?", // Message
+"Yes",                    // Yes button text
+"No"                      // No button text
+);
+
+        if (answer)
+        {
+            // User selected "Yes"  
+            if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
+            {
+                try
+                {
+                    DataManager.PurgeAll();
+                    FileManager.Log("Purged All Dinos", 1);
+                    ClearSelection();
+                    CreateContent();
+                }
+                catch
+                {
+                    FileManager.Log("Failed Purging all dinos", 2);
+                }
+                finally
+                {
+                    Monitor.Exit(Shared._dbLock);
+                }
+            }
+            else
+            {
+                FileManager.Log("Failed to acquire database lock within timeout.", 1);
+            }
+        }
+    }
+
 
     // Button event handlers
     private void SelectDino(Label label, string id)
@@ -462,78 +534,6 @@ public partial class ArchivePage : ContentPage
     private void PurgeAllBtnClicked(object? sender, EventArgs e)
     {
         PurgeAllAsync();
-    }
-
-    private async Task PurgeDinoAsync(string dinoID)
-    {
-        FileManager.Log("Purge Dino???", 1);
-        bool answer = await Application.Current.MainPage.DisplayAlert(
-"Purge dino from DataBase",         // Title
-"Do you want to proceed?", // Message
-"Yes",                    // Yes button text
-"No"                      // No button text
-);
-
-        if (answer)
-        {
-            if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
-            {
-                try
-                {
-
-                    DataManager.DeleteRowsByID(dinoID);
-                    ClearSelection();
-                    CreateContent();
-                }
-                catch { FileManager.Log("Failed Purging dino", 2); }
-                finally
-                {
-                    Monitor.Exit(Shared._dbLock);
-                }
-            }
-            else
-            {
-                FileManager.Log("Failed to acquire database lock within timeout.", 1);
-            }
-        }
-    }
-
-    private async Task PurgeAllAsync()
-    {
-        FileManager.Log("Purge Dino???", 1);
-        bool answer = await Application.Current.MainPage.DisplayAlert(
-"Purge All dinos from DataBase",         // Title
-"Do you want to proceed?", // Message
-"Yes",                    // Yes button text
-"No"                      // No button text
-);
-
-        if (answer)
-        {
-            // User selected "Yes"  
-            if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
-            {
-                try
-                {
-                    DataManager.PurgeAll();
-                    FileManager.Log("Purged All Dinos", 1);
-                    ClearSelection();
-                    CreateContent();
-                }
-                catch
-                {
-                    FileManager.Log("Failed Purging all dinos", 2);
-                }
-                finally
-                {
-                    Monitor.Exit(Shared._dbLock);
-                }
-            }
-            else
-            {
-                FileManager.Log("Failed to acquire database lock within timeout.", 1);
-            }
-        }
     }
 
 }
