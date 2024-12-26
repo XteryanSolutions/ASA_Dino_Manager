@@ -43,10 +43,10 @@
 
         private void CreateContent()
         {
-            string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
+            string[] classList = DataManager.GetAllClasses();
 
             // if manager initialized and we are not scanning and there is dinos in taglist
-            if (!FileManager.Scanning && tagList.Length > 0)
+            if (!FileManager.Scanning && classList.Length > 0)
             {
                 DataManager.CleanDataBaseByID();
                 UpdateMenuContents();
@@ -142,10 +142,8 @@
         public void UpdateMenuContents()
         {
             disableNavSet = true; // FileManager.Log("Disabled setPage", 0);
-            string[] tagList = DataManager.GetAllDistinctColumnData("Tag");
             string[] classList = DataManager.GetAllClasses();
 
-            DataManager.tagSize = tagList.Length;
             DataManager.classSize = classList.Length;
 
 

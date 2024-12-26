@@ -1058,34 +1058,18 @@ public partial class BabyPage : ContentPage
             string id = row["ID"].ToString();
 
             string rawClass = DataManager.GetFirstColumnData("ID", id, "Class");
-            string dinoClass = "";
-
-            if (rawClass.ToUpper().Contains("MAGIC"))
-            {
-                var split = rawClass.Split(new[] { @"_Character_BP" }, StringSplitOptions.RemoveEmptyEntries);
-                dinoClass = split[1].Replace(".", " ");
-                dinoClass = dinoClass.Replace("_", " ").Trim();
-            }
-            else
-            {
-                var split = rawClass.Split(new[] { @"/" }, StringSplitOptions.RemoveEmptyEntries);
-
-                dinoClass = split[3].Replace(".", " ");
-                dinoClass = dinoClass.Replace("_", " ").Trim();
-            }
+            string dinoClass = DataManager.LongClassToShort(rawClass).Replace("_"," ");
 
 
             string name = row["Name"].ToString();
             if (name == "") { name = "I need a name"; }
             string level = row["Level"].ToString();
             //////////////
-            string hp = "N/A";
-            string stamina = "N/A";
-            string oxygen = "N/A";
-            string food = "N/A";
-            //      string weight = "N/A";
-            //      string damage = "N/A";
-            //////////////
+            string ageT = "N/A";
+            string timeT = "N/A";
+            string rateT = "N/A";
+            string dateT = "N/A";
+
             string status = "";
             string gen = row["Gen"].ToString();
             string papa = row["Papa"].ToString();
@@ -1095,9 +1079,9 @@ public partial class BabyPage : ContentPage
             string imprint = row["Imprint"].ToString();
             string imprinter = row["Imprinter"].ToString();
 
-            string group = "";
+            //string group = "";
 
-            group = DataManager.GetGroup(id);
+            //group = DataManager.GetGroup(id);
 
 
             bool isGarbage = false;
@@ -1131,23 +1115,23 @@ public partial class BabyPage : ContentPage
 
                         double ageRateHr = 0;
 
-                        hp = $"{currentAge}%";
+                        ageT = $"{currentAge}%";
 
                         if (ageRate > 0)
                         {
                             ageRateHr = Math.Round(ageRate * 3600, 2);
-                            oxygen = $"{ageRateHr}%/hr";
-                            stamina = $"{days}d {hours}h {minutes}m";
+                            rateT = $"{ageRateHr}%/hr";
+                            timeT = $"{days}d {hours}h {minutes}m";
                         }
                         else
                         {
-                            oxygen = $"{Shared.noSym}";
-                            stamina = $"{Shared.noSym}";
+                            rateT = $"{Shared.noSym}";
+                            timeT = $"{Shared.noSym}";
 
                             status = Shared.missingSym + "Incomplete Data";
                         }
 
-                        food = $"{time}";
+                        dateT = $"{time}";
 
 
 
@@ -1176,10 +1160,10 @@ public partial class BabyPage : ContentPage
             var nameL = new Label { Text = name, TextColor = cellColor0 };
             var levelL = new Label { Text = level, TextColor = cellColor1 };
             //////////////
-            var hpL = new Label { Text = hp, TextColor = cellColor2 };
-            var staminaL = new Label { Text = stamina, TextColor = cellColor3 };
-            var oxygenL = new Label { Text = oxygen, TextColor = cellColor4 };
-            var foodL = new Label { Text = food, TextColor = cellColor5 };
+            var hpL = new Label { Text = ageT, TextColor = cellColor2 };
+            var staminaL = new Label { Text = timeT, TextColor = cellColor3 };
+            var oxygenL = new Label { Text = rateT, TextColor = cellColor4 };
+            var foodL = new Label { Text = dateT, TextColor = cellColor5 };
             //////////////
             var statusL = new Label { Text = status, TextColor = cellColor8 };
             var genL = new Label { Text = gen, TextColor = cellColor8 };
