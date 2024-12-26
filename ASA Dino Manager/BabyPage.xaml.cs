@@ -2,6 +2,7 @@ using System.Data;
 using System.Data.Common;
 using System.Formats.Asn1;
 using System.Xml.Linq;
+using Windows.ApplicationModel.Store;
 
 namespace ASA_Dino_Manager;
 
@@ -975,11 +976,22 @@ public partial class BabyPage : ContentPage
         sortChar = ""; if (newTest == "Level") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header1 = new Label { Text = $"Level{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
-        sortChar = "";
-        var header2 = new Label { Text = $"{Shared.breedSym}Age", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        var header3 = new Label { Text = $"{Shared.timeSym}Time", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        var header4 = new Label { Text = $"{Shared.speedSym}Rate", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+
+        sortChar = ""; if (newTest == $"{Shared.breedSym}Age") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var header2 = new Label { Text = $"{Shared.breedSym}Age{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+
+        sortChar = ""; if (newTest == $"{Shared.timeSym}Time") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var header3 = new Label { Text = $"{Shared.timeSym}Time{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+
+        sortChar = ""; if (newTest == $"{Shared.speedSym}Rate") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var header4 = new Label { Text = $"{Shared.speedSym}Rate{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+
+
+        // no need to sort date
         var header5 = new Label { Text = $"{Shared.dateSym}Date", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+
+
+        // could make theese sortable
         var header6 = new Label { Text = $"Status{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         var header7 = new Label { Text = $"Gen{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         var header8 = new Label { Text = $"Papa{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleHeaderColor, FontSize = fSize };
@@ -994,6 +1006,10 @@ public partial class BabyPage : ContentPage
         // make columns sortable
         SortColumn(header0, title);
         SortColumn(header1, title);
+        SortColumn(header2, title);
+        SortColumn(header3, title);
+        SortColumn(header4, title);
+
 
 
         int startID = 0;
@@ -1039,12 +1055,11 @@ public partial class BabyPage : ContentPage
             if (name == "") { name = "I need a name"; }
             string level = row["Level"].ToString();
             //////////////
-            string ageT = "N/A";
-            string timeT = "N/A";
-            string rateT = "N/A";
-            string dateT = "N/A";
+            string ageT = row["Hp"].ToString() + "%";
+            string timeT = row["Stamina"].ToString();
+            string rateT = row["Oxygen"].ToString();
+            string dateT = row["Status"].ToString();
 
-            string status = "";
             string gen = row["Gen"].ToString();
             string papa = row["Papa"].ToString();
             string mama = row["Mama"].ToString();
@@ -1053,74 +1068,26 @@ public partial class BabyPage : ContentPage
             string imprint = row["Imprint"].ToString();
             string imprinter = row["Imprinter"].ToString();
 
-            //string group = "";
+            string status = "";
 
-            //group = DataManager.GetGroup(id);
+            int totalMinutes = (int)(DataManager.ToDouble(timeT));
+            int days = totalMinutes / (24 * 60);
+            int hours = (totalMinutes % (24 * 60)) / 60;
+            int minutes = totalMinutes % 60;
 
 
-            bool isGarbage = false;
-            if (status == "Garbage")
+            if (DataManager.ToDouble(row["Hp"].ToString()) > 0) // ageRate
             {
-                isGarbage = true;
-                status = "";
-            }
+                double ageRateHr = Math.Round(DataManager.ToDouble(rateT) * 3600, 2);
 
-            //  get aging stuff for dino -> agingRate, fullGrownDate, growUpTime, isBaby, beenBaby,
-            List<Tuple<double, string, double, bool, bool, double, double>> dinoAgingData = DataManager.GetDinoAgingData(id);
-
-            if (dinoAgingData.Count > 0)
-            {
-                foreach (var data in dinoAgingData)
-                {
-                    double ageRate = data.Item1;
-                    string time = data.Item2;
-                    double growthRate = data.Item3;
-                    bool isBaby = data.Item4;
-                    bool beenBaby = data.Item5;
-                    double fullTime = data.Item6;
-                    double currentAge = Math.Round(data.Item7, 1);
-
-                    if (isBaby)
-                    {
-                        int totalMinutes = (int)(fullTime / 60);
-                        int days = totalMinutes / (24 * 60);
-                        int hours = (totalMinutes % (24 * 60)) / 60;
-                        int minutes = totalMinutes % 60;
-
-                        double ageRateHr = 0;
-
-                        ageT = $"{currentAge}%";
-
-                        if (ageRate > 0)
-                        {
-                            ageRateHr = Math.Round(ageRate * 3600, 2);
-                            rateT = $"{ageRateHr}%/hr";
-                            timeT = $"{days}d {hours}h {minutes}m";
-                        }
-                        else
-                        {
-                            rateT = $"{Shared.noSym}";
-                            timeT = $"{Shared.noSym}";
-
-                            status = Shared.missingSym + "Incomplete Data";
-                        }
-
-                        dateT = $"{time}";
-
-
-
-                        if (time == "N/A")
-                        {
-                            status = Shared.missingSym + "Incomplete Data";
-                        }
-                    }
-                }
+                rateT = $"{ageRateHr}%/hr";
+                timeT = $"{days}d {hours}h {minutes}m";
             }
 
 
-            if (isGarbage)
+            if (false)
             {
-                status = Shared.garbageSym + status;
+                status = Shared.missingSym + "Incomplete Data";
             }
 
             string notes = DataManager.GetNotes(id);

@@ -1,6 +1,10 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 using System.Formats.Asn1;
 using System.Globalization;
+using System.Xml.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ASA_Dino_Manager
 {
@@ -342,7 +346,7 @@ namespace ASA_Dino_Manager
                         {
                             return row["Class"].ToString();
                         }
-                    } 
+                    }
                 }
                 else
                 {
@@ -602,6 +606,19 @@ namespace ASA_Dino_Manager
                 double lastAgeP = lastAge * 100;
                 double firstAgeP = firstAge * 100;
 
+
+                DateTime startTime1 = DateTime.ParseExact(firstTime, "dd/MM/yyyy HH:mm:ss", null);
+                DateTime endTime1 = DateTime.ParseExact(lastTime, "dd/MM/yyyy HH:mm:ss", null);
+                // Calculate differences
+                double timeDiffSeconds = (endTime1 - startTime1).TotalSeconds;
+                double ageDiff = (lastAge - firstAge) * 100;
+
+                if (timeDiffSeconds > 0)
+                {
+                    // get accurate unRounded ageRate
+                    agingRate = ageDiff / timeDiffSeconds;
+                }
+
                 // do we or do we not have a Xanax detector (baby detector)
                 // figure out if it has ever been a baby or do we just mark it as tamed
                 bool isBaby = false; bool beenBaby = false;
@@ -717,6 +734,38 @@ namespace ASA_Dino_Manager
             }
             return result;
         }
+
+        public static double AgeRateNew(string id)
+        {
+            double result = 0;
+
+            string firstT = GetFirstColumnData("ID", id, "Time");
+            string lastT = GetLastColumnData("ID", id, "Time");
+
+            DateTime startTime = DateTime.ParseExact(firstT, "dd/MM/yyyy HH:mm:ss", null);
+            DateTime endTime = DateTime.ParseExact(lastT, "dd/MM/yyyy HH:mm:ss", null);
+
+            string firstA = GetFirstColumnData("ID", id, "Time");
+            string lastA = GetLastColumnData("ID", id, "Time");
+
+            double firstAge = ToDouble(firstA);
+            double lastAge = ToDouble(lastA);
+
+
+            // Calculate differences
+            double timeDiffSeconds = (endTime - startTime).TotalSeconds;
+            double ageDiff = (lastAge - firstAge) * 100;
+
+            if (timeDiffSeconds > 0)
+            {
+                // get accurate unRounded ageRate
+                double ageRatePerSecond = ageDiff / timeDiffSeconds;
+                return ageRatePerSecond;
+            }
+
+            return result;
+        }
+
 
         public static double GetGrowthRate(string id)
         {
@@ -1140,30 +1189,26 @@ namespace ASA_Dino_Manager
             string[] males = DataManager.GetDistinctFilteredColumnDataB("Sex", "Male", "ID");
 
 
-            if (DinoPage.CurrentStats)
-            {
-                // Process females
-                List<string[]> MainStatsF = DataManager.GetLastStats(females);
-                List<string[]> BrStatsF = DataManager.GetLastStats(females);
-                ProcessDinos(females, MainStatsF, BrStatsF, DataManager.FemaleTable);
+            // Process females
+            List<string[]> MainStatsF = DataManager.GetFirstStats(females);
+            List<string[]> BrStatsF = DataManager.GetLastStats(females);
+            ProcessDinoBabies(females, MainStatsF, BrStatsF, DataManager.FemaleTable);
 
-                // Process males
-                List<string[]> MainStatsM = DataManager.GetLastStats(males);
-                List<string[]> BrStatsM = DataManager.GetLastStats(males);
-                ProcessDinos(males, MainStatsM, BrStatsM, DataManager.MaleTable);
-            }
-            else
-            {
-                // Process females
-                List<string[]> MainStatsF = DataManager.GetFirstStats(females);
-                List<string[]> BrStatsF = DataManager.GetLastStats(females);
-                ProcessDinos(females, MainStatsF, BrStatsF, DataManager.FemaleTable);
+            // Process males
+            List<string[]> MainStatsM = DataManager.GetFirstStats(males);
+            List<string[]> BrStatsM = DataManager.GetLastStats(males);
+            ProcessDinoBabies(males, MainStatsM, BrStatsM, DataManager.MaleTable);
 
-                // Process males
-                List<string[]> MainStatsM = DataManager.GetFirstStats(males);
-                List<string[]> BrStatsM = DataManager.GetLastStats(males);
-                ProcessDinos(males, MainStatsM, BrStatsM, DataManager.MaleTable);
-            }
+
+            // replace column names with the real ones
+            sortiM = sortiM.Replace($"{Shared.breedSym}Age", "Hp");
+            sortiF = sortiF.Replace($"{Shared.breedSym}Age", "Hp");
+
+            sortiM = sortiM.Replace($"{Shared.timeSym}Time", "Stamina");
+            sortiF = sortiF.Replace($"{Shared.timeSym}Time", "Stamina");
+
+            sortiM = sortiM.Replace($"{Shared.speedSym}Rate", "Oxygen");
+            sortiF = sortiF.Replace($"{Shared.speedSym}Rate", "Oxygen");
 
 
 
@@ -1180,6 +1225,127 @@ namespace ASA_Dino_Manager
 
 
             //  FileManager.Log("updated data");
+        }
+
+        private static void ProcessDinoBabies(string[] dinos, List<string[]> MainStats, List<string[]> BrStats, DataTable table)
+        {
+            int rowID = 0;
+            foreach (var dino in dinos)
+            {
+                string group = GetGroup(dino);
+                int toggle = BabyPage.ToggleExcluded;
+
+                bool addIT = false;
+                if (toggle == 0)
+                {
+                    if (group != "Archived")
+                    {
+                        addIT = true;
+                    }
+                }
+                else if (toggle == 1)
+                {
+                    if (group != "Archived" && group != "Exclude")
+                    {
+                        addIT = true;
+                    }
+                }
+                else if (toggle == 2)
+                {
+                    if (group != "Archived" && group == "Exclude")
+                    {
+                        addIT = true;
+                    }
+                }
+                else if (toggle == 3)
+                {
+                    if (group == "Archived")
+                    {
+                        addIT = true;
+                    }
+                }
+
+
+
+
+                if (addIT)
+                {
+                    string ageT = "0"; // hp column
+                    string timeT = "0"; // stamina column
+                    string rateT = "0";  // oxygen column
+                    string dateT = "N/A";  // food column
+
+                    //  get aging stuff for dino -> agingRate, fullGrownDate, growUpTime, isBaby, beenBaby,
+                    List<Tuple<double, string, double, bool, bool, double, double>> dinoAgingData = DataManager.GetDinoAgingData(dino);
+
+                    if (dinoAgingData.Count > 0)
+                    {
+                        foreach (var data in dinoAgingData)
+                        {
+                            double ageRate = data.Item1;
+                            string time = data.Item2;
+                            double growthRate = data.Item3;
+                            bool isBaby = data.Item4;
+                            bool beenBaby = data.Item5;
+                            double fullTime = data.Item6;
+                            double currentAge = Math.Round(data.Item7, 1);
+
+                            if (isBaby)
+                            {
+                                int totalMinutes = (int)(fullTime / 60);
+                                int days = totalMinutes / (24 * 60);
+                                int hours = (totalMinutes % (24 * 60)) / 60;
+                                int minutes = totalMinutes % 60;
+
+
+                                ageT = $"{currentAge}";
+
+                                if (ageRate > 0)
+                                {
+                                    rateT = ageRate.ToString();
+
+                                    timeT = totalMinutes.ToString();
+                                }
+
+                                dateT = $"{time}";
+                            }
+                        }
+                    }
+
+
+                    // Fill the DataRow
+                    DataRow dr = table.NewRow();
+                    dr["ID"] = dino;
+                    dr["Name"] = BrStats[rowID][0].ToString();
+                    dr["Mama"] = GetLastColumnData("ID", BrStats[rowID][9].ToString(), "Name", "");
+                    dr["Papa"] = GetLastColumnData("ID", BrStats[rowID][10].ToString(), "Name", "");
+                    dr["Imprinter"] = BrStats[rowID][18].ToString();
+                    dr["Level"] = ToDouble(MainStats[rowID][1].ToString());
+
+                    // change theese stats to baby tracking stuff
+                    dr["Hp"] = ToDouble(ageT);
+                    dr["Stamina"] = ToDouble(timeT);
+                    dr["Oxygen"] = ToDouble(rateT);
+                    dr["Status"] = dateT; // have to use status here because date is a string
+
+                    dr["Food"] = 0;
+
+                    dr["Weight"] = Math.Round(ToDouble(MainStats[rowID][6].ToString()), 1);
+                    dr["Damage"] = Math.Round((ToDouble(MainStats[rowID][7].ToString()) + 1) * 100, 1);
+                    dr["Speed"] = Math.Round((ToDouble(BrStats[rowID][8].ToString()) + 1) * 100);
+
+                    dr["Gen"] = ToDouble(BrStats[rowID][13].ToString());
+                    dr["MamaMute"] = ToDouble(BrStats[rowID][11].ToString());
+                    dr["PapaMute"] = ToDouble(BrStats[rowID][12].ToString());
+                    dr["Age"] = Math.Round(ToDouble(BrStats[rowID][15].ToString()) * 100);
+                    dr["Imprint"] = Math.Round(ToDouble(BrStats[rowID][17].ToString()) * 100);
+
+
+                    table.Rows.Add(dr);
+                }
+
+                rowID++;
+            }
         }
 
         public static void CompileDinoArchive(string sortC = "")
