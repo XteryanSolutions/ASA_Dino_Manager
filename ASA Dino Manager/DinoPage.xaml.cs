@@ -1179,11 +1179,17 @@ public partial class DinoPage : ContentPage
             }
             cellColor0 = DefaultColor;
 
+            bool isGarbage = false;
+            if (status == "Garbage")
+            {
+                isGarbage = true;
+            }
             if (title != "Bottom")
             {
                 status = DataManager.CalcStatus(id);
+                if (isGarbage) { status += Shared.garbageSym; }
             }
-
+           
 
             // Create a Labels
             var nameL = new Label { Text = name, TextColor = cellColor0 };
