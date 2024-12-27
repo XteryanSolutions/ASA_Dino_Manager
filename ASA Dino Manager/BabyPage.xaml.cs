@@ -971,8 +971,10 @@ public partial class BabyPage : ContentPage
 
         sortChar = ""; if (newTest == "Class") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var headerTag = new Label { Text = $"Class{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+
         sortChar = ""; if (newTest == "Name") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header0 = new Label { Text = $"Name{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+
         sortChar = ""; if (newTest == "Level") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header1 = new Label { Text = $"Level{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
@@ -986,19 +988,24 @@ public partial class BabyPage : ContentPage
         sortChar = ""; if (newTest == $"{Shared.speedSym}Rate") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header4 = new Label { Text = $"{Shared.speedSym}Rate{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
-
         // no need to sort date
         var header5 = new Label { Text = $"{Shared.dateSym}Date", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
-
-        // could make theese sortable
+        sortChar = ""; if (newTest == "Status") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header6 = new Label { Text = $"Status{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == "Gen") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header7 = new Label { Text = $"Gen{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == "Papa") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header8 = new Label { Text = $"Papa{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleHeaderColor, FontSize = fSize };
+        sortChar = ""; if (newTest == "Mama") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header9 = new Label { Text = $"Mama{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.femaleHeaderColor, FontSize = fSize };
+        sortChar = ""; if (newTest == "PapaMute") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header10 = new Label { Text = $"PapaMute{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleHeaderColor, FontSize = fSize };
+        sortChar = ""; if (newTest == "MamaMute") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header11 = new Label { Text = $"MamaMute{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.femaleHeaderColor, FontSize = fSize };
+        sortChar = ""; if (newTest == "Imprint") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header12 = new Label { Text = $"Imprint{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == "Imprinter") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header13 = new Label { Text = $"Imprinter{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
 
@@ -1009,7 +1016,15 @@ public partial class BabyPage : ContentPage
         SortColumn(header2, title);
         SortColumn(header3, title);
         SortColumn(header4, title);
-
+        //SortColumn(header5, title);
+        //SortColumn(header6, title);
+        SortColumn(header7, title);
+        SortColumn(header8, title);
+        SortColumn(header9, title);
+        SortColumn(header10, title);
+        SortColumn(header11, title);
+        SortColumn(header12, title);
+        SortColumn(header13, title);
 
 
         int startID = 0;
@@ -1055,7 +1070,7 @@ public partial class BabyPage : ContentPage
             if (name == "") { name = "I need a name"; }
             string level = row["Level"].ToString();
             //////////////
-            string ageT = row["Hp"].ToString() + "%";
+            string ageT = Math.Round(DataManager.ToDouble(row["Hp"].ToString()), 1) + "%";
             string timeT = row["Stamina"].ToString();
             string rateT = row["Oxygen"].ToString();
             string dateT = row["Status"].ToString();
@@ -1076,18 +1091,26 @@ public partial class BabyPage : ContentPage
             int minutes = totalMinutes % 60;
 
 
-            if (DataManager.ToDouble(row["Hp"].ToString()) > 0) // ageRate
-            {
-                double ageRateHr = Math.Round(DataManager.ToDouble(rateT) * 3600, 2);
+            double ageRateHr = Math.Round(DataManager.ToDouble(rateT) * 60, 2);
 
-                rateT = $"{ageRateHr}%/hr";
-                timeT = $"{days}d {hours}h {minutes}m";
-            }
+            rateT = $"{ageRateHr}%/hr";
+            timeT = $"{days}d {hours}h {minutes}m";
 
 
+            //maybe add this later
             if (false)
             {
                 status = Shared.missingSym + "Incomplete Data";
+            }
+
+            if (ageT.Contains("NaN"))
+            {
+                ageT = Shared.noSym;
+            }
+            if (rateT.Contains("NaN"))
+            {
+                rateT = Shared.noSym;
+                timeT = Shared.noSym;
             }
 
             string notes = DataManager.GetNotes(id);

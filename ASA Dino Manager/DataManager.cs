@@ -4,6 +4,7 @@ using System.Data.Common;
 using System.Formats.Asn1;
 using System.Globalization;
 using System.Xml.Linq;
+using Windows.ApplicationModel.Store;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ASA_Dino_Manager
@@ -676,6 +677,9 @@ namespace ASA_Dino_Manager
                             double passedAge = timePassed * agingRate;
 
                             currentAge = lastAgeP + passedAge;
+
+                            double leftToGrow = 100 - currentAge;
+                            double time = leftToGrow / ageRateHr;
                         }
                         else
                         {
@@ -765,7 +769,6 @@ namespace ASA_Dino_Manager
 
             return result;
         }
-
 
         public static double GetGrowthRate(string id)
         {
@@ -1270,47 +1273,70 @@ namespace ASA_Dino_Manager
 
                 if (addIT)
                 {
-                    string ageT = "0"; // hp column
-                    string timeT = "0"; // stamina column
-                    string rateT = "0";  // oxygen column
-                    string dateT = "N/A";  // food column
+                    string id = dino;
+                    // get first known age and time
+                    double firstAge = ToDouble(GetFirstColumnData("ID", id, "BabyAge")) * 100;
+                    string firstTime = GetFirstColumnData("ID", id, "Time");
 
-                    //  get aging stuff for dino -> agingRate, fullGrownDate, growUpTime, isBaby, beenBaby,
-                    List<Tuple<double, string, double, bool, bool, double, double>> dinoAgingData = DataManager.GetDinoAgingData(dino);
 
-                    if (dinoAgingData.Count > 0)
+                    // get last known age and time
+                    double lastAge = ToDouble(GetLastColumnData("ID", id, "BabyAge")) * 100;
+                    string lastTime = GetLastColumnData("ID", id, "Time");
+                    double knownAgeLeft = 100 - lastAge;
+
+                    // convert units
+                    DateTime firstTimeD = DateTime.ParseExact(firstTime, "dd/MM/yyyy HH:mm:ss", null);
+                    DateTime lastTimeD = DateTime.ParseExact(lastTime, "dd/MM/yyyy HH:mm:ss", null);
+
+
+                    // Calculate differences
+                    double timeDiffMinutes = (lastTimeD - firstTimeD).TotalMinutes;
+                    double ageDiff = lastAge - firstAge;
+                    
+
+
+                    // Calculate rates age % per minute
+                    double ageRate = ageDiff / timeDiffMinutes;
+
+
+                    // Estimate data
+                    DateTime nowTime = DateTime.Now;
+
+                    double timePassed = (nowTime - lastTimeD).TotalMinutes;
+                    double agePassed = timePassed * ageRate;
+
+
+                    // Convert minutes to TimeSpan
+                    TimeSpan timePassedD = TimeSpan.FromMinutes(timePassed);
+
+                    double estimatedAge = lastAge + agePassed;
+                    double estAgeLeft = 100 - estimatedAge;
+
+
+                    double estTimeLeft = estAgeLeft / ageRate;
+
+
+                    double LastTimeLeft = knownAgeLeft / ageRate; // time left at last data
+                   
+                    DateTime dateT = DateTime.Now;
+
+                    if (ageRate > 0)
                     {
-                        foreach (var data in dinoAgingData)
+                        if (!double.IsNaN(LastTimeLeft))
                         {
-                            double ageRate = data.Item1;
-                            string time = data.Item2;
-                            double growthRate = data.Item3;
-                            bool isBaby = data.Item4;
-                            bool beenBaby = data.Item5;
-                            double fullTime = data.Item6;
-                            double currentAge = Math.Round(data.Item7, 1);
-
-                            if (isBaby)
-                            {
-                                int totalMinutes = (int)(fullTime / 60);
-                                int days = totalMinutes / (24 * 60);
-                                int hours = (totalMinutes % (24 * 60)) / 60;
-                                int minutes = totalMinutes % 60;
-
-
-                                ageT = $"{currentAge}";
-
-                                if (ageRate > 0)
-                                {
-                                    rateT = ageRate.ToString();
-
-                                    timeT = totalMinutes.ToString();
-                                }
-
-                                dateT = $"{time}";
-                            }
+                            TimeSpan timePa = TimeSpan.FromMinutes(LastTimeLeft);
+                            dateT = lastTimeD + timePa;
                         }
                     }
+
+
+
+
+                    string ageT = "0"; // hp column
+                    string timeT = "0"; // stamina column    // time left in minutes
+                    string rateT = "0";  // oxygen column
+                    //string dateT = "N/A";  // food column
+
 
 
                     // Fill the DataRow
@@ -1322,11 +1348,12 @@ namespace ASA_Dino_Manager
                     dr["Imprinter"] = BrStats[rowID][18].ToString();
                     dr["Level"] = ToDouble(MainStats[rowID][1].ToString());
 
+
                     // change theese stats to baby tracking stuff
-                    dr["Hp"] = ToDouble(ageT);
-                    dr["Stamina"] = ToDouble(timeT);
-                    dr["Oxygen"] = ToDouble(rateT);
-                    dr["Status"] = dateT; // have to use status here because date is a string
+                    dr["Hp"] = estimatedAge;
+                    dr["Stamina"] = estTimeLeft;
+                    dr["Oxygen"] = ageRate;
+                    dr["Status"] = dateT.ToString("dd/MM/yyyy HH:mm:ss"); // have to use status here because date is a string
 
                     dr["Food"] = 0;
 
