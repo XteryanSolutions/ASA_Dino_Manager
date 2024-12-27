@@ -1110,17 +1110,17 @@ namespace ASA_Dino_Manager
             if (!beenBaby) // its a tame just add info on when it was tamed
             {
                 DateTime firstTimeD = DateTime.ParseExact(firstTime, "dd/MM/yyyy HH:mm:ss", null);
-                status = Shared.tameSym + firstTimeD.ToString("dd/MM/yyyy HH:mm:ss");
+                status = "[tameSym]" + firstTimeD.ToString("dd/MM/yyyy HH:mm:ss");
             }
             else
             {
                 if (isBaby)
                 {
-                    status = Shared.breedSym + $"{Math.Round(lastAge, 1)}%";
+                    status = $"[breedSym]{Math.Round(lastAge, 1)}%";
                 }
                 else
                 {
-                    status = Shared.grownSym + GrowUpTime(id);
+                    status = "[grownSym]" + GrowUpTime(id);
                 }
             }
 
@@ -1667,7 +1667,7 @@ namespace ASA_Dino_Manager
                     // mark as garbage if they have none of the best stats
                     if (binaryC == "000000") 
                     { 
-                        finalStatus = $"{compareStatus}{Shared.garbageSym}";
+                        finalStatus = $"{compareStatus}[garbageSym]";
                     }
 
                     // edit the row that we show
@@ -1738,7 +1738,7 @@ namespace ASA_Dino_Manager
                     // mark as garbage if they have none of the best stats
                     if (binaryC == "000000")
                     {
-                        finalStatus = $"{compareStatus}{Shared.garbageSym}";
+                        finalStatus = $"{compareStatus}[garbageSym]";
                     }
 
                     // edit the row we show

@@ -1070,7 +1070,9 @@ public partial class BabyPage : ContentPage
             if (name == "") { name = "I need a name"; }
             string level = row["Level"].ToString();
             //////////////
-            string ageT = Math.Round(DataManager.ToDouble(row["Hp"].ToString()), 1) + "%";
+            
+            double ageD = Math.Round(DataManager.ToDouble(row["Hp"].ToString()), 1);
+            string ageT = ageD + "%";
             string timeT = row["Stamina"].ToString();
             string rateT = row["Oxygen"].ToString();
             string dateT = row["Status"].ToString();
@@ -1097,12 +1099,6 @@ public partial class BabyPage : ContentPage
             timeT = $"{days}d {hours}h {minutes}m";
 
 
-            //maybe add this later
-            if (false)
-            {
-                status = Shared.missingSym + "Incomplete Data";
-            }
-
             if (ageT.Contains("NaN"))
             {
                 ageT = Shared.noSym;
@@ -1112,6 +1108,18 @@ public partial class BabyPage : ContentPage
                 rateT = Shared.noSym;
                 timeT = Shared.noSym;
             }
+
+
+            status = "Baby";
+            if (ageD > 10)
+            {
+                status = "Juvenile";
+            }
+            if (ageD > 50)
+            {
+                status = "Adolescent";
+            }
+
 
             string notes = DataManager.GetNotes(id);
             if (notes != "")

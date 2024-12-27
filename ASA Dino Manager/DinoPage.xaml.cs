@@ -1180,11 +1180,13 @@ public partial class DinoPage : ContentPage
             cellColor0 = DefaultColor;
 
 
+
             if (title != "Bottom")
             {
-              //  status = DataManager.CalcStatus(id);
-
-
+                if (DataManager.ToDouble(gen) > 0)
+                {
+                    status += Shared.missingSym;
+                }
                 string notes = DataManager.GetNotes(id);
 
                 bool hasNotes = false;
@@ -1194,7 +1196,13 @@ public partial class DinoPage : ContentPage
                 {
                     status += Shared.noteSym;
                 }
-
+                // replace placeholders with symbols
+                status = status.Replace("#",$"{Shared.worseSym}");
+                status = status.Replace("<", $"{Shared.worseSym}");
+                status = status.Replace("[garbageSym]", $"{Shared.garbageSym}");
+                status = status.Replace("[breedSym]", $"{Shared.breedSym}");
+                status = status.Replace("[grownSym]", $"{Shared.grownSym}");
+                status = status.Replace("[tameSym]", $"{Shared.tameSym}");
             }
            
 
