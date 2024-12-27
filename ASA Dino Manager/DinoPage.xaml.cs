@@ -1179,15 +1179,22 @@ public partial class DinoPage : ContentPage
             }
             cellColor0 = DefaultColor;
 
-            bool isGarbage = false;
-            if (status == "Garbage")
-            {
-                isGarbage = true;
-            }
+
             if (title != "Bottom")
             {
-                status = DataManager.CalcStatus(id);
-                if (isGarbage) { status += Shared.garbageSym; }
+              //  status = DataManager.CalcStatus(id);
+
+
+                string notes = DataManager.GetNotes(id);
+
+                bool hasNotes = false;
+                if (notes != "") { hasNotes = true; }
+
+                if (hasNotes)
+                {
+                    status += Shared.noteSym;
+                }
+
             }
            
 

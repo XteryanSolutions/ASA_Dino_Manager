@@ -739,37 +739,6 @@ namespace ASA_Dino_Manager
             return result;
         }
 
-        public static double AgeRateNew(string id)
-        {
-            double result = 0;
-
-            string firstT = GetFirstColumnData("ID", id, "Time");
-            string lastT = GetLastColumnData("ID", id, "Time");
-
-            DateTime startTime = DateTime.ParseExact(firstT, "dd/MM/yyyy HH:mm:ss", null);
-            DateTime endTime = DateTime.ParseExact(lastT, "dd/MM/yyyy HH:mm:ss", null);
-
-            string firstA = GetFirstColumnData("ID", id, "Time");
-            string lastA = GetLastColumnData("ID", id, "Time");
-
-            double firstAge = ToDouble(firstA);
-            double lastAge = ToDouble(lastA);
-
-
-            // Calculate differences
-            double timeDiffSeconds = (endTime - startTime).TotalSeconds;
-            double ageDiff = (lastAge - firstAge) * 100;
-
-            if (timeDiffSeconds > 0)
-            {
-                // get accurate unRounded ageRate
-                double ageRatePerSecond = ageDiff / timeDiffSeconds;
-                return ageRatePerSecond;
-            }
-
-            return result;
-        }
-
         public static double GetGrowthRate(string id)
         {
             try
@@ -1103,7 +1072,8 @@ namespace ASA_Dino_Manager
                     dr["PapaMute"] = ToDouble(BrStats[rowID][12].ToString());
                     dr["Age"] = Math.Round(ToDouble(BrStats[rowID][15].ToString()) * 100);
                     dr["Imprint"] = Math.Round(ToDouble(BrStats[rowID][17].ToString()) * 100);
-                    dr["Status"] = group;
+                    dr["Status"] = CalcStatus(dino);
+
 
                     table.Rows.Add(dr);
                 }
@@ -1153,18 +1123,7 @@ namespace ASA_Dino_Manager
                     status = Shared.grownSym + GrowUpTime(id);
                 }
             }
-            
 
-            if (status.Contains("<") || status.Contains("#"))
-            {
-                status = Shared.worseSym + status;
-            }
-
-            string notes = DataManager.GetNotes(id);
-            if (notes != "")
-            {
-                status = status + Shared.noteSym;
-            }
 
             return status;
         }
@@ -1698,11 +1657,21 @@ namespace ASA_Dino_Manager
                         }
                     }
 
+                    string finalStatus = compareStatus;
+
+
+                    if (outStatus.Contains("<") || outStatus.Contains("#"))
+                    {
+                        finalStatus = outStatus;
+                    }
                     // mark as garbage if they have none of the best stats
-                    if (binaryC == "000000") { outStatus = "Garbage"; }
+                    if (binaryC == "000000") 
+                    { 
+                        finalStatus = $"{compareStatus}{Shared.garbageSym}";
+                    }
 
                     // edit the row that we show
-                    MaleTable.Rows[rowIDC].SetField("Status", outStatus);
+                    MaleTable.Rows[rowIDC].SetField("Status", finalStatus);
                 }
 
                 rowIDC++;
@@ -1762,13 +1731,18 @@ namespace ASA_Dino_Manager
                 BinaryF[rowIDC] = binaryC;
 
 
-                // mark as garbage if they have none of the best stats
-                if (binaryC == "000000") { outStatus = "Garbage"; }
-
                 if (includeC)
                 {
+                    string finalStatus = compareStatus;
+
+                    // mark as garbage if they have none of the best stats
+                    if (binaryC == "000000")
+                    {
+                        finalStatus = $"{compareStatus}{Shared.garbageSym}";
+                    }
+
                     // edit the row we show
-                    FemaleTable.Rows[rowIDC].SetField("Status", outStatus);
+                    FemaleTable.Rows[rowIDC].SetField("Status", finalStatus);
                 }
 
                 rowIDC++;
