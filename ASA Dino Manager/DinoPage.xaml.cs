@@ -1,6 +1,4 @@
 ﻿using System.Data;
-using System.Linq;
-using Windows.ApplicationModel.Store;
 
 
 namespace ASA_Dino_Manager;
@@ -1183,10 +1181,6 @@ public partial class DinoPage : ContentPage
 
             if (title != "Bottom")
             {
-                if (DataManager.ToDouble(gen) > 0)
-                {
-                    status += Shared.missingSym;
-                }
                 string notes = DataManager.GetNotes(id);
 
                 bool hasNotes = false;
@@ -1203,6 +1197,7 @@ public partial class DinoPage : ContentPage
                 status = status.Replace("[breedSym]", $"{Shared.breedSym}");
                 status = status.Replace("[grownSym]", $"{Shared.grownSym}");
                 status = status.Replace("[tameSym]", $"{Shared.tameSym}");
+                status = status.Replace("[missingSym]", $"{Shared.missingSym}");
             }
            
 

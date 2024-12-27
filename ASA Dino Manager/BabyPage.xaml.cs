@@ -1,8 +1,4 @@
 using System.Data;
-using System.Data.Common;
-using System.Formats.Asn1;
-using System.Xml.Linq;
-using Windows.ApplicationModel.Store;
 
 namespace ASA_Dino_Manager;
 
@@ -1119,7 +1115,6 @@ public partial class BabyPage : ContentPage
             {
                 status = "Adolescent";
             }
-
 
             string notes = DataManager.GetNotes(id);
             if (notes != "")

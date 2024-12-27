@@ -1,11 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
-using System.Formats.Asn1;
+﻿using System.Data;
 using System.Globalization;
-using System.Xml.Linq;
-using Windows.ApplicationModel.Store;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ASA_Dino_Manager
 {
@@ -1107,12 +1101,27 @@ namespace ASA_Dino_Manager
                 isBaby = true;
             }
 
+            // check for missing data
+            string mama = DataManager.GetLastColumnData("ID", id, "Mama");
+            string papa = DataManager.GetLastColumnData("ID", id, "Papa");
+            string mamaM = DataManager.GetLastColumnData("ID", id, "MamaMute");
+            string papaM = DataManager.GetLastColumnData("ID", id, "PapaMute");
+            string gen = DataManager.GetLastColumnData("ID", id, "Gen");
+            string imprint = DataManager.GetLastColumnData("ID", id, "Imprint");
+            string imprinter = DataManager.GetLastColumnData("ID", id, "Imprinter");
+
             if (!beenBaby) // its a tame just add info on when it was tamed
             {
                 DateTime firstTimeD = DateTime.ParseExact(firstTime, "dd/MM/yyyy HH:mm:ss", null);
                 status = "[tameSym]" + firstTimeD.ToString("dd/MM/yyyy HH:mm:ss");
+
+                // stats that a fresh tame should not have
+                if (mama != "" || papa != "" || DataManager.ToDouble(gen) > 0 || DataManager.ToDouble(mamaM) > 0 || DataManager.ToDouble(papaM) > 0 || DataManager.ToDouble(imprint) > 60)
+                {
+                    status += "[missingSym]";
+                }
             }
-            else
+            else // has been a baby at some point
             {
                 if (isBaby)
                 {
@@ -1121,6 +1130,11 @@ namespace ASA_Dino_Manager
                 else
                 {
                     status = "[grownSym]" + GrowUpTime(id);
+                }
+                // stats that someone that has been a baby should not have
+                if (mama == "" || papa == "")
+                {
+                    status += "[missingSym]";
                 }
             }
 
