@@ -1048,15 +1048,8 @@ namespace ASA_Dino_Manager
                 string mutes = a + b + c + d + e + f;
 
                 SetMutes(dino, mutes);
-                int toggle = 0;
-                if (Shared.setPage == "Baby dinos")
-                {
-                    toggle = BabyPage.ToggleExcluded;
-                }
-                else
-                {
-                    toggle = DinoPage.ToggleExcluded;
-                }
+                int toggle = DinoPage.ToggleExcluded;
+
 
                 bool addIT = false;
                 if (toggle == 0)
@@ -1117,6 +1110,63 @@ namespace ASA_Dino_Manager
 
                 rowID++;
             }
+        }
+
+        public static string CalcStatus(string id)
+        {
+            string status = "";
+
+            // get first known age and time
+            string firstTime = DataManager.GetFirstColumnData("ID", id, "Time");
+            double firstAge = DataManager.ToDouble(DataManager.GetFirstColumnData("ID", id, "BabyAge")) * 100;
+
+            // get last known age and time
+            double lastAge = DataManager.ToDouble(DataManager.GetLastColumnData("ID", id, "BabyAge")) * 100;
+            string lastTime = DataManager.GetLastColumnData("ID", id, "Time");
+
+            // convert units   
+            //DateTime lastTimeD = DateTime.ParseExact(lastTime, "dd/MM/yyyy HH:mm:ss", null);
+
+            bool isBaby = false; bool beenBaby = false;
+            if (firstAge < 100) // get the growth stage of the dino
+            {
+                beenBaby = true;
+            }
+            if (lastAge < 100)
+            {
+                isBaby = true;
+            }
+
+            if (!beenBaby) // its a tame just add info on when it was tamed
+            {
+                DateTime firstTimeD = DateTime.ParseExact(firstTime, "dd/MM/yyyy HH:mm:ss", null);
+                status = Shared.tameSym + firstTimeD.ToString("dd/MM/yyyy HH:mm:ss");
+            }
+            else
+            {
+                if (isBaby)
+                {
+                    status = Shared.breedSym + $"{Math.Round(lastAge, 1)}%";
+                }
+                else
+                {
+                    status = Shared.grownSym + GrowUpTime(id);
+                }
+            }
+            
+
+            if (status.Contains("<") || status.Contains("#"))
+            {
+                status = Shared.worseSym + status;
+            }
+
+            string notes = DataManager.GetNotes(id);
+            if (notes != "")
+            {
+                status = status + Shared.noteSym;
+            }
+
+            return status;
         }
 
         public static void GetDinoData(string DinoClass, string sortiM = "", string sortiF = "")
@@ -1292,7 +1342,7 @@ namespace ASA_Dino_Manager
                     // Calculate differences
                     double timeDiffMinutes = (lastTimeD - firstTimeD).TotalMinutes;
                     double ageDiff = lastAge - firstAge;
-                    
+
 
 
                     // Calculate rates age % per minute
@@ -1317,7 +1367,7 @@ namespace ASA_Dino_Manager
 
 
                     double LastTimeLeft = knownAgeLeft / ageRate; // time left at last data
-                   
+
                     DateTime dateT = DateTime.Now;
 
                     if (ageRate > 0)

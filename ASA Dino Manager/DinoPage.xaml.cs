@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Linq;
+using Windows.ApplicationModel.Store;
 
 
 namespace ASA_Dino_Manager;
@@ -1066,7 +1067,7 @@ public partial class DinoPage : ContentPage
 
 
             string name = row["Name"].ToString();
-            if (name == "") { name = "ReName me"; }
+            if (name == "") { name = "Name me"; }
             string level = row["Level"].ToString();
             //////////////
             string hp = row["Hp"].ToString();
@@ -1088,19 +1089,6 @@ public partial class DinoPage : ContentPage
             string group = "";
 
             group = DataManager.GetGroup(id);
-
-            if (ToggleExcluded == 0)
-            {
-
-            }
-            if (ToggleExcluded == 2)
-            {
-                //  if (group == "Exclude") { status = ""; }
-            }
-            if (ToggleExcluded == 3)
-            {
-                //  if (group == "Archived") { status = ""; }
-            }
 
             //recolor breeding stats
             if (DataManager.ToDouble(level) >= DataManager.LevelMax) { cellColor1 = Shared.goodColor; }
@@ -1126,12 +1114,6 @@ public partial class DinoPage : ContentPage
                 if (eC == "1") { cellColor6 = Shared.mutaColor; }
                 if (fC == "1") { cellColor7 = Shared.mutaColor; }
             }
-
-            // Baby detection
-            string age = row["Age"].ToString();
-            double ageD = DataManager.ToDouble(age);
-            if (ageD < 100 && !name.Contains("Breed #") && status == "") { status = ageD + "% Grown"; }
-
 
             // override offspring colors based on breed points
             if (title == "Bottom")
@@ -1197,111 +1179,8 @@ public partial class DinoPage : ContentPage
             }
             cellColor0 = DefaultColor;
 
-            bool isGarbage = false;
-            if (status == "Garbage")
-            {
-                isGarbage = true;
-                status = "";
-            }
 
-            if (title != "Bottom")
-            {
-                //  get aging stuff for dino -> agingRate, fullGrownDate, growUpTime, isBaby, beenBaby,
-                List<Tuple<double, string, double, bool, bool, double, double>> dinoAgingData = DataManager.GetDinoAgingData(id);
-
-                if (dinoAgingData.Count > 0)
-                {
-                    foreach (var data in dinoAgingData)
-                    {
-                        double ageRate = data.Item1;
-                        string time = data.Item2;
-                        double growthRate = data.Item3;
-                        bool isBaby = data.Item4;
-                        bool beenBaby = data.Item5;
-                        double fullTime = data.Item6;
-                        double currentAge = Math.Round(data.Item7, 1);
-
-                        if (!beenBaby) // its a tame just add info on when it was tamed
-                        {
-                            // cellColor0 = Shared.tameColor;
-                            // if it has a mama or papa its not a tame we just dont have enough info on dino
-                            // check for any stuff a wild tame shouldnt have like imprint etc..
-                            if (mama != "" || papa != "" || imprinter != "" || DataManager.ToDouble(gen) > 0 || DataManager.ToDouble(imprint) > 0 || DataManager.ToDouble(mamaM) > 0 || DataManager.ToDouble(papaM) > 0)
-                            {
-                                status = Shared.missingSym + "Incomplete Data";
-                            }
-                            else
-                            {
-                                status = Shared.tameSym + time;
-                            }
-                        }
-                        else
-                        {
-                            if (isBaby)
-                            {
-                                if (time != "N/A")
-                                {
-                                    DateTime endTime = DateTime.ParseExact(time, "dd/MM/yyyy HH:mm:ss", null);
-                                    if (endTime < DateTime.Now)
-                                    {
-                                        status = Shared.noBabySym + "ReImport";
-                                    }
-                                    else
-                                    {
-                                        int totalMinutes = (int)(fullTime / 60);
-                                        int days = totalMinutes / (24 * 60);
-                                        int hours = (totalMinutes % (24 * 60)) / 60;
-                                        int minutes = totalMinutes % 60;
-
-                                        double ageRateHr = Math.Round(ageRate * 3600, 2);
-
-                                        status = Shared.breedSym + $"{currentAge}%{Shared.timeSym}{days}d {hours}h {minutes}m";
-                                    }
-                                }
-                                else
-                                {
-                                    status = Shared.breedSym + status;
-                                }
-                            }
-                            else
-                            {
-                                if (status == "" && time != "N/A")
-                                {
-                                    status = Shared.grownSym + time;
-                                }
-                                else
-                                {
-                                    if (status.Contains("<") || status.Contains("#"))
-                                    {
-                                        status = Shared.worseSym + status;
-                                    }
-                                    else
-                                    {
-                                        if (status == "")
-                                        {
-                                            status = Shared.missingSym + "Incomplete Data";
-                                        }
-                                        else
-                                        {
-                                            status = Shared.noSym + status;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            if (isGarbage && !status.Contains("Incomplete"))
-            {
-                status = Shared.garbageSym + status;
-            }
-
-            string notes = DataManager.GetNotes(id);
-            if (notes != "")
-            {
-                status = Shared.noteSym + status;
-            }
+            status = DataManager.CalcStatus(id);
 
             // Create a Labels
             var nameL = new Label { Text = name, TextColor = cellColor0 };
