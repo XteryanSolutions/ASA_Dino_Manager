@@ -1118,7 +1118,7 @@ public partial class DinoPage : ContentPage
             // override offspring colors based on breed points
             if (title == "Bottom")
             {
-                if (name.Contains("Breed #"))
+                if (name.Contains("Breed #")) // obsolete
                 {
                     var nameSplit = name.Split(new[] { @"#" }, StringSplitOptions.RemoveEmptyEntries);
                     int maxRows = DataManager.ComboTable.Rows.Count;
@@ -1179,8 +1179,11 @@ public partial class DinoPage : ContentPage
             }
             cellColor0 = DefaultColor;
 
+            if (title != "Bottom")
+            {
+                status = DataManager.CalcStatus(id);
+            }
 
-            status = DataManager.CalcStatus(id);
 
             // Create a Labels
             var nameL = new Label { Text = name, TextColor = cellColor0 };
