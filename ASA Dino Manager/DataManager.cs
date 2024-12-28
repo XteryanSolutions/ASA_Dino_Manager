@@ -95,7 +95,7 @@ namespace ASA_Dino_Manager
                 ImportsTable.Columns.Add("Class", typeof(string));
                 ImportsTable.Columns.Add("Time", typeof(string));
                 ImportsTable.Columns.Add("Colors", typeof(string));
-
+                ImportsTable.Columns.Add("CraftSkill", typeof(string));
 
 
 
@@ -2312,6 +2312,8 @@ namespace ASA_Dino_Manager
                     dr["Class"] = importedNew[22];
                     dr["Time"] = Time;
                     dr["Colors"] = importedNew[23];
+                    dr["CraftSkill"] = importedNew[24];
+
 
                     if (!found)
                     {
@@ -2349,7 +2351,7 @@ namespace ASA_Dino_Manager
 
         private static string[] FilterDinoStats(string filename, string emptyString = "N/A")
         {
-            string[] resultSet = Enumerable.Repeat(emptyString, 24).ToArray();
+            string[] resultSet = Enumerable.Repeat(emptyString, 25).ToArray();
 
             try
             {
@@ -2499,6 +2501,10 @@ namespace ASA_Dino_Manager
                             else if (key.Key.ToUpper() == "DINOCLASS")
                             {
                                 resultSet[22] = key.Value;
+                            }
+                            else if (key.Key.ToUpper() == "CRAFTING SKILL")
+                            {
+                                resultSet[24] = key.Value;
                             }
                         }
 

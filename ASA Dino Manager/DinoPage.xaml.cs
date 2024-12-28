@@ -1392,7 +1392,7 @@ public partial class DinoPage : ContentPage
                 string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
                 this.Title = $"{name} - {id}"; // set title to dino name
 
-                // FileManager.Log($"Selected {name} ID: {id}", 0);
+               // FileManager.Log($"Selected {name} ID: {id}", 0);
 
                 // activate double clicking
 
