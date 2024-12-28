@@ -38,15 +38,17 @@ public partial class BabyPage : ContentPage
         FileManager.Log($"Loaded: {Shared.setPage}", 0);
 
         // reset stuff
-        selectedID = ""; isSelected = false;
-        canDouble = false; isDouble = false;
-        ToggleExcluded = Shared.DefaultToggle;
-        CurrentStats = Shared.DefaultStat;
+      //  selectedID = ""; isSelected = false;
+      //  canDouble = false; isDouble = false;
+      //  ToggleExcluded = Shared.DefaultToggle;
+      //  CurrentStats = Shared.DefaultStat;
 
         BabyPage.dataValid = false; // invalidate
 
         // set page title
-        this.Title = $"{Shared.setPage.Replace("_", " ")}";
+        if (!isSelected) { this.Title = $"{Shared.setPage.Replace("_", " ")}"; }
+        else { this.Title = $"{DataManager.GetLastColumnData("ID", selectedID, "Name")} - {selectedID}"; }
+
         CreateContent();
     }
 
@@ -75,6 +77,7 @@ public partial class BabyPage : ContentPage
 
                 FileManager.Log("Updating GUI -> " + Shared.setPage, 0);
                 if (!isSelected) { this.Title = $"{Shared.setPage.Replace("_", " ")}"; }
+                else { this.Title = $"{DataManager.GetLastColumnData("ID", selectedID, "Name")} - {selectedID}"; }
 
                 // DefaultView("WIP");
 
@@ -298,8 +301,8 @@ public partial class BabyPage : ContentPage
             AddToGrid(grid, toggleBtn, 0, 0);
             toggleBtn.Clicked += ToggleBtnClicked;
 
-            string btn1Text = "Current"; var bColor1 = Shared.PrimaryColor;
-            if (CurrentStats) { btn1Text = "Average"; bColor1 = Shared.SecondaryColor; }
+            string btn1Text = "Average"; var bColor1 = Shared.PrimaryColor;
+            if (CurrentStats) { btn1Text = "Current"; bColor1 = Shared.SecondaryColor; }
             var topButton1 = new Button { Text = btn1Text, BackgroundColor = bColor1 };
             topButton1.Clicked += StatsBtnClicked;
             AddToGrid(grid, topButton1, 1, 0);

@@ -42,14 +42,11 @@ public partial class DinoPage : ContentPage
         FileManager.Log($"Loaded: {Shared.setPage}", 0);
 
         // reset stuff
-        selectedID = ""; isSelected = false;
-        canDouble = false; isDouble = false;
-        ToggleExcluded = Shared.DefaultToggle;
-        CurrentStats = Shared.DefaultStat;
         DinoPage.dataValid = false; // invalidate
 
         // set page title
-        this.Title = $"{Shared.setPage.Replace("_", " ")}";
+        if (!isSelected) { this.Title = $"{Shared.setPage.Replace("_", " ")}"; }
+        else { this.Title = $"{DataManager.GetLastColumnData("ID", selectedID, "Name")} - {selectedID}"; }
 
         CreateContent();
     }
@@ -102,6 +99,8 @@ public partial class DinoPage : ContentPage
 
                 FileManager.Log("Updating GUI -> " + Shared.setPage, 0);
                 if (!isSelected) { this.Title = $"{Shared.setPage.Replace("_", " ")}"; }
+                else { this.Title = $"{DataManager.GetLastColumnData("ID", selectedID, "Name")} - {selectedID}"; }
+
 
                 DinoView();
             }
@@ -349,7 +348,7 @@ public partial class DinoPage : ContentPage
             topButton1.Clicked += StatsBtnClicked;
             AddToGrid(grid, topButton1, 1, 0);
 
-           
+
         }
 
 
@@ -1189,7 +1188,7 @@ public partial class DinoPage : ContentPage
                     status += Shared.noteSym;
                 }
                 // replace placeholders with symbols
-                status = status.Replace("#",$"{Shared.worseSym}");
+                status = status.Replace("#", $"{Shared.worseSym}");
                 status = status.Replace("<", $"{Shared.worseSym}");
                 status = status.Replace("[garbageSym]", $"{Shared.garbageSym}");
                 status = status.Replace("[breedSym]", $"{Shared.breedSym}");
@@ -1197,7 +1196,7 @@ public partial class DinoPage : ContentPage
                 status = status.Replace("[tameSym]", $"{Shared.tameSym}");
                 status = status.Replace("[missingSym]", $"{Shared.missingSym}");
             }
-           
+
 
             // Create a Labels
             var nameL = new Label { Text = name, TextColor = cellColor0 };

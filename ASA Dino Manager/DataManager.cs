@@ -1407,7 +1407,7 @@ namespace ASA_Dino_Manager
 
                     DateTime dateT = DateTime.Now;
 
-                    if (!BabyPage.CurrentStats) // alternate ageRate
+                    if (BabyPage.CurrentStats) // alternate ageRate
                     {
                         if (ageRate2 > 0)
                         {

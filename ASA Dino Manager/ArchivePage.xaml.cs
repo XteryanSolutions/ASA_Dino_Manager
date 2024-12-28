@@ -19,7 +19,9 @@ public partial class ArchivePage : ContentPage
         FileManager.Log($"Loaded: {Shared.setPage}", 0);
 
         // set page title
-        this.Title = $"{Shared.setPage}";
+        if (!isSelected) { this.Title = $"{Shared.setPage.Replace("_", " ")}"; }
+        else { this.Title = $"{DataManager.GetLastColumnData("ID", selectedID, "Name")} - {selectedID}"; }
+
         CreateContent();
     }
 
@@ -72,8 +74,8 @@ public partial class ArchivePage : ContentPage
                 DataManager.CompileDinoArchive(sortA);
 
                 FileManager.Log("Updating GUI -> " + Shared.setPage, 0);
-
-                if (!isSelected) { this.Title = Shared.setPage; }
+                if (!isSelected) { this.Title = $"{Shared.setPage.Replace("_", " ")}"; }
+                else { this.Title = $"{DataManager.GetLastColumnData("ID", selectedID, "Name")} - {selectedID}"; }
 
                 if (DataManager.ArchiveTable.Rows.Count > 0)
                 {

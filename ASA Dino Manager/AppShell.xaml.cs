@@ -1,4 +1,6 @@
-﻿namespace ASA_Dino_Manager
+﻿using Microsoft.Maui.Controls;
+
+namespace ASA_Dino_Manager
 {
     public partial class AppShell : Shell
     {
@@ -10,6 +12,8 @@
         private int ImportCount = 0;
         private double ImportAvg = 0; // keep track of average import time
 
+
+        private int reload = 0;
 
         public AppShell()
         {
@@ -49,7 +53,7 @@
             if (!FileManager.Scanning && classList.Length > 0)
             {
                 DataManager.CleanDataBaseByID();
-                UpdateMenuContents();
+                CreateMenuContents();
             }
             else
             {
@@ -113,25 +117,34 @@
                 string target = e.Target.Location.ToString();
 
                 // replace all / and trim it
-                Shared.setPage = target.Replace("/", "").Trim();
+                if (target.Replace("/", "").Trim() != Shared.setPage) // we navigate to a new page reset values
+                {
+                    Shared.setPage = target.Replace("/", "").Trim();
+                    // got a new setpage
+                    UpdateMenuContents(Shared.setPage);
+
+                    // reset toggles and unselect dino when navigating
+                    DinoPage.CurrentStats = Shared.DefaultStat; DinoPage.ToggleExcluded = Shared.DefaultToggle;
+                    DinoPage.isSelected = false; DinoPage.isDouble = false; DinoPage.canDouble = false; DinoPage.selectedID = "";
+                    DinoPage.sortM = Shared.DefaultSortM; DinoPage.sortF = Shared.DefaultSortF; DinoPage.dataValid = false; // invalidate
+
+                    BabyPage.CurrentStats = Shared.DefaultStat; BabyPage.ToggleExcluded = Shared.DefaultToggle;
+                    BabyPage.isSelected = false; BabyPage.isDouble = false; BabyPage.canDouble = false; BabyPage.selectedID = "";
+                    BabyPage.sortM = Shared.DefaultSortM; BabyPage.sortF = Shared.DefaultSortF; BabyPage.dataValid = false; // invalidate
+
+                    ArchivePage.isSelected = false; ArchivePage.selectedID = ""; ArchivePage.sortA = Shared.DefaultSortA;
+                }
+                else
+                {
+                    Shared.setPage = target.Replace("/", "").Trim();
+                }
+                
 
                 FileManager.Log($"Navigating -> {Shared.setPage}", 0);
 
                 // set the selected class to the entire class string
                 // so we need to translate readable back to unreadable
                 Shared.selectedClass = DataManager.ShortClassToLong(Shared.setPage);
-
-
-                // reset toggles and unselect dino when navigating
-                DinoPage.CurrentStats = Shared.DefaultStat; DinoPage.ToggleExcluded = Shared.DefaultToggle;
-                DinoPage.isSelected = false; DinoPage.isDouble = false; DinoPage.canDouble = false; DinoPage.selectedID = "";
-                DinoPage.sortM = Shared.DefaultSortM; DinoPage.sortF = Shared.DefaultSortF; DinoPage.dataValid = false; // invalidate
-
-                BabyPage.CurrentStats = Shared.DefaultStat; BabyPage.ToggleExcluded = Shared.DefaultToggle;
-                BabyPage.isSelected = false; BabyPage.isDouble = false; BabyPage.canDouble = false; BabyPage.selectedID = "";
-                BabyPage.sortM = Shared.DefaultSortM; BabyPage.sortF = Shared.DefaultSortF; BabyPage.dataValid = false; // invalidate
-
-                ArchivePage.isSelected = false; ArchivePage.selectedID = ""; ArchivePage.sortA = Shared.DefaultSortA;
             }
             else
             {
@@ -139,7 +152,7 @@
             }
         }
 
-        public void UpdateMenuContents()
+        public void CreateMenuContents()
         {
             disableNavSet = true; // FileManager.Log("Disabled setPage", 0);
             string[] classList = DataManager.GetAllClassesShort();
@@ -151,6 +164,7 @@
 
             // Retrieve the tag list from DataManager and sort alphabetically
             var sortedClassList = classList.OrderBy(tag => tag).ToArray();
+
 
             var shellContent1 = new ShellContent
             {
@@ -187,7 +201,7 @@
 
                 var shellContent = new ShellContent
                 {
-                    Title = dinoClass.Replace("_"," "),
+                    Title = dinoClass.Replace("_", " "),
                     ContentTemplate = new DataTemplate(typeof(DinoPage)),
                     Route = $"{dinoClass}"
                 };
@@ -198,8 +212,129 @@
             disableNavSet = false; // FileManager.Log("Enabled setPage", 0);
             DinoPage.dataValid = false; // invalidate data
             BabyPage.dataValid = false; // invalidate data
-            FileManager.Log("Updated classList", 0);
+            FileManager.Log("Created classList", 0);
         }
+
+        public void UpdateMenuContents(string page)
+        {
+            if (page != "")
+            {
+                disableNavSet = true; // FileManager.Log("Disabled setPage", 0);
+                string[] classList = DataManager.GetAllClassesShort();
+                DataManager.classSize = classList.Length;
+
+
+                Items.Clear();
+
+                // Retrieve the tag list from DataManager and sort alphabetically
+                var sortedClassList = classList.OrderBy(tag => tag).ToArray();
+
+
+                string location = page;
+                string route = location.Replace(" ", "_");
+
+                reload++;
+                if (route.Contains("ASA")) 
+                {
+                    var shellContent0 = new ShellContent
+                    {
+                        Title = $"Dino Manager",
+                        ContentTemplate = new DataTemplate(typeof(MainPage)),
+                        Route = $"{route}"
+                    };
+                    Items.Add(shellContent0);
+                }
+                else if (route.Contains("Archive"))
+                {
+                    var shellContent0 = new ShellContent
+                    {
+                        Title = $"Dino Archive",
+                        ContentTemplate = new DataTemplate(typeof(ArchivePage)),
+                        Route = $"{route}"
+                    };
+                    Items.Add(shellContent0);
+                }
+                else if (route.Contains("Baby_dinos"))
+                {
+                    var shellContent0 = new ShellContent
+                    {
+                        Title = $"Baby Dinos",
+                        ContentTemplate = new DataTemplate(typeof(BabyPage)),
+                        Route = $"{route}"
+                    };
+                    Items.Add(shellContent0);
+                }
+                else
+                {
+                    var shellContent0 = new ShellContent
+                    {
+                        Title = $"{location}",
+                        ContentTemplate = new DataTemplate(typeof(DinoPage)),
+                        Route = $"{route}"
+                    };
+                    Items.Add(shellContent0);
+                }
+                
+                
+
+                var shellContent1 = new ShellContent
+                {
+                    Title = "Dino Manager",
+                    ContentTemplate = new DataTemplate(typeof(MainPage)),
+                    Route = $"ASA"
+                };
+
+                var shellContent2 = new ShellContent
+                {
+                    Title = "Dino Archive",
+                    ContentTemplate = new DataTemplate(() => new ArchivePage()),
+                    Route = $"Archive"
+                };
+
+                var shellContent3 = new ShellContent
+                {
+                    Title = "Baby Dinos",
+                    ContentTemplate = new DataTemplate(() => new BabyPage()),
+                    Route = $"Baby_dinos"
+                };
+
+                // Add the ShellContent to the Shell
+                if (!route.Contains("ASA")) { Items.Add(shellContent1); }
+                if (!route.Contains("Archive")) { Items.Add(shellContent2); }
+                if (!route.Contains("Baby")) { Items.Add(shellContent3); }
+
+                // Loop through the sorted tags and create ShellContent dynamically
+                foreach (var dinoClass in sortedClassList)
+                {
+                    // string dinoTag = DataManager.ClassForTag(dinoClass);
+
+                    // int totalC = DataManager.DinoCount(dinoTag);
+
+
+                    var shellContent = new ShellContent
+                    {
+                        Title = dinoClass.Replace("_", " "),
+                        ContentTemplate = new DataTemplate(typeof(DinoPage)),
+                        Route = $"{dinoClass}"
+                    };
+
+                    if (route != dinoClass)
+                    {
+                        // Add the ShellContent to the Shell
+                        Items.Add(shellContent);
+                    }
+                }
+                disableNavSet = false; // FileManager.Log("Enabled setPage", 0);
+                DinoPage.dataValid = false; // invalidate data
+                BabyPage.dataValid = false; // invalidate data
+                FileManager.Log($"Updated Menu Contents: {reload}", 0);
+            }
+            else
+            {
+                FileManager.Log("No setPage", 1);
+            }
+        }
+
 
         public void ProcessAllFiles()
         {
@@ -218,6 +353,8 @@
                             // handle import files first
                             DataManager.Import();
 
+                            UpdateMenuContents(Shared.setPage);
+
                             // check for changes in dino class
                             string[] classList = DataManager.GetAllClassesShort();
 
@@ -230,7 +367,7 @@
                                 if (classList.Length != DataManager.classSize)
                                 {
                                     // update menu because we need to see the new class
-                                    UpdateMenuContents();
+                                    //  UpdateMenuContents(Shared.setPage);
                                 }
 
                                 DinoPage.dataValid = false; // invalidate data
