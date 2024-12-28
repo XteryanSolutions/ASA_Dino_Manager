@@ -297,6 +297,13 @@ public partial class BabyPage : ContentPage
             var toggleBtn = new Button { Text = toggleBtnText, BackgroundColor = toggleBtnColor };
             AddToGrid(grid, toggleBtn, 0, 0);
             toggleBtn.Clicked += ToggleBtnClicked;
+
+            string btn1Text = "Average"; var bColor1 = Shared.PrimaryColor;
+            if (CurrentStats) { btn1Text = "Current"; bColor1 = Shared.SecondaryColor; }
+            var topButton1 = new Button { Text = btn1Text, BackgroundColor = bColor1 };
+            topButton1.Clicked += StatsBtnClicked;
+            AddToGrid(grid, topButton1, 1, 0);
+
         }
 
         if (isSelected) // add theese only if we have a dino selected
@@ -1481,6 +1488,25 @@ public partial class BabyPage : ContentPage
         levelText = ""; hpText = ""; staminaText = ""; oxygenText = "";
         foodText = ""; weightText = ""; damageText = ""; notesText = "";
         isDouble = false;
+        ClearSelection();
+        CreateContent();
+    }
+
+    private void StatsBtnClicked(object? sender, EventArgs e)
+    {
+        if (CurrentStats)
+        {
+            CurrentStats = false;
+        }
+        else
+        {
+            CurrentStats = true;
+        }
+
+        dataValid = false; // invalidate
+
+        FileManager.Log($"Toggle Stats {CurrentStats}", 0);
+
         ClearSelection();
         CreateContent();
     }

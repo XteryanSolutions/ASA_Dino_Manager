@@ -1317,10 +1317,8 @@ namespace ASA_Dino_Manager
                     double ageDiff = lastAge - firstAge;
 
 
-
                     // Calculate rates age % per minute
                     double ageRate = ageDiff / timeDiffMinutes;
-
 
                     // Estimate data
                     DateTime nowTime = DateTime.Now;
@@ -1328,38 +1326,54 @@ namespace ASA_Dino_Manager
                     double timePassed = (nowTime - lastTimeD).TotalMinutes;
                     double agePassed = timePassed * ageRate;
 
-
                     // Convert minutes to TimeSpan
                     TimeSpan timePassedD = TimeSpan.FromMinutes(timePassed);
 
+
                     double estimatedAge = lastAge + agePassed;
                     double estAgeLeft = 100 - estimatedAge;
-
-
                     double estTimeLeft = estAgeLeft / ageRate;
-
-
                     double LastTimeLeft = knownAgeLeft / ageRate; // time left at last data
+
+
+
+                    // alternate agerate stuff
+                    double ageRate2 = GetGrowthRate(id) * 60; // alternate ageRate
+                    double agePassed2 = timePassed * ageRate2;
+                    double estimatedAge2 = lastAge + agePassed2;
+                    double estAgeLeft2 = 100 - estimatedAge2;
+                    double estTimeLeft2 = estAgeLeft2 / ageRate2;
+                    double LastTimeLeft2 = knownAgeLeft / ageRate2; // time left at last data
+
 
                     DateTime dateT = DateTime.Now;
 
-                    if (ageRate > 0)
+                    if (BabyPage.CurrentStats) // alternate ageRate
                     {
-                        if (!double.IsNaN(LastTimeLeft))
+                        if (ageRate2 > 0)
                         {
-                            TimeSpan timePa = TimeSpan.FromMinutes(LastTimeLeft);
-                            dateT = lastTimeD + timePa;
+                            if (!double.IsNaN(LastTimeLeft2))
+                            {
+                                TimeSpan timePa = TimeSpan.FromMinutes(LastTimeLeft2);
+                                dateT = lastTimeD + timePa;
+                            }
+                        }
+                        estimatedAge = estimatedAge2;
+                        estTimeLeft = estTimeLeft2;
+                        ageRate = ageRate2;
+                    }
+                    else
+                    {
+                        if (ageRate > 0)
+                        {
+                            if (!double.IsNaN(LastTimeLeft))
+                            {
+                                TimeSpan timePa = TimeSpan.FromMinutes(LastTimeLeft);
+                                dateT = lastTimeD + timePa;
+                            }
                         }
                     }
-
-
-
-
-                    string ageT = "0"; // hp column
-                    string timeT = "0"; // stamina column    // time left in minutes
-                    string rateT = "0";  // oxygen column
-                    //string dateT = "N/A";  // food column
-
+                    
 
 
                     // Fill the DataRow

@@ -289,11 +289,6 @@ public partial class DinoPage : ContentPage
         var bColor1 = Shared.PrimaryColor;
 
 
-        if (CurrentStats)
-        {
-            bColor1 = Shared.SecondaryColor;
-        }
-
         if (ToggleExcluded == 0)
         {
             bColor0 = Shared.DefaultBColor;
@@ -317,10 +312,7 @@ public partial class DinoPage : ContentPage
         else if (ToggleExcluded == 2) { btn0Text = "Excluded"; }
         else if (ToggleExcluded == 3) { btn0Text = "Archived"; }
 
-        if (CurrentStats) { btn1Text = "Current"; }
-
-        var topButton0 = new Button { Text = btn0Text, BackgroundColor = bColor0 };
-        var topButton1 = new Button { Text = btn1Text, BackgroundColor = bColor1 };
+        if (CurrentStats) { btn1Text = "Current"; bColor1 = Shared.SecondaryColor; }
 
 
         string group = DataManager.GetGroup(selectedID);
@@ -347,11 +339,16 @@ public partial class DinoPage : ContentPage
         }
         else
         {
+            var topButton0 = new Button { Text = btn0Text, BackgroundColor = bColor0 };
+            topButton0.Clicked += ToggleBtnClicked;
             AddToGrid(grid, topButton0, 0, 0);
+
+
+            var topButton1 = new Button { Text = btn1Text, BackgroundColor = bColor1 };
+            topButton1.Clicked += StatsBtnClicked;
             AddToGrid(grid, topButton1, 1, 0);
 
-            topButton0.Clicked += ToggleBtnClicked;
-            topButton1.Clicked += StatsBtnClicked;
+           
         }
 
 
@@ -366,9 +363,9 @@ public partial class DinoPage : ContentPage
             }
 
 
-            var topButton3 = new Button { Text = btn3Text, BackgroundColor = bColor3 };
-            topButton3.Clicked += ArchiveBtnClicked;
-            AddToGrid(grid, topButton3, 6, 0);
+            var ArchiveBtn = new Button { Text = btn3Text, BackgroundColor = bColor3 };
+            ArchiveBtn.Clicked += ArchiveBtnClicked;
+            AddToGrid(grid, ArchiveBtn, 6, 0);
         }
 
 
