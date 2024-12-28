@@ -187,9 +187,7 @@ public partial class DinoPage : ContentPage
 
 
         // only attach the tapgesture if we have something selected
-        // for now its the only way to force refresh a page
-        // so we attach it to everything so we can click
-        if (!isDouble)
+        if (!isDouble && isSelected)
         {
             UnSelectDino(mainLayout);
         }

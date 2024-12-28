@@ -161,7 +161,7 @@ public partial class BabyPage : ContentPage
         AddToGrid(mainLayout, CreateMainPanel(), 0, 1);
 
         // don't unselect dino while editing stats
-        if (!isDouble)
+        if (!isDouble && isSelected)
         {
             UnSelectDino(mainLayout);
         }

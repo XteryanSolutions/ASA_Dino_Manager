@@ -173,7 +173,10 @@ public partial class ArchivePage : ContentPage
         AddToGrid(mainLayout, CreateMainPanel(), 0, 1);
 
         // attach unselect event after all content has been created
-        UnSelectDino(mainLayout);
+        if (isSelected)
+        {
+            UnSelectDino(mainLayout);
+        }
 
 
         this.Content = mainLayout;

@@ -184,7 +184,7 @@ namespace ASA_Dino_Manager
             {
                 Title = "Baby Dinos",
                 ContentTemplate = new DataTemplate(() => new BabyPage()),
-                Route = $"Baby dinos"
+                Route = $"Baby_Dinos"
             };
 
             // Add the ShellContent to the Shell
@@ -254,7 +254,7 @@ namespace ASA_Dino_Manager
                     };
                     Items.Add(shellContent0);
                 }
-                else if (route.Contains("Baby_dinos"))
+                else if (route.Contains("Baby_Dinos"))
                 {
                     var shellContent0 = new ShellContent
                     {
@@ -295,7 +295,7 @@ namespace ASA_Dino_Manager
                 {
                     Title = "Baby Dinos",
                     ContentTemplate = new DataTemplate(() => new BabyPage()),
-                    Route = $"Baby_dinos"
+                    Route = $"Baby_Dinos"
                 };
 
                 // Add the ShellContent to the Shell
@@ -327,7 +327,7 @@ namespace ASA_Dino_Manager
                 disableNavSet = false; // FileManager.Log("Enabled setPage", 0);
                 DinoPage.dataValid = false; // invalidate data
                 BabyPage.dataValid = false; // invalidate data
-                FileManager.Log($"Updated Menu Contents: {reload}", 0);
+               // FileManager.Log($"Updated Menu Contents: {reload}", 0);
             }
             else
             {
@@ -357,6 +357,33 @@ namespace ASA_Dino_Manager
 
                             // check for changes in dino class
                             string[] classList = DataManager.GetAllClassesShort();
+
+                            if (DataManager.ModC > 0)
+                            {
+                                if (DataManager.ModC > 1)
+                                {
+                                    this.Title = $"{Shared.version} - Updated {DataManager.ModC} dinos";
+                                }
+                                else
+                                {
+                                    this.Title = $"{Shared.version} - Updated {DataManager.ModC} dino";
+                                }
+                            }
+                            else if (DataManager.AddC > 0)
+                            {
+                                if (DataManager.AddC > 1)
+                                {
+                                    this.Title = $"{Shared.version} - Added {DataManager.AddC} dinos";
+                                }
+                                else
+                                {
+                                    this.Title = $"{Shared.version} - Added {DataManager.AddC} dino";
+                                }
+                            }
+                            else
+                            {
+                                this.Title = Shared.version;
+                            }
 
                             // Check if we need to reload data
                             if (DataManager.ModC > 0 || DataManager.AddC > 0)
