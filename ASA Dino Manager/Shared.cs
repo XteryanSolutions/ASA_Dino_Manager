@@ -41,6 +41,10 @@
         public static string noSym = "❓";
 
 
+
+        public static int muteOffset = 1;
+
+
         ////////////////////    Shared locks    ////////////////////
         public static readonly object _logLock = new object();
         public static readonly object _dbLock = new object();

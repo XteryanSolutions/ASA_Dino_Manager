@@ -50,6 +50,7 @@ public partial class DinoPage : ContentPage
 
         // set page title
         this.Title = $"{Shared.setPage.Replace("_", " ")}";
+
         CreateContent();
     }
 

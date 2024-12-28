@@ -298,8 +298,8 @@ public partial class BabyPage : ContentPage
             AddToGrid(grid, toggleBtn, 0, 0);
             toggleBtn.Clicked += ToggleBtnClicked;
 
-            string btn1Text = "Average"; var bColor1 = Shared.PrimaryColor;
-            if (CurrentStats) { btn1Text = "Current"; bColor1 = Shared.SecondaryColor; }
+            string btn1Text = "Current"; var bColor1 = Shared.PrimaryColor;
+            if (CurrentStats) { btn1Text = "Average"; bColor1 = Shared.SecondaryColor; }
             var topButton1 = new Button { Text = btn1Text, BackgroundColor = bColor1 };
             topButton1.Clicked += StatsBtnClicked;
             AddToGrid(grid, topButton1, 1, 0);

@@ -978,35 +978,94 @@ namespace ASA_Dino_Manager
                     double dinoHP = Math.Round(ToDouble(MainStats[rowID][2].ToString()));
                     double mamaHP = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "HP")));
                     double papaHP = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "HP")));
+
                     if ((mamaHP != 0 && papaHP != 0) && (dinoHP != papaHP && dinoHP != mamaHP))
-                    { a = "1"; }
+                    { 
+                        if (dinoHP > (papaHP + Shared.muteOffset) || dinoHP < (papaHP - Shared.muteOffset))
+                        {
+                            if (dinoHP > (mamaHP + Shared.muteOffset) || dinoHP < (mamaHP - Shared.muteOffset))
+                            {
+                                a = "1";
+                            }
+                        }
+                    }
+
                     double dinoStamina = Math.Round(ToDouble(MainStats[rowID][3].ToString()));
                     double mamaStamina = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Stamina")));
                     double papaStamina = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Stamina")));
+
                     if ((mamaStamina != 0 && papaStamina != 0) && (dinoStamina != papaStamina && dinoStamina != mamaStamina))
-                    { b = "1"; }
+                    {
+                        if (dinoStamina > (papaStamina + Shared.muteOffset) || dinoStamina < (papaStamina - Shared.muteOffset))
+                        {
+                            if (dinoStamina > (mamaStamina + Shared.muteOffset) || dinoStamina < (mamaStamina - Shared.muteOffset))
+                            {
+                                b = "1";
+                            }
+                        }
+                    }
+
+
                     double dinoOxygen = Math.Round(ToDouble(MainStats[rowID][4].ToString()));
                     double mamaOxygen = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Oxygen")));
                     double papaOxygen = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Oxygen")));
+
                     if ((mamaOxygen != 0 && papaOxygen != 0) && (dinoOxygen != papaOxygen && dinoOxygen != mamaOxygen))
-                    { c = "1"; }
+                    {
+                        if (dinoOxygen > (papaOxygen + Shared.muteOffset) || dinoOxygen < (papaOxygen - Shared.muteOffset))
+                        {
+                            if (dinoOxygen > (mamaOxygen + Shared.muteOffset) || dinoOxygen < (mamaOxygen - Shared.muteOffset))
+                            {
+                                c = "1";
+                            }
+                        }
+                    }
+
                     double dinoFood = Math.Round(ToDouble(MainStats[rowID][5].ToString()));
                     double mamaFood = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Food")));
                     double papaFood = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Food")));
+
                     if ((mamaFood != 0 && papaFood != 0) && (dinoFood != papaFood && dinoFood != mamaFood))
-                    { d = "1"; }
+                    {
+                        if (dinoFood > (papaFood + Shared.muteOffset) || dinoFood < (papaFood - Shared.muteOffset))
+                        {
+                            if (dinoFood > (mamaFood + Shared.muteOffset) || dinoFood < (mamaFood - Shared.muteOffset))
+                            {
+                                d = "1";
+                            }
+                        }
+                    }
+
                     double dinoWeight = Math.Round(ToDouble(MainStats[rowID][6].ToString()));
                     double mamaWeight = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Weight")));
                     double papaWeight = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Weight")));
+
                     if ((mamaWeight != 0 && papaWeight != 0) && (dinoWeight != papaWeight && dinoWeight != mamaWeight))
-                    { e = "1"; }
+                    {
+                        if (dinoWeight > (papaWeight + Shared.muteOffset) || dinoWeight < (papaWeight - Shared.muteOffset))
+                        {
+                            if (dinoWeight > (mamaWeight + Shared.muteOffset) || dinoWeight < (mamaWeight - Shared.muteOffset))
+                            {
+                                e = "1";
+                            }
+                        }
+                    }
+
                     double dinoDamage = Math.Round(ToDouble(MainStats[rowID][7].ToString()), 2);
                     double mamaDamage = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Damage")), 2);
                     double papaDamage = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Damage")), 2);
+
                     if ((mamaDamage != 0 && papaDamage != 0) && (dinoDamage != papaDamage && dinoDamage != mamaDamage))
                     {
-                        f = "1";
+                        if (dinoDamage > (papaDamage + Shared.muteOffset) || dinoDamage < (papaDamage - Shared.muteOffset))
+                        {
+                            if (dinoDamage > (mamaDamage + Shared.muteOffset) || dinoDamage < (mamaDamage - Shared.muteOffset))
+                            {
+                                f = "1";
+                            }
+                        }
                     }
+
                 }
                 string mutes = a + b + c + d + e + f;
 
@@ -1348,7 +1407,7 @@ namespace ASA_Dino_Manager
 
                     DateTime dateT = DateTime.Now;
 
-                    if (BabyPage.CurrentStats) // alternate ageRate
+                    if (!BabyPage.CurrentStats) // alternate ageRate
                     {
                         if (ageRate2 > 0)
                         {
@@ -1373,7 +1432,7 @@ namespace ASA_Dino_Manager
                             }
                         }
                     }
-                    
+
 
 
                     // Fill the DataRow
@@ -1693,8 +1752,8 @@ namespace ASA_Dino_Manager
                         finalStatus = outStatus;
                     }
                     // mark as garbage if they have none of the best stats
-                    if (binaryC == "000000") 
-                    { 
+                    if (binaryC == "000000")
+                    {
                         finalStatus = $"{compareStatus}[garbageSym]";
                     }
 
