@@ -7,7 +7,7 @@
   xmlns:uap18="http://schemas.microsoft.com/appx/manifest/uap/windows10/18"
   IgnorableNamespaces="uap rescap uap18">
 
-  <Identity Name="ASADM" Publisher="CN=XteryanSolutions" Version="0.4.48.0" />
+  <Identity Name="ASADM" Publisher="CN=XteryanSolutions" Version="0.4.50.0" />
 
   <mp:PhoneIdentity PhoneProductId="EDB7E280-53C3-4F6F-A22F-6DFEEE7766F0" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 

@@ -4,7 +4,7 @@
     internal class Shared
     {
         ////////////////////    Title version   ////////////////////
-        public static string version = "ASA Dino Manager 0.04.49";
+        public static string version = "ASA Dino Manager 0.04.50";
 
 
         ////////////////////////////////////////////////////////////
