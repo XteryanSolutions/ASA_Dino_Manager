@@ -39,6 +39,7 @@
         public static string dateSym = "📆";
         public static string starSym = "✨";
         public static string noSym = "❓";
+        public static string loveSym = "🧡";
 
 
 

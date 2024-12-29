@@ -573,144 +573,6 @@ namespace ASA_Dino_Manager
             return results;
         }
 
-        public static List<Tuple<double, string, double, bool, bool, double, double>> GetDinoAgingData(string id)
-        {
-            var list = new List<Tuple<double, string, double, bool, bool, double, double>>();
-
-            // all time values are in seconds to retain accuracy
-            /////////////////////////////////////////////////////////////////////////
-            // make a tuple containing -> agingRate, fullGrownDate, growUpTime, isBaby, beenBaby, fullTime, currentAge
-            ////////////////////////////////////////////////////////////////////////
-            ///  3,45%/hr , 
-            try
-            {
-                double currentAge = 0;
-                double agingRate = GetGrowthRate(id); // get agingRate
-                string fullGrown = "N/A";
-                double growUpTime = 0;
-                double fullTime = 0;
-
-                // get last known age and time
-                double lastAge = ToDouble(GetLastColumnData("ID", id, "BabyAge"));
-                string lastTime = GetLastColumnData("ID", id, "Time");
-
-                // get first known age and time
-                double firstAge = ToDouble(GetFirstColumnData("ID", id, "BabyAge"));
-                string firstTime = GetFirstColumnData("ID", id, "Time");
-
-                // convert units
-                double ageRateHr = agingRate * 3600; // age rate to % per hr
-                double lastAgeP = lastAge * 100;
-                double firstAgeP = firstAge * 100;
-
-
-                DateTime startTime1 = DateTime.ParseExact(firstTime, "dd/MM/yyyy HH:mm:ss", null);
-                DateTime endTime1 = DateTime.ParseExact(lastTime, "dd/MM/yyyy HH:mm:ss", null);
-                // Calculate differences
-                double timeDiffSeconds = (endTime1 - startTime1).TotalSeconds;
-                double ageDiff = (lastAge - firstAge) * 100;
-
-                if (timeDiffSeconds > 0)
-                {
-                    // get accurate unRounded ageRate
-                    agingRate = ageDiff / timeDiffSeconds;
-                }
-
-                // do we or do we not have a Xanax detector (baby detector)
-                // figure out if it has ever been a baby or do we just mark it as tamed
-                bool isBaby = false; bool beenBaby = false;
-                if (firstAge < 1) // we have an entry with age younger than one
-                {
-                    beenBaby = true;
-                    if (lastAge < 1) // and the last known age is also under 1
-                    {
-                        isBaby = true; // so baby it is (at this point in time)
-                    }
-                }
-
-                if (!beenBaby) // never been a baby so this is probably a fresh Tame
-                {
-                    fullGrown = firstTime; // set fullgrown to the time it was tamed
-                }
-                else
-                {
-                    // if we have aging rate here we can calculate how long it takes for this dino to grow from 0 to 100%
-                    if (agingRate > 0)
-                    {
-                        growUpTime = 1 / agingRate;
-
-                        // if its still a baby we need to calculate when its about to grow up
-                        if (isBaby) // wich we also need the agingRate for
-                        {
-                            // 100% - currentAge and we get how many % left to grow
-                            double AgeLeft = 100 - lastAgeP;
-
-                            double timeleft = AgeLeft / ageRateHr; // time left at last data
-
-                            // Convert seconds to TimeSpan
-                            TimeSpan timeL = TimeSpan.FromHours(timeleft);
-
-                            // Parse lastTime string to DateTime using the exact known format
-                            DateTime lastTimeD = DateTime.ParseExact(lastTime, "dd/MM/yyyy HH:mm:ss", null);
-
-                            // Add the TimeSpan to DateTime
-                            DateTime fullGrownDate = lastTimeD.Add(timeL);
-
-                            // Convert the result back to a string in the same format
-                            fullGrown = fullGrownDate.ToString("dd/MM/yyyy HH:mm:ss");
-
-
-                            DateTime endTime = DateTime.ParseExact(fullGrown, "dd/MM/yyyy HH:mm:ss", null);
-                            DateTime startTime = DateTime.ParseExact(lastTime, "dd/MM/yyyy HH:mm:ss", null);
-                            DateTime nowTime = DateTime.Now;
-
-                            // timepassed since data = nowTime - lastTimeD
-                            double timePassed = (nowTime - lastTimeD).TotalSeconds;
-
-                            fullTime = (endTime - startTime).TotalSeconds;
-                            fullTime = fullTime - timePassed;
-
-                            double passedAge = timePassed * agingRate;
-
-                            currentAge = lastAgeP + passedAge;
-
-                            double leftToGrow = 100 - currentAge;
-                            double time = leftToGrow / ageRateHr;
-                        }
-                        else
-                        {
-                            // when did it reach fullGrown
-                            fullGrown = GrowUpTime(id);
-
-                            DateTime endTime = DateTime.ParseExact(fullGrown, "dd/MM/yyyy HH:mm:ss", null);
-                            DateTime startTime = DateTime.ParseExact(firstTime, "dd/MM/yyyy HH:mm:ss", null);
-
-                            fullTime = (endTime - startTime).TotalSeconds;
-                        }
-                    }
-                    else // if we dont have aging rate we can atleast show the last known % and calc from there
-                    {
-                        currentAge = lastAgeP;
-
-                        DateTime lastTimeD = DateTime.ParseExact(lastTime, "dd/MM/yyyy HH:mm:ss", null);
-                        fullGrown = lastTimeD.ToString("dd/MM/yyyy HH:mm:ss");
-
-                    }
-                }
-
-
-                list.Add(new Tuple<double, string, double, bool, bool, double, double>(agingRate, fullGrown, growUpTime, isBaby, beenBaby, fullTime, currentAge));
-            }
-            catch
-            {
-                list.Add(new Tuple<double, string, double, bool, bool, double, double>(0, "N/A", 0, false, false, 0, 1));
-            }
-
-            // FileManager.Log($"HUPP", 0);
-
-            return list;
-        }
-
         public static string GrowUpTime(string id)
         {
             string result = "N/A";
@@ -1297,8 +1159,15 @@ namespace ASA_Dino_Manager
             sortiM = sortiM.Replace($"{Shared.speedSym}Rate", "Oxygen");
             sortiF = sortiF.Replace($"{Shared.speedSym}Rate", "Oxygen");
 
-            sortiM = sortiM.Replace($"Class", "Tag");
-            sortiF = sortiF.Replace($"Class", "Tag");
+            sortiM = sortiM.Replace($"{Shared.loveSym}Imprint", "Imprint");
+            sortiF = sortiF.Replace($"{Shared.loveSym}Imprint", "Imprint");
+
+            sortiM = sortiM.Replace($"{Shared.grownSym}Class", "Tag");
+            sortiF = sortiF.Replace($"{Shared.grownSym}Class", "Tag");
+
+            sortiM = sortiM.Replace($"{Shared.tameSym}Gen", "Gen");
+            sortiF = sortiF.Replace($"{Shared.tameSym}Gen", "Gen");
+
 
             // Sort the MaleTable based on the desired column
             DataView view1 = new DataView(DataManager.MaleTable);

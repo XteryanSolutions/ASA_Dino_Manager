@@ -857,81 +857,82 @@ public partial class BabyPage : ContentPage
 
         string sortChar = "";
 
-        if (newTest == "Class") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var headerTag = new Label { Text = $"Class{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        if (newTest == $"{Shared.grownSym}Class") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var tagH = new Label { Text = $"{Shared.grownSym}Class{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
         sortChar = ""; if (newTest == "Name") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var header0 = new Label { Text = $"Name{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var nameH = new Label { Text = $"Name{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
         sortChar = ""; if (newTest == "Level") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var header1 = new Label { Text = $"Level{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var levelH = new Label { Text = $"Level{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
         sortChar = ""; if (newTest == $"{Shared.breedSym}Age") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var header2 = new Label { Text = $"{Shared.breedSym}Age{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var ageH = new Label { Text = $"{Shared.breedSym}Age{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
         sortChar = ""; if (newTest == $"{Shared.timeSym}Time") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var header3 = new Label { Text = $"{Shared.timeSym}Time{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var timeH = new Label { Text = $"{Shared.timeSym}Time{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
         sortChar = ""; if (newTest == $"{Shared.speedSym}Rate") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var header4 = new Label { Text = $"{Shared.speedSym}Rate{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var rateH = new Label { Text = $"{Shared.speedSym}Rate{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
         // no need to sort date
-        var header5 = new Label { Text = $"{Shared.dateSym}Date", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var dateH = new Label { Text = $"{Shared.dateSym}Date", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
         sortChar = ""; if (newTest == "Status") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var header6 = new Label { Text = $"Status{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (newTest == "Gen") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var header7 = new Label { Text = $"Gen{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var statusH = new Label { Text = $"Status{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{Shared.tameSym}Gen") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var genH = new Label { Text = $"{Shared.tameSym}Gen{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         sortChar = ""; if (newTest == "Papa") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var header8 = new Label { Text = $"Papa{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleHeaderColor, FontSize = fSize };
+        var papaH = new Label { Text = $"Papa{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleHeaderColor, FontSize = fSize };
         sortChar = ""; if (newTest == "Mama") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var header9 = new Label { Text = $"Mama{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.femaleHeaderColor, FontSize = fSize };
+        var mamaH = new Label { Text = $"Mama{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.femaleHeaderColor, FontSize = fSize };
         sortChar = ""; if (newTest == "PapaMute") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var header10 = new Label { Text = $"PapaMute{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleHeaderColor, FontSize = fSize };
+        var papamH = new Label { Text = $"PapaMute{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleHeaderColor, FontSize = fSize };
         sortChar = ""; if (newTest == "MamaMute") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var header11 = new Label { Text = $"MamaMute{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.femaleHeaderColor, FontSize = fSize };
-        sortChar = ""; if (newTest == "Imprint") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var header12 = new Label { Text = $"Imprint{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var mamamH = new Label { Text = $"MamaMute{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.femaleHeaderColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{Shared.loveSym}Imprint") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var imprintH = new Label { Text = $"{Shared.loveSym}Imprint{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         sortChar = ""; if (newTest == "Imprinter") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var header13 = new Label { Text = $"Imprinter{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var imprinterH = new Label { Text = $"Imprinter{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
-
+        
 
         // make columns sortable
-        SortColumn(headerTag, title);
-        SortColumn(header0, title);
-        SortColumn(header1, title);
-        SortColumn(header2, title);
-        SortColumn(header3, title);
-        SortColumn(header4, title);
-        //SortColumn(header5, title);
-        //SortColumn(header6, title);
-        SortColumn(header7, title);
-        SortColumn(header8, title);
-        SortColumn(header9, title);
-        SortColumn(header10, title);
-        SortColumn(header11, title);
-        SortColumn(header12, title);
-        SortColumn(header13, title);
+        SortColumn(tagH, title);
+        SortColumn(nameH, title);
+        SortColumn(levelH, title);
+        SortColumn(ageH, title);
+        SortColumn(timeH, title);
+        SortColumn(rateH, title);
+        //SortColumn(dateH, title);
+        //SortColumn(statusH, title);
+        SortColumn(genH, title);
+        SortColumn(papaH, title);
+        SortColumn(mamaH, title);
+        SortColumn(papamH, title);
+        SortColumn(mamamH, title);
+        SortColumn(imprintH, title);
+        SortColumn(imprinterH, title);
 
 
         int startID = 0;
         // Add base header row
-        AddToGrid(grid, headerTag, 0, startID++, title);
-        AddToGrid(grid, header0, 0, startID++, title);
-        AddToGrid(grid, header1, 0, startID++, title);
-        AddToGrid(grid, header2, 0, startID++, title);
-        AddToGrid(grid, header3, 0, startID++, title);
-        AddToGrid(grid, header4, 0, startID++, title);
-        AddToGrid(grid, header5, 0, startID++, title);
-        AddToGrid(grid, header6, 0, startID++, title);
-        AddToGrid(grid, header7, 0, startID++, title);
-        AddToGrid(grid, header8, 0, startID++, title);
-        AddToGrid(grid, header9, 0, startID++, title);
-        AddToGrid(grid, header10, 0, startID++, title);
-        AddToGrid(grid, header11, 0, startID++, title);
-        AddToGrid(grid, header12, 0, startID++, title);
-        AddToGrid(grid, header13, 0, startID++, title);
+        AddToGrid(grid, tagH, 0, startID++, title);// tag
+        AddToGrid(grid, nameH, 0, startID++, title);// name
+        AddToGrid(grid, levelH, 0, startID++, title);// level
+        AddToGrid(grid, ageH, 0, startID++, title);// age
+        AddToGrid(grid, timeH, 0, startID++, title);// time
+        AddToGrid(grid, rateH, 0, startID++, title);// rate
+        AddToGrid(grid, dateH, 0, startID++, title);// date
+        AddToGrid(grid, imprintH, 0, startID++, title);// imprint
+        AddToGrid(grid, genH, 0, startID++, title);// gen
+        AddToGrid(grid, statusH, 0, startID++, title);// status
+        AddToGrid(grid, papaH, 0, startID++, title);// papa
+        AddToGrid(grid, mamaH, 0, startID++, title);// mama
+        AddToGrid(grid, papamH, 0, startID++, title);// papam
+        AddToGrid(grid, mamamH, 0, startID++, title);// mamam
+
+        AddToGrid(grid, imprinterH, 0, startID++, title);// imprinter
 
 
         int rowIndex = 1; // Start adding rows below the header
@@ -982,13 +983,13 @@ public partial class BabyPage : ContentPage
             double ageRateHr = Math.Round(DataManager.ToDouble(rateT) * 60, 2);
 
 
-            rateT = $"{ageRateHr}%/hr";
+            rateT = $"{ageRateHr} %/hr";
             timeT = $"{days}d {hours}h {minutes}m";
 
 
             if (ageT.Contains("NaN"))
             {
-                ageT = Math.Round(ageF, 1) + "%";
+                ageT = Math.Round(ageF, 1) + " %";
             }
             if (rateT.Contains("NaN") || ageRateHr == 0)
             {
@@ -1068,13 +1069,13 @@ public partial class BabyPage : ContentPage
             AddToGrid(grid, staminaL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, oxygenL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, foodL, rowIndex, startID++, title, selected, false, id);
-            AddToGrid(grid, statusL, rowIndex, startID++, title, selected, false, id);
+            AddToGrid(grid, imprintL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, genL, rowIndex, startID++, title, selected, false, id);
+            AddToGrid(grid, statusL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, papaL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, mamaL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, papaML, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, mamaML, rowIndex, startID++, title, selected, false, id);
-            AddToGrid(grid, imprintL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, imprinterL, rowIndex, startID++, title, selected, false, id);
 
             rowIndex++;
