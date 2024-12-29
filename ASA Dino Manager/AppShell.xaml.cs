@@ -5,15 +5,12 @@ namespace ASA_Dino_Manager
     public partial class AppShell : Shell
     {
         private bool _isTimerRunning = false; // Timer control flag
-        private bool disableAuto = false;
         private bool disableNavSet = false;
 
         // Benchmark stuff
         private int ImportCount = 0;
         private double ImportAvg = 0; // keep track of average import time
 
-
-        private int reload = 0;
 
         public AppShell()
         {
@@ -71,39 +68,6 @@ namespace ASA_Dino_Manager
             StartTimer();
         }
 
-        public void ForceNavigate(string route)
-        {
-            string newRoute = $"{route}";
-
-            if (!disableAuto)
-            {
-                disableAuto = true;
-                if (newRoute.Contains("Archive"))
-                {
-                    Routing.RegisterRoute(newRoute, typeof(ArchivePage));
-                }
-                else if (newRoute.Contains("ASA"))
-                {
-                    Routing.RegisterRoute(newRoute, typeof(MainPage));
-                }
-                else
-                {
-                    Routing.RegisterRoute(newRoute, typeof(DinoPage));
-                }
-
-
-                FileManager.Log($"Force navigating -> //{newRoute}", 0);
-                Shell.Current.GoToAsync($"//{newRoute}");
-                _ = UnlockNavigationAfterDelay(1000);
-            }
-        }
-
-        private async Task UnlockNavigationAfterDelay(int delayMilliseconds)
-        {
-            await Task.Delay(delayMilliseconds);
-            disableAuto = false; // Re-enable navigation
-        }
-
         private void OnShellNavigated(object sender, ShellNavigatedEventArgs e)
         {
             // FileManager.Log($"Navigated to: {e.Current.Location}", 0);
@@ -126,11 +90,11 @@ namespace ASA_Dino_Manager
                     // reset toggles and unselect dino when navigating
                     DinoPage.CurrentStats = Shared.DefaultStat; DinoPage.ToggleExcluded = Shared.DefaultToggle;
                     DinoPage.isSelected = false; DinoPage.isDouble = false; DinoPage.canDouble = false; DinoPage.selectedID = "";
-                    DinoPage.sortM = Shared.DefaultSortM; DinoPage.sortF = Shared.DefaultSortF; DinoPage.dataValid = false; // invalidate
+                    DinoPage.sortM = Shared.DefaultSortM; DinoPage.sortF = Shared.DefaultSortF;
 
                     BabyPage.CurrentStats = Shared.DefaultStat; BabyPage.ToggleExcluded = Shared.DefaultToggle;
                     BabyPage.isSelected = false; BabyPage.isDouble = false; BabyPage.canDouble = false; BabyPage.selectedID = "";
-                    BabyPage.sortM = Shared.DefaultSortM; BabyPage.sortF = Shared.DefaultSortF; BabyPage.dataValid = false; // invalidate
+                    BabyPage.sortM = Shared.DefaultSortM; BabyPage.sortF = Shared.DefaultSortF;
 
                     ArchivePage.isSelected = false; ArchivePage.selectedID = ""; ArchivePage.sortA = Shared.DefaultSortA;
                 }
@@ -210,8 +174,6 @@ namespace ASA_Dino_Manager
                 Items.Add(shellContent);
             }
             disableNavSet = false; // FileManager.Log("Enabled setPage", 0);
-            DinoPage.dataValid = false; // invalidate data
-            BabyPage.dataValid = false; // invalidate data
             FileManager.Log("Created classList", 0);
         }
 
@@ -233,7 +195,7 @@ namespace ASA_Dino_Manager
                 string location = page;
                 string route = location.Replace(" ", "_");
 
-                reload++;
+
                 if (route.Contains("ASA")) 
                 {
                     var shellContent0 = new ShellContent
@@ -325,9 +287,6 @@ namespace ASA_Dino_Manager
                     }
                 }
                 disableNavSet = false; // FileManager.Log("Enabled setPage", 0);
-                DinoPage.dataValid = false; // invalidate data
-                BabyPage.dataValid = false; // invalidate data
-               // FileManager.Log($"Updated Menu Contents: {reload}", 0);
             }
             else
             {
@@ -354,9 +313,6 @@ namespace ASA_Dino_Manager
                             DataManager.Import();
 
                             UpdateMenuContents(Shared.setPage);
-
-                            // check for changes in dino class
-                            string[] classList = DataManager.GetAllClassesShort();
 
                             if (DataManager.ModC > 0)
                             {
@@ -390,15 +346,6 @@ namespace ASA_Dino_Manager
                             {
                                 // reset counters
                                 DataManager.AddC = 0; DataManager.ModC = 0;
-
-                                if (classList.Length != DataManager.classSize)
-                                {
-                                    // update menu because we need to see the new class
-                                    //  UpdateMenuContents(Shared.setPage);
-                                }
-
-                                DinoPage.dataValid = false; // invalidate data
-                                BabyPage.dataValid = false; // invalidate data
 
                                 FileManager.Log("Updated DataBase", 0);
 

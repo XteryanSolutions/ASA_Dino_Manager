@@ -18,7 +18,6 @@ public partial class BabyPage : ContentPage
     public static string sortM = Shared.DefaultSortM;
     public static string sortF = Shared.DefaultSortF;
 
-    public static bool dataValid = false;
 
     private string levelText = "";
     private string hpText = "";
@@ -31,24 +30,13 @@ public partial class BabyPage : ContentPage
 
     private bool editStats = false;
 
+    public static bool dataValid = false;
+
     public BabyPage()
     {
         InitializeComponent();
 
-        FileManager.Log($"Loaded: {Shared.setPage}", 0);
-
-        // reset stuff
-      //  selectedID = ""; isSelected = false;
-      //  canDouble = false; isDouble = false;
-      //  ToggleExcluded = Shared.DefaultToggle;
-      //  CurrentStats = Shared.DefaultStat;
-
-        BabyPage.dataValid = false; // invalidate
-
-        // set page title
-        if (!isSelected) { this.Title = $"{Shared.setPage.Replace("_", " ")}"; }
-        else { this.Title = $"{DataManager.GetLastColumnData("ID", selectedID, "Name")} - {selectedID}"; }
-
+        dataValid = false; // refresh data
         CreateContent();
     }
 
@@ -58,19 +46,11 @@ public partial class BabyPage : ContentPage
         {
             try
             {
-                if (!dataValid)
+                if (!dataValid) 
                 {
                     FileManager.Log("Loading Baby Data", 0);
                     // sort data based on column clicked
                     DataManager.GetDinoBabies(sortM, sortF);
-
-                    // DataManager.SetMaxStats(ToggleExcluded);
-                    // DataManager.SetBinaryStats(ToggleExcluded);
-
-                    if (!CurrentStats)
-                    {
-                        // DataManager.GetBestPartner();
-                    }
                     dataValid = true;
                 }
 
@@ -78,8 +58,6 @@ public partial class BabyPage : ContentPage
                 FileManager.Log("Updating GUI -> " + Shared.setPage, 0);
                 if (!isSelected) { this.Title = $"{Shared.setPage.Replace("_", " ")}"; }
                 else { this.Title = $"{DataManager.GetLastColumnData("ID", selectedID, "Name")} - {selectedID}"; }
-
-                // DefaultView("WIP");
 
                 DinoView();
             }
@@ -128,9 +106,10 @@ public partial class BabyPage : ContentPage
         AddToGrid(mainLayout, scrollView, 0, 0);
 
         // only attach the tapgesture if we have something selected
-        // for now its the only way to force refresh a page
-        // so we attach it to everything so we can click
-        UnSelectDino(mainLayout);
+        if (isSelected)
+        {
+            UnSelectDino(mainLayout);
+        }
 
         this.Content = null;
         this.Content = mainLayout;
@@ -733,105 +712,13 @@ public partial class BabyPage : ContentPage
             // Define columns
             notesGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 0
 
-
-            string notes = DataManager.GetNotes(currentID);
-
-
-            string ageText = ""; bool validAgeRate = false;
-            Color growColor = Shared.PrimaryColor;
-
-
             // get some stats for validation
             string papaMute = DataManager.GetLastColumnData("ID", currentID, "PapaMute");
             string mamaMute = DataManager.GetLastColumnData("ID", currentID, "MamaMute");
             string imprint = DataManager.GetLastColumnData("ID", currentID, "Imprint");
             string imprinter = DataManager.GetLastColumnData("ID", currentID, "Imprinter");
 
-
-            //  get aging stuff for dino -> agingRate, fullGrownDate, growUpTime, isBaby, beenBaby,
-            List<Tuple<double, string, double, bool, bool, double, double>> dinoAgingData = DataManager.GetDinoAgingData(currentID);
-
-            if (dinoAgingData.Count == 1)
-            {
-                foreach (var data in dinoAgingData)
-                {
-                    double ageRate = data.Item1;
-                    string time = data.Item2;
-                    double growthRate = data.Item3;
-                    bool isBaby = data.Item4;
-                    bool beenBaby = data.Item5;
-                    double fullTime = data.Item6;
-
-
-
-                    //  DateTime firstTime = DateTime.ParseExact(GetFirstColumnData("ID", id, "Time"), "dd/MM/yyyy HH:mm:ss", null);
-
-                    if (!beenBaby) // its a tame just add info on when it was tamed
-                    {
-                        // if it has a mama or papa its not a tame we just dont have enough info on dino
-                        // check for any stuff a wild tame shouldnt have like imprint etc..
-                        if (mamaID != "" || papaID != "" || imprinter != "" || DataManager.ToDouble(imprint) > 0 || DataManager.ToDouble(papaMute) > 0 || DataManager.ToDouble(mamaMute) > 0)
-                        {
-                            ageText = $"First Record: {Shared.dateSym}{time}";
-                            validAgeRate = true;
-                        }
-                        else
-                        {
-
-                            ageText = $"Tamed: {Shared.dateSym}{time}";
-                            validAgeRate = true;
-                        }
-                    }
-                    else // it been a baby at some point
-                    {
-                        if (isBaby) // its still a baby
-                        {
-                            if (ageRate > 0)
-                            {
-                                int totalMinutes = (int)(fullTime / 60);
-                                int days = totalMinutes / (24 * 60);
-                                int hours = (totalMinutes % (24 * 60)) / 60;
-                                int minutes = totalMinutes % 60;
-
-                                double ageRateHr = Math.Round(ageRate * 3600, 2);
-                                ageText = $"Estimated: {Shared.dateSym}{time} {Shared.timeSym}{days}d {hours}h {minutes}m {Shared.speedSym}{ageRateHr}%/Hr";
-                                validAgeRate = true;
-                            }
-                        }
-                        else // it grew up
-                        {
-                            if (time != "N/A") // and we know when
-                            {
-
-                                int totalMinutes = (int)(fullTime / 60);
-                                int days = totalMinutes / (24 * 60);
-                                int hours = (totalMinutes % (24 * 60)) / 60;
-                                int minutes = totalMinutes % 60;
-
-
-                                double totHr = totalMinutes / 60;
-
-                                double ageHr = 100 / totHr;
-
-                                ageText = $"FullGrown: {Shared.dateSym}{time} {Shared.timeSym}{days}d {hours}h {minutes}m {Shared.speedSym}{Math.Round(ageHr, 2)}%/hr";
-
-                                validAgeRate = true;
-                            }
-                            else
-                            {
-                                string ut = DataManager.GetFirstColumnData("ID", currentID, "Time");
-                                ageText = $"First Record: {Shared.dateSym}{ut}";
-
-                                validAgeRate = true;
-                            }
-                        }
-                    }
-                }
-            }
-
-
-            var grown = new Label { Text = ageText, Style = (Style)Application.Current.Resources["Headline"], TextColor = growColor, FontSize = Shared.fontHSize, FontAttributes = FontAttributes.Bold, HorizontalOptions = LayoutOptions.Start };
-
+            string notes = DataManager.GetNotes(currentID);
             // notes textbox defined here
             var textBoxN = new Editor { Text = notes, Placeholder = "Notes", WidthRequest = 600, HeightRequest = 200, TextColor = cellColor0, BackgroundColor = Shared.OddMPanelColor, FontSize = 16, HorizontalOptions = LayoutOptions.Start, Keyboard = Keyboard.Create(KeyboardFlags.None) };
 
@@ -840,11 +727,6 @@ public partial class BabyPage : ContentPage
                 editStats = true;
                 notesText = e.NewTextValue;
             };
-
-            if (validAgeRate) // only add label if dino is still aging
-            {
-                AddToGrid(notesGrid, grown, rowid++, 0, "", false, true);
-            }
 
             AddToGrid(notesGrid, textBoxN, rowid++, 0, "", false, true);
 
@@ -1076,7 +958,7 @@ public partial class BabyPage : ContentPage
             if (name == "") { name = "I need a name"; }
             string level = row["Level"].ToString();
             //////////////
-            
+            double ageF = DataManager.ToDouble(DataManager.GetLastColumnData("ID", id, "BabyAge")) * 100;
             double ageD = Math.Round(DataManager.ToDouble(row["Hp"].ToString()), 1);
             string ageT = ageD + "%";
             string timeT = row["Stamina"].ToString();
@@ -1101,27 +983,29 @@ public partial class BabyPage : ContentPage
 
             double ageRateHr = Math.Round(DataManager.ToDouble(rateT) * 60, 2);
 
+
             rateT = $"{ageRateHr}%/hr";
             timeT = $"{days}d {hours}h {minutes}m";
 
 
             if (ageT.Contains("NaN"))
             {
-                ageT = Shared.noSym;
+                ageT = Math.Round(ageF, 1) + "%";
             }
-            if (rateT.Contains("NaN"))
+            if (rateT.Contains("NaN") || ageRateHr == 0)
             {
                 rateT = Shared.noSym;
                 timeT = Shared.noSym;
+                dateT = Shared.noSym;
             }
 
 
             status = "Baby";
-            if (ageD > 10)
+            if (ageD > 10 || ageF > 10)
             {
                 status = "Juvenile";
             }
-            if (ageD > 50)
+            if (ageD > 50 || ageF > 50)
             {
                 status = "Adolescent";
             }
@@ -1207,7 +1091,7 @@ public partial class BabyPage : ContentPage
         {
             //  FileManager.Log($"Unselected {selectedID}", 0);
             selectedID = ""; isSelected = false; this.Title = $"{Shared.setPage.Replace("_", " ")}";
-            canDouble = false; editStats = false; BabyPage.dataValid = false; // invalidate
+            canDouble = false; editStats = false;
         }
     }
 
@@ -1290,8 +1174,8 @@ public partial class BabyPage : ContentPage
             }
 
             FileManager.Log($"Sorted: {sortM} : {sortF}", 0);
-            BabyPage.dataValid = false; // invalidate
 
+            dataValid = false;
             ClearSelection();
             CreateContent();
         };
@@ -1411,6 +1295,7 @@ public partial class BabyPage : ContentPage
         grid.GestureRecognizers.Add(tapGesture);
     }
 
+
     // Button event handlers
     private void ToggleBtnClicked(object? sender, EventArgs e)
     {
@@ -1419,9 +1304,9 @@ public partial class BabyPage : ContentPage
         {
             ToggleExcluded = 0;
         }
-        BabyPage.dataValid = false; // invalidate
         FileManager.Log($"Toggle Exclude {ToggleExcluded}", 0);
 
+        dataValid = false;
         ClearSelection();
         CreateContent();
     }
@@ -1435,8 +1320,7 @@ public partial class BabyPage : ContentPage
             else if (status == "") { status = "Exclude"; FileManager.Log($"Excluded ID: {selectedID}", 0); }
             DataManager.SetGroup(selectedID, status);
 
-            BabyPage.dataValid = false; // invalidate
-
+            dataValid = false;
             ClearSelection();
             CreateContent();
         }
@@ -1453,8 +1337,7 @@ public partial class BabyPage : ContentPage
             else if (status == "Exclude") { status = "Archived"; FileManager.Log($"Archived ID: {selectedID}", 0); }
             DataManager.SetGroup(selectedID, status);
 
-            BabyPage.dataValid = false; // invalidate
-
+            dataValid = false;
             ClearSelection();
             CreateContent();
         }
@@ -1467,7 +1350,7 @@ public partial class BabyPage : ContentPage
         levelText = ""; hpText = ""; staminaText = ""; oxygenText = "";
         foodText = ""; weightText = ""; damageText = ""; notesText = "";
         isDouble = false;
-        BabyPage.dataValid = false; // invalidate
+
         ClearSelection();
         CreateContent();
     }
@@ -1484,7 +1367,7 @@ public partial class BabyPage : ContentPage
         {
             DataManager.EditBreedStats(selectedID, levelText, hpText, staminaText, oxygenText, foodText, weightText, damageText, notesText);
             FileManager.needSave = true;
-            BabyPage.dataValid = false; // invalidate
+            dataValid = false;
         }
 
         // reset toggles etc.
@@ -1497,19 +1380,12 @@ public partial class BabyPage : ContentPage
 
     private void StatsBtnClicked(object? sender, EventArgs e)
     {
-        if (CurrentStats)
-        {
-            CurrentStats = false;
-        }
-        else
-        {
-            CurrentStats = true;
-        }
-
-        dataValid = false; // invalidate
+        if (CurrentStats) { CurrentStats = false; }
+        else { CurrentStats = true; }
 
         FileManager.Log($"Toggle Stats {CurrentStats}", 0);
 
+        dataValid = false;
         ClearSelection();
         CreateContent();
     }

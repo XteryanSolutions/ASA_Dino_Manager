@@ -1501,8 +1501,6 @@ namespace ASA_Dino_Manager
             DataView view1 = new DataView(DataManager.ArchiveTable);
             view1.Sort = sortC;
             DataManager.ArchiveTable = view1.ToTable();
-
-            FileManager.Log("Archive compiled", 0);
         }
 
         public static void SetMaxStats(int toggle = 0)

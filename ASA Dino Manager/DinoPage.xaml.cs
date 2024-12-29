@@ -39,15 +39,7 @@ public partial class DinoPage : ContentPage
     {
         InitializeComponent();
 
-        FileManager.Log($"Loaded: {Shared.setPage}", 0);
-
-        // reset stuff
-        DinoPage.dataValid = false; // invalidate
-
-        // set page title
-        if (!isSelected) { this.Title = $"{Shared.setPage.Replace("_", " ")}"; }
-        else { this.Title = $"{DataManager.GetLastColumnData("ID", selectedID, "Name")} - {selectedID}"; }
-
+        dataValid = false;
         CreateContent();
     }
 
@@ -59,48 +51,28 @@ public partial class DinoPage : ContentPage
             {
                 if (!string.IsNullOrEmpty(Shared.selectedClass))
                 {
-                    // do something with this at some point
-                    // maybe add it to the double click menu instead
-                    bool deactivate = false;
-                    if (deactivate)
+                    if (!dataValid)
                     {
-                        if (!dataValid)
+                        FileManager.Log("Loading All Data", 0);
+                        // sort data based on column clicked
+                        DataManager.GetDinoData(Shared.selectedClass, sortM, sortF);
+
+
+                        DataManager.SetMaxStats(ToggleExcluded);
+                        DataManager.SetBinaryStats(ToggleExcluded);
+
+                        if (!CurrentStats)
                         {
-
-                            FileManager.Log("Loading Selected Dino Data", 0);
-                            DataManager.GetOneDinoData(selectedID);
-
-                            DataManager.SetMaxStats(ToggleExcluded);
-                            DataManager.SetBinaryStats(ToggleExcluded);
-                            dataValid = true;
+                            DataManager.GetBestPartner();
                         }
+                        dataValid = true;
                     }
-                    else
-                    {
-                        if (!dataValid)
-                        {
-                            FileManager.Log("Loading All Data", 0);
-                            // sort data based on column clicked
-                            DataManager.GetDinoData(Shared.selectedClass, sortM, sortF);
 
-
-                            DataManager.SetMaxStats(ToggleExcluded);
-                            DataManager.SetBinaryStats(ToggleExcluded);
-
-                            if (!CurrentStats)
-                            {
-                                DataManager.GetBestPartner();
-                            }
-                            dataValid = true;
-                        }
-                    }
                 }
-
 
                 FileManager.Log("Updating GUI -> " + Shared.setPage, 0);
                 if (!isSelected) { this.Title = $"{Shared.setPage.Replace("_", " ")}"; }
                 else { this.Title = $"{DataManager.GetLastColumnData("ID", selectedID, "Name")} - {selectedID}"; }
-
 
                 DinoView();
             }
@@ -1283,7 +1255,7 @@ public partial class DinoPage : ContentPage
         {
             //  FileManager.Log($"Unselected {selectedID}", 0);
             selectedID = ""; isSelected = false; this.Title = $"{Shared.setPage.Replace("_", " ")}";
-            canDouble = false; editStats = false; dataValid = false; // invalidate
+            canDouble = false; editStats = false;
         }
     }
 
@@ -1367,7 +1339,7 @@ public partial class DinoPage : ContentPage
 
             FileManager.Log($"Sorted: {sortM} : {sortF}", 0);
 
-            dataValid = false; // invalidate
+            dataValid = false;
             ClearSelection();
             CreateContent();
         };
@@ -1392,7 +1364,7 @@ public partial class DinoPage : ContentPage
                 string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
                 this.Title = $"{name} - {id}"; // set title to dino name
 
-               // FileManager.Log($"Selected {name} ID: {id}", 0);
+                // FileManager.Log($"Selected {name} ID: {id}", 0);
 
                 // activate double clicking
 
@@ -1498,7 +1470,7 @@ public partial class DinoPage : ContentPage
         {
             ToggleExcluded = 0;
         }
-        dataValid = false; // invalidate
+        dataValid = false;
         FileManager.Log($"Toggle Exclude {ToggleExcluded}", 0);
 
         ClearSelection();
@@ -1516,10 +1488,10 @@ public partial class DinoPage : ContentPage
             CurrentStats = true;
         }
 
-        dataValid = false; // invalidate
 
         FileManager.Log($"Toggle Stats {CurrentStats}", 0);
 
+        dataValid = false;
         ClearSelection();
         CreateContent();
     }
@@ -1533,8 +1505,7 @@ public partial class DinoPage : ContentPage
             else if (group == "") { group = "Exclude"; FileManager.Log($"Excluded ID: {selectedID}", 0); }
             DataManager.SetGroup(selectedID, group);
 
-            dataValid = false; // invalidate
-
+            dataValid = false;
             ClearSelection();
             CreateContent();
         }
@@ -1551,8 +1522,7 @@ public partial class DinoPage : ContentPage
             else if (status == "Exclude") { status = "Archived"; FileManager.Log($"Archived ID: {selectedID}", 0); }
             DataManager.SetGroup(selectedID, status);
 
-            dataValid = false; // invalidate
-
+            dataValid = false;
             ClearSelection();
             CreateContent();
         }
@@ -1565,7 +1535,6 @@ public partial class DinoPage : ContentPage
         levelText = ""; hpText = ""; staminaText = ""; oxygenText = "";
         foodText = ""; weightText = ""; damageText = ""; notesText = "";
         isDouble = false;
-        dataValid = false; // invalidate
         ClearSelection();
         CreateContent();
     }
@@ -1582,13 +1551,14 @@ public partial class DinoPage : ContentPage
         {
             DataManager.EditBreedStats(selectedID, levelText, hpText, staminaText, oxygenText, foodText, weightText, damageText, notesText);
             FileManager.needSave = true;
-            dataValid = false; // invalidate
+            dataValid = false;
         }
 
         // reset toggles etc.
         levelText = ""; hpText = ""; staminaText = ""; oxygenText = "";
         foodText = ""; weightText = ""; damageText = ""; notesText = "";
         isDouble = false;
+
         ClearSelection();
         CreateContent();
     }

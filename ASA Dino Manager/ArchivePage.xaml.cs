@@ -16,12 +16,6 @@ public partial class ArchivePage : ContentPage
     {
         InitializeComponent();
 
-        FileManager.Log($"Loaded: {Shared.setPage}", 0);
-
-        // set page title
-        if (!isSelected) { this.Title = $"{Shared.setPage.Replace("_", " ")}"; }
-        else { this.Title = $"{DataManager.GetLastColumnData("ID", selectedID, "Name")} - {selectedID}"; }
-
         CreateContent();
     }
 
@@ -70,8 +64,9 @@ public partial class ArchivePage : ContentPage
 
             try
             {
-                // recompile the archive after archiving or unarchiving
+                FileManager.Log("Loading Archive Data", 0);
                 DataManager.CompileDinoArchive(sortA);
+
 
                 FileManager.Log("Updating GUI -> " + Shared.setPage, 0);
                 if (!isSelected) { this.Title = $"{Shared.setPage.Replace("_", " ")}"; }
