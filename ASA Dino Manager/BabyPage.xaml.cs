@@ -857,7 +857,7 @@ public partial class BabyPage : ContentPage
 
         string sortChar = "";
 
-        sortChar = ""; if (newTest == "Class") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        if (newTest == "Class") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var headerTag = new Label { Text = $"Class{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
         sortChar = ""; if (newTest == "Name") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
@@ -865,7 +865,6 @@ public partial class BabyPage : ContentPage
 
         sortChar = ""; if (newTest == "Level") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header1 = new Label { Text = $"Level{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-
 
         sortChar = ""; if (newTest == $"{Shared.breedSym}Age") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header2 = new Label { Text = $"{Shared.breedSym}Age{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
@@ -899,6 +898,7 @@ public partial class BabyPage : ContentPage
 
 
         // make columns sortable
+        SortColumn(headerTag, title);
         SortColumn(header0, title);
         SortColumn(header1, title);
         SortColumn(header2, title);
@@ -950,10 +950,8 @@ public partial class BabyPage : ContentPage
 
             string id = row["ID"].ToString();
 
-            string rawClass = DataManager.GetFirstColumnData("ID", id, "Class");
-            string dinoClass = DataManager.LongClassToShort(rawClass).Replace("_", " ");
 
-
+            string dinoClass = row["Tag"].ToString();
             string name = row["Name"].ToString();
             if (name == "") { name = "I need a name"; }
             string level = row["Level"].ToString();

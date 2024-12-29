@@ -121,6 +121,7 @@ namespace ASA_Dino_Manager
                 FemaleTable.Columns.Add("Imprint", typeof(double));
                 FemaleTable.Columns.Add("Imprinter", typeof(string));
                 FemaleTable.Columns.Add("ID", typeof(string));
+                FemaleTable.Columns.Add("Tag", typeof(string));
 
 
 
@@ -146,6 +147,7 @@ namespace ASA_Dino_Manager
                 MaleTable.Columns.Add("Imprint", typeof(double));
                 MaleTable.Columns.Add("Imprinter", typeof(string));
                 MaleTable.Columns.Add("ID", typeof(string));
+                MaleTable.Columns.Add("Tag", typeof(string));
 
 
 
@@ -1126,7 +1128,7 @@ namespace ASA_Dino_Manager
                     dr["Age"] = Math.Round(ToDouble(BrStats[rowID][15].ToString()) * 100);
                     dr["Imprint"] = Math.Round(ToDouble(BrStats[rowID][17].ToString()) * 100);
                     dr["Status"] = CalcStatus(dino);
-
+                    dr["Tag"] = "";
 
                     table.Rows.Add(dr);
                 }
@@ -1295,7 +1297,8 @@ namespace ASA_Dino_Manager
             sortiM = sortiM.Replace($"{Shared.speedSym}Rate", "Oxygen");
             sortiF = sortiF.Replace($"{Shared.speedSym}Rate", "Oxygen");
 
-
+            sortiM = sortiM.Replace($"Class", "Tag");
+            sortiF = sortiF.Replace($"Class", "Tag");
 
             // Sort the MaleTable based on the desired column
             DataView view1 = new DataView(DataManager.MaleTable);
@@ -1432,8 +1435,8 @@ namespace ASA_Dino_Manager
                             }
                         }
                     }
-
-
+                    string rawClass = DataManager.GetFirstColumnData("ID", id, "Class");
+                    string dinoClass = DataManager.LongClassToShort(rawClass).Replace("_", " ");
 
                     // Fill the DataRow
                     DataRow dr = table.NewRow();
@@ -1462,7 +1465,7 @@ namespace ASA_Dino_Manager
                     dr["PapaMute"] = ToDouble(BrStats[rowID][12].ToString());
                     dr["Age"] = Math.Round(ToDouble(BrStats[rowID][15].ToString()) * 100);
                     dr["Imprint"] = Math.Round(ToDouble(BrStats[rowID][17].ToString()) * 100);
-
+                    dr["Tag"] = dinoClass;
 
                     table.Rows.Add(dr);
                 }
