@@ -32,7 +32,7 @@ public partial class DinoPage : ContentPage
 
     private bool editStats = false;
 
-    public static bool dataValid = false;
+    private bool dataValid = false;
 
 
     public DinoPage()

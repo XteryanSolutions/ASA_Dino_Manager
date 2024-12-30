@@ -49,7 +49,8 @@ namespace ASA_Dino_Manager
             // if manager initialized and we are not scanning and there is dinos in taglist
             if (!FileManager.Scanning && classList.Length > 0)
             {
-                DataManager.CleanDataBaseByID();
+               // DataManager.CleanDataBaseByID();
+                DataManager.DeepCleanDatabase();
                 CreateMenuContents();
             }
             else

@@ -30,7 +30,7 @@ public partial class BabyPage : ContentPage
 
     private bool editStats = false;
 
-    public static bool dataValid = false;
+    private bool dataValid = false;
 
     public BabyPage()
     {
@@ -280,8 +280,8 @@ public partial class BabyPage : ContentPage
             string btn1Text = "Average"; var bColor1 = Shared.PrimaryColor;
             if (CurrentStats) { btn1Text = "Current"; bColor1 = Shared.SecondaryColor; }
             var topButton1 = new Button { Text = btn1Text, BackgroundColor = bColor1 };
-            topButton1.Clicked += StatsBtnClicked;
-            AddToGrid(grid, topButton1, 1, 0);
+            // topButton1.Clicked += StatsBtnClicked;
+            // AddToGrid(grid, topButton1, 1, 0);
 
         }
 

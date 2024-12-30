@@ -51,6 +51,99 @@ namespace ASA_Dino_Manager
         public static string[] BinaryF = new string[1]; //keeping track of max stats for breeding
 
 
+        public static void DeepCleanDatabase()
+        {
+            // Get all distinct IDs from the database.
+            string[] idList = GetAllDistinctColumnData("ID");
+            int totalClean = 0;
+            foreach (string id in idList)
+            {
+                var rows = ImportsTable.Select($"ID = '{id}'", "Time DESC");
+
+                // figure out if its still a baby and we only need to save firsty and last rows
+                double firstAge = ToDouble(GetFirstColumnData("ID", id, "BabyAge")) * 100;
+                double lastAge = ToDouble(GetLastColumnData("ID", id, "BabyAge")) * 100;
+                bool isBaby = false; bool beenBaby = false;
+                if (lastAge < 100) { isBaby = true; }
+                if (firstAge < 100) { beenBaby = true; }
+
+
+                string str1 = ""; string str2 = ""; string str3 = ""; string str4 = "";
+                if (isBaby) // 2 // is baby means only 2 rows need to be saved
+                {
+                    str1 = GetFirstColumnData("ID", id, "Time");
+                    str2 = GetLastColumnData("ID", id, "Time");
+                }
+                else if (!isBaby && beenBaby) // 4
+                {
+                    str1 = GetFirstColumnData("ID", id, "Time");
+
+                    foreach (var row in rows)
+                    {
+                        string timeValue = row["Time"].ToString();
+                        double age = ToDouble(row["BabyAge"].ToString()) * 100;
+
+                        if (age < 100)
+                        {
+                            str2 = row["BabyAge"].ToString(); // last baby time
+                        }
+                        else if (age == 100)
+                        {
+                            str3 = row["BabyAge"].ToString(); // first adult time
+                            break;
+                        }
+                    }
+
+                    str4 = GetLastColumnData("ID", id, "Time");
+                }
+                else if (!isBaby && !beenBaby) // 2 // not a baby and never been = new tame
+                {
+                    str1 = GetFirstColumnData("ID", id, "Time");
+                    str2 = GetLastColumnData("ID", id, "Time");
+                }
+
+                string name = GetLastColumnData("ID", id, "Name");
+                FileManager.Log($"===========================================", 1);
+                FileManager.Log($"Dino: {name}", 1);
+
+                int rowID = 0; int savedRows = 0; int delRows = 0;
+                foreach (var row in rows)
+                {
+                    string timeValue = row["Time"].ToString();
+                    string ageValue = row["BabyAge"].ToString();
+
+                    if (timeValue == str1 || timeValue == str2 || timeValue == str3 || timeValue == str4)
+                    {
+                        // save theese rows
+                        savedRows++;
+                        double age = ToDouble(ageValue) * 100;
+                        FileManager.Log($"Saved row: {age} - {timeValue}", 1);
+                    }
+                    else
+                    {
+                        delRows++; totalClean++;
+                        double age = ToDouble(ageValue) * 100;
+                        FileManager.Log($"Deleted row: {age} - {timeValue}", 1);
+                        ImportsTable.Rows.Remove(row);
+                    }
+                    rowID++;
+                }
+                if (isBaby) { FileManager.Log($"is Baby", 1); }
+                else if (beenBaby)
+                {
+                    FileManager.Log($"been Baby", 1);
+                }
+                else
+                {
+                    FileManager.Log($"only adult", 1);
+                }
+                FileManager.Log($"Saved rows: {savedRows} - Deleted rows: {delRows}", 1);
+            }
+            FileManager.Log($"Total rows deleted: {totalClean}", 1);
+            FileManager.Log($"===========================================", 1);
+            ImportsTable.AcceptChanges();
+        }
+
         public static bool InitDataManager()
         {
             try
@@ -844,7 +937,7 @@ namespace ASA_Dino_Manager
                     double papaHP = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "HP")));
 
                     if ((mamaHP != 0 && papaHP != 0) && (dinoHP != papaHP && dinoHP != mamaHP))
-                    { 
+                    {
                         if (dinoHP > (papaHP + Shared.muteOffset) || dinoHP < (papaHP - Shared.muteOffset))
                         {
                             if (dinoHP > (mamaHP + Shared.muteOffset) || dinoHP < (mamaHP - Shared.muteOffset))
@@ -1965,49 +2058,6 @@ namespace ASA_Dino_Manager
 
                 DataManager.BottomTable.Rows.Add(dr);
             }
-        }
-
-        public static void GetOneDinoData(string id)
-        {
-            //fill the bTable with all the rows that this id gets
-            BottomTable.Clear();
-
-
-            foreach (DataRow row in ImportsTable.Rows)
-            {
-                if (row["ID"].ToString() == id)
-                {
-                    DataRow dr = DataManager.BottomTable.NewRow();
-
-                    dr["Name"] = row["Name"].ToString();
-                    dr["Level"] = ToDouble(row["Level"].ToString());
-                    dr["Hp"] = Math.Round(ToDouble(row["HP"].ToString()), 1);
-                    dr["Stamina"] = Math.Round(ToDouble(row["Stamina"].ToString()), 1);
-                    dr["Oxygen"] = Math.Round(ToDouble(row["Oxygen"].ToString()), 1);
-                    dr["Food"] = Math.Round(ToDouble(row["Food"].ToString()), 1);
-                    dr["Weight"] = Math.Round(ToDouble(row["Weight"].ToString()), 1);
-                    dr["Damage"] = Math.Round((ToDouble(row["Damage"].ToString()) + 1) * 100, 1);
-                    dr["Speed"] = Math.Round((ToDouble(row["Speed"].ToString()) + 1) * 100, 1);
-                    dr["Gen"] = ToDouble(row["Gen"].ToString());
-                    dr["Mama"] = GetLastColumnData("ID", row["Mama"].ToString(), "Name", "");
-                    dr["Papa"] = GetLastColumnData("ID", row["Papa"].ToString(), "Name", "");
-                    dr["MamaMute"] = row["MamaMute"].ToString();
-                    dr["PapaMute"] = row["PapaMute"].ToString();
-                    dr["Imprint"] = Math.Round(ToDouble(row["Imprint"].ToString()) * 100);
-                    dr["Imprinter"] = row["Imprinter"].ToString();
-                    dr["Age"] = Math.Round(ToDouble(row["BabyAge"].ToString()) * 100);
-                    dr["ID"] = row["Time"].ToString();
-
-                    DataManager.BottomTable.Rows.Add(dr);
-                }
-
-            }
-
-            // Sort the BottomTable based on the desired column
-            DataView view = new DataView(DataManager.BottomTable);
-            view.Sort = "ID DESC"; // Replace "Level" with the desired column and sorting order (e.g., "Name ASC", "ID DESC")
-            DataManager.BottomTable = view.ToTable();
-            //FileManager.Log("Retrieved Dino Stats");
         }
 
         public static void CleanDataBaseByID()
