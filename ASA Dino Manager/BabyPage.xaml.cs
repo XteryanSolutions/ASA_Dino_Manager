@@ -46,7 +46,7 @@ public partial class BabyPage : ContentPage
         {
             try
             {
-                if (!dataValid) 
+                if (!dataValid)
                 {
                     FileManager.Log("Loading Baby Data", 0);
                     // sort data based on column clicked
@@ -190,12 +190,9 @@ public partial class BabyPage : ContentPage
                 : 1); // Cover all columns
 
             // make background on row selectable to increase surface area
-            if (title != "Bottom") // not the bottom panel
+            if (id != "") // only when an id is passed
             {
-                if (id != "") // only when an id is passed
-                {
-                    SelectBG(rowBackground, id);
-                }
+                SelectBG(rowBackground, id);
             }
 
             grid.Children.Add(rowBackground);
@@ -308,99 +305,38 @@ public partial class BabyPage : ContentPage
 
     private Grid CreateMainPanel()
     {
-        editStats = false;
-        var maingrid = new Grid
-        {
-            RowSpacing = 0,
-            ColumnSpacing = 5,
-            Padding = 0,
-        };
+        var maingrid = new Grid { RowSpacing = 0, ColumnSpacing = 5, Padding = 0, };
 
         // Define columns
         maingrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 0
 
-        // Dynamically adjust the bottom bar height
-        int rowCount = DataManager.BottomTable.Rows.Count;
-        int maxVisibleRows = 5; int barH;
-        int buffer = Shared.sizeOffset; // Extra buffer to prevent scrolling
-
-        if (rowCount > 0)
-        {
-            // Adjust based on row count
-            int offset = 13 - Math.Min(rowCount, maxVisibleRows) * 4;
-            barH = (Math.Min(rowCount, maxVisibleRows) * Shared.rowHeight) + Shared.headerSize + offset + buffer;
-            if (rowCount > 5) { barH = 127; } // prevent showing the top of the 6th row
-        }
-        else
-        {
-            barH = 0; // No rows, no bar height
-        }
-
-        // for now there is no panel at the bottom in baby view
-        barH = 0;
-        // FileManager.Log($"barH: {barH} = {rowCount} * {Shared.rowHeight} + {Shared.headerSize} + {ofs}", 0);
-
-        if (((ToggleExcluded == 3 || ToggleExcluded == 2 || CurrentStats) && !isSelected) || DataManager.BottomTable.Rows.Count < 1) { barH = 0; }
-
         // Define row definitions
         maingrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // Scrollable content
 
-
-
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        
 
         int count = DataManager.FemaleTable.Rows.Count + DataManager.MaleTable.Rows.Count;
 
         if (count > 0 && !isDouble) // more than 0 dinos and not double clicked
         {
-            // create the row for bottompanel if not in dinoEview
-            maingrid.RowDefinitions.Add(new RowDefinition { Height = barH }); // Scrollable content
-
+            ////////////////////////////////////////////////////////////////////////////////////////////////////
             // Create scrollable content
-            var scrollContent = new StackLayout
-            {
-                Spacing = 20,
-                Padding = 3
-            };
+            var scrollContent = new StackLayout { Spacing = 20, Padding = 3 };
 
             // Add male and female tables
             scrollContent.Children.Add(CreateDinoGrid(DataManager.MaleTable, "Male"));
             scrollContent.Children.Add(CreateDinoGrid(DataManager.FemaleTable, "Female"));
 
-
-            // Wrap the scrollable content in a ScrollView and add it to the second row
-            // changed to include horizontal scrolling
+            // Wrap the scrollable content in a ScrollView and add it
             var scrollView = new ScrollView { Content = scrollContent, Orientation = ScrollOrientation.Horizontal };
 
             AddToGrid(maingrid, scrollView, 0, 1);
-
-            ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            // Create scrollable content
-            var bottomContent = new StackLayout
-            {
-                Spacing = 0,
-                Padding = 3,
-                BackgroundColor = Shared.BottomPanelColor
-            };
-
-
-            // bottomContent.Children.Add(CreateDinoGrid(DataManager.BottomTable, "Bottom"));
-
-            // Wrap the scrollable content in a ScrollView and add it to the third row
-            //  var bottomPanel = new ScrollView { Content = bottomContent };
-
-            //  AddToGrid(maingrid, bottomPanel, 1, 1);
-
             ////////////////////////////////////////////////////////////////////////////////////////////////////
         }
         else if (count > 0 && isDouble)
         {
             ////////////////////////////////////////////////////////////////////////////////////////////////////
             // make dino info box
-
-            // Create scrollable content
             var scrollContent = new StackLayout { Spacing = 20, Padding = 3, };
 
             // Create Grid for stats
@@ -419,7 +355,6 @@ public partial class BabyPage : ContentPage
 
             Color DefaultColor = Shared.maleColor;
 
-            DefaultColor = Shared.maleColor;
             if (sex == "Male") { DefaultColor = Shared.maleColor; }
             else if (sex == "Female") { DefaultColor = Shared.femaleColor; }
 
@@ -895,7 +830,7 @@ public partial class BabyPage : ContentPage
         sortChar = ""; if (newTest == "Imprinter") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var imprinterH = new Label { Text = $"Imprinter{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
-        
+
 
         // make columns sortable
         SortColumn(tagH, title);
@@ -1348,7 +1283,7 @@ public partial class BabyPage : ContentPage
         // reset toggles etc.
         levelText = ""; hpText = ""; staminaText = ""; oxygenText = "";
         foodText = ""; weightText = ""; damageText = ""; notesText = "";
-        isDouble = false;
+        isDouble = false; editStats = false;
 
         ClearSelection();
         CreateContent();
@@ -1367,6 +1302,7 @@ public partial class BabyPage : ContentPage
             DataManager.EditBreedStats(selectedID, levelText, hpText, staminaText, oxygenText, foodText, weightText, damageText, notesText);
             FileManager.needSave = true;
             dataValid = false;
+            editStats = false;
         }
 
         // reset toggles etc.
