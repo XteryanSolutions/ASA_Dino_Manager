@@ -59,9 +59,7 @@ namespace ASA_Dino_Manager
             int totalClean = 0;
             foreach (string id in idList)
             {
-                string name = GetLastColumnData("ID", id, "Name");
-                FileManager.Log($"===========================================", 1);
-                FileManager.Log($"Dino: {name}", 1);
+
 
                 var rows = ImportsTable.Select($"ID = '{id}'", "Time ASC");
 
@@ -130,34 +128,35 @@ namespace ASA_Dino_Manager
                     {
                         // save theese rows
                         savedRows++;
-                        double age = ToDouble(ageValue) * 100;
-                        FileManager.Log($"Saved row: {age} - {timeValue}", 1);
+                        //  double age = ToDouble(ageValue) * 100;
+                        //  FileManager.Log($"Saved row: {age} - {timeValue}", 1);
                     }
                     else
                     {
                         delRows++; totalClean++;
-                        double age = ToDouble(ageValue) * 100;
-                        FileManager.Log($"Deleted row: {age} - {timeValue}", 1);
+                        // double age = ToDouble(ageValue) * 100;
+                        // FileManager.Log($"Deleted row: {age} - {timeValue}", 1);
                         ImportsTable.Rows.Remove(row);
                     }
                     rowID++;
                 }
-                if (isBaby) { FileManager.Log($"is Baby", 1); }
-                else if (beenBaby)
+                if (delRows > 0)
                 {
-                    FileManager.Log($"been Baby", 1);
+                    string name = GetLastColumnData("ID", id, "Name");
+                    FileManager.Log($"==================================", 1);
+                    FileManager.Log($"Dino: {name}", 1);
+                    if (isBaby) { FileManager.Log($"is Baby", 1); }
+                    else if (beenBaby) { FileManager.Log($"been Baby", 1); }
+                    else { FileManager.Log($"only adult", 1); }
+                    FileManager.Log($"Saved rows: {savedRows} - Deleted rows: {delRows}", 1);
                 }
-                else
-                {
-                    FileManager.Log($"only adult", 1);
-                }
-                FileManager.Log($"Saved rows: {savedRows} - Deleted rows: {delRows}", 1);
             }
-            FileManager.Log($"Total rows deleted: {totalClean}", 1);
-            FileManager.Log($"===========================================", 1);
             ImportsTable.AcceptChanges();
             if (totalClean > 0)
             {
+                FileManager.Log($"====================================================", 1);
+                FileManager.Log($"Total rows deleted: {totalClean}", 1);
+                FileManager.Log($"================= Database Cleaned =================", 1);
                 FileManager.needSave = true;
             }
         }
@@ -2221,14 +2220,28 @@ namespace ASA_Dino_Manager
 
         private static void CheckDino(string id, string inputColumn, string newData)
         {
-            if (newData != "")
+            string field = DataManager.GetLastColumnData("ID", id, inputColumn);
+            if (newData != "" && newData != "N/A" && newData != "#" && newData != "0") // have new data
             {
-                string field = DataManager.GetLastColumnData("ID", id, inputColumn);
-                if (field == "")// no previous info
+                if (field == "N/A" || field == "" || field == "#" || field == "0")// no previous info
                 {
-                    UpdateField(id, inputColumn, newData);
+                    if (field != newData)
+                    {
+                        UpdateField(id, inputColumn, newData);
+                        FileManager.Log($"Updated: {inputColumn} - {newData}", 0);
+                    } 
                 }
             }
+            else // we dont have new data
+            {
+                if (field == "N/A" || field == "" || field == "#" || field == "0") // we dont have old data
+                {
+                   // FileManager.Log($"Need to import more data", 0);
+                }
+            }
+
+
+
         }
 
         private static void UpdateField(string id, string column, string value)
