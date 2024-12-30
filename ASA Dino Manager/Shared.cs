@@ -47,6 +47,10 @@
         public static int muteOffset = 1;
 
 
+        // Benchmark stuff
+        public static int loadCount = 0;
+        public static double loadAvg = 0; // keep track of average import time
+
         ////////////////////    Shared locks    ////////////////////
         public static readonly object _logLock = new object();
         public static readonly object _dbLock = new object();

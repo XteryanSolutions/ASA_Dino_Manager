@@ -20,9 +20,6 @@ public partial class DinoPage : ContentPage
     public static string sortM = Shared.DefaultSortM;
     public static string sortF = Shared.DefaultSortF;
 
-    // Benchmark stuff
-    private int loadCount = 0;
-    private double loadAvg = 0; // keep track of average import time
 
     private string levelText = "";
     private string hpText = "";
@@ -63,22 +60,17 @@ public partial class DinoPage : ContentPage
 
                         DataManager.SetMaxStats(ToggleExcluded);
 
+                        DataManager.SetBinaryStats(ToggleExcluded);
 
                         // load this data only when showing all and included
-                        if (ToggleExcluded == 0 || ToggleExcluded == 1) 
+                        if (ToggleExcluded == 0 || ToggleExcluded == 1)
                         {
-                           
-                            DataManager.SetBinaryStats(ToggleExcluded);
-
                             if (!CurrentStats)
                             {
                                 DataManager.GetBestPartner();
                             }
-
                         }
- 
 
-                       
                         dataValid = true;
                     }
 
@@ -107,10 +99,10 @@ public partial class DinoPage : ContentPage
         }
         stopwatch.Stop();
         var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
-        loadCount++;
+        Shared.loadCount++;
         double outAVG = 0;
-        if (loadCount < 2) { loadAvg = elapsedMilliseconds; outAVG = loadAvg; }
-        else { loadAvg += elapsedMilliseconds; outAVG = loadAvg / loadCount; }
+        if (Shared.loadCount < 2) { Shared.loadAvg = elapsedMilliseconds; outAVG = Shared.loadAvg; }
+        else { Shared.loadAvg += elapsedMilliseconds; outAVG = Shared.loadAvg / Shared.loadCount; }
         FileManager.Log($"GUI Refresh Done: {elapsedMilliseconds}ms Avg: {outAVG}", 0);
     }
 
@@ -1026,7 +1018,7 @@ public partial class DinoPage : ContentPage
         int startID = 4;
 
         // If hasO2, include the O2 column (header4)
-        if (hasO2) {  AddToGrid(grid, oxygenH, 0, startID++, title); }
+        if (hasO2) { AddToGrid(grid, oxygenH, 0, startID++, title); }
 
         // Add remaining headers
         AddToGrid(grid, foodH, 0, startID++, title);
@@ -1107,7 +1099,7 @@ public partial class DinoPage : ContentPage
             if (DataManager.ToDouble(food) >= DataManager.FoodMax) { cellColor5 = Shared.goodColor; }
             if (DataManager.ToDouble(weight) >= DataManager.WeightMax) { cellColor6 = Shared.goodColor; }
             if (DataManager.ToDouble(damage) >= DataManager.DamageMax) { cellColor7 = Shared.goodColor; }
-           // if (DataManager.ToDouble(speed) >= DataManager.SpeedMax) { cellColor9 = Shared.goodColor; }
+            // if (DataManager.ToDouble(speed) >= DataManager.SpeedMax) { cellColor9 = Shared.goodColor; }
 
 
             // mutation detection overrides normal coloring -> mutaColor

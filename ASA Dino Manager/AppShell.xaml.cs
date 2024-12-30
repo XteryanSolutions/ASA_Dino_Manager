@@ -313,7 +313,10 @@ namespace ASA_Dino_Manager
                             // handle import files first
                             DataManager.Import();
 
-                            UpdateMenuContents(Shared.setPage);
+                            if (DataManager.ModC > 0 || DataManager.AddC > 0 || Shared.setPage == "Baby_Dinos")
+                            {
+                                UpdateMenuContents(Shared.setPage);
+                            }     
 
                             if (DataManager.ModC > 0)
                             {
