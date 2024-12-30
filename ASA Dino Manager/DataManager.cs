@@ -2192,14 +2192,20 @@ namespace ASA_Dino_Manager
                         if (change)
                         {
                             // check for missing data that can be raplaced
-                            CheckDino(id, "Mama", importedNew[11]);
-                            CheckDino(id, "Papa", importedNew[12]);
-                            CheckDino(id, "MamaMute", importedNew[13]);
-                            CheckDino(id, "PapaMute", importedNew[14]);
-                            CheckDino(id, "Gen", importedNew[15]);
-                            CheckDino(id, "GenM", importedNew[16]);
-                            CheckDino(id, "Imprinter", importedNew[20]);
-                            CheckDino(id, "Tribe", importedNew[21]);
+                            bool needInfo = false;
+                            if (CheckDino(id, "Mama", importedNew[11])) { needInfo = true; }
+                            if (CheckDino(id, "Papa", importedNew[12])) { needInfo = true; }
+                            if (CheckDino(id, "MamaMute", importedNew[13])) { needInfo = true; }
+                            if (CheckDino(id, "PapaMute", importedNew[14])) { needInfo = true; }
+                            if (CheckDino(id, "Gen", importedNew[15])) { needInfo = true; }
+                            if (CheckDino(id, "GenM", importedNew[16])) { needInfo = true; }
+                            if (CheckDino(id, "Imprinter", importedNew[20])) { needInfo = true; }
+                            if (CheckDino(id, "Tribe", importedNew[21])) { needInfo = true; }
+
+                            if (needInfo)
+                            {
+                                FileManager.Log($"Need to import more data", 0);
+                            }
 
                             ModC++;
                             //fileManager.log("Updated dino: " + id);
@@ -2218,12 +2224,17 @@ namespace ASA_Dino_Manager
             }
         }
 
-        private static void CheckDino(string id, string inputColumn, string newData)
+        private static bool CheckDino(string id, string inputColumn, string newData)
         {
-            string field = DataManager.GetLastColumnData("ID", id, inputColumn);
-            if (newData != "" && newData != "N/A" && newData != "#" && newData != "0") // have new data
+            string field = DataManager.GetLastColumnData("ID", id, inputColumn);string valu = "0";
+            if (inputColumn == "Gen" || inputColumn == "GenM" || inputColumn == "MamaMute" || inputColumn == "PapaMute")
             {
-                if (field == "N/A" || field == "" || field == "#" || field == "0")// no previous info
+                valu = "";
+            }
+
+            if (newData != "" && newData != "N/A" && newData != "#" && newData != valu) // have new data
+            {
+                if (field == "N/A" || field == "" || field == "#" || field == valu)// no previous info
                 {
                     if (field != newData)
                     {
@@ -2236,12 +2247,10 @@ namespace ASA_Dino_Manager
             {
                 if (field == "N/A" || field == "" || field == "#" || field == "0") // we dont have old data
                 {
-                   // FileManager.Log($"Need to import more data", 0);
+                    return true;
                 }
             }
-
-
-
+            return false;
         }
 
         private static void UpdateField(string id, string column, string value)
