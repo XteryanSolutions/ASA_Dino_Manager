@@ -5,8 +5,7 @@ namespace ASA_Dino_Manager;
 public partial class BabyPage : ContentPage
 {
     ////////////////////    View Toggles    ////////////////////
-    public static int ToggleExcluded = Shared.DefaultToggle;
-    public static bool CurrentStats = Shared.DefaultStat;
+    public static int ToggleExcluded = Shared.DefaultToggleB;
 
     ////////////////////    Selecting       ////////////////////
     public static string selectedID = "";
@@ -276,13 +275,6 @@ public partial class BabyPage : ContentPage
             var toggleBtn = new Button { Text = toggleBtnText, BackgroundColor = toggleBtnColor };
             AddToGrid(grid, toggleBtn, 0, 0);
             toggleBtn.Clicked += ToggleBtnClicked;
-
-            string btn1Text = "Average"; var bColor1 = Shared.PrimaryColor;
-            if (CurrentStats) { btn1Text = "Current"; bColor1 = Shared.SecondaryColor; }
-            var topButton1 = new Button { Text = btn1Text, BackgroundColor = bColor1 };
-            // topButton1.Clicked += StatsBtnClicked;
-            // AddToGrid(grid, topButton1, 1, 0);
-
         }
 
         if (isSelected) // add theese only if we have a dino selected
@@ -401,7 +393,7 @@ public partial class BabyPage : ContentPage
 
             // mutation detection overrides normal coloring -> mutaColor
             string mutes = DataManager.GetMutes(currentID);
-            if (mutes.Length == 6 && !CurrentStats) // dont show mutations on current statview
+            if (mutes.Length == 6) // dont show mutations on current statview
             {
                 string aC = mutes.Substring(0, 1); string bC = mutes.Substring(1, 1); string cC = mutes.Substring(2, 1);
                 string dC = mutes.Substring(3, 1); string eC = mutes.Substring(4, 1); string fC = mutes.Substring(5, 1);
@@ -1313,16 +1305,5 @@ public partial class BabyPage : ContentPage
         CreateContent();
     }
 
-    private void StatsBtnClicked(object? sender, EventArgs e)
-    {
-        if (CurrentStats) { CurrentStats = false; }
-        else { CurrentStats = true; }
-
-        FileManager.Log($"Toggle Stats {CurrentStats}", 0);
-
-        dataValid = false;
-        ClearSelection();
-        CreateContent();
-    }
 
 }

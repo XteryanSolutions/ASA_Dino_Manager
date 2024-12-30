@@ -93,7 +93,7 @@ namespace ASA_Dino_Manager
                     DinoPage.isSelected = false; DinoPage.isDouble = false; DinoPage.canDouble = false; DinoPage.selectedID = "";
                     DinoPage.sortM = Shared.DefaultSortM; DinoPage.sortF = Shared.DefaultSortF;
 
-                    BabyPage.CurrentStats = Shared.DefaultStat; BabyPage.ToggleExcluded = Shared.DefaultToggle;
+                    BabyPage.ToggleExcluded = Shared.DefaultToggleB;
                     BabyPage.isSelected = false; BabyPage.isDouble = false; BabyPage.canDouble = false; BabyPage.selectedID = "";
                     BabyPage.sortM = Shared.DefaultSortM; BabyPage.sortF = Shared.DefaultSortF;
 

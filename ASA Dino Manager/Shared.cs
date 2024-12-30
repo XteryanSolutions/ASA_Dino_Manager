@@ -18,6 +18,7 @@
         public static string DefaultSortF = ""; // default sorting for female dinos
         // Navigation
         public static int DefaultToggle = 1;
+        public static int DefaultToggleB = 0; // default toggle for babypage
         public static bool DefaultStat = false;
         public static int doubleClick = 500;
 
@@ -42,7 +43,7 @@
         public static string loveSym = "🧡";
 
 
-
+        //offset for preventing excessive mutation triggers
         public static int muteOffset = 1;
 
 

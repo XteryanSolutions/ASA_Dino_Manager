@@ -61,7 +61,13 @@ namespace ASA_Dino_Manager
             {
 
 
-                var rows = ImportsTable.Select($"ID = '{id}'", "Time ASC");
+                //var rows = ImportsTable.Select($"ID = '{id}'", "Time ASC");
+
+                var rows = ImportsTable.AsEnumerable()
+    .Where(row => row.Field<string>("ID") == id)
+    .OrderBy(row => DateTime.ParseExact(row.Field<string>("Time"), "dd/MM/yyyy HH:mm:ss", Culture))
+    .ToArray();
+
 
                 // figure out if its still a baby and we only need to save firsty and last rows
                 double firstAge = ToDouble(GetFirstColumnData("ID", id, "BabyAge")) * 100;
@@ -128,14 +134,14 @@ namespace ASA_Dino_Manager
                     {
                         // save theese rows
                         savedRows++;
-                        //  double age = ToDouble(ageValue) * 100;
+                        double age = ToDouble(ageValue) * 100;
                         //  FileManager.Log($"Saved row: {age} - {timeValue}", 1);
                     }
                     else
                     {
                         delRows++; totalClean++;
-                        // double age = ToDouble(ageValue) * 100;
-                        // FileManager.Log($"Deleted row: {age} - {timeValue}", 1);
+                        double age = ToDouble(ageValue) * 100;
+                        //  FileManager.Log($"Deleted row: {age} - {timeValue}", 1);
                         ImportsTable.Rows.Remove(row);
                     }
                     rowID++;
@@ -2226,7 +2232,7 @@ namespace ASA_Dino_Manager
 
         private static bool CheckDino(string id, string inputColumn, string newData)
         {
-            string field = DataManager.GetLastColumnData("ID", id, inputColumn);string valu = "0";
+            string field = DataManager.GetLastColumnData("ID", id, inputColumn); string valu = "0";
             if (inputColumn == "Gen" || inputColumn == "GenM" || inputColumn == "MamaMute" || inputColumn == "PapaMute")
             {
                 valu = "";
@@ -2240,7 +2246,7 @@ namespace ASA_Dino_Manager
                     {
                         UpdateField(id, inputColumn, newData);
                         FileManager.Log($"Updated: {inputColumn} - {newData}", 0);
-                    } 
+                    }
                 }
             }
             else // we dont have new data
