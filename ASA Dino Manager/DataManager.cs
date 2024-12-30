@@ -142,6 +142,10 @@ namespace ASA_Dino_Manager
             FileManager.Log($"Total rows deleted: {totalClean}", 1);
             FileManager.Log($"===========================================", 1);
             ImportsTable.AcceptChanges();
+            if (totalClean > 0)
+            {
+                FileManager.needSave = true;
+            }
         }
 
         public static bool InitDataManager()
