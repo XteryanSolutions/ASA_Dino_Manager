@@ -52,6 +52,174 @@ namespace ASA_Dino_Manager
         public static string[] BinaryF = new string[1]; //keeping track of max stats for breeding
 
 
+
+        public static bool InitDataManager()
+        {
+            try
+            {
+                DecimalSeparator = Culture.NumberFormat.CurrencyDecimalSeparator;
+                ThousandsSeparator = Culture.NumberFormat.CurrencyGroupSeparator;
+
+
+                ImportsDataSet.Tables.Add(ImportsTable);
+                FemaleDataSet.Tables.Add(FemaleTable);
+                MaleDataSet.Tables.Add(MaleTable);
+                BottomDataSet.Tables.Add(BottomTable);
+                StatDataSet.Tables.Add(StatTable);
+                ComboDataSet.Tables.Add(ComboTable);
+                ArchiveDataSet.Tables.Add(ArchiveTable);
+
+
+                ImportsTable.Clear();
+                ImportsTable.Columns.Add("ID", typeof(string));
+                ImportsTable.Columns.Add("Tag", typeof(string));
+                ImportsTable.Columns.Add("Sex", typeof(string));
+                ImportsTable.Columns.Add("Name", typeof(string));
+                ImportsTable.Columns.Add("Level", typeof(string));
+                ImportsTable.Columns.Add("HP", typeof(string));
+                ImportsTable.Columns.Add("Stamina", typeof(string));
+                ImportsTable.Columns.Add("Oxygen", typeof(string));
+                ImportsTable.Columns.Add("Food", typeof(string));
+                ImportsTable.Columns.Add("Weight", typeof(string));
+                ImportsTable.Columns.Add("Damage", typeof(string));
+                ImportsTable.Columns.Add("Speed", typeof(string));
+                ImportsTable.Columns.Add("Mama", typeof(string));
+                ImportsTable.Columns.Add("Papa", typeof(string));
+                ImportsTable.Columns.Add("MamaMute", typeof(string));
+                ImportsTable.Columns.Add("PapaMute", typeof(string));
+                ImportsTable.Columns.Add("Gen", typeof(string));
+                ImportsTable.Columns.Add("GenM", typeof(string));
+                ImportsTable.Columns.Add("BabyAge", typeof(string));
+                ImportsTable.Columns.Add("Neutered", typeof(string));
+                ImportsTable.Columns.Add("Imprint", typeof(string));
+                ImportsTable.Columns.Add("Imprinter", typeof(string));
+                ImportsTable.Columns.Add("Tribe", typeof(string));
+                ImportsTable.Columns.Add("Class", typeof(string));
+                ImportsTable.Columns.Add("Time", typeof(string));
+                ImportsTable.Columns.Add("Colors", typeof(string));
+                ImportsTable.Columns.Add("CraftSkill", typeof(string));
+
+
+
+                FemaleTable.Clear();
+                FemaleTable.Columns.Add("Status", typeof(string));
+                FemaleTable.Columns.Add("Name", typeof(string));
+                FemaleTable.Columns.Add("Level", typeof(double));
+                // ==============
+                FemaleTable.Columns.Add("HP", typeof(double));
+                FemaleTable.Columns.Add("Stamina", typeof(double));
+                FemaleTable.Columns.Add("Oxygen", typeof(double));
+                FemaleTable.Columns.Add("Food", typeof(double));
+                FemaleTable.Columns.Add("Weight", typeof(double));
+                FemaleTable.Columns.Add("Damage", typeof(double));
+                // ==============
+                FemaleTable.Columns.Add("Speed", typeof(double));
+                FemaleTable.Columns.Add("Gen", typeof(double));
+                FemaleTable.Columns.Add("Papa", typeof(string));
+                FemaleTable.Columns.Add("Mama", typeof(string));
+                FemaleTable.Columns.Add("MamaMute", typeof(double));
+                FemaleTable.Columns.Add("PapaMute", typeof(double));
+                FemaleTable.Columns.Add("Age", typeof(double));
+                FemaleTable.Columns.Add("Imprint", typeof(double));
+                FemaleTable.Columns.Add("Imprinter", typeof(string));
+                FemaleTable.Columns.Add("ID", typeof(string));
+                FemaleTable.Columns.Add("Tag", typeof(string));
+                FemaleTable.Columns.Add("Crafting", typeof(double));
+
+
+                MaleTable.Clear();
+                MaleTable.Columns.Add("Status", typeof(string));
+                MaleTable.Columns.Add("Name", typeof(string));
+                MaleTable.Columns.Add("Level", typeof(double));
+                // ==============
+                MaleTable.Columns.Add("HP", typeof(double));
+                MaleTable.Columns.Add("Stamina", typeof(double));
+                MaleTable.Columns.Add("Oxygen", typeof(double));
+                MaleTable.Columns.Add("Food", typeof(double));
+                MaleTable.Columns.Add("Weight", typeof(double));
+                MaleTable.Columns.Add("Damage", typeof(double));
+                // ==============
+                MaleTable.Columns.Add("Speed", typeof(double));
+                MaleTable.Columns.Add("Gen", typeof(double));
+                MaleTable.Columns.Add("Papa", typeof(string));
+                MaleTable.Columns.Add("Mama", typeof(string));
+                MaleTable.Columns.Add("MamaMute", typeof(double));
+                MaleTable.Columns.Add("PapaMute", typeof(double));
+                MaleTable.Columns.Add("Age", typeof(double));
+                MaleTable.Columns.Add("Imprint", typeof(double));
+                MaleTable.Columns.Add("Imprinter", typeof(string));
+                MaleTable.Columns.Add("ID", typeof(string));
+                MaleTable.Columns.Add("Tag", typeof(string));
+                MaleTable.Columns.Add("Crafting", typeof(double));
+
+
+
+                BottomTable.Clear();
+                BottomTable.Columns.Add("Status", typeof(string));
+                BottomTable.Columns.Add("Name", typeof(string));
+                BottomTable.Columns.Add("Level", typeof(double));
+                // ==============
+                BottomTable.Columns.Add("HP", typeof(double));
+                BottomTable.Columns.Add("Stamina", typeof(double));
+                BottomTable.Columns.Add("Oxygen", typeof(double));
+                BottomTable.Columns.Add("Food", typeof(double));
+                BottomTable.Columns.Add("Weight", typeof(double));
+                BottomTable.Columns.Add("Damage", typeof(double));
+                // ==============
+                BottomTable.Columns.Add("Speed", typeof(double));
+                BottomTable.Columns.Add("Gen", typeof(double));
+                BottomTable.Columns.Add("Papa", typeof(string));
+                BottomTable.Columns.Add("Mama", typeof(string));
+                BottomTable.Columns.Add("MamaMute", typeof(double));
+                BottomTable.Columns.Add("PapaMute", typeof(double));
+                BottomTable.Columns.Add("Age", typeof(double));
+                BottomTable.Columns.Add("Imprint", typeof(double));
+                BottomTable.Columns.Add("Imprinter", typeof(string));
+                BottomTable.Columns.Add("ID", typeof(string));
+                BottomTable.Columns.Add("Crafting", typeof(double));
+
+
+
+                ComboTable.Clear();
+                ComboTable.Columns.Add("#", typeof(int));
+                ComboTable.Columns.Add("P", typeof(string));
+                ComboTable.Columns.Add("M", typeof(string));
+                ComboTable.Columns.Add("gP", typeof(int));
+                ComboTable.Columns.Add("aP", typeof(int));
+                ComboTable.Columns.Add("agP", typeof(int));
+                ComboTable.Columns.Add("bP", typeof(int));
+                ComboTable.Columns.Add("res", typeof(string));
+
+
+
+                StatTable.Clear();
+                StatTable.Columns.Add("ID", typeof(string));
+                StatTable.Columns.Add("Status", typeof(string));
+                StatTable.Columns.Add("Notes", typeof(string));
+                StatTable.Columns.Add("Mutes", typeof(string));
+
+
+
+
+                ArchiveTable.Clear();
+                ArchiveTable.Columns.Add("ID", typeof(string));
+                ArchiveTable.Columns.Add("Tag", typeof(string));
+                ArchiveTable.Columns.Add("Name", typeof(string));
+                ArchiveTable.Columns.Add("Level", typeof(double));
+                ArchiveTable.Columns.Add("Class", typeof(string));
+
+
+
+                FileManager.LoadFiles();
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public static void DeepCleanDatabase()
         {
             // Get all distinct IDs from the database.
@@ -164,173 +332,6 @@ namespace ASA_Dino_Manager
                 FileManager.Log($"Total rows deleted: {totalClean}", 1);
                 FileManager.Log($"================= Database Cleaned =================", 1);
                 FileManager.needSave = true;
-            }
-        }
-
-        public static bool InitDataManager()
-        {
-            try
-            {
-                DecimalSeparator = Culture.NumberFormat.CurrencyDecimalSeparator;
-                ThousandsSeparator = Culture.NumberFormat.CurrencyGroupSeparator;
-
-
-                ImportsDataSet.Tables.Add(ImportsTable);
-                FemaleDataSet.Tables.Add(FemaleTable);
-                MaleDataSet.Tables.Add(MaleTable);
-                BottomDataSet.Tables.Add(BottomTable);
-                StatDataSet.Tables.Add(StatTable);
-                ComboDataSet.Tables.Add(ComboTable);
-                ArchiveDataSet.Tables.Add(ArchiveTable);
-
-
-                ImportsTable.Clear();
-                ImportsTable.Columns.Add("ID", typeof(string));
-                ImportsTable.Columns.Add("Tag", typeof(string));
-                ImportsTable.Columns.Add("Sex", typeof(string));
-                ImportsTable.Columns.Add("Name", typeof(string));
-                ImportsTable.Columns.Add("Level", typeof(string));
-                ImportsTable.Columns.Add("HP", typeof(string));
-                ImportsTable.Columns.Add("Stamina", typeof(string));
-                ImportsTable.Columns.Add("Oxygen", typeof(string));
-                ImportsTable.Columns.Add("Food", typeof(string));
-                ImportsTable.Columns.Add("Weight", typeof(string));
-                ImportsTable.Columns.Add("Damage", typeof(string));
-                ImportsTable.Columns.Add("Speed", typeof(string));
-                ImportsTable.Columns.Add("Mama", typeof(string));
-                ImportsTable.Columns.Add("Papa", typeof(string));
-                ImportsTable.Columns.Add("MamaMute", typeof(string));
-                ImportsTable.Columns.Add("PapaMute", typeof(string));
-                ImportsTable.Columns.Add("Gen", typeof(string));
-                ImportsTable.Columns.Add("GenM", typeof(string));
-                ImportsTable.Columns.Add("BabyAge", typeof(string));
-                ImportsTable.Columns.Add("Neutered", typeof(string));
-                ImportsTable.Columns.Add("Imprint", typeof(string));
-                ImportsTable.Columns.Add("Imprinter", typeof(string));
-                ImportsTable.Columns.Add("Tribe", typeof(string));
-                ImportsTable.Columns.Add("Class", typeof(string));
-                ImportsTable.Columns.Add("Time", typeof(string));
-                ImportsTable.Columns.Add("Colors", typeof(string));
-                ImportsTable.Columns.Add("CraftSkill", typeof(string));
-
-
-
-                FemaleTable.Clear();
-                FemaleTable.Columns.Add("Status", typeof(string));
-                FemaleTable.Columns.Add("Name", typeof(string));
-                FemaleTable.Columns.Add("Level", typeof(double));
-                // ==============
-                FemaleTable.Columns.Add("HP", typeof(double));
-                FemaleTable.Columns.Add("Stamina", typeof(double));
-                FemaleTable.Columns.Add("Oxygen", typeof(double));
-                FemaleTable.Columns.Add("Food", typeof(double));
-                FemaleTable.Columns.Add("Weight", typeof(double));
-                FemaleTable.Columns.Add("Damage", typeof(double));
-                // ==============
-                FemaleTable.Columns.Add("Speed", typeof(double));
-                FemaleTable.Columns.Add("Gen", typeof(double));
-                FemaleTable.Columns.Add("Papa", typeof(string));
-                FemaleTable.Columns.Add("Mama", typeof(string));
-                FemaleTable.Columns.Add("MamaMute", typeof(double));
-                FemaleTable.Columns.Add("PapaMute", typeof(double));
-                FemaleTable.Columns.Add("Age", typeof(double));
-                FemaleTable.Columns.Add("Imprint", typeof(double));
-                FemaleTable.Columns.Add("Imprinter", typeof(string));
-                FemaleTable.Columns.Add("ID", typeof(string));
-                FemaleTable.Columns.Add("Tag", typeof(string));
-
-
-
-                MaleTable.Clear();
-                MaleTable.Columns.Add("Status", typeof(string));
-                MaleTable.Columns.Add("Name", typeof(string));
-                MaleTable.Columns.Add("Level", typeof(double));
-                // ==============
-                MaleTable.Columns.Add("HP", typeof(double));
-                MaleTable.Columns.Add("Stamina", typeof(double));
-                MaleTable.Columns.Add("Oxygen", typeof(double));
-                MaleTable.Columns.Add("Food", typeof(double));
-                MaleTable.Columns.Add("Weight", typeof(double));
-                MaleTable.Columns.Add("Damage", typeof(double));
-                // ==============
-                MaleTable.Columns.Add("Speed", typeof(double));
-                MaleTable.Columns.Add("Gen", typeof(double));
-                MaleTable.Columns.Add("Papa", typeof(string));
-                MaleTable.Columns.Add("Mama", typeof(string));
-                MaleTable.Columns.Add("MamaMute", typeof(double));
-                MaleTable.Columns.Add("PapaMute", typeof(double));
-                MaleTable.Columns.Add("Age", typeof(double));
-                MaleTable.Columns.Add("Imprint", typeof(double));
-                MaleTable.Columns.Add("Imprinter", typeof(string));
-                MaleTable.Columns.Add("ID", typeof(string));
-                MaleTable.Columns.Add("Tag", typeof(string));
-
-
-
-
-                BottomTable.Clear();
-                BottomTable.Columns.Add("Status", typeof(string));
-                BottomTable.Columns.Add("Name", typeof(string));
-                BottomTable.Columns.Add("Level", typeof(double));
-                // ==============
-                BottomTable.Columns.Add("HP", typeof(double));
-                BottomTable.Columns.Add("Stamina", typeof(double));
-                BottomTable.Columns.Add("Oxygen", typeof(double));
-                BottomTable.Columns.Add("Food", typeof(double));
-                BottomTable.Columns.Add("Weight", typeof(double));
-                BottomTable.Columns.Add("Damage", typeof(double));
-                // ==============
-                BottomTable.Columns.Add("Speed", typeof(double));
-                BottomTable.Columns.Add("Gen", typeof(double));
-                BottomTable.Columns.Add("Papa", typeof(string));
-                BottomTable.Columns.Add("Mama", typeof(string));
-                BottomTable.Columns.Add("MamaMute", typeof(double));
-                BottomTable.Columns.Add("PapaMute", typeof(double));
-                BottomTable.Columns.Add("Age", typeof(double));
-                BottomTable.Columns.Add("Imprint", typeof(double));
-                BottomTable.Columns.Add("Imprinter", typeof(string));
-                BottomTable.Columns.Add("ID", typeof(string));
-
-
-
-
-                ComboTable.Clear();
-                ComboTable.Columns.Add("#", typeof(int));
-                ComboTable.Columns.Add("P", typeof(string));
-                ComboTable.Columns.Add("M", typeof(string));
-                ComboTable.Columns.Add("gP", typeof(int));
-                ComboTable.Columns.Add("aP", typeof(int));
-                ComboTable.Columns.Add("agP", typeof(int));
-                ComboTable.Columns.Add("bP", typeof(int));
-                ComboTable.Columns.Add("res", typeof(string));
-
-
-
-                StatTable.Clear();
-                StatTable.Columns.Add("ID", typeof(string));
-                StatTable.Columns.Add("Status", typeof(string));
-                StatTable.Columns.Add("Notes", typeof(string));
-                StatTable.Columns.Add("Mutes", typeof(string));
-
-
-
-
-                ArchiveTable.Clear();
-                ArchiveTable.Columns.Add("ID", typeof(string));
-                ArchiveTable.Columns.Add("Tag", typeof(string));
-                ArchiveTable.Columns.Add("Name", typeof(string));
-                ArchiveTable.Columns.Add("Level", typeof(double));
-                ArchiveTable.Columns.Add("Class", typeof(string));
-
-
-
-                FileManager.LoadFiles();
-
-                return true;
-            }
-            catch
-            {
-                return false;
             }
         }
 

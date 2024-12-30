@@ -876,10 +876,11 @@ public partial class DinoPage : ContentPage
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 13
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 14
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 15
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 16
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 17
 
 
-
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 16
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 18
 
 
         Color DefaultColor = Shared.maleColor;
@@ -889,10 +890,11 @@ public partial class DinoPage : ContentPage
         else if (title == "Female") { DefaultColor = Shared.femaleColor; headerColor = Shared.femaleHeaderColor; }
         else { DefaultColor = Shared.bottomColor; headerColor = Shared.bottomHeaderColor; }
 
-        bool hasO2 = true;
-
+        // check for sats we dont need
+        bool hasO2 = true; bool hasSpeed = false; bool hasCraft = false;
         if (DataManager.OxygenMax == 150) { hasO2 = false; }
 
+        if (title != "Bottom") { hasSpeed = true; } // force activate for now
 
         int fSize = Shared.headerSize;  // header fontsize
 
@@ -920,21 +922,27 @@ public partial class DinoPage : ContentPage
 
 
         sortChar = ""; if (newTest == "Name") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var header0 = new Label { Text = $"Name{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var nameH = new Label { Text = $"Name{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         sortChar = ""; if (newTest == "Level") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var header1 = new Label { Text = $"Level{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var levelH = new Label { Text = $"Level{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         sortChar = ""; if (newTest == "Hp") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var header2 = new Label { Text = $"Hp{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var hpH = new Label { Text = $"Hp{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         sortChar = ""; if (newTest == "Stamina") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var header3 = new Label { Text = $"Stamina{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var staminaH = new Label { Text = $"Stamina{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         sortChar = ""; if (newTest == "Oxygen") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var header4 = new Label { Text = $"Oxygen{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var oxygenH = new Label { Text = $"Oxygen{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         sortChar = ""; if (newTest == "Food") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var header5 = new Label { Text = $"Food{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var foodH = new Label { Text = $"Food{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         sortChar = ""; if (newTest == "Weight") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var header6 = new Label { Text = $"Weight{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var weightH = new Label { Text = $"Weight{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         sortChar = ""; if (newTest == "Damage") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var header7 = new Label { Text = $"Damage{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var damageH = new Label { Text = $"Damage{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+
+        sortChar = ""; if (newTest == "Speed") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var speedH = new Label { Text = $"Speed{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == "Crafting") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var craftH = new Label { Text = $"Crafting{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+
         sortChar = ""; if (newTest == "Status") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header8 = new Label { Text = $"Status{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         sortChar = ""; if (newTest == "Gen") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
@@ -960,16 +968,21 @@ public partial class DinoPage : ContentPage
 
         if (title != "Bottom") // not sortable bottom row
         {
-            SortColumn(header0, sexS);
-            SortColumn(header1, sexS);
-            SortColumn(header2, sexS);
-            SortColumn(header3, sexS);
+            SortColumn(nameH, sexS);
+            SortColumn(levelH, sexS);
+            SortColumn(hpH, sexS);
+            SortColumn(staminaH, sexS);
 
-            if (hasO2) { SortColumn(header4, sexS); }
+            if (hasO2) { SortColumn(oxygenH, sexS); }
 
-            SortColumn(header5, sexS);
-            SortColumn(header6, sexS);
-            SortColumn(header7, sexS);
+            SortColumn(foodH, sexS);
+            SortColumn(weightH, sexS);
+            SortColumn(damageH, sexS);
+
+            if (hasSpeed) { SortColumn(speedH, sexS); }
+            if (hasCraft) { SortColumn(craftH, sexS); }
+
+
             SortColumn(header8, sexS);
             SortColumn(header9, sexS);
             SortColumn(header10, sexS);
@@ -981,24 +994,24 @@ public partial class DinoPage : ContentPage
         }
 
         // Add base header row
-        AddToGrid(grid, header0, 0, 0, title);
-        AddToGrid(grid, header1, 0, 1, title);
-        AddToGrid(grid, header2, 0, 2, title);
-        AddToGrid(grid, header3, 0, 3, title);
+        AddToGrid(grid, nameH, 0, 0, title);
+        AddToGrid(grid, levelH, 0, 1, title);
+        AddToGrid(grid, hpH, 0, 2, title);
+        AddToGrid(grid, staminaH, 0, 3, title);
 
 
         int startID = 4;
 
         // If hasO2, include the O2 column (header4)
-        if (hasO2)
-        {
-            AddToGrid(grid, header4, 0, startID++, title); // Increment startID after adding header4
-        }
+        if (hasO2) {  AddToGrid(grid, oxygenH, 0, startID++, title); }
 
         // Add remaining headers
-        AddToGrid(grid, header5, 0, startID++, title);
-        AddToGrid(grid, header6, 0, startID++, title);
-        AddToGrid(grid, header7, 0, startID++, title);
+        AddToGrid(grid, foodH, 0, startID++, title);
+        AddToGrid(grid, weightH, 0, startID++, title);
+        AddToGrid(grid, damageH, 0, startID++, title);
+
+        if (hasSpeed) { AddToGrid(grid, speedH, 0, startID++, title); }
+
         AddToGrid(grid, header8, 0, startID++, title);
         AddToGrid(grid, header9, 0, startID++, title);
         AddToGrid(grid, header10, 0, startID++, title);
@@ -1027,9 +1040,11 @@ public partial class DinoPage : ContentPage
             var cellColor7 = DefaultColor;
 
             var cellColor8 = DefaultColor;
+            var cellColor9 = DefaultColor;
+            var cellColor10 = DefaultColor;
+
 
             string id = row["ID"].ToString();
-
 
             string name = row["Name"].ToString();
             if (name == "") { name = "Name me"; }
@@ -1041,6 +1056,10 @@ public partial class DinoPage : ContentPage
             string food = row["Food"].ToString();
             string weight = row["Weight"].ToString();
             string damage = row["Damage"].ToString();
+            string speed = row["Speed"].ToString();
+
+            string craft = row["Crafting"].ToString();
+
             //////////////
             string status = row["Status"].ToString();
             string gen = row["Gen"].ToString();
@@ -1063,6 +1082,7 @@ public partial class DinoPage : ContentPage
             if (DataManager.ToDouble(food) >= DataManager.FoodMax) { cellColor5 = Shared.goodColor; }
             if (DataManager.ToDouble(weight) >= DataManager.WeightMax) { cellColor6 = Shared.goodColor; }
             if (DataManager.ToDouble(damage) >= DataManager.DamageMax) { cellColor7 = Shared.goodColor; }
+           // if (DataManager.ToDouble(speed) >= DataManager.SpeedMax) { cellColor9 = Shared.goodColor; }
 
 
             // mutation detection overrides normal coloring -> mutaColor
@@ -1178,6 +1198,9 @@ public partial class DinoPage : ContentPage
             var foodL = new Label { Text = food, TextColor = cellColor5 };
             var weightL = new Label { Text = weight, TextColor = cellColor6 };
             var damageL = new Label { Text = damage, TextColor = cellColor7 };
+            var speedL = new Label { Text = speed, TextColor = cellColor9 };
+            var craftL = new Label { Text = craft, TextColor = cellColor10 };
+
             //////////////
             var statusL = new Label { Text = status, TextColor = cellColor8 };
             var genL = new Label { Text = gen, TextColor = cellColor8 };
@@ -1201,6 +1224,9 @@ public partial class DinoPage : ContentPage
                 SelectDino(foodL, id);
                 SelectDino(weightL, id);
                 SelectDino(damageL, id);
+                if (hasSpeed) { SelectDino(speedL, id); }
+                if (hasCraft) { SelectDino(craftL, id); }
+
                 SelectDino(statusL, id);
                 SelectDino(genL, id);
                 SelectDino(papaL, id);
@@ -1234,6 +1260,8 @@ public partial class DinoPage : ContentPage
             AddToGrid(grid, foodL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, weightL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, damageL, rowIndex, startID++, title, selected, false, id);
+            if (hasSpeed) { AddToGrid(grid, speedL, rowIndex, startID++, title, selected, false, id); }
+            if (hasCraft) { AddToGrid(grid, craftL, rowIndex, startID++, title, selected, false, id); }
             AddToGrid(grid, statusL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, genL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, papaL, rowIndex, startID++, title, selected, false, id);
