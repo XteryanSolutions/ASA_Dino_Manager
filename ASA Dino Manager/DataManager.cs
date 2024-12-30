@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Data.Common;
 using System.Globalization;
 
 namespace ASA_Dino_Manager
@@ -58,7 +59,11 @@ namespace ASA_Dino_Manager
             int totalClean = 0;
             foreach (string id in idList)
             {
-                var rows = ImportsTable.Select($"ID = '{id}'", "Time DESC");
+                string name = GetLastColumnData("ID", id, "Name");
+                FileManager.Log($"===========================================", 1);
+                FileManager.Log($"Dino: {name}", 1);
+
+                var rows = ImportsTable.Select($"ID = '{id}'", "Time ASC");
 
                 // figure out if its still a baby and we only need to save firsty and last rows
                 double firstAge = ToDouble(GetFirstColumnData("ID", id, "BabyAge")) * 100;
@@ -72,7 +77,11 @@ namespace ASA_Dino_Manager
                 if (isBaby) // 2 // is baby means only 2 rows need to be saved
                 {
                     str1 = GetFirstColumnData("ID", id, "Time");
-                    str2 = GetLastColumnData("ID", id, "Time");
+                    str4 = GetLastColumnData("ID", id, "Time");
+                    if (str1 == "" || str4 == "") // need both
+                    {
+                        str1 = ""; str2 = ""; str3 = ""; str4 = "";
+                    }
                 }
                 else if (!isBaby && beenBaby) // 4
                 {
@@ -85,26 +94,31 @@ namespace ASA_Dino_Manager
 
                         if (age < 100)
                         {
-                            str2 = row["BabyAge"].ToString(); // last baby time
+                            str2 = timeValue; // last baby time
                         }
-                        else if (age == 100)
+                        if (age == 100)
                         {
-                            str3 = row["BabyAge"].ToString(); // first adult time
+                            str3 = timeValue; // first adult time
                             break;
                         }
                     }
 
                     str4 = GetLastColumnData("ID", id, "Time");
+                    if (str1 == "" || str2 == "" || str3 == "" || str4 == "") // need all 4
+                    {
+                        str1 = ""; str2 = ""; str3 = ""; str4 = "";
+                    }
                 }
                 else if (!isBaby && !beenBaby) // 2 // not a baby and never been = new tame
                 {
                     str1 = GetFirstColumnData("ID", id, "Time");
-                    str2 = GetLastColumnData("ID", id, "Time");
+                    str4 = GetLastColumnData("ID", id, "Time");
+                    if (str1 == "" || str4 == "") // need both
+                    {
+                        str1 = ""; str2 = ""; str3 = ""; str4 = "";
+                    }
                 }
 
-                string name = GetLastColumnData("ID", id, "Name");
-                FileManager.Log($"===========================================", 1);
-                FileManager.Log($"Dino: {name}", 1);
 
                 int rowID = 0; int savedRows = 0; int delRows = 0;
                 foreach (var row in rows)
@@ -692,61 +706,6 @@ namespace ASA_Dino_Manager
                 }
             }
             return result;
-        }
-
-        public static double GetGrowthRate(string id)
-        {
-            try
-            {
-                // Filter rows by ID and ensure valid data
-                var filteredRows = ImportsTable.AsEnumerable()
-                .Where(row => row["ID"]?.ToString() == id &&
-                              !string.IsNullOrEmpty(row["Time"]?.ToString()) &&
-                              !string.IsNullOrEmpty(row["BabyAge"]?.ToString()) &&
-                              ToDouble(row["BabyAge"].ToString()) > 0 &&
-                              ToDouble(row["BabyAge"].ToString()) < 1)
-                .OrderBy(row => DateTime.ParseExact(row["Time"].ToString(), "dd/MM/yyyy HH:mm:ss", null))
-                .ToList();
-
-                if (filteredRows.Count < 2)
-                {
-                    // Not enough data to calculate aging rate
-                    return 0;
-                }
-
-                // Get the last two rows (most recent entries)
-                var secondLastRow = filteredRows[filteredRows.Count - 2];
-                var lastRow = filteredRows[filteredRows.Count - 1];
-
-                // Parse times and ages
-                DateTime secondLastTime = DateTime.ParseExact(secondLastRow["Time"].ToString(), "dd/MM/yyyy HH:mm:ss", null);
-                DateTime lastTime = DateTime.ParseExact(lastRow["Time"].ToString(), "dd/MM/yyyy HH:mm:ss", null);
-
-                double secondLastAge = ToDouble(secondLastRow["BabyAge"].ToString());
-                double lastAge = ToDouble(lastRow["BabyAge"].ToString());
-
-                // Ensure chronological order and valid data
-                if (lastTime > secondLastTime && lastAge >= secondLastAge)
-                {
-                    // Calculate differences
-                    double timeDiffSeconds = (lastTime - secondLastTime).TotalSeconds;
-                    double ageDiff = (lastAge - secondLastAge) * 100;
-
-                    if (timeDiffSeconds > 0)
-                    {
-                        // get accurate unRounded ageRate
-                        double ageRatePerSecond = ageDiff / timeDiffSeconds;
-                        return ageRatePerSecond;
-                    }
-                }
-
-                // Handle invalid data (e.g., younger age or incorrect time order)
-                return 0;
-            }
-            catch
-            {
-                return 0;
-            }
         }
 
         public static void EditBreedStats(string id, string level, string hp, string st, string ox, string fo, string we, string da, string notes)
@@ -1364,43 +1323,17 @@ namespace ASA_Dino_Manager
                     double LastTimeLeft = knownAgeLeft / ageRate; // time left at last data
 
 
-
-                    // alternate agerate stuff
-                    double ageRate2 = GetGrowthRate(id) * 60; // alternate ageRate
-                    double agePassed2 = timePassed * ageRate2;
-                    double estimatedAge2 = lastAge + agePassed2;
-                    double estAgeLeft2 = 100 - estimatedAge2;
-                    double estTimeLeft2 = estAgeLeft2 / ageRate2;
-                    double LastTimeLeft2 = knownAgeLeft / ageRate2; // time left at last data
-
-
                     DateTime dateT = DateTime.Now;
 
-                    if (BabyPage.CurrentStats) // alternate ageRate
+                    if (ageRate > 0)
                     {
-                        if (ageRate2 > 0)
+                        if (!double.IsNaN(LastTimeLeft))
                         {
-                            if (!double.IsNaN(LastTimeLeft2))
-                            {
-                                TimeSpan timePa = TimeSpan.FromMinutes(LastTimeLeft2);
-                                dateT = lastTimeD + timePa;
-                            }
-                        }
-                        estimatedAge = estimatedAge2;
-                        estTimeLeft = estTimeLeft2;
-                        ageRate = ageRate2;
-                    }
-                    else
-                    {
-                        if (ageRate > 0)
-                        {
-                            if (!double.IsNaN(LastTimeLeft))
-                            {
-                                TimeSpan timePa = TimeSpan.FromMinutes(LastTimeLeft);
-                                dateT = lastTimeD + timePa;
-                            }
+                            TimeSpan timePa = TimeSpan.FromMinutes(LastTimeLeft);
+                            dateT = lastTimeD + timePa;
                         }
                     }
+
                     string rawClass = DataManager.GetFirstColumnData("ID", id, "Class");
                     string dinoClass = DataManager.LongClassToShort(rawClass).Replace("_", " ");
 
@@ -2239,6 +2172,9 @@ namespace ASA_Dino_Manager
                     dr["CraftSkill"] = importedNew[24];
 
 
+
+
+
                     if (!found)
                     {
                         AddC++;
@@ -2256,6 +2192,16 @@ namespace ASA_Dino_Manager
 
                         if (change)
                         {
+                            // check for missing data that can be raplaced
+                            CheckDino(id, "Mama", importedNew[11]);
+                            CheckDino(id, "Papa", importedNew[12]);
+                            CheckDino(id, "MamaMute", importedNew[13]);
+                            CheckDino(id, "PapaMute", importedNew[14]);
+                            CheckDino(id, "Gen", importedNew[15]);
+                            CheckDino(id, "GenM", importedNew[16]);
+                            CheckDino(id, "Imprinter", importedNew[20]);
+                            CheckDino(id, "Tribe", importedNew[21]);
+
                             ModC++;
                             //fileManager.log("Updated dino: " + id);
                             ImportsTable.Rows.Add(dr);
@@ -2270,6 +2216,31 @@ namespace ASA_Dino_Manager
             if (ModC > 0)
             {
                 FileManager.Log("Updated " + ModC + " dinos", 0);
+            }
+        }
+
+        private static void CheckDino(string id, string inputColumn, string newData)
+        {
+            if (newData != "")
+            {
+                string field = DataManager.GetLastColumnData("ID", id, inputColumn);
+                if (field == "")// no previous info
+                {
+                    UpdateField(id, inputColumn, newData);
+                }
+            }
+        }
+
+        private static void UpdateField(string id, string column, string value)
+        {
+            int rowID = 0;
+            foreach (DataRow row in ImportsTable.Rows)
+            {
+                if (id == row["ID"].ToString()) // found dino to edit
+                {
+                    ImportsTable.Rows[rowID].SetField(column, value);
+                }
+                rowID++;
             }
         }
 
