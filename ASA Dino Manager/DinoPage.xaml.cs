@@ -20,6 +20,9 @@ public partial class DinoPage : ContentPage
     public static string sortM = Shared.DefaultSortM;
     public static string sortF = Shared.DefaultSortF;
 
+    // Benchmark stuff
+    private int loadCount = 0;
+    private double loadAvg = 0; // keep track of average import time
 
     private string levelText = "";
     private string hpText = "";
@@ -45,6 +48,7 @@ public partial class DinoPage : ContentPage
 
     public void CreateContent()
     {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
         {
             try
@@ -57,14 +61,24 @@ public partial class DinoPage : ContentPage
                         // sort data based on column clicked
                         DataManager.GetDinoData(Shared.selectedClass, sortM, sortF);
 
-
                         DataManager.SetMaxStats(ToggleExcluded);
-                        DataManager.SetBinaryStats(ToggleExcluded);
 
-                        if (!CurrentStats)
+
+                        // load this data only when showing all and included
+                        if (ToggleExcluded == 0 || ToggleExcluded == 1) 
                         {
-                            DataManager.GetBestPartner();
+                           
+                            DataManager.SetBinaryStats(ToggleExcluded);
+
+                            if (!CurrentStats)
+                            {
+                                DataManager.GetBestPartner();
+                            }
+
                         }
+ 
+
+                       
                         dataValid = true;
                     }
 
@@ -91,6 +105,13 @@ public partial class DinoPage : ContentPage
             FileManager.Log("DinoPage Failed to acquire database lock", 1);
             DefaultView("Dinos walked away :(");
         }
+        stopwatch.Stop();
+        var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
+        loadCount++;
+        double outAVG = 0;
+        if (loadCount < 2) { loadAvg = elapsedMilliseconds; outAVG = loadAvg; }
+        else { loadAvg += elapsedMilliseconds; outAVG = loadAvg / loadCount; }
+        FileManager.Log($"GUI Refresh Done: {elapsedMilliseconds}ms Avg: {outAVG}", 0);
     }
 
     private void DefaultView(string labelText)
@@ -1498,7 +1519,7 @@ public partial class DinoPage : ContentPage
     private void ToggleBtnClicked(object? sender, EventArgs e)
     {
         ToggleExcluded++;
-        if (ToggleExcluded == 4)
+        if (ToggleExcluded == 3)
         {
             ToggleExcluded = 0;
         }

@@ -48,6 +48,8 @@ namespace ASA_Dino_Manager
         public static double WeightMax = 0;
         public static double DamageMax = 0;
         public static double SpeedMax = 0;
+        public static double CraftMax = 0;
+
         public static string[] BinaryM = new string[1]; //keeping track of max stats for breeding
         public static string[] BinaryF = new string[1]; //keeping track of max stats for breeding
 
@@ -1151,7 +1153,11 @@ namespace ASA_Dino_Manager
             // Retrieve male data
             string[] males = DataManager.GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Male", "ID");
 
-
+            /*
+            LevelMax = 0; HpMax = 0; StaminaMax = 0; OxygenMax = 0;
+            FoodMax = 0; WeightMax = 0; DamageMax = 0; SpeedMax = 0;
+            CraftMax = 0;
+            */
             if (DinoPage.CurrentStats)
             {
                 // Process females
