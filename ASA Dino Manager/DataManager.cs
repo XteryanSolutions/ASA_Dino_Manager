@@ -654,7 +654,7 @@ namespace ASA_Dino_Manager
                 string[] columns = {
                     "Name", "Level", "HP", "Stamina", "Oxygen", "Food", "Weight", "Damage", "Speed"
                     , "Mama", "Papa", "MamaMute", "PapaMute", "Gen", "GenM", "BabyAge", "Neutered", "Imprint"
-                    , "Imprinter", "Tribe"
+                    , "Imprinter", "Tribe", "CraftSkill"
                 };
                 string[] stats = new string[columns.Count()];
                 int i = 0;
@@ -676,7 +676,7 @@ namespace ASA_Dino_Manager
                 string[] columns = {
                     "Name", "Level", "HP", "Stamina", "Oxygen", "Food", "Weight", "Damage", "Speed"
                     , "Mama", "Papa", "MamaMute", "PapaMute", "Gen", "GenM", "BabyAge", "Neutered", "Imprint"
-                    , "Imprinter", "Tribe"
+                    , "Imprinter", "Tribe", "CraftSkill"
                 };
                 string[] stats = new string[columns.Count()];
                 int i = 0;
@@ -1046,6 +1046,13 @@ namespace ASA_Dino_Manager
                     dr["Weight"] = Math.Round(ToDouble(MainStats[rowID][6].ToString()), 1);
                     dr["Damage"] = Math.Round((ToDouble(MainStats[rowID][7].ToString()) + 1) * 100, 1);
                     dr["Speed"] = Math.Round((ToDouble(BrStats[rowID][8].ToString()) + 1) * 100);
+
+                    if (MainStats[rowID][20].ToString() != "")
+                    {
+                        dr["Crafting"] = Math.Round((ToDouble(MainStats[rowID][20].ToString()) + 1) * 100);
+                    }
+                    else { dr["Crafting"] = 0; }
+
                     dr["Gen"] = ToDouble(BrStats[rowID][13].ToString());
                     dr["MamaMute"] = ToDouble(BrStats[rowID][11].ToString());
                     dr["PapaMute"] = ToDouble(BrStats[rowID][12].ToString());
@@ -1364,6 +1371,12 @@ namespace ASA_Dino_Manager
                     dr["Weight"] = Math.Round(ToDouble(MainStats[rowID][6].ToString()), 1);
                     dr["Damage"] = Math.Round((ToDouble(MainStats[rowID][7].ToString()) + 1) * 100, 1);
                     dr["Speed"] = Math.Round((ToDouble(BrStats[rowID][8].ToString()) + 1) * 100);
+
+                    if (MainStats[rowID][20].ToString() != "")
+                    {
+                        dr["Crafting"] = Math.Round((ToDouble(MainStats[rowID][20].ToString()) + 1) * 100);
+                    }
+                    else { dr["Crafting"] = 0; }
 
                     dr["Gen"] = ToDouble(BrStats[rowID][13].ToString());
                     dr["MamaMute"] = ToDouble(BrStats[rowID][11].ToString());

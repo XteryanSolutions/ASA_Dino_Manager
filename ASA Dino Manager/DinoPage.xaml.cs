@@ -895,6 +895,8 @@ public partial class DinoPage : ContentPage
         if (DataManager.OxygenMax == 150) { hasO2 = false; }
 
         if (title != "Bottom") { hasSpeed = true; } // force activate for now
+        if (title != "Bottom" && Shared.setPage == "Gacha") { hasCraft = true; } // force activate for now
+
 
         int fSize = Shared.headerSize;  // header fontsize
 
@@ -1011,6 +1013,8 @@ public partial class DinoPage : ContentPage
         AddToGrid(grid, damageH, 0, startID++, title);
 
         if (hasSpeed) { AddToGrid(grid, speedH, 0, startID++, title); }
+        if (hasCraft) { AddToGrid(grid, craftH, 0, startID++, title); }
+
 
         AddToGrid(grid, header8, 0, startID++, title);
         AddToGrid(grid, header9, 0, startID++, title);
