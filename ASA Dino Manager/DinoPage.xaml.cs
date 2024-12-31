@@ -33,7 +33,7 @@ public partial class DinoPage : ContentPage
     private bool editStats = false;
 
     private bool dataValid = false;
-
+    private int dinoCount = 0;
 
     public DinoPage()
     {
@@ -43,10 +43,17 @@ public partial class DinoPage : ContentPage
         CreateContent();
     }
 
+
+
     public void CreateContent()
     {
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-        if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
+        FileManager.Log("Updating GUI -> " + Shared.setPage, 0);
+        if (!isSelected) { this.Title = $"{Shared.setPage.Replace("_", " ")}"; }
+        else { this.Title = $"{DataManager.GetLastColumnData("ID", selectedID, "Name")} - {selectedID}"; }
+
+
+        if (Monitor.TryEnter(Shared._dbLock2, TimeSpan.FromSeconds(5)))
         {
             try
             {
@@ -54,31 +61,39 @@ public partial class DinoPage : ContentPage
                 {
                     if (!dataValid)
                     {
-                        FileManager.Log("Loading All Data", 0);
-                        // sort data based on column clicked
-                        DataManager.GetDinoData(Shared.selectedClass, sortM, sortF);
-
-                        //DataManager.SetMaxStats(ToggleExcluded);
-
-                        DataManager.SetBinaryStats(ToggleExcluded);
-
-                        // load this data only when showing all and included
-                        if (ToggleExcluded == 0 || ToggleExcluded == 1)
+                        if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
                         {
-                            if (!CurrentStats)
+                            try
                             {
-                                DataManager.GetBestPartner();
+                                FileManager.Log("Loading All Data", 0);
+                                // sort data based on column clicked
+                                DataManager.GetDinoData(Shared.selectedClass, sortM, sortF);
+
+                                // load this data only when showing all and included
+                                if (ToggleExcluded == 0 || ToggleExcluded == 1)
+                                {
+                                    if (!CurrentStats)
+                                    {
+                                        DataManager.SetBinaryStats(ToggleExcluded);
+                                        DataManager.GetBestPartner();
+                                    }
+                                }
+                                dinoCount = DataManager.DinoCount(Shared.selectedClass, ToggleExcluded);
+                                dataValid = true;
+                            }
+                            catch { dataValid = false; }
+                            finally
+                            {
+                                Monitor.Exit(Shared._dbLock);
                             }
                         }
-
-                        dataValid = true;
+                        else
+                        {
+                            dataValid = false;
+                        }
                     }
-
                 }
 
-                FileManager.Log("Updating GUI -> " + Shared.setPage, 0);
-                if (!isSelected) { this.Title = $"{Shared.setPage.Replace("_", " ")}"; }
-                else { this.Title = $"{DataManager.GetLastColumnData("ID", selectedID, "Name")} - {selectedID}"; }
 
                 DinoView();
             }
@@ -89,7 +104,7 @@ public partial class DinoPage : ContentPage
             }
             finally
             {
-                Monitor.Exit(Shared._dbLock);
+                Monitor.Exit(Shared._dbLock2);
             }
         }
         else
@@ -97,6 +112,7 @@ public partial class DinoPage : ContentPage
             FileManager.Log("DinoPage Failed to acquire database lock", 1);
             DefaultView("Dinos walked away :(");
         }
+
         stopwatch.Stop();
         var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
         Shared.loadCount++;
@@ -178,11 +194,7 @@ public partial class DinoPage : ContentPage
         }
 
 
-
         this.Content = mainLayout;
-
-
-        // DataManager.GetAllAges(Shared.selectedClass);
     }
 
     private void AddToGrid(Grid grid, View view, int row, int column, string title = "", bool selected = false, bool isDoubl = false, string id = "")
@@ -267,10 +279,8 @@ public partial class DinoPage : ContentPage
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
 
-
         var bColor0 = Shared.DefaultBColor;
         var bColor1 = Shared.PrimaryColor;
-
 
         if (ToggleExcluded == 0)
         {
@@ -298,27 +308,20 @@ public partial class DinoPage : ContentPage
         if (CurrentStats) { btn1Text = "Current"; bColor1 = Shared.SecondaryColor; }
 
 
-        string group = DataManager.GetGroup(selectedID);
-
-
         string btn2Text = "Exclude"; var bColor2 = Shared.SecondaryColor;
         string btn3Text = "Archive"; var bColor3 = Shared.TrinaryColor;
 
 
-        if (group == "Exclude") { btn2Text = "Include"; bColor2 = Shared.PrimaryColor; }
-        if (group == "Archived") { btn3Text = "Restore"; bColor3 = Shared.PrimaryColor; }
-
-
         if (isDouble)
         {
-            var topButton5 = new Button { Text = "Save", BackgroundColor = Shared.TrinaryColor };
-            topButton5.Clicked += SaveBtnClicked;
-            AddToGrid(grid, topButton5, 0, 0);
+            var SaveBtn = new Button { Text = "Save", BackgroundColor = Shared.TrinaryColor };
+            SaveBtn.Clicked += SaveBtnClicked;
+            AddToGrid(grid, SaveBtn, 0, 0);
 
 
-            var topButton4 = new Button { Text = "Back", BackgroundColor = Shared.PrimaryColor };
-            topButton4.Clicked += BackBtnClicked;
-            AddToGrid(grid, topButton4, 1, 0);
+            var BackBtn = new Button { Text = "Back", BackgroundColor = Shared.PrimaryColor };
+            BackBtn.Clicked += BackBtnClicked;
+            AddToGrid(grid, BackBtn, 1, 0);
         }
         else
         {
@@ -330,13 +333,15 @@ public partial class DinoPage : ContentPage
             var topButton1 = new Button { Text = btn1Text, BackgroundColor = bColor1 };
             topButton1.Clicked += StatsBtnClicked;
             AddToGrid(grid, topButton1, 1, 0);
-
-
         }
 
 
         if (isSelected) // add theese only if we have a dino selected
         {
+            string group = DataManager.GetGroup(selectedID);
+            if (group == "Exclude") { btn2Text = "Include"; bColor2 = Shared.PrimaryColor; }
+            if (group == "Archived") { btn3Text = "Restore"; bColor3 = Shared.PrimaryColor; }
+
             // do not show exclude button while in archive view
             if (ToggleExcluded != 3)
             {
@@ -397,10 +402,7 @@ public partial class DinoPage : ContentPage
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        int count = DataManager.DinoCount(Shared.selectedClass, ToggleExcluded);
-
-        string test = Shared.selectedClass;
-        if (count > 0 && !isDouble) // more than 0 dinos and not double clicked
+        if (dinoCount > 0 && !isDouble) // more than 0 dinos and not double clicked
         {
             // create the row for bottompanel if not in dinoEview
             maingrid.RowDefinitions.Add(new RowDefinition { Height = barH }); // Scrollable content
@@ -443,7 +445,7 @@ public partial class DinoPage : ContentPage
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////
         }
-        else if (count > 0 && isDouble)
+        else if (dinoCount > 0 && isDouble)
         {
             ////////////////////////////////////////////////////////////////////////////////////////////////////
             // make dino info box
@@ -1087,9 +1089,9 @@ public partial class DinoPage : ContentPage
             string imprint = row["Imprint"].ToString();
             string imprinter = row["Imprinter"].ToString();
 
-            string group = "";
+           // string group = "";
 
-            group = DataManager.GetGroup(id);
+           // group = DataManager.GetGroup(id);
             string dmg = DataManager.DamageMax.ToString();
             //recolor breeding stats
             if (DataManager.ToDouble(level) >= DataManager.LevelMax) { cellColor1 = Shared.goodColor; }

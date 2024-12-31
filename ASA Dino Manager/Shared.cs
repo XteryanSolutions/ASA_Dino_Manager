@@ -54,6 +54,7 @@
         ////////////////////    Shared locks    ////////////////////
         public static readonly object _logLock = new object();
         public static readonly object _dbLock = new object();
+        public static readonly object _dbLock2 = new object();
 
 
         ////////////////////    IMPORTING       ////////////////////
@@ -117,17 +118,17 @@
         public static Color TrinaryColor = Color.FromArgb("#CD5C5C"); // IndianRed
 
         // Layout colors
-        public static Color SelectedColor = Color.FromArgb("#545461");
+        public static Color SelectedColor = Color.FromArgb("#bd614e");
         public static Color SidePanelColor = Color.FromArgb("#312f38");
 
         public static Color MainPanelColor = Color.FromArgb("#222222");
-        public static Color OddMPanelColor = Color.FromArgb("#272727");
+        public static Color OddMPanelColor = Color.FromArgb("#303030");
 
         public static Color BottomPanelColor = Color.FromArgb("#292a32");
         public static Color OddBPanelColor = Color.FromArgb("#2e2f37");
 
         public static Color ArchivePanelColor = Color.FromArgb("#222222");
-        public static Color OddAPanelColor = Color.FromArgb("#272727");
+        public static Color OddAPanelColor = Color.FromArgb("#303030");
 
 
     }

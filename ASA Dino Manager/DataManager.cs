@@ -895,8 +895,8 @@ namespace ASA_Dino_Manager
 
 
                 //MUTATION DETECTION SYSTEM HERE
-                string mamaID = LastStats[rowID][9].ToString();
-                string papaID = LastStats[rowID][10].ToString();
+                string mamaID = FirstStats[rowID][9].ToString();
+                string papaID = FirstStats[rowID][10].ToString();
 
                 string a = "0"; string b = "0"; string c = "0";
                 string d = "0"; string e = "0"; string f = "0";
@@ -1041,7 +1041,7 @@ namespace ASA_Dino_Manager
                     double FoodM = Math.Round(ToDouble(FirstStats[rowID][5].ToString()), 1);
                     double WeightM = Math.Round(ToDouble(FirstStats[rowID][6].ToString()), 1);
                     double DamageM = Math.Round((ToDouble(FirstStats[rowID][7].ToString()) + 1) * 100, 1);
-                    double SpeedM = Math.Round((ToDouble(LastStats[rowID][8].ToString()) + 1) * 100);
+                    double SpeedM = Math.Round((ToDouble(FirstStats[rowID][8].ToString()) + 1) * 100);
                     double CraftM = Math.Round((ToDouble(FirstStats[rowID][20].ToString()) + 1) * 100, 1);
 
                     if (LevelM >= LevelMax) { LevelMax = LevelM; }
@@ -1114,13 +1114,13 @@ namespace ASA_Dino_Manager
             }
 
             // check for missing data
-            string mama = DataManager.GetLastColumnData("ID", id, "Mama");
-            string papa = DataManager.GetLastColumnData("ID", id, "Papa");
-            string mamaM = DataManager.GetLastColumnData("ID", id, "MamaMute");
-            string papaM = DataManager.GetLastColumnData("ID", id, "PapaMute");
-            string gen = DataManager.GetLastColumnData("ID", id, "Gen");
-            string imprint = DataManager.GetLastColumnData("ID", id, "Imprint");
-            string imprinter = DataManager.GetLastColumnData("ID", id, "Imprinter");
+            string mama = DataManager.GetFirstColumnData("ID", id, "Mama");
+            string papa = DataManager.GetFirstColumnData("ID", id, "Papa");
+            string mamaM = DataManager.GetFirstColumnData("ID", id, "MamaMute");
+            string papaM = DataManager.GetFirstColumnData("ID", id, "PapaMute");
+            string gen = DataManager.GetFirstColumnData("ID", id, "Gen");
+            string imprint = DataManager.GetFirstColumnData("ID", id, "Imprint");
+            string imprinter = DataManager.GetFirstColumnData("ID", id, "Imprinter");
 
             if (!beenBaby) // its a tame just add info on when it was tamed
             {
@@ -1137,7 +1137,8 @@ namespace ASA_Dino_Manager
             {
                 if (isBaby)
                 {
-                    status = $"[breedSym]{Math.Round(lastAge, 1)}%";
+                    DateTime firstTimeD = DateTime.ParseExact(firstTime, "dd/MM/yyyy HH:mm:ss", null);
+                    status = "[breedSym]" + firstTimeD.ToString("dd/MM/yyyy HH:mm:ss");
                 }
                 else
                 {
@@ -1448,120 +1449,6 @@ namespace ASA_Dino_Manager
             DataManager.ArchiveTable = view1.ToTable();
         }
 
-        public static void SetMaxStats(int toggle = 0)
-        {
-            LevelMax = 0;
-            HpMax = 0;
-            StaminaMax = 0;
-            OxygenMax = 0;
-            FoodMax = 0;
-            WeightMax = 0;
-            DamageMax = 0;
-            SpeedMax = 0;
-            // look trough males for highest stats
-            foreach (DataRow rowM in MaleTable.Rows)
-            {
-
-                string id = rowM["id"].ToString();
-                string group = GetGroup(id);
-
-                bool include = false;
-                if (toggle == 0)// include dinos only by set toggle
-                {
-                    if (group != "Archived") { include = true; }
-                }
-                else if (toggle == 1)
-                {
-                    if (group != "Archived" && group != "Exclude") { include = true; }
-                }
-                else if (toggle == 2)
-                {
-                    if (group != "Archived" && group != "") { include = true; }
-                }
-                else if (toggle == 3)
-                {
-                    if (group != "" && group != "Exclude") { include = true; }
-                }
-
-
-                if (include)
-                {
-                    double LevelM = ToDouble(rowM["Level"].ToString());
-                    double HpM = ToDouble(rowM["HP"].ToString());
-                    double StaminaM = ToDouble(rowM["Stamina"].ToString());
-                    double OxygenM = ToDouble(rowM["Oxygen"].ToString());
-                    double FoodM = ToDouble(rowM["Food"].ToString());
-                    double WeightM = ToDouble(rowM["Weight"].ToString());
-                    double DamageM = ToDouble(rowM["Damage"].ToString());
-                    double SpeedM = ToDouble(rowM["Speed"].ToString());
-                    double CraftM = ToDouble(rowM["Crafting"].ToString());
-
-
-                    if (LevelM >= LevelMax) { LevelMax = LevelM; }
-                    if (HpM >= HpMax) { HpMax = HpM; }
-                    if (StaminaM >= StaminaMax) { StaminaMax = StaminaM; }
-                    if (OxygenM >= OxygenMax) { OxygenMax = OxygenM; }
-                    if (FoodM >= FoodMax) { FoodMax = FoodM; }
-                    if (WeightM >= WeightMax) { WeightMax = WeightM; }
-                    if (DamageM >= DamageMax) { DamageMax = DamageM; }
-                    if (SpeedM >= SpeedMax) { SpeedMax = SpeedM; }
-                    if (CraftM >= CraftMax) { CraftMax = CraftM; }
-
-                }
-            }
-
-            // look trough females for highest stats
-            foreach (DataRow rowM in FemaleTable.Rows)
-            {
-
-                string id = rowM["id"].ToString();
-                string group = GetGroup(id);
-
-                bool include = false;
-                if (toggle == 0)// include dinos only by set toggle
-                {
-                    if (group != "Archived") { include = true; }
-                }
-                else if (toggle == 1)
-                {
-                    if (group != "Archived" && group != "Exclude") { include = true; }
-                }
-                else if (toggle == 2)
-                {
-                    if (group != "Archived" && group != "") { include = true; }
-                }
-                else if (toggle == 3)
-                {
-                    if (group != "" && group != "Exclude") { include = true; }
-                }
-
-
-                if (include)
-                {
-                    double LevelM = ToDouble(rowM["Level"].ToString());
-                    double HpM = ToDouble(rowM["HP"].ToString());
-                    double StaminaM = ToDouble(rowM["Stamina"].ToString());
-                    double OxygenM = ToDouble(rowM["Oxygen"].ToString());
-                    double FoodM = ToDouble(rowM["Food"].ToString());
-                    double WeightM = ToDouble(rowM["Weight"].ToString());
-                    double DamageM = ToDouble(rowM["Damage"].ToString());
-                    double SpeedM = ToDouble(rowM["Speed"].ToString());
-                    double CraftM = ToDouble(rowM["Crafting"].ToString());
-
-                    if (LevelM >= LevelMax) { LevelMax = LevelM; }
-                    if (HpM >= HpMax) { HpMax = HpM; }
-                    if (StaminaM >= StaminaMax) { StaminaMax = StaminaM; }
-                    if (OxygenM >= OxygenMax) { OxygenMax = OxygenM; }
-                    if (FoodM >= FoodMax) { FoodMax = FoodM; }
-                    if (WeightM >= WeightMax) { WeightMax = WeightM; }
-                    if (DamageM >= DamageMax) { DamageMax = DamageM; }
-                    if (SpeedM >= SpeedMax) { SpeedMax = SpeedM; }
-                    if (CraftM >= CraftMax) { CraftMax = CraftM; }
-                }
-            }
-            //FileManager.Log("updated stats");
-        }
-
         public static void SetBinaryStats(int toggle = 0)
         {
             BinaryM = new string[MaleTable.Rows.Count];
@@ -1802,9 +1689,7 @@ namespace ASA_Dino_Manager
 
             DataManager.ComboTable.Clear();
 
-
             int superID = 0;
-            int superID2 = 1000;
 
             int p0 = 6;
             while (p0 >= 0)
@@ -1823,7 +1708,7 @@ namespace ASA_Dino_Manager
                             string statusM = rowM["Status"].ToString();
 
 
-                            if (!statusM.Contains("<") && !statusM.Contains("#") && !statusM.Contains("Exclude")) // dont include theese males
+                            if (!statusM.Contains("<") && !statusM.Contains("#")) // dont include theese males
                             {
                                 int roFID = 0;
                                 foreach (DataRow rowF in DataManager.FemaleTable.Rows)
@@ -1831,89 +1716,54 @@ namespace ASA_Dino_Manager
                                     string IDF1 = DataManager.BinaryF[roFID];
                                     string mamaID = rowF["ID"].ToString();
                                     string statusF = rowF["Status"].ToString();
-                                    if (statusF != "Baby" && statusF != "Exclude")// && nameF != femaleO)
+
+
+                                    string aM = IDM1.Substring(0, 1); string bM = IDM1.Substring(1, 1); string cM = IDM1.Substring(2, 1);
+                                    string dM = IDM1.Substring(3, 1); string eM = IDM1.Substring(4, 1); string fM = IDM1.Substring(5, 1);
+
+                                    string aF = IDF1.Substring(0, 1); string bF = IDF1.Substring(1, 1); string cF = IDF1.Substring(2, 1);
+                                    string dF = IDF1.Substring(3, 1); string eF = IDF1.Substring(4, 1); string fF = IDF1.Substring(5, 1);
+
+
+                                    int gPoints = 0;
+                                    int aPoints = 0;
+                                    int nPoints = 0;
+
+                                    if (aM == "1" && aF == "1") { gPoints++; aB = "2"; } else if (aM == "1" || aF == "1") { aPoints++; aB = "1"; } else { aB = "0"; nPoints++; }
+                                    if (bM == "1" && bF == "1") { gPoints++; bB = "2"; } else if (bM == "1" || bF == "1") { aPoints++; bB = "1"; } else { bB = "0"; nPoints++; }
+                                    if (cM == "1" && cF == "1") { gPoints++; cB = "2"; } else if (cM == "1" || cF == "1") { aPoints++; cB = "1"; } else { cB = "0"; nPoints++; }
+                                    if (dM == "1" && dF == "1") { gPoints++; dB = "2"; } else if (dM == "1" || dF == "1") { aPoints++; dB = "1"; } else { dB = "0"; nPoints++; }
+                                    if (eM == "1" && eF == "1") { gPoints++; eB = "2"; } else if (eM == "1" || eF == "1") { aPoints++; eB = "1"; } else { eB = "0"; nPoints++; }
+                                    if (fM == "1" && fF == "1") { gPoints++; fB = "2"; } else if (fM == "1" || fF == "1") { aPoints++; fB = "1"; } else { fB = "0"; nPoints++; }
+
+
+                                    int agPoints = gPoints + aPoints;
+
+                                    if (p0 == agPoints)
                                     {
-                                        string aM = IDM1.Substring(0, 1); string bM = IDM1.Substring(1, 1); string cM = IDM1.Substring(2, 1);
-                                        string dM = IDM1.Substring(3, 1); string eM = IDM1.Substring(4, 1); string fM = IDM1.Substring(5, 1);
-
-                                        string aF = IDF1.Substring(0, 1); string bF = IDF1.Substring(1, 1); string cF = IDF1.Substring(2, 1);
-                                        string dF = IDF1.Substring(3, 1); string eF = IDF1.Substring(4, 1); string fF = IDF1.Substring(5, 1);
-
-
-                                        int gPoints = 0;
-                                        int aPoints = 0;
-                                        int nPoints = 0;
-
-                                        if (aM == "1" && aF == "1") { gPoints++; aB = "2"; } else if (aM == "1" || aF == "1") { aPoints++; aB = "1"; } else { aB = "0"; nPoints++; }
-                                        if (bM == "1" && bF == "1") { gPoints++; bB = "2"; } else if (bM == "1" || bF == "1") { aPoints++; bB = "1"; } else { bB = "0"; nPoints++; }
-                                        if (cM == "1" && cF == "1") { gPoints++; cB = "2"; } else if (cM == "1" || cF == "1") { aPoints++; cB = "1"; } else { cB = "0"; nPoints++; }
-                                        if (dM == "1" && dF == "1") { gPoints++; dB = "2"; } else if (dM == "1" || dF == "1") { aPoints++; dB = "1"; } else { dB = "0"; nPoints++; }
-                                        if (eM == "1" && eF == "1") { gPoints++; eB = "2"; } else if (eM == "1" || eF == "1") { aPoints++; eB = "1"; } else { eB = "0"; nPoints++; }
-                                        if (fM == "1" && fF == "1") { gPoints++; fB = "2"; } else if (fM == "1" || fF == "1") { aPoints++; fB = "1"; } else { fB = "0"; nPoints++; }
-
-
-                                        int agPoints = gPoints + aPoints;
-
-                                        if (p0 == agPoints)
+                                        if (p1 == gPoints)
                                         {
-                                            if (p1 == gPoints)
+                                            if (p2 == aPoints)
                                             {
-                                                if (p2 == aPoints)
+                                                bool fnd = false;
+                                                foreach (DataRow rowC in DataManager.ComboTable.Rows)
                                                 {
-                                                    bool fnd = false;
-                                                    foreach (DataRow rowC in DataManager.ComboTable.Rows)
-                                                    {
-                                                        if (rowC["M"].ToString() == mamaID) { fnd = true; break; }
-                                                    }
-                                                    if (!fnd)
-                                                    {
-                                                        if (rowF["Status"].ToString() != "Baby")
-                                                        {
-                                                            if (rowM["Status"].ToString() != "Baby")
-                                                            {
-
-                                                                if (aPoints > 0)
-                                                                {
-                                                                    DataRow dr = DataManager.ComboTable.NewRow(); // add to combine list sorted by bPoints
-                                                                    dr["#"] = superID;
-                                                                    dr["P"] = papaID; // papa
-                                                                    dr["M"] = mamaID; // mama
-                                                                    dr["gP"] = gPoints;
-                                                                    dr["aP"] = aPoints;
-                                                                    dr["agP"] = agPoints;
-                                                                    dr["res"] = (aB + bB + cB + dB + eB + fB);
-                                                                    DataManager.ComboTable.Rows.Add(dr);
-                                                                    superID++;
-                                                                }
-                                                                else if (agPoints > 5)
-                                                                {
-                                                                    DataRow dr = DataManager.ComboTable.NewRow(); // add to combine list sorted by bPoints
-                                                                    dr["#"] = superID;
-                                                                    dr["P"] = papaID; // papa
-                                                                    dr["M"] = mamaID; // mama
-                                                                    dr["gP"] = gPoints;
-                                                                    dr["aP"] = aPoints;
-                                                                    dr["agP"] = agPoints;
-                                                                    dr["res"] = (aB + bB + cB + dB + eB + fB);
-                                                                    DataManager.ComboTable.Rows.Add(dr);
-                                                                    superID++;
-                                                                }
-                                                            }
-                                                        }
-
-                                                    }
-                                                    else
+                                                    if (rowC["M"].ToString() == mamaID) { fnd = true; break; }
+                                                }
+                                                if (!fnd)
+                                                {
+                                                    if (aPoints > 0 || agPoints > 5)
                                                     {
                                                         DataRow dr = DataManager.ComboTable.NewRow(); // add to combine list sorted by bPoints
-                                                        dr["#"] = superID2;
+                                                        dr["#"] = superID;
                                                         dr["P"] = papaID; // papa
                                                         dr["M"] = mamaID; // mama
                                                         dr["gP"] = gPoints;
                                                         dr["aP"] = aPoints;
                                                         dr["agP"] = agPoints;
                                                         dr["res"] = (aB + bB + cB + dB + eB + fB);
-                                                        //   comboTable.Rows.Add(dr);
-                                                        superID2++;
+                                                        DataManager.ComboTable.Rows.Add(dr);
+                                                        superID++;
                                                     }
                                                 }
                                             }

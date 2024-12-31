@@ -180,7 +180,7 @@ namespace ASA_Dino_Manager
                         // try all colors at once for now and return to default if any fails
                         try
                         {
-                            if (section.Key.ToUpper() == "[TABLE COLORS]")
+                            if (section.Key.ToUpper() == "TABLE COLORS")
                             {
                                 foreach (var key in section.Value)
                                 {
@@ -226,7 +226,7 @@ namespace ASA_Dino_Manager
                                     }
                                 }
                             }
-                            if (section.Key.ToUpper() == "[BUTTON COLORS]")
+                            if (section.Key.ToUpper() == "BUTTON COLORS")
                             {
                                 foreach (var key in section.Value)
                                 {
@@ -248,7 +248,7 @@ namespace ASA_Dino_Manager
                                     }
                                 }
                             }
-                            if (section.Key.ToUpper() == "[LAYOUT COLORS]")
+                            if (section.Key.ToUpper() == "LAYOUT COLORS")
                             {
                                 foreach (var key in section.Value)
                                 {
