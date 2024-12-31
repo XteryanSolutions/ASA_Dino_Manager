@@ -58,7 +58,7 @@ public partial class DinoPage : ContentPage
                         // sort data based on column clicked
                         DataManager.GetDinoData(Shared.selectedClass, sortM, sortF);
 
-                        DataManager.SetMaxStats(ToggleExcluded);
+                        //DataManager.SetMaxStats(ToggleExcluded);
 
                         DataManager.SetBinaryStats(ToggleExcluded);
 
@@ -1090,7 +1090,7 @@ public partial class DinoPage : ContentPage
             string group = "";
 
             group = DataManager.GetGroup(id);
-
+            string dmg = DataManager.DamageMax.ToString();
             //recolor breeding stats
             if (DataManager.ToDouble(level) >= DataManager.LevelMax) { cellColor1 = Shared.goodColor; }
             if (DataManager.ToDouble(hp) >= DataManager.HpMax) { cellColor2 = Shared.goodColor; }
@@ -1099,7 +1099,8 @@ public partial class DinoPage : ContentPage
             if (DataManager.ToDouble(food) >= DataManager.FoodMax) { cellColor5 = Shared.goodColor; }
             if (DataManager.ToDouble(weight) >= DataManager.WeightMax) { cellColor6 = Shared.goodColor; }
             if (DataManager.ToDouble(damage) >= DataManager.DamageMax) { cellColor7 = Shared.goodColor; }
-            // if (DataManager.ToDouble(speed) >= DataManager.SpeedMax) { cellColor9 = Shared.goodColor; }
+            if (DataManager.ToDouble(speed) >= DataManager.SpeedMax) { cellColor9 = Shared.goodColor; }
+            if (DataManager.ToDouble(craft) >= DataManager.CraftMax) { cellColor10 = Shared.goodColor; }
 
 
             // mutation detection overrides normal coloring -> mutaColor

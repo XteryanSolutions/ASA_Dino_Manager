@@ -886,7 +886,7 @@ namespace ASA_Dino_Manager
             }
         }
 
-        private static void ProcessDinos(string[] dinos, List<string[]> MainStats, List<string[]> BrStats, DataTable table)
+        private static void ProcessDinos(string[] dinos, List<string[]> FirstStats, List<string[]> LastStats, DataTable table)
         {
             int rowID = 0;
             foreach (var dino in dinos)
@@ -895,15 +895,15 @@ namespace ASA_Dino_Manager
 
 
                 //MUTATION DETECTION SYSTEM HERE
-                string mamaID = BrStats[rowID][9].ToString();
-                string papaID = BrStats[rowID][10].ToString();
+                string mamaID = LastStats[rowID][9].ToString();
+                string papaID = LastStats[rowID][10].ToString();
 
                 string a = "0"; string b = "0"; string c = "0";
                 string d = "0"; string e = "0"; string f = "0";
 
                 if (mamaID != "" && papaID != "")
                 {
-                    double dinoHP = Math.Round(ToDouble(MainStats[rowID][2].ToString()));
+                    double dinoHP = Math.Round(ToDouble(FirstStats[rowID][2].ToString()));
                     double mamaHP = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "HP")));
                     double papaHP = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "HP")));
 
@@ -918,7 +918,7 @@ namespace ASA_Dino_Manager
                         }
                     }
 
-                    double dinoStamina = Math.Round(ToDouble(MainStats[rowID][3].ToString()));
+                    double dinoStamina = Math.Round(ToDouble(FirstStats[rowID][3].ToString()));
                     double mamaStamina = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Stamina")));
                     double papaStamina = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Stamina")));
 
@@ -934,7 +934,7 @@ namespace ASA_Dino_Manager
                     }
 
 
-                    double dinoOxygen = Math.Round(ToDouble(MainStats[rowID][4].ToString()));
+                    double dinoOxygen = Math.Round(ToDouble(FirstStats[rowID][4].ToString()));
                     double mamaOxygen = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Oxygen")));
                     double papaOxygen = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Oxygen")));
 
@@ -949,7 +949,7 @@ namespace ASA_Dino_Manager
                         }
                     }
 
-                    double dinoFood = Math.Round(ToDouble(MainStats[rowID][5].ToString()));
+                    double dinoFood = Math.Round(ToDouble(FirstStats[rowID][5].ToString()));
                     double mamaFood = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Food")));
                     double papaFood = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Food")));
 
@@ -964,7 +964,7 @@ namespace ASA_Dino_Manager
                         }
                     }
 
-                    double dinoWeight = Math.Round(ToDouble(MainStats[rowID][6].ToString()));
+                    double dinoWeight = Math.Round(ToDouble(FirstStats[rowID][6].ToString()));
                     double mamaWeight = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Weight")));
                     double papaWeight = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Weight")));
 
@@ -979,7 +979,7 @@ namespace ASA_Dino_Manager
                         }
                     }
 
-                    double dinoDamage = Math.Round(ToDouble(MainStats[rowID][7].ToString()), 2);
+                    double dinoDamage = Math.Round(ToDouble(FirstStats[rowID][7].ToString()), 2);
                     double mamaDamage = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Damage")), 2);
                     double papaDamage = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Damage")), 2);
 
@@ -1033,35 +1033,53 @@ namespace ASA_Dino_Manager
 
                 if (addIT)
                 {
+                    // at the same time we set the max stats
+                    double LevelM = ToDouble(FirstStats[rowID][1].ToString());
+                    double HpM = Math.Round(ToDouble(FirstStats[rowID][2].ToString()), 1);
+                    double StaminaM = Math.Round(ToDouble(FirstStats[rowID][3].ToString()), 1);
+                    double OxygenM = Math.Round(ToDouble(FirstStats[rowID][4].ToString()), 1);
+                    double FoodM = Math.Round(ToDouble(FirstStats[rowID][5].ToString()), 1);
+                    double WeightM = Math.Round(ToDouble(FirstStats[rowID][6].ToString()), 1);
+                    double DamageM = Math.Round((ToDouble(FirstStats[rowID][7].ToString()) + 1) * 100, 1);
+                    double SpeedM = Math.Round((ToDouble(LastStats[rowID][8].ToString()) + 1) * 100);
+                    double CraftM = Math.Round((ToDouble(FirstStats[rowID][20].ToString()) + 1) * 100, 1);
+
+                    if (LevelM >= LevelMax) { LevelMax = LevelM; }
+                    if (HpM >= HpMax) { HpMax = HpM; }
+                    if (StaminaM >= StaminaMax) { StaminaMax = StaminaM; }
+                    if (OxygenM >= OxygenMax) { OxygenMax = OxygenM; }
+                    if (FoodM >= FoodMax) { FoodMax = FoodM; }
+                    if (WeightM >= WeightMax) { WeightMax = WeightM; }
+                    if (DamageM >= DamageMax) { DamageMax = DamageM; }
+                    if (SpeedM >= SpeedMax) { SpeedMax = SpeedM; }
+                    if (CraftM >= CraftMax) { CraftMax = CraftM; }
+
                     // Fill the DataRow
                     DataRow dr = table.NewRow();
                     dr["ID"] = dino;
-                    dr["Name"] = BrStats[rowID][0].ToString();
-                    dr["Mama"] = GetLastColumnData("ID", BrStats[rowID][9].ToString(), "Name", "");
-                    dr["Papa"] = GetLastColumnData("ID", BrStats[rowID][10].ToString(), "Name", "");
-                    dr["Imprinter"] = BrStats[rowID][18].ToString();
-                    dr["Level"] = ToDouble(MainStats[rowID][1].ToString());
-                    dr["Hp"] = Math.Round(ToDouble(MainStats[rowID][2].ToString()), 1);
-                    dr["Stamina"] = Math.Round(ToDouble(MainStats[rowID][3].ToString()), 1);
-                    dr["Oxygen"] = Math.Round(ToDouble(MainStats[rowID][4].ToString()), 1);
-                    dr["Food"] = Math.Round(ToDouble(MainStats[rowID][5].ToString()), 1);
-                    dr["Weight"] = Math.Round(ToDouble(MainStats[rowID][6].ToString()), 1);
-                    dr["Damage"] = Math.Round((ToDouble(MainStats[rowID][7].ToString()) + 1) * 100, 1);
-                    dr["Speed"] = Math.Round((ToDouble(BrStats[rowID][8].ToString()) + 1) * 100);
+                    dr["Name"] = LastStats[rowID][0].ToString();
 
-                    if (MainStats[rowID][20].ToString() != "")
-                    {
-                        dr["Crafting"] = Math.Round((ToDouble(MainStats[rowID][20].ToString()) + 1) * 100);
-                    }
-                    else { dr["Crafting"] = 0; }
+                    dr["Level"] = LevelM;
+                    dr["Hp"] = HpM;
+                    dr["Stamina"] = StaminaM;
+                    dr["Oxygen"] = OxygenM;
+                    dr["Food"] = FoodM;
+                    dr["Weight"] = WeightM;
+                    dr["Damage"] = DamageM;
 
-                    dr["Gen"] = ToDouble(BrStats[rowID][13].ToString());
-                    dr["MamaMute"] = ToDouble(BrStats[rowID][11].ToString());
-                    dr["PapaMute"] = ToDouble(BrStats[rowID][12].ToString());
-                    dr["Age"] = Math.Round(ToDouble(BrStats[rowID][15].ToString()) * 100);
-                    dr["Imprint"] = Math.Round(ToDouble(BrStats[rowID][17].ToString()) * 100);
+                    dr["Speed"] = SpeedM;
+                    dr["Gen"] = ToDouble(LastStats[rowID][13].ToString());
+                    dr["Mama"] = GetLastColumnData("ID", LastStats[rowID][9].ToString(), "Name", "");
+                    dr["Papa"] = GetLastColumnData("ID", LastStats[rowID][10].ToString(), "Name", "");
+                    dr["MamaMute"] = ToDouble(LastStats[rowID][11].ToString());
+                    dr["PapaMute"] = ToDouble(LastStats[rowID][12].ToString());
+                    dr["Age"] = Math.Round(ToDouble(LastStats[rowID][15].ToString()) * 100);
+                    dr["Imprint"] = Math.Round(ToDouble(LastStats[rowID][17].ToString()) * 100);
+                    dr["Imprinter"] = LastStats[rowID][18].ToString();
+
                     dr["Status"] = CalcStatus(dino);
-                    dr["Tag"] = "";
+                    dr["Tag"] = ""; // maybe use this at some point just make sure its not null for now
+                    dr["Crafting"] = CraftM;
 
                     table.Rows.Add(dr);
                 }
@@ -1153,11 +1171,11 @@ namespace ASA_Dino_Manager
             // Retrieve male data
             string[] males = DataManager.GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Male", "ID");
 
-            /*
+
             LevelMax = 0; HpMax = 0; StaminaMax = 0; OxygenMax = 0;
             FoodMax = 0; WeightMax = 0; DamageMax = 0; SpeedMax = 0;
             CraftMax = 0;
-            */
+
             if (DinoPage.CurrentStats)
             {
                 // Process females
@@ -1476,6 +1494,8 @@ namespace ASA_Dino_Manager
                     double WeightM = ToDouble(rowM["Weight"].ToString());
                     double DamageM = ToDouble(rowM["Damage"].ToString());
                     double SpeedM = ToDouble(rowM["Speed"].ToString());
+                    double CraftM = ToDouble(rowM["Crafting"].ToString());
+
 
                     if (LevelM >= LevelMax) { LevelMax = LevelM; }
                     if (HpM >= HpMax) { HpMax = HpM; }
@@ -1485,6 +1505,8 @@ namespace ASA_Dino_Manager
                     if (WeightM >= WeightMax) { WeightMax = WeightM; }
                     if (DamageM >= DamageMax) { DamageMax = DamageM; }
                     if (SpeedM >= SpeedMax) { SpeedMax = SpeedM; }
+                    if (CraftM >= CraftMax) { CraftMax = CraftM; }
+
                 }
             }
 
@@ -1524,6 +1546,7 @@ namespace ASA_Dino_Manager
                     double WeightM = ToDouble(rowM["Weight"].ToString());
                     double DamageM = ToDouble(rowM["Damage"].ToString());
                     double SpeedM = ToDouble(rowM["Speed"].ToString());
+                    double CraftM = ToDouble(rowM["Crafting"].ToString());
 
                     if (LevelM >= LevelMax) { LevelMax = LevelM; }
                     if (HpM >= HpMax) { HpMax = HpM; }
@@ -1533,6 +1556,7 @@ namespace ASA_Dino_Manager
                     if (WeightM >= WeightMax) { WeightMax = WeightM; }
                     if (DamageM >= DamageMax) { DamageMax = DamageM; }
                     if (SpeedM >= SpeedMax) { SpeedMax = SpeedM; }
+                    if (CraftM >= CraftMax) { CraftMax = CraftM; }
                 }
             }
             //FileManager.Log("updated stats");
