@@ -397,6 +397,7 @@ public partial class BabyPage : ContentPage
             {
                 string aC = mutes.Substring(0, 1); string bC = mutes.Substring(1, 1); string cC = mutes.Substring(2, 1);
                 string dC = mutes.Substring(3, 1); string eC = mutes.Substring(4, 1); string fC = mutes.Substring(5, 1);
+                //   string gC = mutes.Substring(6, 1); string hC = mutes.Substring(7, 1);
 
                 if (aC == "1") { cellColor2 = Shared.mutaColor; }
                 if (bC == "1") { cellColor3 = Shared.mutaColor; }
@@ -404,6 +405,8 @@ public partial class BabyPage : ContentPage
                 if (dC == "1") { cellColor5 = Shared.mutaColor; }
                 if (eC == "1") { cellColor6 = Shared.mutaColor; }
                 if (fC == "1") { cellColor7 = Shared.mutaColor; }
+
+
             }
 
 
@@ -1124,10 +1127,7 @@ public partial class BabyPage : ContentPage
                 string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
                 this.Title = $"{name} - {id}"; // set title to dino name
 
-                // FileManager.Log($"Selected {name} ID: {id}", 0);
-
                 // activate double clicking
-
                 canDouble = true;
                 DisableDoubleClick();
             }
@@ -1135,12 +1135,6 @@ public partial class BabyPage : ContentPage
             {
                 // double click  // open the dino extended info window
                 isDouble = true; canDouble = false;
-
-                string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
-                //this.Title = $"{name} - {id}"; // set title to dino name
-
-                //   FileManager.Log($"Double click {name} ID: {id}", 0);
-
             }
             else if (selectedID == id && !canDouble) // select same dino over time
             {
@@ -1169,10 +1163,7 @@ public partial class BabyPage : ContentPage
                 string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
                 this.Title = $"{name} - {id}"; // set title to dino name
 
-                //  FileManager.Log($"Selected. {name} ID: {id}", 0);
-
                 // activate double clicking
-
                 canDouble = true;
                 DisableDoubleClick();
             }
@@ -1180,12 +1171,6 @@ public partial class BabyPage : ContentPage
             {
                 // double click  // open the dino extended info window
                 isDouble = true; canDouble = false;
-
-                string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
-                //this.Title = $"{name} - {id}"; // set title to dino name
-
-                //   FileManager.Log($"Double click. {name} ID: {id}", 0);
-
             }
             else if (selectedID == id && !canDouble) // select same dino over time
             {

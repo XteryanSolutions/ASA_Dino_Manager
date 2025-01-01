@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Diagnostics;
 
 
 namespace ASA_Dino_Manager;
@@ -30,10 +31,13 @@ public partial class DinoPage : ContentPage
     private string damageText = "";
     private string notesText = "";
 
+    ////////////////////    Data   ////////////////////
     private bool editStats = false;
-
     private bool dataValid = false;
     private int dinoCount = 0;
+
+    private Stopwatch timer1 = Stopwatch.StartNew();
+
 
     public DinoPage()
     {
@@ -43,17 +47,29 @@ public partial class DinoPage : ContentPage
         CreateContent();
     }
 
+    private void FromHere()
+    {
+        timer1 = Stopwatch.StartNew();
+    }
+
+    private void ToHere(string text)
+    {
+        timer1.Stop();
+        var elapsedMilliseconds = timer1.Elapsed.TotalMilliseconds;
+        Shared.loadCount++; double outAVG = 0;
+        if (Shared.loadCount < 2) { Shared.loadAvg = elapsedMilliseconds; outAVG = Shared.loadAvg; }
+        else { Shared.loadAvg += elapsedMilliseconds; outAVG = Shared.loadAvg / Shared.loadCount; }
+        FileManager.Log($"{text}: {elapsedMilliseconds}ms Avg: {outAVG}", 0);
+    }
 
 
     public void CreateContent()
     {
-        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
         FileManager.Log("Updating GUI -> " + Shared.setPage, 0);
         if (!isSelected) { this.Title = $"{Shared.setPage.Replace("_", " ")}"; }
-        else { this.Title = $"{DataManager.GetLastColumnData("ID", selectedID, "Name")} - {selectedID}"; }
 
-
-        if (Monitor.TryEnter(Shared._dbLock2, TimeSpan.FromSeconds(5)))
+        if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
         {
             try
             {
@@ -61,39 +77,23 @@ public partial class DinoPage : ContentPage
                 {
                     if (!dataValid)
                     {
-                        if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
-                        {
-                            try
-                            {
-                                FileManager.Log("Loading All Data", 0);
-                                // sort data based on column clicked
-                                DataManager.GetDinoData(Shared.selectedClass, sortM, sortF);
+                        FileManager.Log("Loading All Data", 0);
+                        // sort data based on column clicked
+                        DataManager.GetDinoData(Shared.selectedClass, sortM, sortF);
 
-                                // load this data only when showing all and included
-                                if (ToggleExcluded == 0 || ToggleExcluded == 1)
-                                {
-                                    if (!CurrentStats)
-                                    {
-                                        DataManager.SetBinaryStats(ToggleExcluded);
-                                        DataManager.GetBestPartner();
-                                    }
-                                }
-                                dinoCount = DataManager.DinoCount(Shared.selectedClass, ToggleExcluded);
-                                dataValid = true;
-                            }
-                            catch { dataValid = false; }
-                            finally
-                            {
-                                Monitor.Exit(Shared._dbLock);
-                            }
-                        }
-                        else
+                        // load this data only when showing all and included
+                        if (ToggleExcluded == 0 || ToggleExcluded == 1)
                         {
-                            dataValid = false;
+                            if (!CurrentStats)
+                            {
+                                DataManager.SetBinaryStats(ToggleExcluded);
+                                DataManager.GetBestPartner();
+                            }
                         }
+                        dinoCount = DataManager.DinoCount(Shared.selectedClass, ToggleExcluded);
+                        dataValid = true;
                     }
                 }
-
 
                 DinoView();
             }
@@ -104,7 +104,7 @@ public partial class DinoPage : ContentPage
             }
             finally
             {
-                Monitor.Exit(Shared._dbLock2);
+                Monitor.Exit(Shared._dbLock);
             }
         }
         else
@@ -113,13 +113,7 @@ public partial class DinoPage : ContentPage
             DefaultView("Dinos walked away :(");
         }
 
-        stopwatch.Stop();
-        var elapsedMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
-        Shared.loadCount++;
-        double outAVG = 0;
-        if (Shared.loadCount < 2) { Shared.loadAvg = elapsedMilliseconds; outAVG = Shared.loadAvg; }
-        else { Shared.loadAvg += elapsedMilliseconds; outAVG = Shared.loadAvg / Shared.loadCount; }
-        FileManager.Log($"GUI Refresh Done: {elapsedMilliseconds}ms Avg: {outAVG}", 0);
+
     }
 
     private void DefaultView(string labelText)
@@ -415,8 +409,13 @@ public partial class DinoPage : ContentPage
             };
 
             // Add male and female tables
+            FromHere(); // Start benchmark timer here
             scrollContent.Children.Add(CreateDinoGrid(DataManager.MaleTable, "Male"));
+            ToHere("Time1"); // Stop timer and show results
+
+            FromHere(); // Start benchmark timer here
             scrollContent.Children.Add(CreateDinoGrid(DataManager.FemaleTable, "Female"));
+            ToHere("Time2"); // Stop timer and show results
 
 
             // Wrap the scrollable content in a ScrollView and add it to the second row
@@ -435,8 +434,9 @@ public partial class DinoPage : ContentPage
                 BackgroundColor = Shared.BottomPanelColor
             };
 
-
+            FromHere(); // Start benchmark timer here
             bottomContent.Children.Add(CreateDinoGrid(DataManager.BottomTable, "Bottom"));
+            ToHere("Time3"); // Stop timer and show results
 
             // Wrap the scrollable content in a ScrollView and add it to the third row
             var bottomPanel = new ScrollView { Content = bottomContent };
@@ -925,14 +925,8 @@ public partial class DinoPage : ContentPage
 
 
         string newTest = "";
-        if (testingSort.Contains("ASC"))
-        {
-            newTest = testingSort.Substring(0, testingSort.Length - 4);
-        }
-        if (testingSort.Contains("DESC"))
-        {
-            newTest = testingSort.Substring(0, testingSort.Length - 5);
-        }
+        if (testingSort.Contains("ASC")) { newTest = testingSort.Substring(0, testingSort.Length - 4); }
+        if (testingSort.Contains("DESC")) { newTest = testingSort.Substring(0, testingSort.Length - 5); }
 
         string upChar = Shared.sortUp;
         string downChar = Shared.sortDown;
@@ -978,36 +972,30 @@ public partial class DinoPage : ContentPage
         var header15 = new Label { Text = $"Imprinter{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
 
-
-        string sexS = "T";
-        if (title == "Male") { sexS = "M"; }
-        else { sexS = "F"; }
-
         if (title != "Bottom") // not sortable bottom row
         {
-            SortColumn(nameH, sexS);
-            SortColumn(levelH, sexS);
-            SortColumn(hpH, sexS);
-            SortColumn(staminaH, sexS);
+            SortColumn(nameH, title);
+            SortColumn(levelH, title);
+            SortColumn(hpH, title);
+            SortColumn(staminaH, title);
 
-            if (hasO2) { SortColumn(oxygenH, sexS); }
+            if (hasO2) { SortColumn(oxygenH, title); }
 
-            SortColumn(foodH, sexS);
-            SortColumn(weightH, sexS);
-            SortColumn(damageH, sexS);
+            SortColumn(foodH, title);
+            SortColumn(weightH, title);
+            SortColumn(damageH, title);
 
-            if (hasSpeed) { SortColumn(speedH, sexS); }
-            if (hasCraft) { SortColumn(craftH, sexS); }
+            if (hasSpeed) { SortColumn(speedH, title); }
+            if (hasCraft) { SortColumn(craftH, title); }
 
-
-            SortColumn(header8, sexS);
-            SortColumn(header9, sexS);
-            SortColumn(header10, sexS);
-            SortColumn(header11, sexS);
-            SortColumn(header12, sexS);
-            SortColumn(header13, sexS);
-            SortColumn(header14, sexS);
-            SortColumn(header15, sexS);
+            SortColumn(header8, title);
+            SortColumn(header9, title);
+            SortColumn(header10, title);
+            SortColumn(header11, title);
+            SortColumn(header12, title);
+            SortColumn(header13, title);
+            SortColumn(header14, title);
+            SortColumn(header15, title);
         }
 
         // Add base header row
@@ -1089,9 +1077,11 @@ public partial class DinoPage : ContentPage
             string imprint = row["Imprint"].ToString();
             string imprinter = row["Imprinter"].ToString();
 
-           // string group = "";
 
-           // group = DataManager.GetGroup(id);
+
+            // string group = "";
+
+            // group = DataManager.GetGroup(id);
             string dmg = DataManager.DamageMax.ToString();
             //recolor breeding stats
             if (DataManager.ToDouble(level) >= DataManager.LevelMax) { cellColor1 = Shared.goodColor; }
@@ -1106,11 +1096,12 @@ public partial class DinoPage : ContentPage
 
 
             // mutation detection overrides normal coloring -> mutaColor
-            string mutes = DataManager.GetMutes(id);
-            if (mutes.Length == 6 && !CurrentStats) // dont show mutations on current statview
+            string mutes = row["Mutes"].ToString();
+            if (mutes.Length == 8 && !CurrentStats) // dont show mutations on current statview
             {
                 string aC = mutes.Substring(0, 1); string bC = mutes.Substring(1, 1); string cC = mutes.Substring(2, 1);
                 string dC = mutes.Substring(3, 1); string eC = mutes.Substring(4, 1); string fC = mutes.Substring(5, 1);
+                string gC = mutes.Substring(6, 1); string hC = mutes.Substring(7, 1);
 
                 if (aC == "1") { cellColor2 = Shared.mutaColor; }
                 if (bC == "1") { cellColor3 = Shared.mutaColor; }
@@ -1118,6 +1109,8 @@ public partial class DinoPage : ContentPage
                 if (dC == "1") { cellColor5 = Shared.mutaColor; }
                 if (eC == "1") { cellColor6 = Shared.mutaColor; }
                 if (fC == "1") { cellColor7 = Shared.mutaColor; }
+                if (gC == "1") { cellColor9 = Shared.mutaColor; }
+                if (hC == "1") { cellColor10 = Shared.mutaColor; }
             }
 
             // override offspring colors based on breed points
@@ -1346,7 +1339,7 @@ public partial class DinoPage : ContentPage
                 outF = splitF[0];
             }
 
-            if (sex == "M")
+            if (sex == "Male")
             {
                 // are we clicking the same column then toggle sorting
                 if (outM == column)
@@ -1365,7 +1358,7 @@ public partial class DinoPage : ContentPage
                     sortM = column + " ASC";
                 }
             }
-            else if (sex == "F")
+            else if (sex == "Female")
             {
                 // are we clicking the same column then toggle sorting
                 if (outF == column)
@@ -1407,15 +1400,10 @@ public partial class DinoPage : ContentPage
             {
                 selectedID = id; isSelected = true;
 
-                // dataValid = false; // invalidate
-
-                string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
-                this.Title = $"{name} - {id}"; // set title to dino name
-
-                // FileManager.Log($"Selected {name} ID: {id}", 0);
+                // set title to dino name
+                this.Title = $"{DataManager.GetLastColumnData("ID", selectedID, "Name")} - {selectedID}";
 
                 // activate double clicking
-
                 canDouble = true;
                 DisableDoubleClick();
             }
@@ -1423,11 +1411,6 @@ public partial class DinoPage : ContentPage
             {
                 // double click  // open the dino extended info window
                 isDouble = true; canDouble = false;
-
-                string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
-                //this.Title = $"{name} - {id}"; // set title to dino name
-
-                //   FileManager.Log($"Double click {name} ID: {id}", 0);
 
             }
             else if (selectedID == id && !canDouble) // select same dino over time
@@ -1454,15 +1437,10 @@ public partial class DinoPage : ContentPage
             {
                 selectedID = id; isSelected = true;
 
-                // dataValid = false; // invalidate
-
-                string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
-                this.Title = $"{name} - {id}"; // set title to dino name
-
-                //  FileManager.Log($"Selected. {name} ID: {id}", 0);
+                // set title to dino name
+                this.Title = $"{DataManager.GetLastColumnData("ID", selectedID, "Name")} - {selectedID}";
 
                 // activate double clicking
-
                 canDouble = true;
                 DisableDoubleClick();
             }
@@ -1470,12 +1448,6 @@ public partial class DinoPage : ContentPage
             {
                 // double click  // open the dino extended info window
                 isDouble = true; canDouble = false;
-
-                string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
-                //this.Title = $"{name} - {id}"; // set title to dino name
-
-                //   FileManager.Log($"Double click. {name} ID: {id}", 0);
-
             }
             else if (selectedID == id && !canDouble) // select same dino over time
             {
