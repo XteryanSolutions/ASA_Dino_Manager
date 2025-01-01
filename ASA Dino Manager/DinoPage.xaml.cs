@@ -67,7 +67,7 @@ public partial class DinoPage : ContentPage
 
     public void CreateContent()
     {
-
+        FromHere(); // Start benchmark timer here
         FileManager.Log("Updating GUI -> " + Shared.setPage, 0);
         if (!isSelected) { this.Title = $"{Shared.setPage.Replace("_", " ")}"; }
 
@@ -114,8 +114,7 @@ public partial class DinoPage : ContentPage
             FileManager.Log("DinoPage Failed to acquire database lock", 1);
             DefaultView("Dinos walked away :(");
         }
-
-
+        ToHere("Time1"); // Stop timer and show results
     }
 
     private void DefaultView(string labelText)
@@ -181,7 +180,6 @@ public partial class DinoPage : ContentPage
 
         // Add main panel to right column
         AddToGrid(mainLayout, CreateMainPanel(), 0, 1);
-
 
         // only attach the tapgesture if we have something selected
         if (!isDouble && isSelected)
@@ -411,13 +409,12 @@ public partial class DinoPage : ContentPage
             };
 
             // Add male and female tables
-            FromHere(); // Start benchmark timer here
             scrollContent.Children.Add(CreateDinoGrid(DataManager.MaleTable, "Male"));
-            ToHere("Time1"); // Stop timer and show results
 
-            FromHere(); // Start benchmark timer here
+
+
             scrollContent.Children.Add(CreateDinoGrid(DataManager.FemaleTable, "Female"));
-            ToHere("Time2"); // Stop timer and show results
+
 
 
             // Wrap the scrollable content in a ScrollView and add it to the second row
@@ -436,9 +433,9 @@ public partial class DinoPage : ContentPage
                 BackgroundColor = Shared.BottomPanelColor
             };
 
-            FromHere(); // Start benchmark timer here
+
             bottomContent.Children.Add(CreateDinoGrid(DataManager.BottomTable, "Bottom"));
-            ToHere("Time3"); // Stop timer and show results
+
 
             // Wrap the scrollable content in a ScrollView and add it to the third row
             var bottomPanel = new ScrollView { Content = bottomContent };
@@ -927,12 +924,7 @@ public partial class DinoPage : ContentPage
 
     private Grid CreateDinoGrid(DataTable table, string title)
     {
-        var grid = new Grid
-        {
-            RowSpacing = 0,
-            ColumnSpacing = 20,
-            Padding = 3
-        };
+        var grid = new Grid { RowSpacing = 0, ColumnSpacing = 20, Padding = 3 };
 
         // Define columns
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 0
@@ -947,14 +939,12 @@ public partial class DinoPage : ContentPage
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 9
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 10
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 11
-
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 12
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 13
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 14
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 15
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 16
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 17
-
 
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 18
 

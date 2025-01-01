@@ -41,6 +41,9 @@
         public static string starSym = "✨";
         public static string noSym = "❓";
         public static string loveSym = "🧡";
+        public static string nameSym = "🔤";
+        public static string levelSym = "🔎";
+
 
 
         //offset for preventing excessive mutation triggers
@@ -54,7 +57,7 @@
         ////////////////////    Shared locks    ////////////////////
         public static readonly object _logLock = new object();
         public static readonly object _dbLock = new object();
-        public static readonly object _dbLock2 = new object();
+
 
 
         ////////////////////    IMPORTING       ////////////////////
@@ -104,12 +107,6 @@
         public static Color goldColor = Color.FromArgb("#FFFF00"); // Yellow
         public static Color mutaColor = Color.FromArgb("#9370DB"); // MediumPurple
 
-        // add theese to config (maybe not yet)
-        public static Color tameColor = Color.FromArgb("#9370DB"); // MediumPurple
-        public static Color breedColor = Color.FromArgb("#FFFFE0"); // LightYellow
-        public static Color grownColor = Color.FromArgb("#90EE90"); // LightGreen
-        // 3 values
-
 
         // Button colors
         public static Color DefaultBColor = Color.FromArgb("#ADD8E6"); // LightBlue
@@ -118,7 +115,7 @@
         public static Color TrinaryColor = Color.FromArgb("#CD5C5C"); // IndianRed
 
         // Layout colors
-        public static Color SelectedColor = Color.FromArgb("#bd614e");
+        public static Color SelectedColor = Color.FromArgb("#85837d");
         public static Color SidePanelColor = Color.FromArgb("#312f38");
 
         public static Color MainPanelColor = Color.FromArgb("#222222");

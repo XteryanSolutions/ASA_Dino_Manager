@@ -1174,6 +1174,13 @@ namespace ASA_Dino_Manager
             sortiM = sortiM.Replace($"{Shared.tameSym}Gen", "Gen");
             sortiF = sortiF.Replace($"{Shared.tameSym}Gen", "Gen");
 
+            sortiM = sortiM.Replace($"{Shared.nameSym}Name", "Name");
+            sortiF = sortiF.Replace($"{Shared.nameSym}Name", "Name");
+
+            sortiM = sortiM.Replace($"{Shared.levelSym}Level", "Level");
+            sortiF = sortiF.Replace($"{Shared.levelSym}Level", "Level");
+
+
 
             // Sort the MaleTable based on the desired column
             DataView view1 = new DataView(DataManager.MaleTable);
