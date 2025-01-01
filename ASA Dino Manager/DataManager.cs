@@ -239,7 +239,8 @@ namespace ASA_Dino_Manager
             int totalClean = 0;
             foreach (string id in idList)
             {
-
+                // mutation detection here to only do it when data changes
+                MutationDetection(id);
 
                 //var rows = ImportsTable.Select($"ID = '{id}'", "Time ASC");
 
@@ -726,7 +727,7 @@ namespace ASA_Dino_Manager
             return result;
         }
 
-        public static void EditBreedStats(string id, string level, string hp, string st, string ox, string fo, string we, string da, string notes)
+        public static void EditBreedStats(string id, string level, string hp, string st, string ox, string fo, string we, string da, string notes, string speed, string craft)
         {
             if (id != "")
             {
@@ -743,6 +744,8 @@ namespace ASA_Dino_Manager
                         ImportsTable.Rows[rowID].SetField("Food", fo);
                         ImportsTable.Rows[rowID].SetField("Weight", we);
                         ImportsTable.Rows[rowID].SetField("Damage", da);
+                        ImportsTable.Rows[rowID].SetField("Speed", speed);
+                        ImportsTable.Rows[rowID].SetField("CraftSkill", craft);
 
                         break;
                     }
@@ -1926,15 +1929,18 @@ namespace ASA_Dino_Manager
             FileManager.needSave = true;
         }
 
-        private static void MutationDetection(string id, string mamaID, string papaID, string hp, string stamina, string oxygen, string food, string weight, string damage, string speed, string craft)
+        private static void MutationDetection(string id)
         {
             string a = "0"; string b = "0"; string c = "0";
             string d = "0"; string e = "0"; string f = "0";
             string g = "0"; string h = "0";
 
+            string mamaID = GetFirstColumnData("ID", id, "Mama");
+            string papaID = GetFirstColumnData("ID", id, "Papa");
+
             if (mamaID != "" && papaID != "")
             {
-                double dinoHP = Math.Round(ToDouble(hp));
+                double dinoHP = Math.Round(ToDouble(GetFirstColumnData("ID", id, "HP")));
                 double mamaHP = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "HP")));
                 double papaHP = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "HP")));
 
@@ -1949,7 +1955,7 @@ namespace ASA_Dino_Manager
                     }
                 }
 
-                double dinoStamina = Math.Round(ToDouble(stamina));
+                double dinoStamina = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Stamina")));
                 double mamaStamina = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Stamina")));
                 double papaStamina = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Stamina")));
 
@@ -1964,7 +1970,7 @@ namespace ASA_Dino_Manager
                     }
                 }
 
-                double dinoOxygen = Math.Round(ToDouble(oxygen));
+                double dinoOxygen = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Oxygen")));
                 double mamaOxygen = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Oxygen")));
                 double papaOxygen = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Oxygen")));
 
@@ -1979,7 +1985,7 @@ namespace ASA_Dino_Manager
                     }
                 }
 
-                double dinoFood = Math.Round(ToDouble(food));
+                double dinoFood = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Food")));
                 double mamaFood = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Food")));
                 double papaFood = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Food")));
 
@@ -1994,7 +2000,7 @@ namespace ASA_Dino_Manager
                     }
                 }
 
-                double dinoWeight = Math.Round(ToDouble(weight));
+                double dinoWeight = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Weight")));
                 double mamaWeight = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Weight")));
                 double papaWeight = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Weight")));
 
@@ -2009,7 +2015,7 @@ namespace ASA_Dino_Manager
                     }
                 }
 
-                double dinoDamage = Math.Round(ToDouble(damage), 2);
+                double dinoDamage = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Damage")), 2);
                 double mamaDamage = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Damage")), 2);
                 double papaDamage = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Damage")), 2);
 
@@ -2024,7 +2030,7 @@ namespace ASA_Dino_Manager
                     }
                 }
 
-                double dinoSpeed = Math.Round(ToDouble(speed), 2);
+                double dinoSpeed = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Speed")), 2);
                 double mamaSpeed = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Speed")), 2);
                 double papaSpeed = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Speed")), 2);
 
@@ -2039,7 +2045,7 @@ namespace ASA_Dino_Manager
                     }
                 }
 
-                double dinoCraft = Math.Round(ToDouble(craft), 2);
+                double dinoCraft = Math.Round(ToDouble(GetFirstColumnData("ID", id, "CraftSkill")), 2);
                 double mamaCraft = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "CraftSkill")), 2);
                 double papaCraft = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "CraftSkill")), 2);
 
@@ -2115,13 +2121,10 @@ namespace ASA_Dino_Manager
                     dr["Colors"] = importedNew[23];
                     dr["CraftSkill"] = importedNew[24];
 
-
-                    // mutation detection here to only do it when data changes
-                    MutationDetection(id, importedNew[11], importedNew[12], importedNew[4], importedNew[5], importedNew[6], importedNew[7], importedNew[8], importedNew[9], importedNew[10], importedNew[24]);
-
-
                     if (!found)
                     {
+                        // add it to mutation list
+                        MutationDetection(id);
                         AddC++;
                         //fileManager.log("Added dino: " + id);
                         ImportsTable.Rows.Add(dr);

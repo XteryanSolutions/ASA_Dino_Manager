@@ -1134,7 +1134,7 @@ public partial class BabyPage : ContentPage
             else if (selectedID == id && canDouble) // select same dino within time
             {
                 // double click  // open the dino extended info window
-                isDouble = true; canDouble = false;
+                //isDouble = true; canDouble = false;
             }
             else if (selectedID == id && !canDouble) // select same dino over time
             {
@@ -1276,7 +1276,7 @@ public partial class BabyPage : ContentPage
 
         if (editStats)
         {
-            DataManager.EditBreedStats(selectedID, levelText, hpText, staminaText, oxygenText, foodText, weightText, damageText, notesText);
+           // DataManager.EditBreedStats(selectedID, levelText, hpText, staminaText, oxygenText, foodText, weightText, damageText, notesText);
             FileManager.needSave = true;
             dataValid = false;
             editStats = false;

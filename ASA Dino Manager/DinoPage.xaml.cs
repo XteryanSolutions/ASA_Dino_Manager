@@ -30,6 +30,8 @@ public partial class DinoPage : ContentPage
     private string weightText = "";
     private string damageText = "";
     private string notesText = "";
+    private string speedText = "";
+    private string craftText = "";
 
     ////////////////////    Data   ////////////////////
     private bool editStats = false;
@@ -481,6 +483,8 @@ public partial class DinoPage : ContentPage
             var cellColor5 = DefaultColor;
             var cellColor6 = DefaultColor;
             var cellColor7 = DefaultColor;
+            var cellColor8 = DefaultColor;
+            var cellColor9 = DefaultColor;
 
             // get the current breed stats of selected dino
             string sep = DataManager.DecimalSeparator;
@@ -493,6 +497,10 @@ public partial class DinoPage : ContentPage
             string weight = DataManager.GetFirstColumnData("ID", currentID, "Weight").Replace(".", sep);
             string damage = DataManager.GetFirstColumnData("ID", currentID, "Damage").Replace(".", sep);
 
+            string speed = DataManager.GetFirstColumnData("ID", currentID, "Speed").Replace(".", sep);
+            string craft = DataManager.GetFirstColumnData("ID", currentID, "CraftSkill").Replace(".", sep);
+
+
 
             //set the temp variables
             levelText = level;
@@ -502,6 +510,8 @@ public partial class DinoPage : ContentPage
             foodText = food;
             weightText = weight;
             damageText = damage;
+            speedText = speed;
+            craftText = craft;
 
 
             //recolor stats (use -0.1 to account for rounding)
@@ -512,14 +522,17 @@ public partial class DinoPage : ContentPage
             if (DataManager.ToDouble(food) >= DataManager.FoodMax - 0.1) { cellColor5 = Shared.goodColor; }
             if (DataManager.ToDouble(weight) >= DataManager.WeightMax - 0.1) { cellColor6 = Shared.goodColor; }
             if ((DataManager.ToDouble(damage) + 1) * 100 >= DataManager.DamageMax - 0.1) { cellColor7 = Shared.goodColor; }
+            if ((DataManager.ToDouble(speed) + 1) * 100 >= DataManager.SpeedMax - 0.1) { cellColor8 = Shared.goodColor; }
+            if ((DataManager.ToDouble(craft) + 1) * 100 >= DataManager.CraftMax - 0.1) { cellColor9 = Shared.goodColor; }
 
 
             // mutation detection overrides normal coloring -> mutaColor
             string mutes = DataManager.GetMutes(currentID);
-            if (mutes.Length == 6 && !CurrentStats) // dont show mutations on current statview
+            if (mutes.Length == 8 && !CurrentStats) // dont show mutations on current statview
             {
                 string aC = mutes.Substring(0, 1); string bC = mutes.Substring(1, 1); string cC = mutes.Substring(2, 1);
                 string dC = mutes.Substring(3, 1); string eC = mutes.Substring(4, 1); string fC = mutes.Substring(5, 1);
+                string gC = mutes.Substring(6, 1); string hC = mutes.Substring(7, 1);
 
                 if (aC == "1") { cellColor2 = Shared.mutaColor; }
                 if (bC == "1") { cellColor3 = Shared.mutaColor; }
@@ -527,6 +540,9 @@ public partial class DinoPage : ContentPage
                 if (dC == "1") { cellColor5 = Shared.mutaColor; }
                 if (eC == "1") { cellColor6 = Shared.mutaColor; }
                 if (fC == "1") { cellColor7 = Shared.mutaColor; }
+                if (gC == "1") { cellColor8 = Shared.mutaColor; }
+                if (hC == "1") { cellColor9 = Shared.mutaColor; }
+
             }
 
 
@@ -540,6 +556,9 @@ public partial class DinoPage : ContentPage
             var t5 = new Label { Text = "Food", TextColor = cellColor5, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
             var t6 = new Label { Text = "Weight", TextColor = cellColor6, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
             var t7 = new Label { Text = "Damage", TextColor = cellColor7, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var t8 = new Label { Text = "Speed", TextColor = cellColor8, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var t9 = new Label { Text = "Crafting", TextColor = cellColor9, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+
 
 
             int rowid = 0;
@@ -552,6 +571,8 @@ public partial class DinoPage : ContentPage
             AddToGrid(statGrid, t5, rowid++, colid, "", false, true);
             AddToGrid(statGrid, t6, rowid++, colid, "", false, true);
             AddToGrid(statGrid, t7, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, t8, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, t9, rowid++, colid, "", false, true);
 
 
 
@@ -574,6 +595,10 @@ public partial class DinoPage : ContentPage
             var textBox5 = new Entry { Text = food, Placeholder = "Food", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor5, BackgroundColor = Shared.OddMPanelColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start };
             var textBox6 = new Entry { Text = weight, Placeholder = "Weight", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor6, BackgroundColor = Shared.OddMPanelColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start };
             var textBox7 = new Entry { Text = damage, Placeholder = "Damage", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor7, BackgroundColor = Shared.OddMPanelColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start };
+            var textBox8 = new Entry { Text = speed, Placeholder = "Speed", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor8, BackgroundColor = Shared.OddMPanelColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start };
+            var textBox9 = new Entry { Text = craft, Placeholder = "Crafting", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor9, BackgroundColor = Shared.OddMPanelColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start };
+
+
 
             textBox1.TextChanged += (sender, e) =>
             {
@@ -612,6 +637,16 @@ public partial class DinoPage : ContentPage
                 else { damageText = e.NewTextValue; }
             };
 
+            textBox8.TextChanged += (sender, e) =>
+            {
+                if (!IsValidDouble(e.NewTextValue)) { ((Entry)sender).Text = e.OldTextValue; }
+                else { speedText = e.NewTextValue; }
+            };
+            textBox9.TextChanged += (sender, e) =>
+            {
+                if (!IsValidDouble(e.NewTextValue)) { ((Entry)sender).Text = e.OldTextValue; }
+                else { craftText = e.NewTextValue; }
+            };
 
 
             // AddToGrid(grid1, imageContainer, 0, 1);
@@ -627,6 +662,8 @@ public partial class DinoPage : ContentPage
             AddToGrid(statGrid, textBox5, rowid++, colid, "", false, true);
             AddToGrid(statGrid, textBox6, rowid++, colid, "", false, true);
             AddToGrid(statGrid, textBox7, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, textBox8, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, textBox9, rowid++, colid, "", false, true);
 
 
             // get parents id
@@ -648,6 +685,8 @@ public partial class DinoPage : ContentPage
             string foodP = DataManager.GetFirstColumnData("ID", papaID, "Food").Replace(".", sep);
             string weightP = DataManager.GetFirstColumnData("ID", papaID, "Weight").Replace(".", sep);
             string damageP = DataManager.GetFirstColumnData("ID", papaID, "Damage").Replace(".", sep);
+            string speedP = DataManager.GetFirstColumnData("ID", papaID, "Speed").Replace(".", sep);
+            string craftP = DataManager.GetFirstColumnData("ID", papaID, "CraftSkill").Replace(".", sep);
 
 
             DefaultColor = Shared.maleColor;
@@ -660,6 +699,9 @@ public partial class DinoPage : ContentPage
             cellColor5 = DefaultColor;
             cellColor6 = DefaultColor;
             cellColor7 = DefaultColor;
+            cellColor8 = DefaultColor;
+            cellColor9 = DefaultColor;
+
 
 
             //recolor stats (use -0.1 to account for rounding)
@@ -670,6 +712,9 @@ public partial class DinoPage : ContentPage
             if (DataManager.ToDouble(foodP) >= DataManager.FoodMax - 0.1) { cellColor5 = Shared.goodColor; }
             if (DataManager.ToDouble(weightP) >= DataManager.WeightMax - 0.1) { cellColor6 = Shared.goodColor; }
             if ((DataManager.ToDouble(damageP) + 1) * 100 >= DataManager.DamageMax - 0.1) { cellColor7 = Shared.goodColor; }
+            if ((DataManager.ToDouble(speedP) + 1) * 100 >= DataManager.SpeedMax - 0.1) { cellColor8 = Shared.goodColor; }
+            if ((DataManager.ToDouble(craftP) + 1) * 100 >= DataManager.CraftMax - 0.1) { cellColor9 = Shared.goodColor; }
+
 
 
             // add papa stats
@@ -681,6 +726,9 @@ public partial class DinoPage : ContentPage
             var labelP5 = new Label { Text = foodP, TextColor = cellColor5, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
             var labelP6 = new Label { Text = weightP, TextColor = cellColor6, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
             var labelP7 = new Label { Text = damageP, TextColor = cellColor7, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelP8 = new Label { Text = speedP, TextColor = cellColor8, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelP9 = new Label { Text = craftP, TextColor = cellColor9, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+
 
 
             rowid = 0;
@@ -693,6 +741,9 @@ public partial class DinoPage : ContentPage
             AddToGrid(statGrid, labelP5, rowid++, colid, "", false, true);
             AddToGrid(statGrid, labelP6, rowid++, colid, "", false, true);
             AddToGrid(statGrid, labelP7, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, labelP8, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, labelP9, rowid++, colid, "", false, true);
+
 
 
             string levelM = DataManager.GetFirstColumnData("ID", mamaID, "Level").Replace(".", sep);
@@ -702,6 +753,8 @@ public partial class DinoPage : ContentPage
             string foodM = DataManager.GetFirstColumnData("ID", mamaID, "Food").Replace(".", sep);
             string weightM = DataManager.GetFirstColumnData("ID", mamaID, "Weight").Replace(".", sep);
             string damageM = DataManager.GetFirstColumnData("ID", mamaID, "Damage").Replace(".", sep);
+            string speedM = DataManager.GetFirstColumnData("ID", mamaID, "Speed").Replace(".", sep);
+            string craftM = DataManager.GetFirstColumnData("ID", mamaID, "CraftSkill").Replace(".", sep);
 
 
 
@@ -714,7 +767,8 @@ public partial class DinoPage : ContentPage
             cellColor5 = DefaultColor;
             cellColor6 = DefaultColor;
             cellColor7 = DefaultColor;
-
+            cellColor8 = DefaultColor;
+            cellColor9 = DefaultColor;
 
             //recolor stats (use -0.1 to account for rounding)
             if (DataManager.ToDouble(levelM) >= (DataManager.LevelMax - 0.1)) { cellColor1 = Shared.goodColor; }
@@ -724,6 +778,8 @@ public partial class DinoPage : ContentPage
             if (DataManager.ToDouble(foodM) >= DataManager.FoodMax - 0.1) { cellColor5 = Shared.goodColor; }
             if (DataManager.ToDouble(weightM) >= DataManager.WeightMax - 0.1) { cellColor6 = Shared.goodColor; }
             if ((DataManager.ToDouble(damageM) + 1) * 100 >= DataManager.DamageMax - 0.1) { cellColor7 = Shared.goodColor; }
+            if ((DataManager.ToDouble(speedM) + 1) * 100 >= DataManager.SpeedMax - 0.1) { cellColor8 = Shared.goodColor; }
+            if ((DataManager.ToDouble(craftM) + 1) * 100 >= DataManager.CraftMax - 0.1) { cellColor9 = Shared.goodColor; }
 
 
             // add mama stats
@@ -736,6 +792,8 @@ public partial class DinoPage : ContentPage
             var labelM5 = new Label { Text = foodM, TextColor = cellColor5, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
             var labelM6 = new Label { Text = weightM, TextColor = cellColor6, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
             var labelM7 = new Label { Text = damageM, TextColor = cellColor7, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelM8 = new Label { Text = speedM, TextColor = cellColor8, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelM9 = new Label { Text = craftM, TextColor = cellColor9, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
 
 
             rowid = 0;
@@ -748,6 +806,9 @@ public partial class DinoPage : ContentPage
             AddToGrid(statGrid, labelM5, rowid++, colid, "", false, true);
             AddToGrid(statGrid, labelM6, rowid++, colid, "", false, true);
             AddToGrid(statGrid, labelM7, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, labelM8, rowid++, colid, "", false, true);
+            AddToGrid(statGrid, labelM9, rowid++, colid, "", false, true);
+
 
             scrollContent.Children.Add(statGrid);
 
@@ -1554,6 +1615,7 @@ public partial class DinoPage : ContentPage
         // reset toggles etc.
         levelText = ""; hpText = ""; staminaText = ""; oxygenText = "";
         foodText = ""; weightText = ""; damageText = ""; notesText = "";
+        speedText = ""; craftText = "";
         isDouble = false;
         ClearSelection();
         CreateContent();
@@ -1569,7 +1631,7 @@ public partial class DinoPage : ContentPage
 
         if (editStats)
         {
-            DataManager.EditBreedStats(selectedID, levelText, hpText, staminaText, oxygenText, foodText, weightText, damageText, notesText);
+            DataManager.EditBreedStats(selectedID, levelText, hpText, staminaText, oxygenText, foodText, weightText, damageText, notesText, speedText, craftText);
             FileManager.needSave = true;
             dataValid = false;
         }
@@ -1577,6 +1639,7 @@ public partial class DinoPage : ContentPage
         // reset toggles etc.
         levelText = ""; hpText = ""; staminaText = ""; oxygenText = "";
         foodText = ""; weightText = ""; damageText = ""; notesText = "";
+        speedText = ""; craftText = "";
         isDouble = false;
 
         ClearSelection();
