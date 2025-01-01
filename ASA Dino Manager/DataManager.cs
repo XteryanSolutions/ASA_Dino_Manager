@@ -1407,7 +1407,8 @@ namespace ASA_Dino_Manager
                 {
                     string aC = "0"; string bC = "0"; string cC = "0";
                     string dC = "0"; string eC = "0"; string fC = "0";
-                    string binaryC = "000000";
+                    string gC = "0";
+                    string binaryC = "0000000";
 
                     double HpC = ToDouble(rowC["HP"].ToString());
                     double StaminaC = ToDouble(rowC["Stamina"].ToString());
@@ -1415,6 +1416,9 @@ namespace ASA_Dino_Manager
                     double FoodC = ToDouble(rowC["Food"].ToString());
                     double WeightC = ToDouble(rowC["Weight"].ToString());
                     double DamageC = ToDouble(rowC["Damage"].ToString());
+                    double CraftC = ToDouble(rowC["Crafting"].ToString());
+
+
 
                     if (HpC >= HpMax) { aC = "1"; }
                     if (StaminaC >= StaminaMax) { bC = "1"; }
@@ -1422,8 +1426,10 @@ namespace ASA_Dino_Manager
                     if (FoodC >= FoodMax) { dC = "1"; }
                     if (WeightC >= WeightMax) { eC = "1"; }
                     if (DamageC >= DamageMax) { fC = "1"; }
+                    if (CraftC >= CraftMax) { gC = "1"; }
 
-                    binaryC = aC + bC + cC + dC + eC + fC;
+
+                    binaryC = aC + bC + cC + dC + eC + fC + gC;
                     BinaryM[rowIDC] = binaryC;
                     string outStatus = "";
                     foreach (DataRow rowW in MaleTable.Rows) // compare males to put useles males in reserve
@@ -1455,6 +1461,7 @@ namespace ASA_Dino_Manager
                         {
                             string aW = "0"; string bW = "0"; string cW = "0";
                             string dW = "0"; string eW = "0"; string fW = "0";
+                            string gW = "0";
 
                             double HpW = ToDouble(rowW["HP"].ToString());
                             double StaminaW = ToDouble(rowW["Stamina"].ToString());
@@ -1462,6 +1469,7 @@ namespace ASA_Dino_Manager
                             double FoodW = ToDouble(rowW["Food"].ToString());
                             double WeightW = ToDouble(rowW["Weight"].ToString());
                             double DamageW = ToDouble(rowW["Damage"].ToString());
+                            double CraftW = ToDouble(rowW["Crafting"].ToString());
 
                             if (HpW >= DataManager.HpMax) { aW = "1"; }
                             if (StaminaW >= DataManager.StaminaMax) { bW = "1"; }
@@ -1469,12 +1477,14 @@ namespace ASA_Dino_Manager
                             if (FoodW >= DataManager.FoodMax) { dW = "1"; }
                             if (WeightW >= DataManager.WeightMax) { eW = "1"; }
                             if (DamageW >= DataManager.DamageMax) { fW = "1"; }
+                            if (CraftW >= DataManager.CraftMax) { gW = "1"; }
 
-                            string binaryW = aW + bW + cW + dW + eW + fW;
+                            string binaryW = aW + bW + cW + dW + eW + fW + gW;
 
                             // now that we have both binary strings compare them to figure out if the compare is superceeded or not
                             string aA = "0"; string bA = "0"; string cA = "0";
                             string dA = "0"; string eA = "0"; string fA = "0";
+                            string gA = "0";
 
                             // add up the binary shiz with magical ways known only to the gods of blubs
                             if (aC == "0" && aW == "0") { aA = "0"; } else if (aC == "0" && aW == "1") { aA = "1"; } else if (aC == "1" && aW == "0") { aA = "2"; } else if (aC == "1" && aW == "1") { aA = "3"; }
@@ -1483,8 +1493,10 @@ namespace ASA_Dino_Manager
                             if (dC == "0" && dW == "0") { dA = "0"; } else if (dC == "0" && dW == "1") { dA = "1"; } else if (dC == "1" && dW == "0") { dA = "2"; } else if (dC == "1" && dW == "1") { dA = "3"; }
                             if (eC == "0" && eW == "0") { eA = "0"; } else if (eC == "0" && eW == "1") { eA = "1"; } else if (eC == "1" && eW == "0") { eA = "2"; } else if (eC == "1" && eW == "1") { eA = "3"; }
                             if (fC == "0" && fW == "0") { fA = "0"; } else if (fC == "0" && fW == "1") { fA = "1"; } else if (fC == "1" && fW == "0") { fA = "2"; } else if (fC == "1" && fW == "1") { fA = "3"; }
+                            if (gC == "0" && gW == "0") { gA = "0"; } else if (gC == "0" && gW == "1") { gA = "1"; } else if (gC == "1" && gW == "0") { gA = "2"; } else if (gC == "1" && gW == "1") { gA = "3"; }
 
-                            string binaryA = aA + bA + cA + dA + eA + fA;
+
+                            string binaryA = aA + bA + cA + dA + eA + fA + gA;
 
 
                             if (binaryC == binaryW && !withStatus.Contains("<") && !withStatus.Contains("#"))
@@ -1510,7 +1522,7 @@ namespace ASA_Dino_Manager
                         finalStatus = outStatus;
                     }
                     // mark as garbage if they have none of the best stats
-                    if (binaryC == "000000")
+                    if (binaryC == "0000000")
                     {
                         finalStatus = $"{compareStatus}[garbageSym]";
                     }
@@ -1553,7 +1565,8 @@ namespace ASA_Dino_Manager
                 string outStatus = "";
                 string aC = "0"; string bC = "0"; string cC = "0";
                 string dC = "0"; string eC = "0"; string fC = "0";
-                string binaryC = "000000";
+                string gC = "0";
+                string binaryC = "0000000";
 
                 double HpC = ToDouble(rowC["HP"].ToString());
                 double StaminaC = ToDouble(rowC["Stamina"].ToString());
@@ -1561,7 +1574,7 @@ namespace ASA_Dino_Manager
                 double FoodC = ToDouble(rowC["Food"].ToString());
                 double WeightC = ToDouble(rowC["Weight"].ToString());
                 double DamageC = ToDouble(rowC["Damage"].ToString());
-
+                double CraftC = ToDouble(rowC["Crafting"].ToString());
 
 
                 if (HpC >= HpMax) { aC = "1"; }
@@ -1570,8 +1583,9 @@ namespace ASA_Dino_Manager
                 if (FoodC >= FoodMax) { dC = "1"; }
                 if (WeightC >= WeightMax) { eC = "1"; }
                 if (DamageC >= DamageMax) { fC = "1"; }
+                if (CraftC >= CraftMax) { gC = "1"; }
 
-                binaryC = aC + bC + cC + dC + eC + fC;
+                binaryC = aC + bC + cC + dC + eC + fC + gC;
 
                 BinaryF[rowIDC] = binaryC;
 
@@ -1581,7 +1595,7 @@ namespace ASA_Dino_Manager
                     string finalStatus = compareStatus;
 
                     // mark as garbage if they have none of the best stats
-                    if (binaryC == "000000")
+                    if (binaryC == "0000000")
                     {
                         finalStatus = $"{compareStatus}[garbageSym]";
                     }
@@ -1600,6 +1614,7 @@ namespace ASA_Dino_Manager
             BottomTable.Clear();
             string aB = "0"; string bB = "0"; string cB = "0";
             string dB = "0"; string eB = "0"; string fB = "0";
+            string gB = "0";
             // colorDinos();
             // get best pairing
 
@@ -1613,13 +1628,13 @@ namespace ASA_Dino_Manager
 
             int superID = 0;
 
-            int p0 = 6;
+            int p0 = 7;
             while (p0 >= 0)
             {
-                int p1 = 6;
+                int p1 = 7;
                 while (p1 >= 0)
                 {
-                    int p2 = 6;
+                    int p2 = 7;
                     while (p2 >= 0)
                     {
                         int roMID = 0;
@@ -1642,10 +1657,11 @@ namespace ASA_Dino_Manager
 
                                     string aM = IDM1.Substring(0, 1); string bM = IDM1.Substring(1, 1); string cM = IDM1.Substring(2, 1);
                                     string dM = IDM1.Substring(3, 1); string eM = IDM1.Substring(4, 1); string fM = IDM1.Substring(5, 1);
+                                    string gM = IDM1.Substring(6, 1);
 
                                     string aF = IDF1.Substring(0, 1); string bF = IDF1.Substring(1, 1); string cF = IDF1.Substring(2, 1);
                                     string dF = IDF1.Substring(3, 1); string eF = IDF1.Substring(4, 1); string fF = IDF1.Substring(5, 1);
-
+                                    string gF = IDF1.Substring(6, 1);
 
                                     int gPoints = 0;
                                     int aPoints = 0;
@@ -1657,6 +1673,7 @@ namespace ASA_Dino_Manager
                                     if (dM == "1" && dF == "1") { gPoints++; dB = "2"; } else if (dM == "1" || dF == "1") { aPoints++; dB = "1"; } else { dB = "0"; nPoints++; }
                                     if (eM == "1" && eF == "1") { gPoints++; eB = "2"; } else if (eM == "1" || eF == "1") { aPoints++; eB = "1"; } else { eB = "0"; nPoints++; }
                                     if (fM == "1" && fF == "1") { gPoints++; fB = "2"; } else if (fM == "1" || fF == "1") { aPoints++; fB = "1"; } else { fB = "0"; nPoints++; }
+                                    if (gM == "1" && gF == "1") { gPoints++; gB = "2"; } else if (gM == "1" || gF == "1") { aPoints++; gB = "1"; } else { gB = "0"; nPoints++; }
 
 
                                     int agPoints = gPoints + aPoints;
@@ -1674,7 +1691,7 @@ namespace ASA_Dino_Manager
                                                 }
                                                 if (!fnd)
                                                 {
-                                                    if (aPoints > 0 || agPoints > 5)
+                                                    if (aPoints > 0 || agPoints > 6)
                                                     {
                                                         DataRow dr = DataManager.ComboTable.NewRow(); // add to combine list sorted by bPoints
                                                         dr["#"] = superID;
@@ -1683,7 +1700,7 @@ namespace ASA_Dino_Manager
                                                         dr["gP"] = gPoints;
                                                         dr["aP"] = aPoints;
                                                         dr["agP"] = agPoints;
-                                                        dr["res"] = (aB + bB + cB + dB + eB + fB);
+                                                        dr["res"] = (aB + bB + cB + dB + eB + fB + gB);
                                                         DataManager.ComboTable.Rows.Add(dr);
                                                         superID++;
                                                     }
@@ -1717,7 +1734,7 @@ namespace ASA_Dino_Manager
                 int agP = gP + aP;
 
 
-                if (aP > 0 || gP == 6)
+                if (aP > 0 || gP == 7)
                 {
                     maleO1 = rowC["P"].ToString(); femaleO1 = rowC["M"].ToString(); // the est one
                     point = gP + " + " + aP + " = " + agP;
@@ -1736,6 +1753,7 @@ namespace ASA_Dino_Manager
             {
                 double Hp = 0; double Stamina = 0; double Oxygen = 0;
                 double Food = 0; double Weight = 0; double Damage = 0;
+                double Craft = 0;
                 double Gen = 0; double LevelB = 0;
                 string mama = ""; string papa = "";
                 int MrowID = 0;
@@ -1753,6 +1771,7 @@ namespace ASA_Dino_Manager
                         double FoodM = ToDouble(rowM["Food"].ToString());
                         double WeightM = ToDouble(rowM["Weight"].ToString());
                         double DamageM = ToDouble(rowM["Damage"].ToString());
+                        double CraftM = ToDouble(rowM["Crafting"].ToString());
                         double GenM = ToDouble(rowM["Gen"].ToString());
                         double levelM = ToDouble(rowM["Level"].ToString());
                         int FrowID = 0;
@@ -1769,6 +1788,7 @@ namespace ASA_Dino_Manager
                                 double FoodF = ToDouble(rowF["Food"].ToString());
                                 double WeightF = ToDouble(rowF["Weight"].ToString());
                                 double DamageF = ToDouble(rowF["Damage"].ToString());
+                                double CraftF = ToDouble(rowF["Crafting"].ToString());
                                 double GenF = ToDouble(rowF["Gen"].ToString());
                                 double levelF = ToDouble(rowF["Level"].ToString());
 
@@ -1787,8 +1807,9 @@ namespace ASA_Dino_Manager
                                 if (FoodM > FoodF) { Food = FoodM; } else { Food = FoodF; }
                                 if (WeightM > WeightF) { Weight = WeightM; } else { Weight = WeightF; }
                                 if (DamageM > DamageF) { Damage = DamageM; } else { Damage = DamageF; }
+                                if (CraftM > CraftF) { Craft = CraftM; } else { Craft = CraftF; }
 
-
+                                // average out the level for now
                                 if ((levelM + levelF) > 0) { LevelB = Math.Round((levelM + levelF) / 2); }
 
                             }
@@ -1808,6 +1829,7 @@ namespace ASA_Dino_Manager
                 dr["Food"] = Food;
                 dr["Weight"] = Weight;
                 dr["Damage"] = Damage;
+                dr["Crafting"] = Craft;
                 dr["Gen"] = Gen;
                 dr["Mama"] = mama;
                 dr["Papa"] = papa;

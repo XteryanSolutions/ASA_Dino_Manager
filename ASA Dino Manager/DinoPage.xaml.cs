@@ -957,12 +957,11 @@ public partial class DinoPage : ContentPage
         else { DefaultColor = Shared.bottomColor; headerColor = Shared.bottomHeaderColor; }
 
         // check for sats we dont need
-        bool hasO2 = true; bool hasSpeed = false; bool hasCraft = false;
+        bool hasO2 = true; bool hasSpeed = false; bool hasCraft = true;
         if (DataManager.OxygenMax == 150) { hasO2 = false; }
+        if (DataManager.CraftMax == 100) { hasCraft = false; }
 
         if (title != "Bottom") { hasSpeed = true; } // force activate for now
-        if (title != "Bottom" && Shared.setPage == "Gacha") { hasCraft = true; } // force activate for now
-
 
         int fSize = Shared.headerSize;  // header fontsize
 
@@ -1209,10 +1208,25 @@ public partial class DinoPage : ContentPage
                 }
             }
 
-            // oxygen breed point override
-            if (!hasO2)
+
+            // oxygen breed and craft point override
+
+            if (title == "Bottom" && status.Length == 9 && name.Contains("Breed #"))
             {
-                if (title == "Bottom" && status.Length == 9 && name.Contains("Breed #"))
+                if (!hasO2)
+                {
+                    string newBP = status.Trim();
+
+                    string gP = newBP.Substring(0, 1); // take first char
+                    string aP = newBP.Substring(4, 1); // take 5th char
+
+                    double GP = DataManager.ToDouble(gP) - 1;
+                    double AP = DataManager.ToDouble(aP);
+                    double SP = GP + AP;
+
+                    status = $"{GP} + {AP} = {SP}";
+                }
+                if (!hasCraft)
                 {
                     string newBP = status.Trim();
 
@@ -1226,6 +1240,8 @@ public partial class DinoPage : ContentPage
                     status = $"{GP} + {AP} = {SP}";
                 }
             }
+
+            
             cellColor0 = DefaultColor;
 
 
