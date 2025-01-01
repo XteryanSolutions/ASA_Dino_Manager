@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Data.Common;
 using System.Globalization;
+using Windows.Media.Devices;
 using static Microsoft.Maui.ApplicationModel.Permissions;
 
 namespace ASA_Dino_Manager
@@ -2394,6 +2395,11 @@ namespace ASA_Dino_Manager
                 {
                     input = input.Replace(",", DecimalSeparator);
                     input = input.Replace(".", DecimalSeparator);
+
+                    // replace missing field values with 0
+                    input = input.Replace("N/A", "0");
+                    input = input.Replace("#", "0");
+
 
                     return Convert.ToDouble(input);
                 }
