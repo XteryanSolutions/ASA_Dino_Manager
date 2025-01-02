@@ -1373,6 +1373,10 @@ namespace ASA_Dino_Manager
 
         public static void SetBinaryStats(int toggle = 0)
         {
+            bool hasO2 = true; bool hasCraft = true;
+            if (DataManager.OxygenMax == 150) { hasO2 = false; }
+            if (DataManager.CraftMax == 100) { hasCraft = false; }
+
             BinaryM = new string[MaleTable.Rows.Count];
             BinaryF = new string[FemaleTable.Rows.Count];
 
@@ -1428,7 +1432,8 @@ namespace ASA_Dino_Manager
                     if (DamageC >= DamageMax) { fC = "1"; }
                     if (CraftC >= CraftMax) { gC = "1"; }
 
-
+                    if (!hasCraft) { gC = "0"; }
+                    if (!hasO2) { cC = "0"; }
                     binaryC = aC + bC + cC + dC + eC + fC + gC;
                     BinaryM[rowIDC] = binaryC;
                     string outStatus = "";
@@ -1436,7 +1441,7 @@ namespace ASA_Dino_Manager
                     {
                         string with = rowW["ID"].ToString();
                         string withStatus = rowW["Status"].ToString();
-
+                        //string groupW = rowW["Group"].ToString();
                         string groupW = GetGroup(with);
 
                         bool includeW = false;
@@ -1496,6 +1501,8 @@ namespace ASA_Dino_Manager
                             if (gC == "0" && gW == "0") { gA = "0"; } else if (gC == "0" && gW == "1") { gA = "1"; } else if (gC == "1" && gW == "0") { gA = "2"; } else if (gC == "1" && gW == "1") { gA = "3"; }
 
 
+
+
                             string binaryA = aA + bA + cA + dA + eA + fA + gA;
 
 
@@ -1527,6 +1534,8 @@ namespace ASA_Dino_Manager
                         finalStatus = $"{compareStatus}[garbageSym]";
                     }
 
+
+
                     // edit the row that we show
                     MaleTable.Rows[rowIDC].SetField("Status", finalStatus);
                 }
@@ -1540,7 +1549,7 @@ namespace ASA_Dino_Manager
             {
                 string compare = rowC["ID"].ToString();
                 string compareStatus = rowC["Status"].ToString();
-
+                //string groupC = rowC["Group"].ToString();
                 string groupC = GetGroup(compare);
 
                 bool includeC = false;
@@ -1585,6 +1594,9 @@ namespace ASA_Dino_Manager
                 if (DamageC >= DamageMax) { fC = "1"; }
                 if (CraftC >= CraftMax) { gC = "1"; }
 
+
+                if (!hasCraft) { gC = "0"; }
+                if (!hasO2) { cC = "0"; }
                 binaryC = aC + bC + cC + dC + eC + fC + gC;
 
                 BinaryF[rowIDC] = binaryC;
@@ -1594,7 +1606,6 @@ namespace ASA_Dino_Manager
                 {
                     string finalStatus = compareStatus;
 
-                    // mark as garbage if they have none of the best stats
                     if (binaryC == "0000000")
                     {
                         finalStatus = $"{compareStatus}[garbageSym]";
@@ -1611,6 +1622,9 @@ namespace ASA_Dino_Manager
 
         public static void GetBestPartner()
         {
+            bool hasO2 = true; bool hasCraft = true;
+            if (DataManager.OxygenMax == 150) { hasO2 = false; }
+            if (DataManager.CraftMax == 100) { hasCraft = false; }
             BottomTable.Clear();
             string aB = "0"; string bB = "0"; string cB = "0";
             string dB = "0"; string eB = "0"; string fB = "0";
@@ -1667,13 +1681,23 @@ namespace ASA_Dino_Manager
                                     int aPoints = 0;
                                     int nPoints = 0;
 
+
                                     if (aM == "1" && aF == "1") { gPoints++; aB = "2"; } else if (aM == "1" || aF == "1") { aPoints++; aB = "1"; } else { aB = "0"; nPoints++; }
                                     if (bM == "1" && bF == "1") { gPoints++; bB = "2"; } else if (bM == "1" || bF == "1") { aPoints++; bB = "1"; } else { bB = "0"; nPoints++; }
-                                    if (cM == "1" && cF == "1") { gPoints++; cB = "2"; } else if (cM == "1" || cF == "1") { aPoints++; cB = "1"; } else { cB = "0"; nPoints++; }
+                                    if (hasO2)
+                                    {
+                                        if (cM == "1" && cF == "1") { gPoints++; cB = "2"; } else if (cM == "1" || cF == "1") { aPoints++; cB = "1"; } else { cB = "0"; nPoints++; }
+
+                                    }
                                     if (dM == "1" && dF == "1") { gPoints++; dB = "2"; } else if (dM == "1" || dF == "1") { aPoints++; dB = "1"; } else { dB = "0"; nPoints++; }
                                     if (eM == "1" && eF == "1") { gPoints++; eB = "2"; } else if (eM == "1" || eF == "1") { aPoints++; eB = "1"; } else { eB = "0"; nPoints++; }
                                     if (fM == "1" && fF == "1") { gPoints++; fB = "2"; } else if (fM == "1" || fF == "1") { aPoints++; fB = "1"; } else { fB = "0"; nPoints++; }
-                                    if (gM == "1" && gF == "1") { gPoints++; gB = "2"; } else if (gM == "1" || gF == "1") { aPoints++; gB = "1"; } else { gB = "0"; nPoints++; }
+
+                                    if (hasCraft)
+                                    {
+                                        if (gM == "1" && gF == "1") { gPoints++; gB = "2"; } else if (gM == "1" || gF == "1") { aPoints++; gB = "1"; } else { gB = "0"; nPoints++; }
+                                    }
+
 
 
                                     int agPoints = gPoints + aPoints;
@@ -1691,7 +1715,19 @@ namespace ASA_Dino_Manager
                                                 }
                                                 if (!fnd)
                                                 {
-                                                    if (aPoints > 0 || agPoints > 6)
+                                                    bool addIT = false;
+                                                    if (aPoints > 0)
+                                                    {
+                                                        addIT = true;
+                                                    }
+                                                    int check = 5;
+                                                    if (hasCraft) { check++; }
+                                                    if (hasO2) { check++; }
+                                                    if (agPoints > check)
+                                                    {
+                                                        addIT = true;
+                                                    }
+                                                    if (addIT)
                                                     {
                                                         DataRow dr = DataManager.ComboTable.NewRow(); // add to combine list sorted by bPoints
                                                         dr["#"] = superID;

@@ -1209,42 +1209,8 @@ public partial class DinoPage : ContentPage
             }
 
 
-            // oxygen breed and craft point override
-
-            if (title == "Bottom" && status.Length == 9 && name.Contains("Breed #"))
-            {
-                if (!hasO2)
-                {
-                    string newBP = status.Trim();
-
-                    string gP = newBP.Substring(0, 1); // take first char
-                    string aP = newBP.Substring(4, 1); // take 5th char
-
-                    double GP = DataManager.ToDouble(gP) - 1;
-                    double AP = DataManager.ToDouble(aP);
-                    double SP = GP + AP;
-
-                    status = $"{GP} + {AP} = {SP}";
-                }
-                if (!hasCraft)
-                {
-                    string newBP = status.Trim();
-
-                    string gP = newBP.Substring(0, 1); // take first char
-                    string aP = newBP.Substring(4, 1); // take 5th char
-
-                    double GP = DataManager.ToDouble(gP) - 1;
-                    double AP = DataManager.ToDouble(aP);
-                    double SP = GP + AP;
-
-                    status = $"{GP} + {AP} = {SP}";
-                }
-            }
-
             
             cellColor0 = DefaultColor;
-
-
 
             if (title != "Bottom")
             {
