@@ -1166,54 +1166,53 @@ public partial class DinoPage : ContentPage
             // override offspring colors based on breed points
             if (title == "Bottom")
             {
-                if (name.Contains("Breed #")) // obsolete
+                var nameSplit = name.Split(new[] { @"#" }, StringSplitOptions.RemoveEmptyEntries);
+                int maxRows = DataManager.ComboTable.Rows.Count;
+                string nr = nameSplit[1].Trim();
+                if (maxRows > 0)
                 {
-                    var nameSplit = name.Split(new[] { @"#" }, StringSplitOptions.RemoveEmptyEntries);
-                    int maxRows = DataManager.ComboTable.Rows.Count;
-                    string nr = nameSplit[1].Trim();
-                    if (maxRows > 0)
+                    int rowID = 1;
+                    foreach (DataRow rowC in DataManager.ComboTable.Rows)
                     {
-                        int rowID = 1;
-                        foreach (DataRow rowC in DataManager.ComboTable.Rows)
+                        // locate the right row
+                        if (rowID.ToString() == nr)
                         {
-                            // locate the right row
-                            if (rowID.ToString() == nr)
+                            string IDC = rowC["res"].ToString(); // get the combined stats
+                            string aC = IDC.Substring(0, 1); string bC = IDC.Substring(1, 1); string cC = IDC.Substring(2, 1);
+                            string dC = IDC.Substring(3, 1); string eC = IDC.Substring(4, 1); string fC = IDC.Substring(5, 1);
+                            string gC = IDC.Substring(6, 1);
+
+                            if (aC == "2") { cellColor2 = Shared.bestColor; }
+                            if (bC == "2") { cellColor3 = Shared.bestColor; }
+                            if (cC == "2") { cellColor4 = Shared.bestColor; }
+                            if (dC == "2") { cellColor5 = Shared.bestColor; }
+                            if (eC == "2") { cellColor6 = Shared.bestColor; }
+                            if (fC == "2") { cellColor7 = Shared.bestColor; }
+                            if (gC == "2") { cellColor10 = Shared.bestColor; }
+
+
+                            if (!hasO2) { cC = "2"; }
+                            if (!hasCraft) { gC = "2"; }
+                            if ((aC + bC + cC + dC + eC + fC + gC) == "2222222")
                             {
-                                string IDC = rowC["res"].ToString(); // get the combined stats
-                                string aC = IDC.Substring(0, 1); string bC = IDC.Substring(1, 1); string cC = IDC.Substring(2, 1);
-                                string dC = IDC.Substring(3, 1); string eC = IDC.Substring(4, 1); string fC = IDC.Substring(5, 1);
-                                string gC = IDC.Substring(6, 1);
-
-                                if (aC == "2") { cellColor2 = Shared.bestColor; }
-                                if (bC == "2") { cellColor3 = Shared.bestColor; }
-                                if (cC == "2") { cellColor4 = Shared.bestColor; }
-                                if (dC == "2") { cellColor5 = Shared.bestColor; }
-                                if (eC == "2") { cellColor6 = Shared.bestColor; }
-                                if (fC == "2") { cellColor7 = Shared.bestColor; }
-                                if (gC == "2") { cellColor10 = Shared.bestColor; }
-
-
-                                if ((aC + bC + cC + dC + eC + fC + gC) == "2222222")
-                                {
-                                    // here is a golden offspring with all the best stats
-                                    cellColor2 = Shared.goldColor;
-                                    cellColor3 = Shared.goldColor;
-                                    cellColor4 = Shared.goldColor;
-                                    cellColor5 = Shared.goldColor;
-                                    cellColor6 = Shared.goldColor;
-                                    cellColor7 = Shared.goldColor;
-                                    cellColor10 = Shared.goldColor;
-                                }
-                                break;
+                                // here is a golden offspring with all the best stats
+                                cellColor2 = Shared.goldColor;
+                                cellColor3 = Shared.goldColor;
+                                cellColor4 = Shared.goldColor;
+                                cellColor5 = Shared.goldColor;
+                                cellColor6 = Shared.goldColor;
+                                cellColor7 = Shared.goldColor;
+                                cellColor10 = Shared.goldColor;
                             }
-                            rowID++;
+                            break;
                         }
+                        rowID++;
                     }
                 }
             }
 
 
-            
+
             cellColor0 = DefaultColor;
 
             if (title != "Bottom")

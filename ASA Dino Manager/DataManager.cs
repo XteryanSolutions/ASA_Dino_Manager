@@ -1620,10 +1620,10 @@ namespace ASA_Dino_Manager
 
         public static void GetBestPartner()
         {
-            int check = 7; int maxGP = 4;
+            int check = 7; int maxGP = 5; // max stat points we can have = hp,st,o2,fo,we,da,cr
             bool hasO2 = false; bool hasCraft = false;
-            if (DataManager.OxygenMax != 150) { } else { maxGP++; }
-            if (DataManager.CraftMax != 100) { } else { maxGP++; }
+            if (DataManager.OxygenMax != 150) { maxGP++; } // have o2
+            if (DataManager.CraftMax != 100) { maxGP++; } // have craft
 
             BottomTable.Clear();
 
@@ -1711,7 +1711,7 @@ namespace ASA_Dino_Manager
                                                 }
                                                 if (!fnd)
                                                 {
-                                                    if (aPoints > 0 || agPoints > maxGP)
+                                                    if (aPoints > 0 || agPoints >= maxGP)
                                                     {
                                                         DataRow dr = DataManager.ComboTable.NewRow(); // add to combine list sorted by bPoints
                                                         dr["#"] = superID;
@@ -1754,7 +1754,7 @@ namespace ASA_Dino_Manager
                 int agP = gP + aP;
 
 
-                if (aP > 0 || agP > maxGP)
+                if (aP > 0 || agP >= maxGP)
                 {
                     maleO1 = rowC["P"].ToString(); femaleO1 = rowC["M"].ToString(); // the est one
                     point = gP + " + " + aP + " = " + agP;
