@@ -1182,6 +1182,7 @@ public partial class DinoPage : ContentPage
                                 string IDC = rowC["res"].ToString(); // get the combined stats
                                 string aC = IDC.Substring(0, 1); string bC = IDC.Substring(1, 1); string cC = IDC.Substring(2, 1);
                                 string dC = IDC.Substring(3, 1); string eC = IDC.Substring(4, 1); string fC = IDC.Substring(5, 1);
+                                string gC = IDC.Substring(6, 1);
 
                                 if (aC == "2") { cellColor2 = Shared.bestColor; }
                                 if (bC == "2") { cellColor3 = Shared.bestColor; }
@@ -1189,8 +1190,10 @@ public partial class DinoPage : ContentPage
                                 if (dC == "2") { cellColor5 = Shared.bestColor; }
                                 if (eC == "2") { cellColor6 = Shared.bestColor; }
                                 if (fC == "2") { cellColor7 = Shared.bestColor; }
+                                if (gC == "2") { cellColor10 = Shared.bestColor; }
 
-                                if ((aC + bC + cC + dC + eC + fC) == "222222")
+
+                                if ((aC + bC + cC + dC + eC + fC + gC) == "2222222")
                                 {
                                     // here is a golden offspring with all the best stats
                                     cellColor2 = Shared.goldColor;
@@ -1199,6 +1202,7 @@ public partial class DinoPage : ContentPage
                                     cellColor5 = Shared.goldColor;
                                     cellColor6 = Shared.goldColor;
                                     cellColor7 = Shared.goldColor;
+                                    cellColor10 = Shared.goldColor;
                                 }
                                 break;
                             }
