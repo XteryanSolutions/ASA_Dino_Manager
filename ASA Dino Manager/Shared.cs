@@ -4,7 +4,7 @@
     internal class Shared
     {
         ////////////////////    Title version   ////////////////////
-        public static string version = "ASA Dino Manager 0.04.55";
+        public static string version = "ASA Dino Manager 0.04.56";
 
 
         ////////////////////////////////////////////////////////////
@@ -52,7 +52,8 @@
 
         // Benchmark stuff
         public static int loadCount = 0;
-        public static double loadAvg = 0; // keep track of average import time
+        public static double loadAvg = 0; // keep track of average time
+
 
         ////////////////////    Shared locks    ////////////////////
         public static readonly object _logLock = new object();
@@ -70,7 +71,6 @@
 
         ////////////////////    Navigation      ////////////////////
         public static string setPage = "";
-        //public static string setRoute = "";
         public static string selectedClass = "";
         public static bool eventDisabled = false;
         public static bool isLoaded = false;

@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using ASA_Dino_Manager.WinUI;
+using System.Data;
 using System.Data.Common;
 using System.Globalization;
 using Windows.Media.Devices;
@@ -26,9 +27,6 @@ namespace ASA_Dino_Manager
 
         public static DataSet StatDataSet = new DataSet("dinoDataSet");
         public static DataTable StatTable = new DataTable("dinoList");
-
-        public static DataSet ComboDataSet = new DataSet("comboDataSet"); // used for combining the best breed
-        public static DataTable ComboTable = new DataTable("comboList");
 
         public static DataSet ArchiveDataSet = new DataSet("dinoDataSet");
         public static DataTable ArchiveTable = new DataTable("dinoList");
@@ -70,7 +68,6 @@ namespace ASA_Dino_Manager
                 MaleDataSet.Tables.Add(MaleTable);
                 BottomDataSet.Tables.Add(BottomTable);
                 StatDataSet.Tables.Add(StatTable);
-                ComboDataSet.Tables.Add(ComboTable);
                 ArchiveDataSet.Tables.Add(ArchiveTable);
 
 
@@ -188,20 +185,7 @@ namespace ASA_Dino_Manager
                 BottomTable.Columns.Add("Crafting", typeof(double));
                 BottomTable.Columns.Add("Mutes", typeof(string));
                 BottomTable.Columns.Add("Group", typeof(string));
-
-
-
-
-                ComboTable.Clear();
-                ComboTable.Columns.Add("#", typeof(int));
-                ComboTable.Columns.Add("P", typeof(string));
-                ComboTable.Columns.Add("M", typeof(string));
-                ComboTable.Columns.Add("gP", typeof(int));
-                ComboTable.Columns.Add("aP", typeof(int));
-                ComboTable.Columns.Add("agP", typeof(int));
-                ComboTable.Columns.Add("bP", typeof(int));
-                ComboTable.Columns.Add("res", typeof(string));
-
+                BottomTable.Columns.Add("Res", typeof(string));
 
 
                 StatTable.Clear();
@@ -212,14 +196,12 @@ namespace ASA_Dino_Manager
 
 
 
-
                 ArchiveTable.Clear();
                 ArchiveTable.Columns.Add("ID", typeof(string));
                 ArchiveTable.Columns.Add("Tag", typeof(string));
                 ArchiveTable.Columns.Add("Name", typeof(string));
                 ArchiveTable.Columns.Add("Level", typeof(double));
                 ArchiveTable.Columns.Add("Class", typeof(string));
-
 
 
                 FileManager.LoadFiles();
@@ -1387,156 +1369,109 @@ namespace ASA_Dino_Manager
                 string compare = rowC["ID"].ToString();
                 string compareStatus = rowC["Status"].ToString();
 
-                string groupC = GetGroup(compare);
 
-                bool includeC = false;
-                if (toggle == 0)// include dinos only by set toggle
+                string aC = "0"; string bC = "0"; string cC = "0";
+                string dC = "0"; string eC = "0"; string fC = "0";
+                string gC = "0";
+                string binaryC = "0000000";
+
+                double HpC = ToDouble(rowC["HP"].ToString());
+                double StaminaC = ToDouble(rowC["Stamina"].ToString());
+                double OxygenC = ToDouble(rowC["Oxygen"].ToString());
+                double FoodC = ToDouble(rowC["Food"].ToString());
+                double WeightC = ToDouble(rowC["Weight"].ToString());
+                double DamageC = ToDouble(rowC["Damage"].ToString());
+                double CraftC = ToDouble(rowC["Crafting"].ToString());
+
+
+                if (HpC >= HpMax) { aC = "1"; }
+                if (StaminaC >= StaminaMax) { bC = "1"; }
+                if (OxygenC >= OxygenMax && hasO2) { cC = "1"; }
+                if (FoodC >= FoodMax) { dC = "1"; }
+                if (WeightC >= WeightMax) { eC = "1"; }
+                if (DamageC >= DamageMax) { fC = "1"; }
+                if (CraftC >= CraftMax && hasCraft) { gC = "1"; }
+
+                binaryC = aC + bC + cC + dC + eC + fC + gC;
+                BinaryM[rowIDC] = binaryC;
+                string outStatus = "";
+                foreach (DataRow rowW in MaleTable.Rows) // compare males to put useles males in reserve
                 {
-                    if (groupC != "Archived") { includeC = true; }
-                }
-                else if (toggle == 1)
-                {
-                    if (groupC != "Archived" && groupC != "Exclude") { includeC = true; }
-                }
-                else if (toggle == 2)
-                {
-                    if (groupC != "Archived" && groupC != "") { includeC = true; }
-                }
-                else if (toggle == 3)
-                {
-                    if (groupC != "" && groupC != "Exclude") { includeC = true; }
-                }
+                    string with = rowW["ID"].ToString();
+                    string withStatus = rowW["Status"].ToString();
 
-                if (includeC)
-                {
-                    string aC = "0"; string bC = "0"; string cC = "0";
-                    string dC = "0"; string eC = "0"; string fC = "0";
-                    string gC = "0";
-                    string binaryC = "0000000";
-
-                    double HpC = ToDouble(rowC["HP"].ToString());
-                    double StaminaC = ToDouble(rowC["Stamina"].ToString());
-                    double OxygenC = ToDouble(rowC["Oxygen"].ToString());
-                    double FoodC = ToDouble(rowC["Food"].ToString());
-                    double WeightC = ToDouble(rowC["Weight"].ToString());
-                    double DamageC = ToDouble(rowC["Damage"].ToString());
-                    double CraftC = ToDouble(rowC["Crafting"].ToString());
-
-
-
-                    if (HpC >= HpMax) { aC = "1"; }
-                    if (StaminaC >= StaminaMax) { bC = "1"; }
-                    if (OxygenC >= OxygenMax && hasO2) { cC = "1"; }
-                    if (FoodC >= FoodMax) { dC = "1"; }
-                    if (WeightC >= WeightMax) { eC = "1"; }
-                    if (DamageC >= DamageMax) { fC = "1"; }
-                    if (CraftC >= CraftMax && hasCraft) { gC = "1"; }
-
-                    binaryC = aC + bC + cC + dC + eC + fC + gC;
-                    BinaryM[rowIDC] = binaryC;
-                    string outStatus = "";
-                    foreach (DataRow rowW in MaleTable.Rows) // compare males to put useles males in reserve
+                    if (compare != with) // not with eachother
                     {
-                        string with = rowW["ID"].ToString();
-                        string withStatus = rowW["Status"].ToString();
-                        //string groupW = rowW["Group"].ToString();
-                        string groupW = GetGroup(with);
+                        string aW = "0"; string bW = "0"; string cW = "0";
+                        string dW = "0"; string eW = "0"; string fW = "0";
+                        string gW = "0";
 
-                        bool includeW = false;
-                        if (toggle == 0)// include dinos only by set toggle
+                        double HpW = ToDouble(rowW["HP"].ToString());
+                        double StaminaW = ToDouble(rowW["Stamina"].ToString());
+                        double OxygenW = ToDouble(rowW["Oxygen"].ToString());
+                        double FoodW = ToDouble(rowW["Food"].ToString());
+                        double WeightW = ToDouble(rowW["Weight"].ToString());
+                        double DamageW = ToDouble(rowW["Damage"].ToString());
+                        double CraftW = ToDouble(rowW["Crafting"].ToString());
+
+                        if (HpW >= DataManager.HpMax) { aW = "1"; }
+                        if (StaminaW >= DataManager.StaminaMax) { bW = "1"; }
+                        if (OxygenW >= DataManager.OxygenMax && hasO2) { cW = "1"; }
+                        if (FoodW >= DataManager.FoodMax) { dW = "1"; }
+                        if (WeightW >= DataManager.WeightMax) { eW = "1"; }
+                        if (DamageW >= DataManager.DamageMax) { fW = "1"; }
+                        if (CraftW >= DataManager.CraftMax && hasCraft) { gW = "1"; }
+
+                        string binaryW = aW + bW + cW + dW + eW + fW + gW;
+
+                        // now that we have both binary strings compare them to figure out if the compare is superceeded or not
+                        string aA = "0"; string bA = "0"; string cA = "0";
+                        string dA = "0"; string eA = "0"; string fA = "0";
+                        string gA = "0";
+
+                        // add up the binary shiz with magical ways known only to the gods of blubs
+                        if (aC == "0" && aW == "0") { aA = "0"; } else if (aC == "0" && aW == "1") { aA = "1"; } else if (aC == "1" && aW == "0") { aA = "2"; } else if (aC == "1" && aW == "1") { aA = "3"; }
+                        if (bC == "0" && bW == "0") { bA = "0"; } else if (bC == "0" && bW == "1") { bA = "1"; } else if (bC == "1" && bW == "0") { bA = "2"; } else if (bC == "1" && bW == "1") { bA = "3"; }
+                        if (cC == "0" && cW == "0") { cA = "0"; } else if (cC == "0" && cW == "1") { cA = "1"; } else if (cC == "1" && cW == "0") { cA = "2"; } else if (cC == "1" && cW == "1") { cA = "3"; }
+                        if (dC == "0" && dW == "0") { dA = "0"; } else if (dC == "0" && dW == "1") { dA = "1"; } else if (dC == "1" && dW == "0") { dA = "2"; } else if (dC == "1" && dW == "1") { dA = "3"; }
+                        if (eC == "0" && eW == "0") { eA = "0"; } else if (eC == "0" && eW == "1") { eA = "1"; } else if (eC == "1" && eW == "0") { eA = "2"; } else if (eC == "1" && eW == "1") { eA = "3"; }
+                        if (fC == "0" && fW == "0") { fA = "0"; } else if (fC == "0" && fW == "1") { fA = "1"; } else if (fC == "1" && fW == "0") { fA = "2"; } else if (fC == "1" && fW == "1") { fA = "3"; }
+                        if (gC == "0" && gW == "0") { gA = "0"; } else if (gC == "0" && gW == "1") { gA = "1"; } else if (gC == "1" && gW == "0") { gA = "2"; } else if (gC == "1" && gW == "1") { gA = "3"; }
+
+                        string binaryA = aA + bA + cA + dA + eA + fA + gA;
+
+                        if (binaryC == binaryW && !withStatus.Contains("<") && !withStatus.Contains("#"))
                         {
-                            if (groupW != "Archived") { includeW = true; }
+                            // both have same stats   MARK IT
+                            outStatus = "# " + rowW["Name"].ToString();  // identical   #with
                         }
-                        else if (toggle == 1)
+
+                        if (binaryA.Contains("1") && binaryA.Contains("3") && !binaryA.Contains("2")) // has 1 and 3 but not 2
                         {
-                            if (groupW != "Archived" && groupW != "Exclude") { includeW = true; }
-                        }
-                        else if (toggle == 2)
-                        {
-                            if (groupW != "Archived" && groupW != "") { includeW = true; }
-                        }
-                        else if (toggle == 3)
-                        {
-                            if (groupW != "" && groupW != "Exclude") { includeW = true; }
+                            // both have same stats   MARK IT
+                            outStatus = "< " + rowW["Name"].ToString();  // superceeded
                         }
 
-                        if (compare != with && includeW) // not with eachother
-                        {
-                            string aW = "0"; string bW = "0"; string cW = "0";
-                            string dW = "0"; string eW = "0"; string fW = "0";
-                            string gW = "0";
-
-                            double HpW = ToDouble(rowW["HP"].ToString());
-                            double StaminaW = ToDouble(rowW["Stamina"].ToString());
-                            double OxygenW = ToDouble(rowW["Oxygen"].ToString());
-                            double FoodW = ToDouble(rowW["Food"].ToString());
-                            double WeightW = ToDouble(rowW["Weight"].ToString());
-                            double DamageW = ToDouble(rowW["Damage"].ToString());
-                            double CraftW = ToDouble(rowW["Crafting"].ToString());
-
-                            if (HpW >= DataManager.HpMax) { aW = "1"; }
-                            if (StaminaW >= DataManager.StaminaMax) { bW = "1"; }
-                            if (OxygenW >= DataManager.OxygenMax && hasO2) { cW = "1"; }
-                            if (FoodW >= DataManager.FoodMax) { dW = "1"; }
-                            if (WeightW >= DataManager.WeightMax) { eW = "1"; }
-                            if (DamageW >= DataManager.DamageMax) { fW = "1"; }
-                            if (CraftW >= DataManager.CraftMax && hasCraft) { gW = "1"; }
-
-                            string binaryW = aW + bW + cW + dW + eW + fW + gW;
-
-                            // now that we have both binary strings compare them to figure out if the compare is superceeded or not
-                            string aA = "0"; string bA = "0"; string cA = "0";
-                            string dA = "0"; string eA = "0"; string fA = "0";
-                            string gA = "0";
-
-                            // add up the binary shiz with magical ways known only to the gods of blubs
-                            if (aC == "0" && aW == "0") { aA = "0"; } else if (aC == "0" && aW == "1") { aA = "1"; } else if (aC == "1" && aW == "0") { aA = "2"; } else if (aC == "1" && aW == "1") { aA = "3"; }
-                            if (bC == "0" && bW == "0") { bA = "0"; } else if (bC == "0" && bW == "1") { bA = "1"; } else if (bC == "1" && bW == "0") { bA = "2"; } else if (bC == "1" && bW == "1") { bA = "3"; }
-                            if (cC == "0" && cW == "0") { cA = "0"; } else if (cC == "0" && cW == "1") { cA = "1"; } else if (cC == "1" && cW == "0") { cA = "2"; } else if (cC == "1" && cW == "1") { cA = "3"; }
-                            if (dC == "0" && dW == "0") { dA = "0"; } else if (dC == "0" && dW == "1") { dA = "1"; } else if (dC == "1" && dW == "0") { dA = "2"; } else if (dC == "1" && dW == "1") { dA = "3"; }
-                            if (eC == "0" && eW == "0") { eA = "0"; } else if (eC == "0" && eW == "1") { eA = "1"; } else if (eC == "1" && eW == "0") { eA = "2"; } else if (eC == "1" && eW == "1") { eA = "3"; }
-                            if (fC == "0" && fW == "0") { fA = "0"; } else if (fC == "0" && fW == "1") { fA = "1"; } else if (fC == "1" && fW == "0") { fA = "2"; } else if (fC == "1" && fW == "1") { fA = "3"; }
-                            if (gC == "0" && gW == "0") { gA = "0"; } else if (gC == "0" && gW == "1") { gA = "1"; } else if (gC == "1" && gW == "0") { gA = "2"; } else if (gC == "1" && gW == "1") { gA = "3"; }
-
-
-
-
-                            string binaryA = aA + bA + cA + dA + eA + fA + gA;
-
-
-                            if (binaryC == binaryW && !withStatus.Contains("<") && !withStatus.Contains("#"))
-                            {
-                                // both have same stats   MARK IT
-                                outStatus = "# " + rowW["Name"].ToString();  // identical   #with
-                            }
-
-                            if (binaryA.Contains("1") && binaryA.Contains("3") && !binaryA.Contains("2")) // has 1 and 3 but not 2
-                            {
-                                // both have same stats   MARK IT
-                                outStatus = "< " + rowW["Name"].ToString();  // superceeded
-                            }
-
-                        }
                     }
-
-                    string finalStatus = compareStatus;
-
-
-                    if (outStatus.Contains("<") || outStatus.Contains("#"))
-                    {
-                        finalStatus = outStatus;
-                    }
-                    // mark as garbage if they have none of the best stats
-                    if (binaryC == "0000000")
-                    {
-                        finalStatus = $"{compareStatus}[garbageSym]";
-                    }
-
-
-
-                    // edit the row that we show
-                    MaleTable.Rows[rowIDC].SetField("Status", finalStatus);
                 }
+
+                string finalStatus = compareStatus;
+
+
+                if (outStatus.Contains("<") || outStatus.Contains("#"))
+                {
+                    finalStatus = outStatus;
+                }
+                // mark as garbage if they have none of the best stats
+                if (binaryC == "0000000")
+                {
+                    finalStatus = $"{compareStatus}[garbageSym]";
+                }
+
+
+                // edit the row that we show
+                MaleTable.Rows[rowIDC].SetField("Status", finalStatus);
+
 
                 rowIDC++;
             }
@@ -1547,26 +1482,6 @@ namespace ASA_Dino_Manager
             {
                 string compare = rowC["ID"].ToString();
                 string compareStatus = rowC["Status"].ToString();
-                //string groupC = rowC["Group"].ToString();
-                string groupC = GetGroup(compare);
-
-                bool includeC = false;
-                if (toggle == 0)// include dinos only by set toggle
-                {
-                    if (groupC != "Archived") { includeC = true; }
-                }
-                else if (toggle == 1)
-                {
-                    if (groupC != "Archived" && groupC != "Exclude") { includeC = true; }
-                }
-                else if (toggle == 2)
-                {
-                    if (groupC != "Archived" && groupC != "") { includeC = true; }
-                }
-                else if (toggle == 3)
-                {
-                    if (groupC != "" && groupC != "Exclude") { includeC = true; }
-                }
 
 
                 string outStatus = "";
@@ -1586,32 +1501,26 @@ namespace ASA_Dino_Manager
 
                 if (HpC >= HpMax) { aC = "1"; }
                 if (StaminaC >= StaminaMax) { bC = "1"; }
-                if (OxygenC >= OxygenMax) { cC = "1"; }
+                if (OxygenC >= OxygenMax && hasO2) { cC = "1"; }
                 if (FoodC >= FoodMax) { dC = "1"; }
                 if (WeightC >= WeightMax) { eC = "1"; }
                 if (DamageC >= DamageMax) { fC = "1"; }
-                if (CraftC >= CraftMax) { gC = "1"; }
+                if (CraftC >= CraftMax && hasCraft) { gC = "1"; }
 
-
-                if (!hasCraft) { gC = "0"; }
-                if (!hasO2) { cC = "0"; }
                 binaryC = aC + bC + cC + dC + eC + fC + gC;
 
                 BinaryF[rowIDC] = binaryC;
 
+                string finalStatus = compareStatus;
 
-                if (includeC)
+                if (binaryC == "0000000")
                 {
-                    string finalStatus = compareStatus;
-
-                    if (binaryC == "0000000")
-                    {
-                        finalStatus = $"{compareStatus}[garbageSym]";
-                    }
-
-                    // edit the row we show
-                    FemaleTable.Rows[rowIDC].SetField("Status", finalStatus);
+                    finalStatus = $"{compareStatus}[garbageSym]";
                 }
+
+                // edit the row we show
+                FemaleTable.Rows[rowIDC].SetField("Status", finalStatus);
+
 
                 rowIDC++;
             }
@@ -1621,26 +1530,13 @@ namespace ASA_Dino_Manager
         public static void GetBestPartner()
         {
             int check = 7; int maxGP = 5; // max stat points we can have = hp,st,o2,fo,we,da,cr
-            bool hasO2 = false; bool hasCraft = false;
             if (DataManager.OxygenMax != 150) { maxGP++; } // have o2
             if (DataManager.CraftMax != 100) { maxGP++; } // have craft
 
             BottomTable.Clear();
-
-            // colorDinos();
-            // get best pairing
-
             // ==================================================================================================
-            string maleO1 = ""; string femaleO1 = "";
-            string point = "";
-            // bPointsMax = 0;
-            // rowFID = 0;
 
-            DataManager.ComboTable.Clear();
-
-            int superID = 0;
-
-
+            int nr = 1;
             int p0 = check;
             while (p0 >= 0)
             {
@@ -1684,7 +1580,7 @@ namespace ASA_Dino_Manager
                                     int aPoints = 0;
                                     int nPoints = 0;
 
-
+                                    string binC = "0000000";
                                     if (aM == "1" && aF == "1") { gPoints++; aB = "2"; } else if (aM == "1" || aF == "1") { aPoints++; aB = "1"; } else { aB = "0"; nPoints++; }
                                     if (bM == "1" && bF == "1") { gPoints++; bB = "2"; } else if (bM == "1" || bF == "1") { aPoints++; bB = "1"; } else { bB = "0"; nPoints++; }
                                     if (cM == "1" && cF == "1") { gPoints++; cB = "2"; } else if (cM == "1" || cF == "1") { aPoints++; cB = "1"; } else { cB = "0"; nPoints++; }
@@ -1693,9 +1589,7 @@ namespace ASA_Dino_Manager
                                     if (fM == "1" && fF == "1") { gPoints++; fB = "2"; } else if (fM == "1" || fF == "1") { aPoints++; fB = "1"; } else { fB = "0"; nPoints++; }
                                     if (gM == "1" && gF == "1") { gPoints++; gB = "2"; } else if (gM == "1" || gF == "1") { aPoints++; gB = "1"; } else { gB = "0"; nPoints++; }
 
-
-
-
+                                    binC = aB + bB + cB + dB + eB + fB + gB;
                                     int agPoints = gPoints + aPoints;
 
                                     if (p0 == agPoints)
@@ -1704,26 +1598,9 @@ namespace ASA_Dino_Manager
                                         {
                                             if (p2 == aPoints)
                                             {
-                                                bool fnd = false;
-                                                foreach (DataRow rowC in DataManager.ComboTable.Rows)
+                                                if (aPoints > 0 || agPoints >= maxGP)
                                                 {
-                                                    if (rowC["M"].ToString() == mamaID) { fnd = true; break; }
-                                                }
-                                                if (!fnd)
-                                                {
-                                                    if (aPoints > 0 || agPoints >= maxGP)
-                                                    {
-                                                        DataRow dr = DataManager.ComboTable.NewRow(); // add to combine list sorted by bPoints
-                                                        dr["#"] = superID;
-                                                        dr["P"] = papaID; // papa
-                                                        dr["M"] = mamaID; // mama
-                                                        dr["gP"] = gPoints;
-                                                        dr["aP"] = aPoints;
-                                                        dr["agP"] = agPoints;
-                                                        dr["res"] = (aB + bB + cB + dB + eB + fB + gB);
-                                                        DataManager.ComboTable.Rows.Add(dr);
-                                                        superID++;
-                                                    }
+                                                    MakeOffspring(papaID, mamaID, "Breed #" + nr++, $"{gPoints} + {aPoints} = {agPoints}", binC);
                                                 }
                                             }
                                         }
@@ -1740,33 +1617,10 @@ namespace ASA_Dino_Manager
                 p0--;
             }
 
-
-            // now we have a list of all the combinations and their points
-            // sort by highest bP then gP with most aP
-
-            //string combo = "";
-            int nr = 1;
-            foreach (DataRow rowC in DataManager.ComboTable.Rows) // now find the best combination gp + ap
-            {
-                //combo = rowC["M"].ToString() + "+" + rowC["P"].ToString();
-                int gP = Convert.ToInt32(rowC["gP"].ToString());
-                int aP = Convert.ToInt32(rowC["aP"].ToString());
-                int agP = gP + aP;
-
-
-                if (aP > 0 || agP >= maxGP)
-                {
-                    maleO1 = rowC["P"].ToString(); femaleO1 = rowC["M"].ToString(); // the est one
-                    point = gP + " + " + aP + " = " + agP;
-
-                    MakeOffspring(maleO1, femaleO1, "Breed #" + nr, point);
-                    nr++;
-                }
-            }
             //FileManager.Log("Updated BreedPairs",0);
         }
 
-        public static void MakeOffspring(string male, string female, string offspring, string point)
+        public static void MakeOffspring(string male, string female, string offspring, string point,string res)
         {
 
             if (male != "" && female != "")
@@ -1854,7 +1708,7 @@ namespace ASA_Dino_Manager
                 dr["Mama"] = mama;
                 dr["Papa"] = papa;
                 dr["Status"] = point;
-
+                dr["Res"] = res;
 
 
                 DataManager.BottomTable.Rows.Add(dr);
@@ -1983,7 +1837,7 @@ namespace ASA_Dino_Manager
         {
             string a = "0"; string b = "0"; string c = "0";
             string d = "0"; string e = "0"; string f = "0";
-            string g = "0"; string h = "0";
+            string g = "0";
 
             string mamaID = GetFirstColumnData("ID", id, "Mama");
             string papaID = GetFirstColumnData("ID", id, "Papa");
@@ -2080,21 +1934,6 @@ namespace ASA_Dino_Manager
                     }
                 }
 
-                double dinoSpeed = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Speed")), 2);
-                double mamaSpeed = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Speed")), 2);
-                double papaSpeed = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Speed")), 2);
-
-                if ((mamaSpeed != 0 && papaSpeed != 0) && (dinoSpeed != papaSpeed && dinoSpeed != mamaSpeed))
-                {
-                    if (dinoSpeed > (papaSpeed + Shared.muteOffset) || dinoSpeed < (papaSpeed - Shared.muteOffset))
-                    {
-                        if (dinoSpeed > (mamaSpeed + Shared.muteOffset) || dinoSpeed < (mamaSpeed - Shared.muteOffset))
-                        {
-                            g = "1";
-                        }
-                    }
-                }
-
                 double dinoCraft = Math.Round(ToDouble(GetFirstColumnData("ID", id, "CraftSkill")), 2);
                 double mamaCraft = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "CraftSkill")), 2);
                 double papaCraft = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "CraftSkill")), 2);
@@ -2105,12 +1944,12 @@ namespace ASA_Dino_Manager
                     {
                         if (dinoCraft > (mamaCraft + Shared.muteOffset) || dinoCraft < (mamaCraft - Shared.muteOffset))
                         {
-                            h = "1";
+                            g = "1";
                         }
                     }
                 }
             }
-            string mutes = a + b + c + d + e + f + g + h;
+            string mutes = a + b + c + d + e + f + g;
 
             SetMutes(id, mutes);
         }

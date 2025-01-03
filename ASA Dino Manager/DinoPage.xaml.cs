@@ -961,7 +961,7 @@ public partial class DinoPage : ContentPage
         if (DataManager.OxygenMax == 150) { hasO2 = false; }
         if (DataManager.CraftMax == 100) { hasCraft = false; }
 
-        if (title != "Bottom") { hasSpeed = true; } // force activate for now
+        if (title != "Bottom") { hasSpeed = true; } // fdont activate for offspring since speed doesnt breed
 
         int fSize = Shared.headerSize;  // header fontsize
 
@@ -1026,18 +1026,16 @@ public partial class DinoPage : ContentPage
         {
             SortColumn(nameH, title);
             SortColumn(levelH, title);
+            //---------------------
             SortColumn(hpH, title);
             SortColumn(staminaH, title);
-
             if (hasO2) { SortColumn(oxygenH, title); }
-
             SortColumn(foodH, title);
             SortColumn(weightH, title);
             SortColumn(damageH, title);
-
             if (hasSpeed) { SortColumn(speedH, title); }
+            //---------------------
             if (hasCraft) { SortColumn(craftH, title); }
-
             SortColumn(header8, title);
             SortColumn(header9, title);
             SortColumn(header10, title);
@@ -1048,27 +1046,21 @@ public partial class DinoPage : ContentPage
             SortColumn(header15, title);
         }
 
+        int startID = 0;
+
         // Add base header row
-        AddToGrid(grid, nameH, 0, 0, title);
-        AddToGrid(grid, levelH, 0, 1, title);
-        AddToGrid(grid, hpH, 0, 2, title);
-        AddToGrid(grid, staminaH, 0, 3, title);
-
-
-        int startID = 4;
-
-        // If hasO2, include the O2 column (header4)
+        AddToGrid(grid, nameH, 0, startID++, title);
+        AddToGrid(grid, levelH, 0, startID++, title);
+        //---------------------
+        AddToGrid(grid, hpH, 0, startID++, title);
+        AddToGrid(grid, staminaH, 0, startID++, title);
         if (hasO2) { AddToGrid(grid, oxygenH, 0, startID++, title); }
-
-        // Add remaining headers
         AddToGrid(grid, foodH, 0, startID++, title);
         AddToGrid(grid, weightH, 0, startID++, title);
         AddToGrid(grid, damageH, 0, startID++, title);
-
-        if (hasSpeed) { AddToGrid(grid, speedH, 0, startID++, title); }
         if (hasCraft) { AddToGrid(grid, craftH, 0, startID++, title); }
-
-
+        //---------------------
+        if (hasSpeed) { AddToGrid(grid, speedH, 0, startID++, title); }
         AddToGrid(grid, header8, 0, startID++, title);
         AddToGrid(grid, header9, 0, startID++, title);
         AddToGrid(grid, header10, 0, startID++, title);
@@ -1084,27 +1076,10 @@ public partial class DinoPage : ContentPage
         }
 
         int rowIndex = 1; // Start adding rows below the header
-
         foreach (DataRow row in table.Rows)
         {
-            var cellColor0 = DefaultColor;
-            var cellColor1 = DefaultColor;
-            var cellColor2 = DefaultColor;
-            var cellColor3 = DefaultColor;
-            var cellColor4 = DefaultColor;
-            var cellColor5 = DefaultColor;
-            var cellColor6 = DefaultColor;
-            var cellColor7 = DefaultColor;
-
-            var cellColor8 = DefaultColor;
-            var cellColor9 = DefaultColor;
-            var cellColor10 = DefaultColor;
-
-
             string id = row["ID"].ToString();
-
             string name = row["Name"].ToString();
-            if (name == "") { name = "Name me"; }
             string level = row["Level"].ToString();
             //////////////
             string hp = row["Hp"].ToString();
@@ -1113,11 +1088,9 @@ public partial class DinoPage : ContentPage
             string food = row["Food"].ToString();
             string weight = row["Weight"].ToString();
             string damage = row["Damage"].ToString();
-            string speed = row["Speed"].ToString();
-
             string craft = row["Crafting"].ToString();
-
             //////////////
+            string speed = row["Speed"].ToString();
             string status = row["Status"].ToString();
             string gen = row["Gen"].ToString();
             string papa = row["Papa"].ToString();
@@ -1126,106 +1099,96 @@ public partial class DinoPage : ContentPage
             string mamaM = row["MamaMute"].ToString();
             string imprint = row["Imprint"].ToString();
             string imprinter = row["Imprinter"].ToString();
+            string mutes = row["Mutes"].ToString();
 
 
 
-            // string group = "";
+            if (name == "") { name = "Name me"; }
 
-            // group = DataManager.GetGroup(id);
-            string dmg = DataManager.DamageMax.ToString();
+            var nameC = DefaultColor;
+            var levelC = DefaultColor;
+            ////////////
+            var hpC = DefaultColor;
+            var staminaC = DefaultColor;
+            var oxygenC = DefaultColor;
+            var foodC = DefaultColor;
+            var weightC = DefaultColor;
+            var damageC = DefaultColor;
+            var craftC = DefaultColor;
+            ////////////
+            var speedC = DefaultColor;  
+            var defaultC = DefaultColor;
+
+            
             //recolor breeding stats
-            if (DataManager.ToDouble(level) >= DataManager.LevelMax) { cellColor1 = Shared.goodColor; }
-            if (DataManager.ToDouble(hp) >= DataManager.HpMax) { cellColor2 = Shared.goodColor; }
-            if (DataManager.ToDouble(stamina) >= DataManager.StaminaMax) { cellColor3 = Shared.goodColor; }
-            if (DataManager.ToDouble(oxygen) >= DataManager.OxygenMax) { cellColor4 = Shared.goodColor; }
-            if (DataManager.ToDouble(food) >= DataManager.FoodMax) { cellColor5 = Shared.goodColor; }
-            if (DataManager.ToDouble(weight) >= DataManager.WeightMax) { cellColor6 = Shared.goodColor; }
-            if (DataManager.ToDouble(damage) >= DataManager.DamageMax) { cellColor7 = Shared.goodColor; }
-            if (DataManager.ToDouble(speed) >= DataManager.SpeedMax) { cellColor9 = Shared.goodColor; }
-            if (DataManager.ToDouble(craft) >= DataManager.CraftMax) { cellColor10 = Shared.goodColor; }
+            if (DataManager.ToDouble(hp) >= DataManager.HpMax) { hpC = Shared.goodColor; }
+            if (DataManager.ToDouble(stamina) >= DataManager.StaminaMax) { staminaC = Shared.goodColor; }
+            if (DataManager.ToDouble(oxygen) >= DataManager.OxygenMax) { oxygenC = Shared.goodColor; }
+            if (DataManager.ToDouble(food) >= DataManager.FoodMax) { foodC = Shared.goodColor; }
+            if (DataManager.ToDouble(weight) >= DataManager.WeightMax) { weightC = Shared.goodColor; }
+            if (DataManager.ToDouble(damage) >= DataManager.DamageMax) { damageC = Shared.goodColor; }
+            if (DataManager.ToDouble(craft) >= DataManager.CraftMax) { craftC = Shared.goodColor; }
 
+            // if (DataManager.ToDouble(speed) >= DataManager.SpeedMax) { cellColor9 = Shared.goodColor; }
+            
 
             // mutation detection overrides normal coloring -> mutaColor
-            string mutes = row["Mutes"].ToString();
-            if (mutes.Length == 8 && !CurrentStats) // dont show mutations on current statview
+            if (mutes.Length >= 7 && !CurrentStats) // dont show mutations on current statview
             {
                 string aC = mutes.Substring(0, 1); string bC = mutes.Substring(1, 1); string cC = mutes.Substring(2, 1);
                 string dC = mutes.Substring(3, 1); string eC = mutes.Substring(4, 1); string fC = mutes.Substring(5, 1);
-                string gC = mutes.Substring(6, 1); string hC = mutes.Substring(7, 1);
+                string gC = mutes.Substring(6, 1);
 
-                if (aC == "1") { cellColor2 = Shared.mutaColor; }
-                if (bC == "1") { cellColor3 = Shared.mutaColor; }
-                if (cC == "1") { cellColor4 = Shared.mutaColor; }
-                if (dC == "1") { cellColor5 = Shared.mutaColor; }
-                if (eC == "1") { cellColor6 = Shared.mutaColor; }
-                if (fC == "1") { cellColor7 = Shared.mutaColor; }
-                if (gC == "1") { cellColor9 = Shared.mutaColor; }
-                if (hC == "1") { cellColor10 = Shared.mutaColor; }
+                if (aC == "1") { hpC = Shared.mutaColor; }
+                if (bC == "1") { staminaC = Shared.mutaColor; }
+                if (cC == "1") { oxygenC = Shared.mutaColor; }
+                if (dC == "1") { foodC = Shared.mutaColor; }
+                if (eC == "1") { weightC = Shared.mutaColor; }
+                if (fC == "1") { damageC = Shared.mutaColor; }
+                if (gC == "1") { craftC = Shared.mutaColor; }
             }
 
             // override offspring colors based on breed points
             if (title == "Bottom")
             {
-                var nameSplit = name.Split(new[] { @"#" }, StringSplitOptions.RemoveEmptyEntries);
-                int maxRows = DataManager.ComboTable.Rows.Count;
-                string nr = nameSplit[1].Trim();
-                if (maxRows > 0)
+                string IDC = row["Res"].ToString(); // this column only exist in bottom table
+                string aC = IDC.Substring(0, 1); string bC = IDC.Substring(1, 1); string cC = IDC.Substring(2, 1);
+                string dC = IDC.Substring(3, 1); string eC = IDC.Substring(4, 1); string fC = IDC.Substring(5, 1);
+                string gC = IDC.Substring(6, 1);
+
+                if (aC == "2") { hpC = Shared.bestColor; }
+                if (bC == "2") { staminaC = Shared.bestColor; }
+                if (cC == "2") { oxygenC = Shared.bestColor; }
+                if (dC == "2") { foodC = Shared.bestColor; }
+                if (eC == "2") { weightC = Shared.bestColor; }
+                if (fC == "2") { damageC = Shared.bestColor; }
+                if (gC == "2") { craftC = Shared.bestColor; }
+
+                if (!hasO2) { cC = "2"; }
+                if (!hasCraft) { gC = "2"; }
+                if ((aC + bC + cC + dC + eC + fC + gC) == "2222222")
                 {
-                    int rowID = 1;
-                    foreach (DataRow rowC in DataManager.ComboTable.Rows)
-                    {
-                        // locate the right row
-                        if (rowID.ToString() == nr)
-                        {
-                            string IDC = rowC["res"].ToString(); // get the combined stats
-                            string aC = IDC.Substring(0, 1); string bC = IDC.Substring(1, 1); string cC = IDC.Substring(2, 1);
-                            string dC = IDC.Substring(3, 1); string eC = IDC.Substring(4, 1); string fC = IDC.Substring(5, 1);
-                            string gC = IDC.Substring(6, 1);
-
-                            if (aC == "2") { cellColor2 = Shared.bestColor; }
-                            if (bC == "2") { cellColor3 = Shared.bestColor; }
-                            if (cC == "2") { cellColor4 = Shared.bestColor; }
-                            if (dC == "2") { cellColor5 = Shared.bestColor; }
-                            if (eC == "2") { cellColor6 = Shared.bestColor; }
-                            if (fC == "2") { cellColor7 = Shared.bestColor; }
-                            if (gC == "2") { cellColor10 = Shared.bestColor; }
-
-
-                            if (!hasO2) { cC = "2"; }
-                            if (!hasCraft) { gC = "2"; }
-                            if ((aC + bC + cC + dC + eC + fC + gC) == "2222222")
-                            {
-                                // here is a golden offspring with all the best stats
-                                cellColor2 = Shared.goldColor;
-                                cellColor3 = Shared.goldColor;
-                                cellColor4 = Shared.goldColor;
-                                cellColor5 = Shared.goldColor;
-                                cellColor6 = Shared.goldColor;
-                                cellColor7 = Shared.goldColor;
-                                cellColor10 = Shared.goldColor;
-                            }
-                            break;
-                        }
-                        rowID++;
-                    }
+                    // here is a golden offspring with all the best stats
+                    hpC = Shared.goldColor;
+                    staminaC = Shared.goldColor;
+                    oxygenC = Shared.goldColor;
+                    foodC = Shared.goldColor;
+                    weightC = Shared.goldColor;
+                    damageC = Shared.goldColor;
+                    craftC = Shared.goldColor;
                 }
             }
 
 
 
-            cellColor0 = DefaultColor;
+            nameC = DefaultColor;
 
             if (title != "Bottom")
             {
+                // Add notes symbol if notes are set
                 string notes = DataManager.GetNotes(id);
+                if (notes != "") { status += Shared.noteSym; }
 
-                bool hasNotes = false;
-                if (notes != "") { hasNotes = true; }
-
-                if (hasNotes)
-                {
-                    status += Shared.noteSym;
-                }
                 // replace placeholders with symbols
                 status = status.Replace("#", $"{Shared.worseSym}");
                 status = status.Replace("<", $"{Shared.worseSym}");
@@ -1236,46 +1199,47 @@ public partial class DinoPage : ContentPage
                 status = status.Replace("[missingSym]", $"{Shared.missingSym}");
             }
 
-
             // Create a Labels
-            var nameL = new Label { Text = name, TextColor = cellColor0 };
-            var levelL = new Label { Text = level, TextColor = cellColor1 };
+            var nameL = new Label { Text = name, TextColor = nameC };
+            var levelL = new Label { Text = level, TextColor = levelC };
             //////////////
-            var hpL = new Label { Text = hp, TextColor = cellColor2 };
-            var staminaL = new Label { Text = stamina, TextColor = cellColor3 };
-            var oxygenL = new Label { Text = oxygen, TextColor = cellColor4 };
-            var foodL = new Label { Text = food, TextColor = cellColor5 };
-            var weightL = new Label { Text = weight, TextColor = cellColor6 };
-            var damageL = new Label { Text = damage, TextColor = cellColor7 };
-            var speedL = new Label { Text = speed, TextColor = cellColor9 };
-            var craftL = new Label { Text = craft, TextColor = cellColor10 };
-
+            var hpL = new Label { Text = hp, TextColor = hpC };
+            var staminaL = new Label { Text = stamina, TextColor = staminaC };
+            var oxygenL = new Label { Text = oxygen, TextColor = oxygenC };
+            var foodL = new Label { Text = food, TextColor = foodC };
+            var weightL = new Label { Text = weight, TextColor = weightC };
+            var damageL = new Label { Text = damage, TextColor = damageC };
+            var craftL = new Label { Text = craft, TextColor = craftC };
             //////////////
-            var statusL = new Label { Text = status, TextColor = cellColor8 };
-            var genL = new Label { Text = gen, TextColor = cellColor8 };
+            var speedL = new Label { Text = speed, TextColor = speedC };
+            var statusL = new Label { Text = status, TextColor = defaultC };
+            var genL = new Label { Text = gen, TextColor = defaultC };
             var papaL = new Label { Text = papa, TextColor = Shared.maleColor };
             var mamaL = new Label { Text = mama, TextColor = Shared.femaleColor };
             var papaML = new Label { Text = papaM, TextColor = Shared.maleColor };
             var mamaML = new Label { Text = mamaM, TextColor = Shared.femaleColor };
-            var imprintL = new Label { Text = imprint, TextColor = cellColor8 };
-            var imprinterL = new Label { Text = imprinter, TextColor = cellColor8 };
-
+            var imprintL = new Label { Text = imprint, TextColor = defaultC };
+            var imprinterL = new Label { Text = imprinter, TextColor = defaultC };
 
             bool selected = false;
             if (title != "Bottom") // dont make bottom panel selectable
             {
+                // figure out if we have this dino selected for row coloring purposes
+                if (id == selectedID) { selected = true; }
+
                 // Attach TapGesture to all labels
                 SelectDino(nameL, id);
                 SelectDino(levelL, id);
+                //------------------------------------------
                 SelectDino(hpL, id);
                 SelectDino(staminaL, id);
                 if (hasO2) { SelectDino(oxygenL, id); }
                 SelectDino(foodL, id);
                 SelectDino(weightL, id);
                 SelectDino(damageL, id);
-                if (hasSpeed) { SelectDino(speedL, id); }
                 if (hasCraft) { SelectDino(craftL, id); }
-
+                //------------------------------------------
+                if (hasSpeed) { SelectDino(speedL, id); }
                 SelectDino(statusL, id);
                 SelectDino(genL, id);
                 SelectDino(papaL, id);
@@ -1284,33 +1248,24 @@ public partial class DinoPage : ContentPage
                 SelectDino(mamaML, id);
                 SelectDino(imprintL, id);
                 SelectDino(imprinterL, id);
-
-                // figure out if we have this dino selected
-                // for row coloring purposes
-                if (id == selectedID) { selected = true; }
             }
-
 
             // Reset startID for new row
-            startID = 4;
+            startID = 0;
 
             // Add base items to the grid
-            AddToGrid(grid, nameL, rowIndex, 0, title, selected, false, id);
-            AddToGrid(grid, levelL, rowIndex, 1, title, selected, false, id);
-            AddToGrid(grid, hpL, rowIndex, 2, title, selected, false, id);
-            AddToGrid(grid, staminaL, rowIndex, 3, title, selected, false, id);
-
-            // Add dynamic items starting from the existing startID
-            if (hasO2)
-            {
-                AddToGrid(grid, oxygenL, rowIndex, startID++, title, selected, false, id); // Add oxygen if applicable
-            }
-
+            AddToGrid(grid, nameL, rowIndex, startID++, title, selected, false, id);
+            AddToGrid(grid, levelL, rowIndex, startID++, title, selected, false, id);
+            //-------------------
+            AddToGrid(grid, hpL, rowIndex, startID++, title, selected, false, id);
+            AddToGrid(grid, staminaL, rowIndex, startID++, title, selected, false, id);
+            if (hasO2) { AddToGrid(grid, oxygenL, rowIndex, startID++, title, selected, false, id); }
             AddToGrid(grid, foodL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, weightL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, damageL, rowIndex, startID++, title, selected, false, id);
-            if (hasSpeed) { AddToGrid(grid, speedL, rowIndex, startID++, title, selected, false, id); }
             if (hasCraft) { AddToGrid(grid, craftL, rowIndex, startID++, title, selected, false, id); }
+            //-------------------
+            if (hasSpeed) { AddToGrid(grid, speedL, rowIndex, startID++, title, selected, false, id); }
             AddToGrid(grid, statusL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, genL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, papaL, rowIndex, startID++, title, selected, false, id);

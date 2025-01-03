@@ -295,7 +295,6 @@ namespace ASA_Dino_Manager
             }
         }
 
-
         public void ProcessAllFiles()
         {
             if (Shared.ImportEnabled)
