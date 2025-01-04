@@ -806,11 +806,11 @@ namespace ASA_Dino_Manager
             return "";
         }
 
-        public static string GetRate(string id)
+        public static string GetRate(string shortClass)
         {
             foreach (DataRow row in DataManager.StatTable.Rows)
             {
-                if (id == row["ID"].ToString()) // did we find our dino in dinoData file
+                if (shortClass == row["ID"].ToString()) // did we find our dino in dinoData file
                 {
                     return row["Rate"].ToString();
                 }
@@ -818,17 +818,17 @@ namespace ASA_Dino_Manager
             return "";
         }
 
-        public static void SetRate(string id, string rate)
+        public static void SetRate(string shortClass, string rate)
         {
-            if (id != "")
+            if (shortClass != "")
             {
                 int rowid = 0; bool found = false;
                 foreach (DataRow row in DataManager.StatTable.Rows)
                 {
-                    if (id == row["ID"].ToString()) // did we find our dino in dinoData file
+                    if (shortClass == row["ID"].ToString()) // did we find our dino in dinoData file
                     {
                         StatTable.Rows[rowid].SetField("Rate", rate);
-                        FileManager.Log($"Set rate for id: {id} to: {rate}", 0);
+                        FileManager.Log($"Set rate for id: {shortClass} to: {rate}", 0);
                         found = true; break;
                     }
                     rowid++;
@@ -836,7 +836,7 @@ namespace ASA_Dino_Manager
                 if (!found)
                 {
                     DataRow dr = DataManager.StatTable.NewRow();
-                    dr["ID"] = id;
+                    dr["ID"] = shortClass;
                     dr["Status"] = "";
                     dr["Mutes"] = "";
                     dr["Notes"] = "";

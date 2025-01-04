@@ -645,6 +645,13 @@ public partial class BabyPage : ContentPage
 
             double ageRateHr = Math.Round(DataManager.ToDouble(rateT) * 60, 2);
 
+            // check if manual age rate is set
+            string age2 = DataManager.GetRate(dinoClass);
+            double age2D = DataManager.ToDouble(age2);
+            if (age2D > 0) 
+            {
+                cellColor4 = goodColor;
+            }
 
             rateT = $"{ageRateHr} %/hr";
             timeT = $"{days}d {hours}h {minutes}m";
