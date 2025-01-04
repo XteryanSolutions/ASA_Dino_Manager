@@ -89,7 +89,7 @@ public partial class DinoPage : ContentPage
                         {
                             if (!CurrentStats)
                             {
-                                DataManager.SetBinaryStats(ToggleExcluded);
+                                DataManager.EvaluateDinos();
                                 DataManager.GetBestPartner();
                             }
                         }
@@ -985,7 +985,7 @@ public partial class DinoPage : ContentPage
 
         // maybe some width adjustment for headers to line up the tables
         int colID = 0;
-        int[] cellW = { 100, 100 };
+        int[] cellW = { 100, 100 }; // maybe figure out the max width of any cells
         // , WidthRequest = cellW[colID++]
 
         sortChar = ""; if (newTest == $"{Smap["Name"]}Name") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }

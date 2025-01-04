@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Common;
 using System.Globalization;
 using Windows.Media.Devices;
+using Windows.Storage.Provider;
 using static Microsoft.Maui.ApplicationModel.Permissions;
 
 namespace ASA_Dino_Manager
@@ -50,9 +51,6 @@ namespace ASA_Dino_Manager
         public static double DamageMax = 0;
         public static double SpeedMax = 0;
         public static double CraftMax = 0;
-
-        public static string[] BinaryM = new string[1]; //keeping track of max stats for breeding
-        public static string[] BinaryF = new string[1]; //keeping track of max stats for breeding
 
 
 
@@ -129,7 +127,7 @@ namespace ASA_Dino_Manager
                 FemaleTable.Columns.Add("Crafting", typeof(double));
                 FemaleTable.Columns.Add("Mutes", typeof(string));
                 FemaleTable.Columns.Add("Group", typeof(string));
-
+                FemaleTable.Columns.Add("Res", typeof(string));
 
 
                 MaleTable.Clear();
@@ -158,7 +156,7 @@ namespace ASA_Dino_Manager
                 MaleTable.Columns.Add("Crafting", typeof(double));
                 MaleTable.Columns.Add("Mutes", typeof(string));
                 MaleTable.Columns.Add("Group", typeof(string));
-
+                MaleTable.Columns.Add("Res", typeof(string));
 
 
                 BottomTable.Clear();
@@ -1023,7 +1021,7 @@ namespace ASA_Dino_Manager
 
                     dr["Status"] = CalcStatus(dino);
                     dr["Tag"] = ""; // maybe use this at some point just make sure its not null for now
-                    
+
                     dr["Mutes"] = mutes;
                     dr["Group"] = group;
 
@@ -1281,7 +1279,7 @@ namespace ASA_Dino_Manager
                     double rateD = ToDouble(rate);
 
                     double ageRate = 0;
-                    if (rateD > 0) 
+                    if (rateD > 0)
                     {
                         ageRate = rateD / 60;
                     }
@@ -1404,14 +1402,156 @@ namespace ASA_Dino_Manager
             DataManager.ArchiveTable = view1.ToTable();
         }
 
-        public static void SetBinaryStats(int toggle = 0)
+        public static void EvaluateDinos()
+        {
+            bool hasO2 = true; bool hasCraft = true;
+            if (OxygenMax == 150) { hasO2 = false; }
+            if (CraftMax == 100) { hasCraft = false; }
+
+            int rowIDC = 0; // Male dinos
+            foreach (DataRow rowC in MaleTable.Rows)
+            {
+                string compare = rowC["ID"].ToString();
+                string compareStatus = rowC["Status"].ToString();
+
+                string aC = "0"; string bC = "0"; string cC = "0";
+                string dC = "0"; string eC = "0"; string fC = "0";
+                string gC = "0";
+                string binaryC = "0000000";
+
+                double HpC = ToDouble(rowC["HP"].ToString());
+                double StaminaC = ToDouble(rowC["Stamina"].ToString());
+                double OxygenC = ToDouble(rowC["Oxygen"].ToString());
+                double FoodC = ToDouble(rowC["Food"].ToString());
+                double WeightC = ToDouble(rowC["Weight"].ToString());
+                double DamageC = ToDouble(rowC["Damage"].ToString());
+                double CraftC = ToDouble(rowC["Crafting"].ToString());
+
+                if (HpC >= HpMax) { aC = "1"; }
+                if (StaminaC >= StaminaMax) { bC = "1"; }
+                if (OxygenC >= OxygenMax && hasO2) { cC = "1"; }
+                if (FoodC >= FoodMax) { dC = "1"; }
+                if (WeightC >= WeightMax) { eC = "1"; }
+                if (DamageC >= DamageMax) { fC = "1"; }
+                if (CraftC >= CraftMax && hasCraft) { gC = "1"; }
+
+                binaryC = aC + bC + cC + dC + eC + fC + gC;
+
+                string outStatus = "";
+                // compare males against others to get the best male to breed
+                foreach (DataRow rowW in MaleTable.Rows)
+                {
+                    string with = rowW["ID"].ToString();
+
+                    if (compare != with) // not with eachother
+                    {
+                        string withStatus = rowW["Status"].ToString();
+                        string aW = "0"; string bW = "0"; string cW = "0";
+                        string dW = "0"; string eW = "0"; string fW = "0";
+                        string gW = "0";
+
+                        double HpW = ToDouble(rowW["HP"].ToString());
+                        double StaminaW = ToDouble(rowW["Stamina"].ToString());
+                        double OxygenW = ToDouble(rowW["Oxygen"].ToString());
+                        double FoodW = ToDouble(rowW["Food"].ToString());
+                        double WeightW = ToDouble(rowW["Weight"].ToString());
+                        double DamageW = ToDouble(rowW["Damage"].ToString());
+                        double CraftW = ToDouble(rowW["Crafting"].ToString());
+
+                        if (HpW >= DataManager.HpMax) { aW = "1"; }
+                        if (StaminaW >= DataManager.StaminaMax) { bW = "1"; }
+                        if (OxygenW >= DataManager.OxygenMax && hasO2) { cW = "1"; }
+                        if (FoodW >= DataManager.FoodMax) { dW = "1"; }
+                        if (WeightW >= DataManager.WeightMax) { eW = "1"; }
+                        if (DamageW >= DataManager.DamageMax) { fW = "1"; }
+                        if (CraftW >= DataManager.CraftMax && hasCraft) { gW = "1"; }
+
+                        string binaryW = aW + bW + cW + dW + eW + fW + gW;
+
+                        // now that we have both binary strings compare them to figure out if the compare is superceeded or not
+                        string aA = "0"; string bA = "0"; string cA = "0";
+                        string dA = "0"; string eA = "0"; string fA = "0";
+                        string gA = "0";
+
+                        // add up the binary shiz with magical ways known only to the gods of blubs
+                        if (aC == "0" && aW == "0") { aA = "0"; } else if (aC == "0" && aW == "1") { aA = "1"; } else if (aC == "1" && aW == "0") { aA = "2"; } else if (aC == "1" && aW == "1") { aA = "3"; }
+                        if (bC == "0" && bW == "0") { bA = "0"; } else if (bC == "0" && bW == "1") { bA = "1"; } else if (bC == "1" && bW == "0") { bA = "2"; } else if (bC == "1" && bW == "1") { bA = "3"; }
+                        if (cC == "0" && cW == "0") { cA = "0"; } else if (cC == "0" && cW == "1") { cA = "1"; } else if (cC == "1" && cW == "0") { cA = "2"; } else if (cC == "1" && cW == "1") { cA = "3"; }
+                        if (dC == "0" && dW == "0") { dA = "0"; } else if (dC == "0" && dW == "1") { dA = "1"; } else if (dC == "1" && dW == "0") { dA = "2"; } else if (dC == "1" && dW == "1") { dA = "3"; }
+                        if (eC == "0" && eW == "0") { eA = "0"; } else if (eC == "0" && eW == "1") { eA = "1"; } else if (eC == "1" && eW == "0") { eA = "2"; } else if (eC == "1" && eW == "1") { eA = "3"; }
+                        if (fC == "0" && fW == "0") { fA = "0"; } else if (fC == "0" && fW == "1") { fA = "1"; } else if (fC == "1" && fW == "0") { fA = "2"; } else if (fC == "1" && fW == "1") { fA = "3"; }
+                        if (gC == "0" && gW == "0") { gA = "0"; } else if (gC == "0" && gW == "1") { gA = "1"; } else if (gC == "1" && gW == "0") { gA = "2"; } else if (gC == "1" && gW == "1") { gA = "3"; }
+
+                        string binaryA = aA + bA + cA + dA + eA + fA + gA;
+
+                        if (binaryC == binaryW && !withStatus.Contains("<") && !withStatus.Contains("#"))
+                        {
+                            // both have same stats   MARK IT
+                            outStatus = "# " + rowW["Name"].ToString();  // identical   #with
+                        }
+
+                        if (binaryA.Contains("1") && binaryA.Contains("3") && !binaryA.Contains("2")) // has 1 and 3 but not 2
+                        {
+                            // both have same stats   MARK IT
+                            outStatus = "< " + rowW["Name"].ToString();  // superceeded
+                        }
+                    }
+                }
+
+                // edit the row that we show
+                if (outStatus.Contains("<") || outStatus.Contains("#")) { compareStatus = outStatus; }
+                if (binaryC == "0000000") { compareStatus = $"{compareStatus}{Shared.Smap["Garbage"]}"; }
+                MaleTable.Rows[rowIDC].SetField("Status", compareStatus);
+                MaleTable.Rows[rowIDC].SetField("Res", binaryC);
+                rowIDC++;
+            }
+            //==================================================================================================
+            rowIDC = 0; // Female dinos
+            foreach (DataRow rowC in FemaleTable.Rows)
+            {
+                string compare = rowC["ID"].ToString();
+                string compareStatus = rowC["Status"].ToString();
+
+                string aC = "0"; string bC = "0"; string cC = "0";
+                string dC = "0"; string eC = "0"; string fC = "0";
+                string gC = "0";
+                string binaryC = "0000000";
+
+                double HpC = ToDouble(rowC["HP"].ToString());
+                double StaminaC = ToDouble(rowC["Stamina"].ToString());
+                double OxygenC = ToDouble(rowC["Oxygen"].ToString());
+                double FoodC = ToDouble(rowC["Food"].ToString());
+                double WeightC = ToDouble(rowC["Weight"].ToString());
+                double DamageC = ToDouble(rowC["Damage"].ToString());
+                double CraftC = ToDouble(rowC["Crafting"].ToString());
+
+                if (HpC >= HpMax) { aC = "1"; }
+                if (StaminaC >= StaminaMax) { bC = "1"; }
+                if (OxygenC >= OxygenMax && hasO2) { cC = "1"; }
+                if (FoodC >= FoodMax) { dC = "1"; }
+                if (WeightC >= WeightMax) { eC = "1"; }
+                if (DamageC >= DamageMax) { fC = "1"; }
+                if (CraftC >= CraftMax && hasCraft) { gC = "1"; }
+
+                binaryC = aC + bC + cC + dC + eC + fC + gC;
+
+
+                // edit the row we show
+                if (binaryC == "0000000") { compareStatus = $"{compareStatus}{Shared.Smap["Garbage"]}"; }
+                FemaleTable.Rows[rowIDC].SetField("Status", compareStatus);
+                FemaleTable.Rows[rowIDC].SetField("Res", binaryC);
+                rowIDC++;
+            }
+        }
+
+        public static void SetBinaryStats()
         {
             bool hasO2 = true; bool hasCraft = true;
             if (DataManager.OxygenMax == 150) { hasO2 = false; }
             if (DataManager.CraftMax == 100) { hasCraft = false; }
 
-            BinaryM = new string[MaleTable.Rows.Count];
-            BinaryF = new string[FemaleTable.Rows.Count];
+            //BinaryM = new string[MaleTable.Rows.Count];
+            //BinaryF = new string[FemaleTable.Rows.Count];
 
             // look trough males
             int rowIDC = 0;
@@ -1444,7 +1584,7 @@ namespace ASA_Dino_Manager
                 if (CraftC >= CraftMax && hasCraft) { gC = "1"; }
 
                 binaryC = aC + bC + cC + dC + eC + fC + gC;
-                BinaryM[rowIDC] = binaryC;
+                //BinaryM[rowIDC] = binaryC;
                 string outStatus = "";
                 foreach (DataRow rowW in MaleTable.Rows) // compare males to put useles males in reserve
                 {
@@ -1560,7 +1700,7 @@ namespace ASA_Dino_Manager
 
                 binaryC = aC + bC + cC + dC + eC + fC + gC;
 
-                BinaryF[rowIDC] = binaryC;
+                //BinaryF[rowIDC] = binaryC;
 
                 string finalStatus = compareStatus;
 
@@ -1671,7 +1811,7 @@ namespace ASA_Dino_Manager
             //FileManager.Log("Updated BreedPairs",0);
         }
 
-        public static void MakeOffspring(string male, string female, string offspring, string point,string res)
+        public static void MakeOffspring(string male, string female, string offspring, string point, string res)
         {
 
             if (male != "" && female != "")
@@ -1766,66 +1906,6 @@ namespace ASA_Dino_Manager
             }
         }
 
-        public static void CleanDataBaseByID()
-        {
-            // Get all distinct IDs from the database.
-            string[] idList = DataManager.GetAllDistinctColumnData("ID");
-
-            // Counter for deleted rows.
-            int totalDeletedRows = 0;
-
-            // Dictionary to store deleted row counts per ID.
-            var deletedRowsPerID = new Dictionary<string, int>();
-
-            foreach (string id in idList)
-            {
-                // Get rows for the current ID, sorted by Time in descending order.
-                var rows = ImportsTable.Select($"ID = '{id}'", "Time DESC");
-
-                // Reset the HashSet to track unique rows excluding "Time".
-                var seenRows = new HashSet<string>();
-
-                // Counter for this ID's deleted rows.
-                int deletedRows = 0;
-
-                foreach (var row in rows)
-                {
-                    // Generate a unique key excluding the "Time" column.
-                    var rowKey = string.Join("|", row.Table.Columns.Cast<DataColumn>()
-                        .Where(col => col.ColumnName != "Time") // Exclude the "Time" column
-                        .Select(col => row[col]));
-
-                    if (seenRows.Contains(rowKey))
-                    {
-                        // Remove the duplicate row and increment the counters.
-                        ImportsTable.Rows.Remove(row);
-                        deletedRows++;
-                        totalDeletedRows++;
-                    }
-                    else
-                    {
-                        // Add the row key to the set if it is unique.
-                        seenRows.Add(rowKey);
-                    }
-                }
-
-                // Record deleted row count for this ID.
-                if (deletedRows > 0)
-                {
-                    deletedRowsPerID[id] = deletedRows;
-                }
-            }
-
-            // Accept changes to finalize modifications.
-            ImportsTable.AcceptChanges();
-
-            if (totalDeletedRows > 0)
-            {
-                FileManager.Log("DataBase cleaned", 0);
-            }
-
-        }
-
         public static void DeleteRowsByID(string id)
         {
             // Select rows matching the ID.
@@ -1890,118 +1970,126 @@ namespace ASA_Dino_Manager
             string d = "0"; string e = "0"; string f = "0";
             string g = "0";
 
-            string mamaID = GetFirstColumnData("ID", id, "Mama");
-            string papaID = GetFirstColumnData("ID", id, "Papa");
+            // check if mutation count is more than 0
+            // maybe add a check if its gone up from previous generation
+            double muteP = ToDouble(GetFirstColumnData("ID", id, "PapaMutes"));
+            double muteM = ToDouble(GetFirstColumnData("ID", id, "MamaMutes"));
 
-            if (mamaID != "" && papaID != "")
+            if (muteM > 0 || muteP > 0)
             {
-                double dinoHP = Math.Round(ToDouble(GetFirstColumnData("ID", id, "HP")));
-                double mamaHP = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "HP")));
-                double papaHP = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "HP")));
+                string mamaID = GetFirstColumnData("ID", id, "Mama");
+                string papaID = GetFirstColumnData("ID", id, "Papa");
 
-                if ((mamaHP != 0 && papaHP != 0) && (dinoHP != papaHP && dinoHP != mamaHP))
+                if (mamaID != "" && papaID != "")
                 {
-                    if (dinoHP > (papaHP + Shared.muteOffset) || dinoHP < (papaHP - Shared.muteOffset))
+                    double dinoHP = Math.Round(ToDouble(GetFirstColumnData("ID", id, "HP")));
+                    double mamaHP = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "HP")));
+                    double papaHP = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "HP")));
+
+                    if ((mamaHP != 0 && papaHP != 0) && (dinoHP != papaHP && dinoHP != mamaHP))
                     {
-                        if (dinoHP > (mamaHP + Shared.muteOffset) || dinoHP < (mamaHP - Shared.muteOffset))
+                        if (dinoHP > (papaHP + Shared.muteOffset) || dinoHP < (papaHP - Shared.muteOffset))
                         {
-                            a = "1";
+                            if (dinoHP > (mamaHP + Shared.muteOffset) || dinoHP < (mamaHP - Shared.muteOffset))
+                            {
+                                a = "1";
+                            }
                         }
                     }
-                }
 
-                double dinoStamina = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Stamina")));
-                double mamaStamina = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Stamina")));
-                double papaStamina = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Stamina")));
+                    double dinoStamina = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Stamina")));
+                    double mamaStamina = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Stamina")));
+                    double papaStamina = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Stamina")));
 
-                if ((mamaStamina != 0 && papaStamina != 0) && (dinoStamina != papaStamina && dinoStamina != mamaStamina))
-                {
-                    if (dinoStamina > (papaStamina + Shared.muteOffset) || dinoStamina < (papaStamina - Shared.muteOffset))
+                    if ((mamaStamina != 0 && papaStamina != 0) && (dinoStamina != papaStamina && dinoStamina != mamaStamina))
                     {
-                        if (dinoStamina > (mamaStamina + Shared.muteOffset) || dinoStamina < (mamaStamina - Shared.muteOffset))
+                        if (dinoStamina > (papaStamina + Shared.muteOffset) || dinoStamina < (papaStamina - Shared.muteOffset))
                         {
-                            b = "1";
+                            if (dinoStamina > (mamaStamina + Shared.muteOffset) || dinoStamina < (mamaStamina - Shared.muteOffset))
+                            {
+                                b = "1";
+                            }
                         }
                     }
-                }
 
-                double dinoOxygen = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Oxygen")));
-                double mamaOxygen = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Oxygen")));
-                double papaOxygen = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Oxygen")));
+                    double dinoOxygen = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Oxygen")));
+                    double mamaOxygen = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Oxygen")));
+                    double papaOxygen = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Oxygen")));
 
-                if ((mamaOxygen != 0 && papaOxygen != 0) && (dinoOxygen != papaOxygen && dinoOxygen != mamaOxygen))
-                {
-                    if (dinoOxygen > (papaOxygen + Shared.muteOffset) || dinoOxygen < (papaOxygen - Shared.muteOffset))
+                    if ((mamaOxygen != 0 && papaOxygen != 0) && (dinoOxygen != papaOxygen && dinoOxygen != mamaOxygen))
                     {
-                        if (dinoOxygen > (mamaOxygen + Shared.muteOffset) || dinoOxygen < (mamaOxygen - Shared.muteOffset))
+                        if (dinoOxygen > (papaOxygen + Shared.muteOffset) || dinoOxygen < (papaOxygen - Shared.muteOffset))
                         {
-                            c = "1";
+                            if (dinoOxygen > (mamaOxygen + Shared.muteOffset) || dinoOxygen < (mamaOxygen - Shared.muteOffset))
+                            {
+                                c = "1";
+                            }
                         }
                     }
-                }
 
-                double dinoFood = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Food")));
-                double mamaFood = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Food")));
-                double papaFood = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Food")));
+                    double dinoFood = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Food")));
+                    double mamaFood = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Food")));
+                    double papaFood = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Food")));
 
-                if ((mamaFood != 0 && papaFood != 0) && (dinoFood != papaFood && dinoFood != mamaFood))
-                {
-                    if (dinoFood > (papaFood + Shared.muteOffset) || dinoFood < (papaFood - Shared.muteOffset))
+                    if ((mamaFood != 0 && papaFood != 0) && (dinoFood != papaFood && dinoFood != mamaFood))
                     {
-                        if (dinoFood > (mamaFood + Shared.muteOffset) || dinoFood < (mamaFood - Shared.muteOffset))
+                        if (dinoFood > (papaFood + Shared.muteOffset) || dinoFood < (papaFood - Shared.muteOffset))
                         {
-                            d = "1";
+                            if (dinoFood > (mamaFood + Shared.muteOffset) || dinoFood < (mamaFood - Shared.muteOffset))
+                            {
+                                d = "1";
+                            }
                         }
                     }
-                }
 
-                double dinoWeight = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Weight")));
-                double mamaWeight = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Weight")));
-                double papaWeight = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Weight")));
+                    double dinoWeight = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Weight")));
+                    double mamaWeight = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Weight")));
+                    double papaWeight = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Weight")));
 
-                if ((mamaWeight != 0 && papaWeight != 0) && (dinoWeight != papaWeight && dinoWeight != mamaWeight))
-                {
-                    if (dinoWeight > (papaWeight + Shared.muteOffset) || dinoWeight < (papaWeight - Shared.muteOffset))
+                    if ((mamaWeight != 0 && papaWeight != 0) && (dinoWeight != papaWeight && dinoWeight != mamaWeight))
                     {
-                        if (dinoWeight > (mamaWeight + Shared.muteOffset) || dinoWeight < (mamaWeight - Shared.muteOffset))
+                        if (dinoWeight > (papaWeight + Shared.muteOffset) || dinoWeight < (papaWeight - Shared.muteOffset))
                         {
-                            e = "1";
+                            if (dinoWeight > (mamaWeight + Shared.muteOffset) || dinoWeight < (mamaWeight - Shared.muteOffset))
+                            {
+                                e = "1";
+                            }
                         }
                     }
-                }
 
-                double dinoDamage = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Damage")), 2);
-                double mamaDamage = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Damage")), 2);
-                double papaDamage = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Damage")), 2);
+                    double dinoDamage = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Damage")), 2);
+                    double mamaDamage = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Damage")), 2);
+                    double papaDamage = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Damage")), 2);
 
-                if ((mamaDamage != 0 && papaDamage != 0) && (dinoDamage != papaDamage && dinoDamage != mamaDamage))
-                {
-                    if (dinoDamage > (papaDamage + Shared.muteOffset) || dinoDamage < (papaDamage - Shared.muteOffset))
+                    if ((mamaDamage != 0 && papaDamage != 0) && (dinoDamage != papaDamage && dinoDamage != mamaDamage))
                     {
-                        if (dinoDamage > (mamaDamage + Shared.muteOffset) || dinoDamage < (mamaDamage - Shared.muteOffset))
+                        if (dinoDamage > (papaDamage + Shared.muteOffset) || dinoDamage < (papaDamage - Shared.muteOffset))
                         {
-                            f = "1";
+                            if (dinoDamage > (mamaDamage + Shared.muteOffset) || dinoDamage < (mamaDamage - Shared.muteOffset))
+                            {
+                                f = "1";
+                            }
                         }
                     }
-                }
 
-                double dinoCraft = Math.Round(ToDouble(GetFirstColumnData("ID", id, "CraftSkill")), 2);
-                double mamaCraft = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "CraftSkill")), 2);
-                double papaCraft = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "CraftSkill")), 2);
+                    double dinoCraft = Math.Round(ToDouble(GetFirstColumnData("ID", id, "CraftSkill")), 2);
+                    double mamaCraft = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "CraftSkill")), 2);
+                    double papaCraft = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "CraftSkill")), 2);
 
-                if ((mamaCraft != 0 && papaCraft != 0) && (dinoCraft != papaCraft && dinoCraft != mamaCraft))
-                {
-                    if (dinoCraft > (papaCraft + Shared.muteOffset) || dinoCraft < (papaCraft - Shared.muteOffset))
+                    if ((mamaCraft != 0 && papaCraft != 0) && (dinoCraft != papaCraft && dinoCraft != mamaCraft))
                     {
-                        if (dinoCraft > (mamaCraft + Shared.muteOffset) || dinoCraft < (mamaCraft - Shared.muteOffset))
+                        if (dinoCraft > (papaCraft + Shared.muteOffset) || dinoCraft < (papaCraft - Shared.muteOffset))
                         {
-                            g = "1";
+                            if (dinoCraft > (mamaCraft + Shared.muteOffset) || dinoCraft < (mamaCraft - Shared.muteOffset))
+                            {
+                                g = "1";
+                            }
                         }
                     }
                 }
             }
-            string mutes = a + b + c + d + e + f + g;
 
+            string mutes = a + b + c + d + e + f + g;
             SetMutes(id, mutes);
         }
 
@@ -2115,7 +2203,7 @@ namespace ASA_Dino_Manager
 
         private static bool CheckDino(string id, string inputColumn, string newData)
         {
-            string field = DataManager.GetLastColumnData("ID", id, inputColumn); string valu = "0";
+            string field = DataManager.GetFirstColumnData("ID", id, inputColumn); string valu = "0";
             if (inputColumn == "Gen" || inputColumn == "GenM" || inputColumn == "MamaMute" || inputColumn == "PapaMute")
             {
                 valu = "";
@@ -2348,6 +2436,7 @@ namespace ASA_Dino_Manager
                 }
                 catch
                 {
+                    FileManager.Log($"Failed to convert: {input} - Returned: 0", 1);
                     return def;
                 }
             }

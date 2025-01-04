@@ -7,6 +7,7 @@ public partial class BabyPage : ContentPage
 {
     ////////////////////    View Toggles    ////////////////////
     public static int ToggleExcluded = Shared.DefaultToggleB;
+    public static string speciesToggle = "All";
 
     ////////////////////    Selecting       ////////////////////
     public static string selectedID = "";
@@ -223,6 +224,7 @@ public partial class BabyPage : ContentPage
 
         // Define button colors
         var toggleBtnColor = Shared.DefaultBColor;
+        var speciesBtnColor = Shared.DefaultBColor;
 
         if (ToggleExcluded == 0)
         {
@@ -240,6 +242,10 @@ public partial class BabyPage : ContentPage
         {
             toggleBtnColor = Shared.TrinaryColor;
         }
+
+
+        string speciesBtnText = speciesToggle;
+
 
         string toggleBtnText = "Toggle";
         if (ToggleExcluded == 0) { toggleBtnText = "All"; }
@@ -270,6 +276,11 @@ public partial class BabyPage : ContentPage
             var toggleBtn = new Button { Text = toggleBtnText, BackgroundColor = toggleBtnColor };
             AddToGrid(grid, toggleBtn, 0, 0);
             toggleBtn.Clicked += ToggleBtnClicked;
+
+
+            var speciesBtn = new Button { Text = speciesBtnText, BackgroundColor = speciesBtnColor };
+            AddToGrid(grid, speciesBtn, 1, 0);
+            speciesBtn.Clicked += SpeciesBtnClicked;
         }
 
         if (isSelected) // add theese only if we have a dino selected
@@ -300,7 +311,7 @@ public partial class BabyPage : ContentPage
         // Define row definitions
         maingrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // Scrollable content
 
-        
+
 
         int count = DataManager.FemaleTable.Rows.Count + DataManager.MaleTable.Rows.Count;
 
@@ -390,7 +401,7 @@ public partial class BabyPage : ContentPage
             AddToGrid(statGrid, textBox1, rowid++, colid, "", false, true);
 
 
-  
+
             scrollContent.Children.Add(statGrid);
 
 
@@ -648,7 +659,7 @@ public partial class BabyPage : ContentPage
             // check if manual age rate is set
             string age2 = DataManager.GetRate(dinoClass);
             double age2D = DataManager.ToDouble(age2);
-            if (age2D > 0) 
+            if (age2D > 0)
             {
                 cellColor4 = goodColor;
             }
@@ -760,7 +771,7 @@ public partial class BabyPage : ContentPage
         {
             //  FileManager.Log($"Unselected {selectedID}", 0);
             selectedID = ""; isSelected = false; this.Title = $"{Shared.setPage.Replace("_", " ")}";
-            canDouble = false; editStats = false;
+            canDouble = false; editStats = false; speciesToggle = "All";
         }
     }
 
@@ -962,6 +973,18 @@ public partial class BabyPage : ContentPage
         CreateContent();
     }
 
+    private void SpeciesBtnClicked(object? sender, EventArgs e)
+    {
+
+
+
+        FileManager.Log($"Toggle Species", 0);
+
+        dataValid = false;
+        ClearSelection();
+        CreateContent();
+    }
+
     private void ExcludeBtnClicked(object? sender, EventArgs e)
     {
         if (selectedID != "")
@@ -1010,7 +1033,7 @@ public partial class BabyPage : ContentPage
         if (editStats)
         {
             // DataManager.EditBreedStats(selectedID, levelText, hpText, staminaText, oxygenText, foodText, weightText, damageText, notesText);
-            DataManager.SetRate(classText,rateText);
+            DataManager.SetRate(classText, rateText);
 
 
             FileManager.needSave = true;

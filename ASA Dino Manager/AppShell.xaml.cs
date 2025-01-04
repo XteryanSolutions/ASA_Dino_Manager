@@ -94,9 +94,9 @@ namespace ASA_Dino_Manager
                     DinoPage.isSelected = false; DinoPage.isDouble = false; DinoPage.canDouble = false; DinoPage.selectedID = "";
                     DinoPage.sortM = Shared.DefaultSortM; DinoPage.sortF = Shared.DefaultSortF;
 
-                    BabyPage.ToggleExcluded = Shared.DefaultToggleB;
+                    BabyPage.ToggleExcluded = Shared.DefaultToggleB; 
                     BabyPage.isSelected = false; BabyPage.isDouble = false; BabyPage.canDouble = false; BabyPage.selectedID = "";
-                    BabyPage.sortM = Shared.DefaultSortM; BabyPage.sortF = Shared.DefaultSortF;
+                    BabyPage.sortM = Shared.DefaultSortM; BabyPage.sortF = Shared.DefaultSortF; BabyPage.speciesToggle = "All";
 
                     ArchivePage.isSelected = false; ArchivePage.selectedID = ""; ArchivePage.sortA = Shared.DefaultSortA;
                 }
