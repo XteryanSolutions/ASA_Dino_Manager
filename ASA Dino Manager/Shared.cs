@@ -39,21 +39,21 @@
         { "Date", "📆" },
         { "Name", "🔤" },
         { "Level", "🔎" },
-        { "Hp", "❓" },
-        { "Stamina", "" },
-        { "Oxygen", "" },
-        { "Food", "" },
-        { "Weight", "" },
-        { "Damage", "" },
-        { "Craft", "" },
-        { "Speed", "" },
-        { "Gen", "" },
-        { "Papa", "" },
-        { "Mama", "" },
-        { "Mutation", "" },
-        { "Status", "" },
+        { "Hp", "🍀" },
+        { "Stamina", "⚡" },
+        { "Oxygen", "🤿" },
+        { "Food", "🥪" },
+        { "Weight", "🧱" },
+        { "Damage", "💪" },
+        { "Crafting", "🔨" },
+        { "Speed", "🐌" },
+        { "Gen", "🧬" },
+        { "Papa", "👨" },
+        { "Mama", "👩" },
+        { "Mutation", "🧪" },
+        { "Status", "📑" },
         { "Imprint", "💖" },
-        { "Imprinter", "" },
+        { "Imprinter", "💑" },
         { "Class", "🦖" },
         { "SortUp", "▲" },
         { "SortDown", "▼" },
@@ -61,7 +61,7 @@
     };
 
         //offset for preventing excessive mutation triggers
-        public static int muteOffset = 1;
+        public static int muteOffset = 10;
 
         // Benchmark stuff
         public static int loadCount = 0;
