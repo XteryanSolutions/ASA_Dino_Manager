@@ -1,4 +1,5 @@
 ﻿using ASA_Dino_Manager.WinUI;
+using Microsoft.UI.Xaml.Controls;
 using System.Data;
 using System.Data.Common;
 using System.Globalization;
@@ -994,9 +995,6 @@ namespace ASA_Dino_Manager
             double lastAge = DataManager.ToDouble(DataManager.GetLastColumnData("ID", id, "BabyAge")) * 100;
             string lastTime = DataManager.GetLastColumnData("ID", id, "Time");
 
-            // convert units   
-            //DateTime lastTimeD = DateTime.ParseExact(lastTime, "dd/MM/yyyy HH:mm:ss", null);
-
             bool isBaby = false; bool beenBaby = false;
             if (firstAge < 100) // get the growth stage of the dino
             {
@@ -1007,44 +1005,23 @@ namespace ASA_Dino_Manager
                 isBaby = true;
             }
 
-            // check for missing data
-            string mama = DataManager.GetFirstColumnData("ID", id, "Mama");
-            string papa = DataManager.GetFirstColumnData("ID", id, "Papa");
-            string mamaM = DataManager.GetFirstColumnData("ID", id, "MamaMute");
-            string papaM = DataManager.GetFirstColumnData("ID", id, "PapaMute");
-            string gen = DataManager.GetFirstColumnData("ID", id, "Gen");
-            string imprint = DataManager.GetFirstColumnData("ID", id, "Imprint");
-            string imprinter = DataManager.GetFirstColumnData("ID", id, "Imprinter");
-
             if (!beenBaby) // its a tame just add info on when it was tamed
             {
                 DateTime firstTimeD = DateTime.ParseExact(firstTime, "dd/MM/yyyy HH:mm:ss", null);
-                status = "[tameSym]" + firstTimeD.ToString("dd/MM/yyyy HH:mm:ss");
-
-                // stats that a fresh tame should not have
-                if (mama != "" || papa != "" || DataManager.ToDouble(gen) > 0 || DataManager.ToDouble(mamaM) > 0 || DataManager.ToDouble(papaM) > 0 || DataManager.ToDouble(imprint) > 60)
-                {
-                    status += "[missingSym]";
-                }
+                status = $"{Shared.Smap["NewTame"]}" + firstTimeD.ToString("dd/MM/yyyy HH:mm:ss");
             }
             else // has been a baby at some point
             {
                 if (isBaby)
                 {
                     DateTime firstTimeD = DateTime.ParseExact(firstTime, "dd/MM/yyyy HH:mm:ss", null);
-                    status = "[breedSym]" + firstTimeD.ToString("dd/MM/yyyy HH:mm:ss");
+                    status = $"{Shared.Smap["Age"]}" + firstTimeD.ToString("dd/MM/yyyy HH:mm:ss");
                 }
                 else
                 {
-                    status = "[grownSym]" + GrowUpTime(id);
-                }
-                // stats that someone that has been a baby should not have
-                if (mama == "" || papa == "")
-                {
-                    status += "[missingSym]";
+                    status = $"{Shared.Smap["Grown"]}" + GrowUpTime(id);
                 }
             }
-
 
             return status;
         }
@@ -1097,6 +1074,9 @@ namespace ASA_Dino_Manager
             }
 
 
+            // remove symbols to use correct name in sorting
+            sortiM = ReplaceSymbols(sortiM, Shared.Smap);
+            sortiF = ReplaceSymbols(sortiF, Shared.Smap);
 
             // Sort the MaleTable based on the desired column
             DataView view1 = new DataView(DataManager.MaleTable);
@@ -1137,31 +1117,21 @@ namespace ASA_Dino_Manager
             ProcessDinoBabies(males, MainStatsM, BrStatsM, DataManager.MaleTable);
 
 
-            // replace column names with the real ones
-            sortiM = sortiM.Replace($"{Shared.breedSym}Age", "Hp");
-            sortiF = sortiF.Replace($"{Shared.breedSym}Age", "Hp");
+            // remove symbols to use correct name in sorting
+            sortiM = ReplaceSymbols(sortiM, Shared.Smap);
+            sortiF = ReplaceSymbols(sortiF, Shared.Smap);
 
-            sortiM = sortiM.Replace($"{Shared.timeSym}Time", "Stamina");
-            sortiF = sortiF.Replace($"{Shared.timeSym}Time", "Stamina");
+            sortiM = sortiM.Replace("Class", "Tag");
+            sortiF = sortiF.Replace("Class", "Tag");
 
-            sortiM = sortiM.Replace($"{Shared.speedSym}Rate", "Oxygen");
-            sortiF = sortiF.Replace($"{Shared.speedSym}Rate", "Oxygen");
+            sortiM = sortiM.Replace("Age", "Hp");
+            sortiF = sortiF.Replace("Age", "Hp");
 
-            sortiM = sortiM.Replace($"{Shared.loveSym}Imprint", "Imprint");
-            sortiF = sortiF.Replace($"{Shared.loveSym}Imprint", "Imprint");
+            sortiM = sortiM.Replace("Time", "Stamina");
+            sortiF = sortiF.Replace("Time", "Stamina");
 
-            sortiM = sortiM.Replace($"{Shared.grownSym}Class", "Tag");
-            sortiF = sortiF.Replace($"{Shared.grownSym}Class", "Tag");
-
-            sortiM = sortiM.Replace($"{Shared.tameSym}Gen", "Gen");
-            sortiF = sortiF.Replace($"{Shared.tameSym}Gen", "Gen");
-
-            sortiM = sortiM.Replace($"{Shared.nameSym}Name", "Name");
-            sortiF = sortiF.Replace($"{Shared.nameSym}Name", "Name");
-
-            sortiM = sortiM.Replace($"{Shared.levelSym}Level", "Level");
-            sortiF = sortiF.Replace($"{Shared.levelSym}Level", "Level");
-
+            sortiM = sortiM.Replace("Rate", "Oxygen");
+            sortiF = sortiF.Replace("Rate", "Oxygen");
 
 
             // Sort the MaleTable based on the desired column
@@ -1177,6 +1147,19 @@ namespace ASA_Dino_Manager
 
 
             //  FileManager.Log("updated data");
+        }
+
+
+        public static string ReplaceSymbols(string input, Dictionary<string, string> symbolMap)
+        {
+            foreach (var symbol in symbolMap.Values)
+            {
+                if (!string.IsNullOrEmpty(symbol))
+                {
+                    input = input.Replace(symbol, string.Empty);
+                }
+            }
+            return input;
         }
 
         private static void ProcessDinoBabies(string[] dinos, List<string[]> MainStats, List<string[]> BrStats, DataTable table)
@@ -1310,7 +1293,7 @@ namespace ASA_Dino_Manager
                     dr["Age"] = Math.Round(ToDouble(BrStats[rowID][15].ToString()) * 100);
                     dr["Imprint"] = Math.Round(ToDouble(BrStats[rowID][17].ToString()) * 100);
                     dr["Tag"] = dinoClass;
-                    dr["Mutes"] = "000000";
+                    dr["Mutes"] = "0000000";
                     dr["Group"] = group;
 
 

@@ -1,6 +1,6 @@
 ﻿using System.Data;
 using System.Diagnostics;
-
+using static ASA_Dino_Manager.Shared;
 
 namespace ASA_Dino_Manager;
 
@@ -961,7 +961,7 @@ public partial class DinoPage : ContentPage
         if (DataManager.OxygenMax == 150) { hasO2 = false; }
         if (DataManager.CraftMax == 100) { hasCraft = false; }
 
-        if (title != "Bottom") { hasSpeed = true; } // fdont activate for offspring since speed doesnt breed
+        if (title != "Bottom") { hasSpeed = true; } // dont activate for offspring since speed doesnt breed
 
         int fSize = Shared.headerSize;  // header fontsize
 
@@ -978,8 +978,8 @@ public partial class DinoPage : ContentPage
         if (testingSort.Contains("ASC")) { newTest = testingSort.Substring(0, testingSort.Length - 4); }
         if (testingSort.Contains("DESC")) { newTest = testingSort.Substring(0, testingSort.Length - 5); }
 
-        string upChar = Shared.sortUp;
-        string downChar = Shared.sortDown;
+        string upChar = Smap["SortUp"];
+        string downChar = Smap["SortDown"];
 
 
         sortChar = ""; if (newTest == "Name") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
@@ -1179,24 +1179,15 @@ public partial class DinoPage : ContentPage
                 }
             }
 
-
-
-            nameC = DefaultColor;
-
             if (title != "Bottom")
             {
                 // Add notes symbol if notes are set
                 string notes = DataManager.GetNotes(id);
-                if (notes != "") { status += Shared.noteSym; }
+                if (notes != "") { status += Smap["Notes"]; }
 
                 // replace placeholders with symbols
-                status = status.Replace("#", $"{Shared.worseSym}");
-                status = status.Replace("<", $"{Shared.worseSym}");
-                status = status.Replace("[garbageSym]", $"{Shared.garbageSym}");
-                status = status.Replace("[breedSym]", $"{Shared.breedSym}");
-                status = status.Replace("[grownSym]", $"{Shared.grownSym}");
-                status = status.Replace("[tameSym]", $"{Shared.tameSym}");
-                status = status.Replace("[missingSym]", $"{Shared.missingSym}");
+                status = status.Replace("#", $"{Smap["Identical"]}");
+                status = status.Replace("<", $"{Smap["LessThan"]}");
             }
 
             // Create a Labels
@@ -1309,7 +1300,7 @@ public partial class DinoPage : ContentPage
             // Handle the click event and pass additional data
             string column = label.Text;
 
-            if (column.Contains(Shared.sortUp) || column.Contains(Shared.sortDown))
+            if (column.Contains(Smap["SortUp"]) || column.Contains(Smap["SortDown"]))
             {
                 column = column.Substring(0, column.Length - 2);
             }

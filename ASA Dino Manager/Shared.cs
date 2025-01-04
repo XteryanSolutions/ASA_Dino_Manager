@@ -24,31 +24,43 @@
 
 
         // symbols
-        public static string sortUp = "▲";
-        public static string sortDown = "▼";
-
-        public static string tameSym = "🧬";
-        public static string breedSym = "🐣";
-        public static string noBabySym = "🐤";
-        public static string grownSym = "🦖";
-        public static string garbageSym = "💩";
-        public static string missingSym = "❗";
-        public static string worseSym = "📉";
-        public static string noteSym = "📋";
-        public static string timeSym = "⌛";
-        public static string speedSym = "📶";
-        public static string dateSym = "📆";
-        public static string starSym = "✨";
-        public static string noSym = "❓";
-        public static string loveSym = "🧡";
-        public static string nameSym = "🔤";
-        public static string levelSym = "🔎";
-
-
+        public static readonly Dictionary<string, string> Smap = new Dictionary<string, string>
+    {
+        { "Missing", "❓" },
+        { "Garbage", "💩" },
+        { "NewTame", "🧬" },
+        { "Age", "🐣" },
+        { "Grown", "🦖" },
+        { "LessThan", "📉" },
+        { "Identical", "📉" },
+        { "Notes", "📋" },
+        { "Time", "⌛" },
+        { "Rate", "📶" },
+        { "Date", "📆" },
+        { "Name", "🔤" },
+        { "Level", "🔎" },
+        { "Hp", "❓" },
+        { "Stamina", "" },
+        { "Oxygen", "" },
+        { "Food", "" },
+        { "Weight", "" },
+        { "Damage", "" },
+        { "Craft", "" },
+        { "Speed", "" },
+        { "Gen", "" },
+        { "Papa", "" },
+        { "Mama", "" },
+        { "Mutation", "" },
+        { "Status", "" },
+        { "Imprint", "💖" },
+        { "Imprinter", "" },
+        { "Class", "🦖" },
+        { "SortUp", "▲" },
+        { "SortDown", "▼" },
+    };
 
         //offset for preventing excessive mutation triggers
         public static int muteOffset = 1;
-
 
         // Benchmark stuff
         public static int loadCount = 0;
@@ -60,10 +72,9 @@
         public static readonly object _dbLock = new object();
 
 
-
         ////////////////////    IMPORTING       ////////////////////
-        public static bool ImportEnabled = false; // initial import delay
-        public static int Delay = 5; 
+        public static bool ImportEnabled = false;
+        public static int Delay = 5; // initial import delay
         public static int DefaultDelay = 10; // default import delay in seconds
         public static int CurrentDelay = 10;
         public static int MaxDelay = 60;
@@ -72,9 +83,6 @@
         ////////////////////    Navigation      ////////////////////
         public static string setPage = "";
         public static string selectedClass = "";
-        public static bool eventDisabled = false;
-        public static bool isLoaded = false;
-
 
 
         ////////////////////    Scaling         ////////////////////
@@ -82,7 +90,6 @@
         public static int tableSize = 16; // FontSize on tables
         public static int fontSize = 16; // General FontSize
         public static int fontHSize = 20; // General Header FontSize
-
         public static int rowHeight = 24; // rowheight to determine bottom panel size
         public static int sizeOffset = 5; // Extra buffer to prevent scrolling
 
