@@ -1,4 +1,5 @@
 ﻿using Microsoft.Maui.Controls;
+using System;
 
 namespace ASA_Dino_Manager
 {
@@ -312,7 +313,7 @@ namespace ASA_Dino_Manager
                             // handle import files first
                             DataManager.Import();
 
-                            if (DataManager.ModC > 0 || DataManager.AddC > 0 || Shared.setPage == "Baby_Dinos")
+                            if (DataManager.ModC > 0 || DataManager.AddC > 0 || (Shared.setPage == "Baby_Dinos" && !BabyPage.isDouble))
                             {
                                 UpdateMenuContents(Shared.setPage);
                             }     

@@ -194,6 +194,7 @@ namespace ASA_Dino_Manager
                 StatTable.Columns.Add("Status", typeof(string));
                 StatTable.Columns.Add("Notes", typeof(string));
                 StatTable.Columns.Add("Mutes", typeof(string));
+                StatTable.Columns.Add("Rate", typeof(string));
 
 
 
@@ -805,6 +806,48 @@ namespace ASA_Dino_Manager
             return "";
         }
 
+        public static string GetRate(string id)
+        {
+            foreach (DataRow row in DataManager.StatTable.Rows)
+            {
+                if (id == row["ID"].ToString()) // did we find our dino in dinoData file
+                {
+                    return row["Rate"].ToString();
+                }
+            }
+            return "";
+        }
+
+        public static void SetRate(string id, string rate)
+        {
+            if (id != "")
+            {
+                int rowid = 0; bool found = false;
+                foreach (DataRow row in DataManager.StatTable.Rows)
+                {
+                    if (id == row["ID"].ToString()) // did we find our dino in dinoData file
+                    {
+                        StatTable.Rows[rowid].SetField("Rate", rate);
+                        FileManager.Log($"Set rate for id: {id} to: {rate}", 0);
+                        found = true; break;
+                    }
+                    rowid++;
+                }
+                if (!found)
+                {
+                    DataRow dr = DataManager.StatTable.NewRow();
+                    dr["ID"] = id;
+                    dr["Status"] = "";
+                    dr["Mutes"] = "";
+                    dr["Notes"] = "";
+                    dr["Rate"] = rate;
+                    DataManager.StatTable.Rows.Add(dr);
+                }
+                // request a save after modifying data
+                FileManager.needSave = true;
+            }
+        }
+
         public static void SetGroup(string id, string group)
         {
             if (id != "")
@@ -1208,8 +1251,6 @@ namespace ASA_Dino_Manager
                 }
 
 
-
-
                 if (addIT)
                 {
                     string id = dino;
@@ -1233,8 +1274,22 @@ namespace ASA_Dino_Manager
                     double ageDiff = lastAge - firstAge;
 
 
-                    // Calculate rates age % per minute
-                    double ageRate = ageDiff / timeDiffMinutes;
+                    // check if manual aging rate is set for this species
+                    string dinoClass = DataManager.GetLastColumnData("ID", id, "Class");
+                    string shortClass = DataManager.LongClassToShort(dinoClass);
+                    string rate = DataManager.GetRate(shortClass);
+                    double rateD = ToDouble(rate);
+
+                    double ageRate = 0;
+                    if (rateD > 0) 
+                    {
+                        ageRate = rateD / 60;
+                    }
+                    else
+                    {
+                        // Calculate rates age % per minute
+                        ageRate = ageDiff / timeDiffMinutes;
+                    }
 
                     // Estimate data
                     DateTime nowTime = DateTime.Now;
@@ -1263,8 +1318,7 @@ namespace ASA_Dino_Manager
                         }
                     }
 
-                    string rawClass = DataManager.GetFirstColumnData("ID", id, "Class");
-                    string dinoClass = DataManager.LongClassToShort(rawClass).Replace("_", " ");
+
 
                     // Fill the DataRow
                     DataRow dr = table.NewRow();
@@ -1306,7 +1360,7 @@ namespace ASA_Dino_Manager
                     dr["PapaMute"] = ToDouble(LastStats[rowID][12].ToString());
                     dr["Age"] = Math.Round(ToDouble(LastStats[rowID][15].ToString()) * 100);
                     dr["Imprint"] = Math.Round(ToDouble(LastStats[rowID][17].ToString()) * 100);
-                    dr["Tag"] = dinoClass;
+                    dr["Tag"] = shortClass;
                     dr["Mutes"] = "0000000";
                     dr["Group"] = group;
 
