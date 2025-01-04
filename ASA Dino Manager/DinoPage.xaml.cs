@@ -1129,7 +1129,7 @@ public partial class DinoPage : ContentPage
             if (DataManager.ToDouble(damage) >= DataManager.DamageMax) { damageC = Shared.goodColor; }
             if (DataManager.ToDouble(craft) >= DataManager.CraftMax) { craftC = Shared.goodColor; }
 
-            // if (DataManager.ToDouble(speed) >= DataManager.SpeedMax) { cellColor9 = Shared.goodColor; }
+            
             
 
             // mutation detection overrides normal coloring -> mutaColor

@@ -951,19 +951,27 @@ namespace ASA_Dino_Manager
                     DataRow dr = table.NewRow();
                     dr["ID"] = dino;
                     dr["Name"] = LastStats[rowID][0].ToString();
-
                     dr["Level"] = LevelM;
+
                     dr["Hp"] = HpM;
                     dr["Stamina"] = StaminaM;
                     dr["Oxygen"] = OxygenM;
                     dr["Food"] = FoodM;
                     dr["Weight"] = WeightM;
                     dr["Damage"] = DamageM;
+                    dr["Crafting"] = CraftM;
 
                     dr["Speed"] = SpeedM;
                     dr["Gen"] = ToDouble(LastStats[rowID][13].ToString());
-                    dr["Mama"] = GetLastColumnData("ID", LastStats[rowID][9].ToString(), "Name", "");
-                    dr["Papa"] = GetLastColumnData("ID", LastStats[rowID][10].ToString(), "Name", "");
+
+                    // try to link the ID of parent with a name in dataBase
+                    string mama = GetFirstColumnData("ID", FirstStats[rowID][9].ToString(), "Name", "");
+                    if (mama == "") { mama = FirstStats[rowID][9].ToString(); }
+                    string papa = GetFirstColumnData("ID", FirstStats[rowID][10].ToString(), "Name", "");
+                    if (papa == "") { papa = FirstStats[rowID][10].ToString(); }
+
+                    dr["Mama"] = mama;
+                    dr["Papa"] = papa;
                     dr["MamaMute"] = ToDouble(LastStats[rowID][11].ToString());
                     dr["PapaMute"] = ToDouble(LastStats[rowID][12].ToString());
                     dr["Age"] = Math.Round(ToDouble(LastStats[rowID][15].ToString()) * 100);
@@ -972,7 +980,7 @@ namespace ASA_Dino_Manager
 
                     dr["Status"] = CalcStatus(dino);
                     dr["Tag"] = ""; // maybe use this at some point just make sure its not null for now
-                    dr["Crafting"] = CraftM;
+                    
                     dr["Mutes"] = mutes;
                     dr["Group"] = group;
 
@@ -1149,7 +1157,6 @@ namespace ASA_Dino_Manager
             //  FileManager.Log("updated data");
         }
 
-
         public static string ReplaceSymbols(string input, Dictionary<string, string> symbolMap)
         {
             foreach (var symbol in symbolMap.Values)
@@ -1162,7 +1169,7 @@ namespace ASA_Dino_Manager
             return input;
         }
 
-        private static void ProcessDinoBabies(string[] dinos, List<string[]> MainStats, List<string[]> BrStats, DataTable table)
+        private static void ProcessDinoBabies(string[] dinos, List<string[]> FirstStats, List<string[]> LastStats, DataTable table)
         {
             int rowID = 0;
             foreach (var dino in dinos)
@@ -1262,11 +1269,18 @@ namespace ASA_Dino_Manager
                     // Fill the DataRow
                     DataRow dr = table.NewRow();
                     dr["ID"] = dino;
-                    dr["Name"] = BrStats[rowID][0].ToString();
-                    dr["Mama"] = GetLastColumnData("ID", BrStats[rowID][9].ToString(), "Name", "");
-                    dr["Papa"] = GetLastColumnData("ID", BrStats[rowID][10].ToString(), "Name", "");
-                    dr["Imprinter"] = BrStats[rowID][18].ToString();
-                    dr["Level"] = ToDouble(MainStats[rowID][1].ToString());
+                    dr["Name"] = LastStats[rowID][0].ToString();
+
+                    // try to link the ID of parent with a name in dataBase
+                    string mama = GetFirstColumnData("ID", FirstStats[rowID][9].ToString(), "Name", "");
+                    if (mama == "") { mama = FirstStats[rowID][9].ToString(); }
+                    string papa = GetFirstColumnData("ID", FirstStats[rowID][10].ToString(), "Name", "");
+                    if (papa == "") { papa = FirstStats[rowID][10].ToString(); }
+                    dr["Mama"] = mama;
+                    dr["Papa"] = papa;
+
+                    dr["Imprinter"] = LastStats[rowID][18].ToString();
+                    dr["Level"] = ToDouble(FirstStats[rowID][1].ToString());
 
 
                     // change theese stats to baby tracking stuff
@@ -1277,21 +1291,21 @@ namespace ASA_Dino_Manager
 
                     dr["Food"] = 0;
 
-                    dr["Weight"] = Math.Round(ToDouble(MainStats[rowID][6].ToString()), 1);
-                    dr["Damage"] = Math.Round((ToDouble(MainStats[rowID][7].ToString()) + 1) * 100, 1);
-                    dr["Speed"] = Math.Round((ToDouble(BrStats[rowID][8].ToString()) + 1) * 100);
+                    dr["Weight"] = Math.Round(ToDouble(FirstStats[rowID][6].ToString()), 1);
+                    dr["Damage"] = Math.Round((ToDouble(FirstStats[rowID][7].ToString()) + 1) * 100, 1);
+                    dr["Speed"] = Math.Round((ToDouble(LastStats[rowID][8].ToString()) + 1) * 100);
 
-                    if (MainStats[rowID][20].ToString() != "")
+                    if (FirstStats[rowID][20].ToString() != "")
                     {
-                        dr["Crafting"] = Math.Round((ToDouble(MainStats[rowID][20].ToString()) + 1) * 100);
+                        dr["Crafting"] = Math.Round((ToDouble(FirstStats[rowID][20].ToString()) + 1) * 100);
                     }
                     else { dr["Crafting"] = 0; }
 
-                    dr["Gen"] = ToDouble(BrStats[rowID][13].ToString());
-                    dr["MamaMute"] = ToDouble(BrStats[rowID][11].ToString());
-                    dr["PapaMute"] = ToDouble(BrStats[rowID][12].ToString());
-                    dr["Age"] = Math.Round(ToDouble(BrStats[rowID][15].ToString()) * 100);
-                    dr["Imprint"] = Math.Round(ToDouble(BrStats[rowID][17].ToString()) * 100);
+                    dr["Gen"] = ToDouble(LastStats[rowID][13].ToString());
+                    dr["MamaMute"] = ToDouble(LastStats[rowID][11].ToString());
+                    dr["PapaMute"] = ToDouble(LastStats[rowID][12].ToString());
+                    dr["Age"] = Math.Round(ToDouble(LastStats[rowID][15].ToString()) * 100);
+                    dr["Imprint"] = Math.Round(ToDouble(LastStats[rowID][17].ToString()) * 100);
                     dr["Tag"] = dinoClass;
                     dr["Mutes"] = "0000000";
                     dr["Group"] = group;
@@ -1448,7 +1462,7 @@ namespace ASA_Dino_Manager
                 // mark as garbage if they have none of the best stats
                 if (binaryC == "0000000")
                 {
-                    finalStatus = $"{compareStatus}[garbageSym]";
+                    finalStatus = $"{compareStatus}{Shared.Smap["Garbage"]}";
                 }
 
 
@@ -1498,7 +1512,7 @@ namespace ASA_Dino_Manager
 
                 if (binaryC == "0000000")
                 {
-                    finalStatus = $"{compareStatus}[garbageSym]";
+                    finalStatus = $"{compareStatus}{Shared.Smap["Garbage"]}";
                 }
 
                 // edit the row we show
