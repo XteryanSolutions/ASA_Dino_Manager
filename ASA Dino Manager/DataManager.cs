@@ -1013,11 +1013,11 @@ namespace ASA_Dino_Manager
 
                     dr["Mama"] = mama;
                     dr["Papa"] = papa;
-                    dr["MamaMute"] = ToDouble(LastStats[rowID][11].ToString());
-                    dr["PapaMute"] = ToDouble(LastStats[rowID][12].ToString());
+                    dr["MamaMute"] = ToDouble(FirstStats[rowID][11].ToString());
+                    dr["PapaMute"] = ToDouble(FirstStats[rowID][12].ToString());
                     dr["Age"] = Math.Round(ToDouble(LastStats[rowID][15].ToString()) * 100);
                     dr["Imprint"] = Math.Round(ToDouble(LastStats[rowID][17].ToString()) * 100);
-                    dr["Imprinter"] = LastStats[rowID][18].ToString();
+                    dr["Imprinter"] = FirstStats[rowID][18].ToString();
 
                     dr["Status"] = CalcStatus(dino);
                     dr["Tag"] = ""; // maybe use this at some point just make sure its not null for now
@@ -1740,7 +1740,7 @@ namespace ASA_Dino_Manager
                         int roMID = 0;
                         foreach (DataRow rowM in DataManager.MaleTable.Rows)
                         {
-                            string IDM1 = DataManager.BinaryM[roMID];
+                            string IDM1 = rowM["Res"].ToString();
                             string papaID = rowM["ID"].ToString();
                             string statusM = rowM["Status"].ToString();
 
@@ -1754,7 +1754,7 @@ namespace ASA_Dino_Manager
                                     string dB = "0"; string eB = "0"; string fB = "0";
                                     string gB = "0";
 
-                                    string IDF1 = DataManager.BinaryF[roFID];
+                                    string IDF1 = rowF["Res"].ToString();
                                     string mamaID = rowF["ID"].ToString();
                                     string statusF = rowF["Status"].ToString();
 
@@ -1972,8 +1972,8 @@ namespace ASA_Dino_Manager
 
             // check if mutation count is more than 0
             // maybe add a check if its gone up from previous generation
-            double muteP = ToDouble(GetFirstColumnData("ID", id, "PapaMutes"));
-            double muteM = ToDouble(GetFirstColumnData("ID", id, "MamaMutes"));
+            double muteP = ToDouble(GetFirstColumnData("ID", id, "PapaMute"));
+            double muteM = ToDouble(GetFirstColumnData("ID", id, "MamaMute"));
 
             if (muteM > 0 || muteP > 0)
             {
