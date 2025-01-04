@@ -402,6 +402,7 @@ namespace ASA_Dino_Manager
                     DataManager.StatTable.WriteXml(AppPath + dataLocation + @"\data.hrv");
                     FileManager.Log("==== Saved DataBase ====", 0);
                     needSave = false;
+
                 }
                 catch
                 {

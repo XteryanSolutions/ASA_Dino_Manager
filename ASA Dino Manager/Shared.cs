@@ -57,6 +57,7 @@
         { "Class", "🦖" },
         { "SortUp", "▲" },
         { "SortDown", "▼" },
+        { "Save", "💾" },
     };
 
         //offset for preventing excessive mutation triggers

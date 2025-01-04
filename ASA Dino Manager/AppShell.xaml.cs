@@ -437,20 +437,25 @@ namespace ASA_Dino_Manager
 
         private void SaveData()
         {
-            if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
+            if (FileManager.needSave)
             {
-                try
+                this.Title = this.Title + " " + Shared.Smap["Save"];
+                if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
                 {
-                    FileManager.SaveFiles();
+                    try
+                    {
+                        FileManager.SaveFiles();
+                    }
+                    finally
+                    {
+                        Monitor.Exit(Shared._dbLock);
+
+                    }
                 }
-                finally
+                else
                 {
-                    Monitor.Exit(Shared._dbLock);
+                    FileManager.Log("Failed to acquire database lock within timeout.", 1);
                 }
-            }
-            else
-            {
-                FileManager.Log("Failed to acquire database lock within timeout.", 1);
             }
         }
 
