@@ -700,6 +700,19 @@ public partial class BabyPage : ContentPage
                 status = Smap["Notes"] + status;
             }
 
+            if (!status.Contains(Smap["NewTame"]))
+            {
+                if (mama == "") { mama = Smap["Missing"]; }
+                if (papa == "") { papa = Smap["Missing"]; }
+            }
+            else
+            {
+                if (mama == "") { mama = Smap["Warning"]; }
+                if (papa == "") { papa = Smap["Warning"]; }
+                // get the tamer string instead of imprinter
+                imprinter = DataManager.GetFirstColumnData("ID", id, "Tribe");
+            }
+
             // Create a Labels
             var tagL = new Label { Text = dinoClass, TextColor = cellColor0 };
             var nameL = new Label { Text = name, TextColor = cellColor0 };

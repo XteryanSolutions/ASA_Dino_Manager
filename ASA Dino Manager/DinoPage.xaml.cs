@@ -1196,6 +1196,18 @@ public partial class DinoPage : ContentPage
                 status = status.Replace("<", $"{Smap["LessThan"]}");
             }
 
+            if (!status.Contains(Smap["NewTame"]))
+            {
+                if (mama == "") { mama = Smap["Missing"]; }
+                if (papa == "") { papa = Smap["Missing"]; }
+            }
+            else
+            {
+                // get the tamer string instead of imprinter
+                imprinter = DataManager.GetFirstColumnData("ID", id, "Tribe");
+            }
+            
+
             // Create a Labels
             var nameL = new Label { Text = name, TextColor = nameC };
             var levelL = new Label { Text = level, TextColor = levelC };

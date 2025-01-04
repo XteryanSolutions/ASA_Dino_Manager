@@ -2209,9 +2209,9 @@ namespace ASA_Dino_Manager
                 valu = "";
             }
 
-            if (newData != "" && newData != "N/A" && newData != "#" && newData != valu) // have new data
+            if (newData != "" && newData != "N/A" && newData != "#" && newData != valu && newData != "00") // have new data
             {
-                if (field == "N/A" || field == "" || field == "#" || field == valu)// no previous info
+                if (field == "N/A" || field == "" || field == "#" || field == valu && field == "00") // no previous info
                 {
                     if (field != newData)
                     {
@@ -2222,7 +2222,7 @@ namespace ASA_Dino_Manager
             }
             else // we dont have new data
             {
-                if (field == "N/A" || field == "" || field == "#" || field == "0") // we dont have old data
+                if (field == "N/A" || field == "" || field == "#" || field == "0" || field == "00") // we dont have old data
                 {
                     return true;
                 }
