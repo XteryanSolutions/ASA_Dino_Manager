@@ -279,7 +279,7 @@ public partial class BabyPage : ContentPage
 
 
             var speciesBtn = new Button { Text = speciesBtnText, BackgroundColor = speciesBtnColor };
-            AddToGrid(grid, speciesBtn, 1, 0);
+            //AddToGrid(grid, speciesBtn, 1, 0);
             speciesBtn.Clicked += SpeciesBtnClicked;
         }
 
@@ -689,6 +689,10 @@ public partial class BabyPage : ContentPage
             {
                 status = "Adolescent";
             }
+            if (ageD > 99 || ageF > 99)
+            {
+                status = "Adult";
+            }
 
             string notes = DataManager.GetNotes(id);
             if (notes != "")
@@ -771,7 +775,7 @@ public partial class BabyPage : ContentPage
         {
             //  FileManager.Log($"Unselected {selectedID}", 0);
             selectedID = ""; isSelected = false; this.Title = $"{Shared.setPage.Replace("_", " ")}";
-            canDouble = false; editStats = false; speciesToggle = "All";
+            canDouble = false; editStats = false;
         }
     }
 
@@ -975,8 +979,10 @@ public partial class BabyPage : ContentPage
 
     private void SpeciesBtnClicked(object? sender, EventArgs e)
     {
+        if (speciesToggle == "All")
+        {
 
-
+        }
 
         FileManager.Log($"Toggle Species", 0);
 

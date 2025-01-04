@@ -440,17 +440,17 @@ namespace ASA_Dino_Manager
         {
             if (FileManager.needSave)
             {
-                this.Title = this.Title + " " + Shared.Smap["Save"];
+                
                 if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
                 {
                     try
                     {
                         FileManager.SaveFiles();
+                        this.Title = this.Title + " " + Shared.Smap["Save"]; DisableSaveIcon();
                     }
                     finally
                     {
                         Monitor.Exit(Shared._dbLock);
-
                     }
                 }
                 else
@@ -460,5 +460,10 @@ namespace ASA_Dino_Manager
             }
         }
 
+        private async Task DisableSaveIcon()
+        {
+            await Task.Delay(1000);
+            this.Title = this.Title.Replace(Shared.Smap["Save"], "");
+        }
     }
 }
