@@ -20,8 +20,6 @@ public partial class DinoPage : ContentPage
     private Dictionary<int, BoxView> boxViews = new Dictionary<int, BoxView>();
     private int boxID = 0;
     private int boxRowID = 0;
-    private int maxM = 0;
-    private int maxF = 0;
 
     Button Button0 = new Button { };
     Button Button1 = new Button { };
@@ -93,9 +91,9 @@ public partial class DinoPage : ContentPage
                         DataManager.GetDinoData(Shared.selectedClass, sortM, sortF);
 
                         // load this data only when showing all and included
-                        if (ToggleExcluded == 0 || ToggleExcluded == 1)
+                        if (ToggleExcluded == 0 || ToggleExcluded == 1 || ToggleExcluded == 2)
                         {
-                            if (!CurrentStats && ToggleExcluded != 2)
+                            if (!CurrentStats)
                             {
                                 DataManager.EvaluateDinos();
                                 DataManager.GetBestPartner();
@@ -245,7 +243,11 @@ public partial class DinoPage : ContentPage
                 ? grid.ColumnDefinitions.Count
                 : 1); // Cover all columns
 
-            boxViews[boxID++] = rowBackground;
+            // dont recolor the bottom panel since its not selectable
+            if (title != "Bottom") 
+            {
+                boxViews[boxID++] = rowBackground;
+            } 
 
             // make background on row selectable to increase surface area
             if (title != "Bottom") // not the bottom panel
@@ -341,12 +343,12 @@ public partial class DinoPage : ContentPage
         }
 
 
-       
+
 
 
         Button0.Text = "Include";
 
-        Button0 = new Button { Text = ""};
+        Button0 = new Button { Text = "" };
         Button0.Clicked += ExcludeBtnClicked;
         AddToGrid(grid, Button0, 5, 0);
 
@@ -355,7 +357,7 @@ public partial class DinoPage : ContentPage
         AddToGrid(grid, Button1, 6, 0);
 
         string group = DataManager.GetGroup(selectedID);
-        if (group == "Exclude") { Button0.Text = "Include"; Button0.BackgroundColor = Shared.PrimaryColor; } 
+        if (group == "Exclude") { Button0.Text = "Include"; Button0.BackgroundColor = Shared.PrimaryColor; }
         else { Button0.Text = "Exclude"; Button0.BackgroundColor = Shared.SecondaryColor; }
 
         if (group == "Archived") { Button1.Text = "Include"; Button1.BackgroundColor = Shared.PrimaryColor; }
@@ -407,7 +409,7 @@ public partial class DinoPage : ContentPage
 
         // FileManager.Log($"barH: {barH} = {rowCount} * {Shared.rowHeight} + {Shared.headerSize} + {ofs}", 0);
 
-        if (ToggleExcluded == 2 || CurrentStats || DataManager.BottomTable.Rows.Count < 1) { barH = 0; }
+        if (CurrentStats || DataManager.BottomTable.Rows.Count < 1) { barH = 0; }
 
         // Define row definitions
         maingrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // Scrollable content
@@ -1308,16 +1310,6 @@ public partial class DinoPage : ContentPage
 
             rowIndex++;
         }
-        // set id max for row color tracking
-        if (title == "Male")
-        {
-            maxM = boxID;
-        }
-        else if (title == "Female")
-        {
-            maxF = boxID;
-        }
-
 
         return grid;
     }
@@ -1352,21 +1344,23 @@ public partial class DinoPage : ContentPage
             {
                 if (boxViews.Count > 0)
                 {
-                    int rows = maxM;
-                    for (int i = 0; i < rows; i++)
-                    {
-                        // Check if the index is even or odd
-                        boxViews[i].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
-                    }
-                    int id = rows; rows = maxF - 2;
-                    for (int i = 0; i < rows; i++)
-                    {
-                        if (id >= boxViews.Count) { break; }
+                    int rowsM = DataManager.MaleTable.Rows.Count;
+                    int rowsF = DataManager.FemaleTable.Rows.Count;
+                    int rowsT = boxViews.Count;
+                    int z = 0;
 
-                        // Check if the index is even or odd
-                        boxViews[id].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
-
-                        id++;
+                    for (int i = 0; i < rowsT; i++) // color all male rows
+                    {
+                        // start coloring the rows with Solid color
+                        if (i <= rowsM)
+                        {
+                            boxViews[i].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
+                        }
+                        else
+                        {
+                            boxViews[i].Color = z % 2 == 0 ? OddMPanelColor : MainPanelColor;
+                            z++;
+                        }
                     }
                 }
             }

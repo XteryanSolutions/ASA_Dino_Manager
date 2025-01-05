@@ -19,8 +19,6 @@ public partial class BabyPage : ContentPage
     private Dictionary<int, BoxView> boxViews = new Dictionary<int, BoxView>();
     private int boxID = 0;
     private int boxRowID = 0;
-    private int maxM = 0;
-    private int maxF = 0;
 
     Button Button0 = new Button { };
     Button Button1 = new Button { };
@@ -722,7 +720,7 @@ public partial class BabyPage : ContentPage
             {
                 status = "Adolescent";
             }
-            if (ageD > 99 || ageF > 99)
+            if (ageD > 100 || ageF > 100)
             {
                 status = "Adult";
             }
@@ -811,15 +809,6 @@ public partial class BabyPage : ContentPage
 
             rowIndex++;
         }
-        // set id max for row color tracking
-        if (title == "Male")
-        {
-            maxM = boxID;
-        }
-        else if (title == "Female")
-        {
-            maxF = boxID;
-        }
 
         return grid;
     }
@@ -832,21 +821,23 @@ public partial class BabyPage : ContentPage
             {
                 if (boxViews.Count > 0)
                 {
-                    int rows = maxM;
-                    for (int i = 0; i < rows; i++)
-                    {
-                        // Check if the index is even or odd
-                        boxViews[i].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
-                    }
-                    int id = rows; rows = maxF - 2;
-                    for (int i = 0; i < rows; i++)
-                    {
-                        if (id >= boxViews.Count) { break; }
+                    int rowsM = DataManager.MaleTable.Rows.Count;
+                    int rowsF = DataManager.FemaleTable.Rows.Count;
+                    int rowsT = boxViews.Count;
+                    int z = 0;
 
-                        // Check if the index is even or odd
-                        boxViews[id].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
-
-                        id++;
+                    for (int i = 0; i < rowsT; i++) // color all male rows
+                    {
+                        // start coloring the rows with Solid color
+                        if (i <= rowsM)
+                        {
+                            boxViews[i].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
+                        }
+                        else
+                        {
+                            boxViews[i].Color = z % 2 == 0 ? OddMPanelColor : MainPanelColor;
+                            z++;
+                        }
                     }
                 }
             }
