@@ -537,8 +537,13 @@ public partial class BabyPage : ContentPage
 
         string sortChar = "";
 
+        // maybe some width adjustment for headers to line up the tables
+        int colID = 0;
+        int[] cellW = { 110, 100 }; // maybe figure out the max width of any cells
+
+
         if (newTest == $"{Smap["Class"]}Class") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var tagH = new Label { Text = $"{Smap["Class"]}Class{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var tagH = new Label { Text = $"{Smap["Class"]}Class{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize, WidthRequest = cellW[colID++] };
         sortChar = ""; if (newTest == $"{Smap["Name"]}Name") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var nameH = new Label { Text = $"{Smap["Name"]}Name{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         sortChar = ""; if (newTest == $"{Smap["Level"]}Level") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }

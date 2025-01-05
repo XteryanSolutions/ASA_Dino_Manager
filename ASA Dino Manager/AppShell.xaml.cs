@@ -462,7 +462,7 @@ namespace ASA_Dino_Manager
 
         private async Task DisableSaveIcon()
         {
-            await Task.Delay(1000);
+            await Task.Delay(1500);
             this.Title = this.Title.Replace(Shared.Smap["Save"], "");
         }
     }

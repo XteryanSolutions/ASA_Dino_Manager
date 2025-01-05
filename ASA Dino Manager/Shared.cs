@@ -20,7 +20,7 @@
         public static int DefaultToggle = 1;
         public static int DefaultToggleB = 0; // default toggle for babypage
         public static bool DefaultStat = false;
-        public static int doubleClick = 500;
+        public static int doubleClick = 1000;
 
 
         // symbols

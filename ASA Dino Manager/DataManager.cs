@@ -2181,7 +2181,7 @@ namespace ASA_Dino_Manager
 
                             if (needInfo)
                             {
-                                FileManager.Log($"Need to import more data", 0);
+                                FileManager.Log($"Need to import more data", 1);
                             }
 
                             ModC++;
