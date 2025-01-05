@@ -269,12 +269,6 @@ public partial class BabyPage : ContentPage
         else if (ToggleExcluded == 2) { toggleBtnText = "Excluded"; }
         else if (ToggleExcluded == 3) { toggleBtnText = "Archived"; }
 
-        string excludeBtnText = "Exclude"; var excludeBtnColor = Shared.SecondaryColor;
-        string archiveBtnText = "Archive"; var archiveBtnColor = Shared.TrinaryColor;
-
-        string group = DataManager.GetGroup(selectedID);
-        if (group == "Exclude") { excludeBtnText = "Include"; excludeBtnColor = Shared.PrimaryColor; }
-        if (group == "Archived") { archiveBtnText = "Restore"; archiveBtnColor = Shared.PrimaryColor; }
 
         if (isDouble)
         {
@@ -301,18 +295,31 @@ public partial class BabyPage : ContentPage
 
 
         // add dynamic buttons (shown only when dino is selected)
-        Button0 = new Button { Text = excludeBtnText, BackgroundColor = excludeBtnColor };
+        Button0 = new Button { Text = "" };
         Button0.Clicked += ExcludeBtnClicked;
         AddToGrid(grid, Button0, 5, 0);
 
-        Button1 = new Button { Text = archiveBtnText, BackgroundColor = archiveBtnColor };
+        Button1 = new Button { Text = "" };
         Button1.Clicked += ArchiveBtnClicked;
         AddToGrid(grid, Button1, 6, 0);
+
+
+        string group = DataManager.GetGroup(selectedID);
+        if (group == "Exclude") { Button0.Text = "Include"; Button0.BackgroundColor = Shared.PrimaryColor; }
+        else { Button0.Text = "Exclude"; Button0.BackgroundColor = Shared.SecondaryColor; }
+
+        if (group == "Archived") { Button1.Text = "Include"; Button1.BackgroundColor = Shared.PrimaryColor; }
+        else { Button1.Text = "Archive"; Button1.BackgroundColor = Shared.TrinaryColor; }
 
         if (!isSelected)
         {
             Button0.IsVisible = false;
             Button1.IsVisible = false;
+        }
+        else
+        {
+            Button0.IsVisible = true;
+            Button1.IsVisible = true;
         }
 
         return grid;
@@ -819,21 +826,39 @@ public partial class BabyPage : ContentPage
 
     private void DefaultRowColors()
     {
-        int rows = maxM;
-        for (int i = 0; i < rows; i++)
+        if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
         {
-            // Check if the index is even or odd
-            boxViews[i].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
+            try
+            {
+                if (boxViews.Count > 0)
+                {
+                    int rows = maxM;
+                    for (int i = 0; i < rows; i++)
+                    {
+                        // Check if the index is even or odd
+                        boxViews[i].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
+                    }
+                    int id = rows; rows = maxF - 2;
+                    for (int i = 0; i < rows; i++)
+                    {
+                        if (id >= boxViews.Count) { break; }
+
+                        // Check if the index is even or odd
+                        boxViews[id].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
+
+                        id++;
+                    }
+                }
+            }
+            catch { }
+            finally
+            {
+                Monitor.Exit(Shared._dbLock);
+            }
         }
-        int id = rows; rows = maxF - 2;
-        for (int i = 0; i < rows; i++)
+        else
         {
-            if (id >= boxViews.Count) { break; }
-
-            // Check if the index is even or odd
-            boxViews[id].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
-
-            id++;
+            FileManager.Log("Recoloring failure", 1);
         }
     }
 

@@ -366,6 +366,11 @@ public partial class DinoPage : ContentPage
             Button0.IsVisible = false;
             Button1.IsVisible = false;
         }
+        else
+        {
+            Button0.IsVisible = true;
+            Button1.IsVisible = true;
+        }
 
         return grid;
     }
@@ -1344,21 +1349,39 @@ public partial class DinoPage : ContentPage
 
     private void DefaultRowColors()
     {
-        int rows = maxM;
-        for (int i = 0; i < rows; i++)
+        if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
         {
-            // Check if the index is even or odd
-            boxViews[i].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
+            try
+            {
+                if (boxViews.Count > 0)
+                {
+                    int rows = maxM;
+                    for (int i = 0; i < rows; i++)
+                    {
+                        // Check if the index is even or odd
+                        boxViews[i].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
+                    }
+                    int id = rows; rows = maxF - 2;
+                    for (int i = 0; i < rows; i++)
+                    {
+                        if (id >= boxViews.Count) { break; }
+
+                        // Check if the index is even or odd
+                        boxViews[id].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
+
+                        id++;
+                    }
+                }
+            }
+            catch { }
+            finally
+            {
+                Monitor.Exit(Shared._dbLock);
+            }
         }
-        int id = rows; rows = maxF - 2;
-        for (int i = 0; i < rows; i++)
+        else
         {
-            if (id >= boxViews.Count) { break; }
-
-            // Check if the index is even or odd
-            boxViews[id].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
-
-            id++;
+            FileManager.Log("Recoloring failure", 1);
         }
     }
 
