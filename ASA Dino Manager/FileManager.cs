@@ -1,7 +1,4 @@
-﻿//using static System.Net.Mime.MediaTypeNames;
-//using System.Windows.Forms;
-
-namespace ASA_Dino_Manager
+﻿namespace ASA_Dino_Manager
 {
 
     class FileManager

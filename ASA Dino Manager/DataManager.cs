@@ -1,11 +1,5 @@
-﻿using ASA_Dino_Manager.WinUI;
-using Microsoft.UI.Xaml.Controls;
-using System.Data;
-using System.Data.Common;
+﻿using System.Data;
 using System.Globalization;
-using Windows.Media.Devices;
-using Windows.Storage.Provider;
-using static Microsoft.Maui.ApplicationModel.Permissions;
 
 namespace ASA_Dino_Manager
 {

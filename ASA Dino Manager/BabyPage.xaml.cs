@@ -15,6 +15,16 @@ public partial class BabyPage : ContentPage
     public static bool canDouble = false;
     public static bool isDouble = false;
 
+    // keep track of boxviews for recoloring
+    private Dictionary<int, BoxView> boxViews = new Dictionary<int, BoxView>();
+    private int boxID = 0;
+    private int boxRowID = 0;
+    private int maxM = 0;
+    private int maxF = 0;
+
+    Button Button0 = new Button { };
+    Button Button1 = new Button { };
+
     ////////////////////    Table Sorting   ////////////////////
     public static string sortM = Shared.DefaultSortM;
     public static string sortF = Shared.DefaultSortF;
@@ -128,6 +138,10 @@ public partial class BabyPage : ContentPage
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        // reset boxViews
+        boxID = 0; boxRowID = 0;
+        boxViews = new Dictionary<int, BoxView>();
+
         // Add side panel to left column
         AddToGrid(mainLayout, CreateSidePanel(), 0, 0);
 
@@ -135,7 +149,7 @@ public partial class BabyPage : ContentPage
         AddToGrid(mainLayout, CreateMainPanel(), 0, 1);
 
         // don't unselect dino while editing stats
-        if (!isDouble && isSelected)
+        if (!isDouble)
         {
             UnSelectDino(mainLayout);
         }
@@ -183,6 +197,8 @@ public partial class BabyPage : ContentPage
             Grid.SetColumnSpan(rowBackground, grid.ColumnDefinitions.Count > 0
                 ? grid.ColumnDefinitions.Count
                 : 1); // Cover all columns
+
+            boxViews[boxID++] = rowBackground;
 
             // make background on row selectable to increase surface area
             if (id != "") // only when an id is passed
@@ -283,19 +299,20 @@ public partial class BabyPage : ContentPage
             speciesBtn.Clicked += SpeciesBtnClicked;
         }
 
-        if (isSelected) // add theese only if we have a dino selected
-        {
-            // do not show exclude button while in archive view
-            if (ToggleExcluded != 3)
-            {
-                var excludeBtn = new Button { Text = excludeBtnText, BackgroundColor = excludeBtnColor };
-                excludeBtn.Clicked += ExcludeBtnClicked;
-                AddToGrid(grid, excludeBtn, 5, 0);
-            }
 
-            var archiveBtn = new Button { Text = archiveBtnText, BackgroundColor = archiveBtnColor };
-            archiveBtn.Clicked += ArchiveBtnClicked;
-            AddToGrid(grid, archiveBtn, 6, 0);
+        // add dynamic buttons (shown only when dino is selected)
+        Button0 = new Button { Text = excludeBtnText, BackgroundColor = excludeBtnColor };
+        Button0.Clicked += ExcludeBtnClicked;
+        AddToGrid(grid, Button0, 5, 0);
+
+        Button1 = new Button { Text = archiveBtnText, BackgroundColor = archiveBtnColor };
+        Button1.Clicked += ArchiveBtnClicked;
+        AddToGrid(grid, Button1, 6, 0);
+
+        if (!isSelected)
+        {
+            Button0.IsVisible = false;
+            Button1.IsVisible = false;
         }
 
         return grid;
@@ -614,10 +631,14 @@ public partial class BabyPage : ContentPage
         AddToGrid(grid, imprinterH, 0, startID++, title);// imprinter
 
 
-        int rowIndex = 1; // Start adding rows below the header
+        // add one xtra id for female header row
+        if (boxRowID > 0) { boxRowID++; }
 
+        int rowIndex = 1; // Start adding rows below the header
         foreach (DataRow row in table.Rows)
         {
+            boxRowID++;
+
             var cellColor0 = DefaultColor;
             var cellColor1 = DefaultColor;
             var cellColor2 = DefaultColor;
@@ -741,21 +762,21 @@ public partial class BabyPage : ContentPage
             bool selected = false;
 
             // Attach TapGesture to all labels
-            SelectDino(tagL, id);
-            SelectDino(nameL, id);
-            SelectDino(levelL, id);
-            SelectDino(hpL, id);
-            SelectDino(staminaL, id);
-            SelectDino(oxygenL, id);
-            SelectDino(foodL, id);
-            SelectDino(statusL, id);
-            SelectDino(genL, id);
-            SelectDino(papaL, id);
-            SelectDino(mamaL, id);
-            SelectDino(papaML, id);
-            SelectDino(mamaML, id);
-            SelectDino(imprintL, id);
-            SelectDino(imprinterL, id);
+            SelectDino(tagL, id, boxRowID);
+            SelectDino(nameL, id, boxRowID);
+            SelectDino(levelL, id, boxRowID);
+            SelectDino(hpL, id, boxRowID);
+            SelectDino(staminaL, id, boxRowID);
+            SelectDino(oxygenL, id, boxRowID);
+            SelectDino(foodL, id, boxRowID);
+            SelectDino(statusL, id, boxRowID);
+            SelectDino(genL, id, boxRowID);
+            SelectDino(papaL, id, boxRowID);
+            SelectDino(mamaL, id, boxRowID);
+            SelectDino(papaML, id, boxRowID);
+            SelectDino(mamaML, id, boxRowID);
+            SelectDino(imprintL, id, boxRowID);
+            SelectDino(imprinterL, id, boxRowID);
 
             // figure out if we have this dino selected
             // for row coloring purposes
@@ -783,8 +804,37 @@ public partial class BabyPage : ContentPage
 
             rowIndex++;
         }
+        // set id max for row color tracking
+        if (title == "Male")
+        {
+            maxM = boxID;
+        }
+        else if (title == "Female")
+        {
+            maxF = boxID;
+        }
 
         return grid;
+    }
+
+    private void DefaultRowColors()
+    {
+        int rows = maxM;
+        for (int i = 0; i < rows; i++)
+        {
+            // Check if the index is even or odd
+            boxViews[i].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
+        }
+        int id = rows; rows = maxF - 2;
+        for (int i = 0; i < rows; i++)
+        {
+            if (id >= boxViews.Count) { break; }
+
+            // Check if the index is even or odd
+            boxViews[id].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
+
+            id++;
+        }
     }
 
     private void ClearSelection()
@@ -794,6 +844,12 @@ public partial class BabyPage : ContentPage
             //  FileManager.Log($"Unselected {selectedID}", 0);
             selectedID = ""; isSelected = false; this.Title = $"{Shared.setPage.Replace("_", " ")}";
             canDouble = false; editStats = false;
+
+            Button0.IsVisible = false;
+            Button1.IsVisible = false;
+
+            // recolor all rows to default
+            DefaultRowColors();
         }
     }
 
@@ -803,6 +859,18 @@ public partial class BabyPage : ContentPage
         return double.TryParse(input, out _); // Returns true if the input is a valid double
     }
 
+    private void ButtonGroup()
+    {
+        string group = DataManager.GetGroup(selectedID);
+        if (group == "Exclude") { Button0.Text = "Include"; Button0.BackgroundColor = Shared.PrimaryColor; }
+        else { Button0.Text = "Exclude"; Button0.BackgroundColor = Shared.SecondaryColor; }
+
+        if (group == "Archived") { Button1.Text = "Include"; Button1.BackgroundColor = Shared.PrimaryColor; }
+        else { Button1.Text = "Archive"; Button1.BackgroundColor = Shared.TrinaryColor; }
+
+        Button0.IsVisible = true;
+        Button1.IsVisible = true;
+    }
 
     // Some event handlers
     void SortColumn(Label label, string sex)
@@ -886,7 +954,7 @@ public partial class BabyPage : ContentPage
         label.GestureRecognizers.Add(tapGesture1);
     }
 
-    void SelectDino(Label label, string id)
+    void SelectDino(Label label, string id, int boxid = 0)
     {
         label.GestureRecognizers.Clear();
         // Create a TapGestureRecognizer
@@ -896,6 +964,14 @@ public partial class BabyPage : ContentPage
             if (selectedID != id) // select a new dino
             {
                 selectedID = id; isSelected = true;
+
+                // recolor all rows to default
+                DefaultRowColors();
+
+                boxViews[boxid].Color = SelectedColor;
+
+                // make buttons visible
+                ButtonGroup();
 
                 string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
                 this.Title = $"{name} - {id}"; // set title to dino name
@@ -908,6 +984,7 @@ public partial class BabyPage : ContentPage
             {
                 // double click  // open the dino extended info window
                 isDouble = true; canDouble = false;
+                CreateContent();
             }
             else if (selectedID == id && !canDouble) // select same dino over time
             {
@@ -915,7 +992,6 @@ public partial class BabyPage : ContentPage
                 canDouble = true;
                 DisableDoubleClick();
             }
-            CreateContent();
         };
 
         // Attach the TapGestureRecognizer to the label
@@ -933,6 +1009,14 @@ public partial class BabyPage : ContentPage
             {
                 selectedID = id; isSelected = true;
 
+                // recolor all rows to default
+                DefaultRowColors();
+
+                inp.Color = SelectedColor;
+
+                // make buttons visible
+                ButtonGroup();
+
                 string name = DataManager.GetLastColumnData("ID", selectedID, "Name");
                 this.Title = $"{name} - {id}"; // set title to dino name
 
@@ -944,6 +1028,7 @@ public partial class BabyPage : ContentPage
             {
                 // double click  // open the dino extended info window
                 isDouble = true; canDouble = false;
+                CreateContent();
             }
             else if (selectedID == id && !canDouble) // select same dino over time
             {
@@ -951,7 +1036,6 @@ public partial class BabyPage : ContentPage
                 canDouble = true;
                 DisableDoubleClick();
             }
-            CreateContent();
         };
 
         // Attach the TapGestureRecognizer to the label
@@ -972,7 +1056,7 @@ public partial class BabyPage : ContentPage
         tapGesture.Tapped += (s, e) =>
         {
             ClearSelection();
-            CreateContent();
+            //CreateContent();
         };
 
         // Attach the TapGestureRecognizer to the label

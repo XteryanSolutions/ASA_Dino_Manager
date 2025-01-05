@@ -1,7 +1,4 @@
-﻿using Microsoft.Maui.Controls;
-using System;
-
-namespace ASA_Dino_Manager
+﻿namespace ASA_Dino_Manager
 {
     public partial class AppShell : Shell
     {

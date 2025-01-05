@@ -1,6 +1,4 @@
-﻿using Microsoft.UI.Xaml.Automation;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Data;
 using System.Diagnostics;
 using static ASA_Dino_Manager.Shared;
 
@@ -18,6 +16,15 @@ public partial class DinoPage : ContentPage
     public static bool canDouble = false;
     public static bool isDouble = false;
 
+    // keep track of boxviews for recoloring
+    private Dictionary<int, BoxView> boxViews = new Dictionary<int, BoxView>();
+    private int boxID = 0;
+    private int boxRowID = 0;
+    private int maxM = 0;
+    private int maxF = 0;
+
+    Button Button0 = new Button { };
+    Button Button1 = new Button { };
 
     ////////////////////    Table Sorting   ////////////////////
     public static string sortM = Shared.DefaultSortM;
@@ -42,11 +49,6 @@ public partial class DinoPage : ContentPage
 
     private Stopwatch timer1 = Stopwatch.StartNew();
 
-    private Dictionary<int, BoxView> boxViews = new Dictionary<int, BoxView>();
-    private int boxID = 0;
-    private int boxRowID = 0;
-    private int maxM = 0;
-    private int maxF = 0;
 
     public DinoPage()
     {
@@ -244,7 +246,7 @@ public partial class DinoPage : ContentPage
                 : 1); // Cover all columns
 
             boxViews[boxID++] = rowBackground;
-            
+
             // make background on row selectable to increase surface area
             if (title != "Bottom") // not the bottom panel
             {
@@ -315,10 +317,6 @@ public partial class DinoPage : ContentPage
         if (CurrentStats) { btn1Text = "Current"; bColor1 = Shared.SecondaryColor; }
 
 
-        string btn2Text = "Exclude"; var bColor2 = Shared.SecondaryColor;
-        string btn3Text = "Archive"; var bColor3 = Shared.TrinaryColor;
-
-
         if (isDouble)
         {
             var SaveBtn = new Button { Text = "Save", BackgroundColor = Shared.TrinaryColor };
@@ -343,26 +341,31 @@ public partial class DinoPage : ContentPage
         }
 
 
-        if (isSelected) // add theese only if we have a dino selected
+       
+
+
+        Button0.Text = "Include";
+
+        Button0 = new Button { Text = ""};
+        Button0.Clicked += ExcludeBtnClicked;
+        AddToGrid(grid, Button0, 5, 0);
+
+        Button1 = new Button { Text = "" };
+        Button1.Clicked += ArchiveBtnClicked;
+        AddToGrid(grid, Button1, 6, 0);
+
+        string group = DataManager.GetGroup(selectedID);
+        if (group == "Exclude") { Button0.Text = "Include"; Button0.BackgroundColor = Shared.PrimaryColor; } 
+        else { Button0.Text = "Exclude"; Button0.BackgroundColor = Shared.SecondaryColor; }
+
+        if (group == "Archived") { Button1.Text = "Include"; Button1.BackgroundColor = Shared.PrimaryColor; }
+        else { Button1.Text = "Archive"; Button1.BackgroundColor = Shared.TrinaryColor; }
+
+        if (!isSelected)
         {
-            string group = DataManager.GetGroup(selectedID);
-            if (group == "Exclude") { btn2Text = "Include"; bColor2 = Shared.PrimaryColor; }
-            if (group == "Archived") { btn3Text = "Restore"; bColor3 = Shared.PrimaryColor; }
-
-            // do not show exclude button while in archive view
-            if (ToggleExcluded != 3)
-            {
-                var topButton2 = new Button { Text = btn2Text, BackgroundColor = bColor2 };
-                topButton2.Clicked += ExcludeBtnClicked;
-                AddToGrid(grid, topButton2, 5, 0);
-            }
-
-
-            var ArchiveBtn = new Button { Text = btn3Text, BackgroundColor = bColor3 };
-            ArchiveBtn.Clicked += ArchiveBtnClicked;
-            AddToGrid(grid, ArchiveBtn, 6, 0);
+            Button0.IsVisible = false;
+            Button1.IsVisible = false;
         }
-
 
         return grid;
     }
@@ -1093,7 +1096,8 @@ public partial class DinoPage : ContentPage
             AddToGrid(grid, header15, 0, startID++, title);
         }
 
-        if (boxRowID > 0) { boxRowID++; } // add one extra for the female header
+        // add one xtra id for female header row
+        if (boxRowID > 0) { boxRowID++; }
 
         int rowIndex = 1; // Start adding rows below the header
         foreach (DataRow row in table.Rows)
@@ -1138,10 +1142,10 @@ public partial class DinoPage : ContentPage
             var damageC = DefaultColor;
             var craftC = DefaultColor;
             ////////////
-            var speedC = DefaultColor;  
+            var speedC = DefaultColor;
             var defaultC = DefaultColor;
 
-            
+
             //recolor breeding stats
             if (DataManager.ToDouble(hp) >= DataManager.HpMax) { hpC = Shared.goodColor; }
             if (DataManager.ToDouble(stamina) >= DataManager.StaminaMax) { staminaC = Shared.goodColor; }
@@ -1151,8 +1155,8 @@ public partial class DinoPage : ContentPage
             if (DataManager.ToDouble(damage) >= DataManager.DamageMax) { damageC = Shared.goodColor; }
             if (DataManager.ToDouble(craft) >= DataManager.CraftMax) { craftC = Shared.goodColor; }
 
-            
-            
+
+
 
             // mutation detection overrides normal coloring -> mutaColor
             if (mutes.Length >= 7 && !CurrentStats) // dont show mutations on current statview
@@ -1222,7 +1226,7 @@ public partial class DinoPage : ContentPage
                 // get the tamer string instead of imprinter
                 imprinter = DataManager.GetFirstColumnData("ID", id, "Tribe");
             }
-            
+
 
             // Create a Labels
             var nameL = new Label { Text = name, TextColor = nameC };
@@ -1258,7 +1262,7 @@ public partial class DinoPage : ContentPage
                 //------------------------------------------
                 SelectDino(hpL, id, boxRowID);
                 SelectDino(staminaL, id, boxRowID);
-                if (hasO2) { SelectDino(oxygenL, id , boxRowID); }
+                if (hasO2) { SelectDino(oxygenL, id, boxRowID); }
                 SelectDino(foodL, id, boxRowID);
                 SelectDino(weightL, id, boxRowID);
                 SelectDino(damageL, id, boxRowID);
@@ -1324,6 +1328,9 @@ public partial class DinoPage : ContentPage
             selectedID = ""; isSelected = false; this.Title = $"{Shared.setPage.Replace("_", " ")}";
             canDouble = false; editStats = false;
 
+            Button0.IsVisible = false;
+            Button1.IsVisible = false;
+
             // recolor all rows to default
             DefaultRowColors();
         }
@@ -1337,20 +1344,37 @@ public partial class DinoPage : ContentPage
 
     private void DefaultRowColors()
     {
-        int rows = boxViews.Count;
+        int rows = maxM;
         for (int i = 0; i < rows; i++)
         {
             // Check if the index is even or odd
-            if (i <= maxM)
-            {
-                boxViews[i].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
-            }
-            else if (i <= maxF)
-            {
-                boxViews[i - 1].Color = i % 2 == 0 ? MainPanelColor : OddMPanelColor;
-            }
+            boxViews[i].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
+        }
+        int id = rows; rows = maxF - 2;
+        for (int i = 0; i < rows; i++)
+        {
+            if (id >= boxViews.Count) { break; }
+
+            // Check if the index is even or odd
+            boxViews[id].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
+
+            id++;
         }
     }
+
+    private void ButtonGroup()
+    {
+        string group = DataManager.GetGroup(selectedID);
+        if (group == "Exclude") { Button0.Text = "Include"; Button0.BackgroundColor = Shared.PrimaryColor; }
+        else { Button0.Text = "Exclude"; Button0.BackgroundColor = Shared.SecondaryColor; }
+
+        if (group == "Archived") { Button1.Text = "Include"; Button1.BackgroundColor = Shared.PrimaryColor; }
+        else { Button1.Text = "Archive"; Button1.BackgroundColor = Shared.TrinaryColor; }
+
+        Button0.IsVisible = true;
+        Button1.IsVisible = true;
+    }
+
 
     // Button event handlers
     void SortColumn(Label label, string sex)
@@ -1450,6 +1474,9 @@ public partial class DinoPage : ContentPage
 
                 boxViews[boxid].Color = SelectedColor;
 
+                // make buttons visible
+                ButtonGroup();
+
                 // set title to dino name
                 this.Title = $"{DataManager.GetLastColumnData("ID", selectedID, "Name")} - {selectedID}";
 
@@ -1490,7 +1517,9 @@ public partial class DinoPage : ContentPage
                 DefaultRowColors();
 
                 inp.Color = SelectedColor;
-                //inp.BackgroundColor = SelectedColor;
+
+                // make buttons visible
+                ButtonGroup();
 
                 // set title to dino name
                 this.Title = $"{DataManager.GetLastColumnData("ID", selectedID, "Name")} - {selectedID}";
