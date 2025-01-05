@@ -1302,6 +1302,7 @@ public partial class DinoPage : ContentPage
 
             rowIndex++;
         }
+        // set id max for row color tracking
         if (title == "Male")
         {
             maxM = boxID;
@@ -1323,19 +1324,8 @@ public partial class DinoPage : ContentPage
             selectedID = ""; isSelected = false; this.Title = $"{Shared.setPage.Replace("_", " ")}";
             canDouble = false; editStats = false;
 
-            int rows = boxViews.Count;
-            for (int i = 0; i < rows; i++)
-            {
-                // Check if the index is even or odd
-                if (i <= maxM)
-                {
-                    boxViews[i].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
-                }
-                else if (i <= maxF)
-                {
-                    boxViews[i - 1].Color = i % 2 == 0 ? MainPanelColor : OddMPanelColor;
-                }
-            }
+            // recolor all rows to default
+            DefaultRowColors();
         }
     }
 
@@ -1345,6 +1335,22 @@ public partial class DinoPage : ContentPage
         return double.TryParse(input, out _); // Returns true if the input is a valid double
     }
 
+    private void DefaultRowColors()
+    {
+        int rows = boxViews.Count;
+        for (int i = 0; i < rows; i++)
+        {
+            // Check if the index is even or odd
+            if (i <= maxM)
+            {
+                boxViews[i].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
+            }
+            else if (i <= maxF)
+            {
+                boxViews[i - 1].Color = i % 2 == 0 ? MainPanelColor : OddMPanelColor;
+            }
+        }
+    }
 
     // Button event handlers
     void SortColumn(Label label, string sex)
@@ -1439,22 +1445,10 @@ public partial class DinoPage : ContentPage
             {
                 selectedID = id; isSelected = true;
 
-                int rows = boxViews.Count;
-                for (int i = 0; i < rows; i++)
-                {
-                    // Check if the index is even or odd
-                    if (i <= maxM)
-                    {
-                        boxViews[i].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
-                    }
-                    else if (i <= maxF)
-                    {
-                        boxViews[i-1].Color = i % 2 == 0 ? MainPanelColor : OddMPanelColor;
-                    }
-                }
+                // recolor all rows to default
+                DefaultRowColors();
 
                 boxViews[boxid].Color = SelectedColor;
-                //boxViews[boxid].BackgroundColor = SelectedColor;
 
                 // set title to dino name
                 this.Title = $"{DataManager.GetLastColumnData("ID", selectedID, "Name")} - {selectedID}";
@@ -1467,7 +1461,7 @@ public partial class DinoPage : ContentPage
             {
                 // double click  // open the dino extended info window
                 isDouble = true; canDouble = false;
-                DelayedRefresh();
+                CreateContent();
             }
             else if (selectedID == id && !canDouble) // select same dino over time
             {
@@ -1492,20 +1486,8 @@ public partial class DinoPage : ContentPage
             {
                 selectedID = id; isSelected = true;
 
-
-                int rows = boxViews.Count;
-                for (int i = 0; i < rows; i++)
-                {
-                    // Check if the index is even or odd
-                    if (i <= maxM)
-                    {
-                        boxViews[i].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
-                    }
-                    else if (i <= maxF)
-                    {
-                        boxViews[i-1].Color = i % 2 == 0 ? MainPanelColor : OddMPanelColor;
-                    }
-                }
+                // recolor all rows to default
+                DefaultRowColors();
 
                 inp.Color = SelectedColor;
                 //inp.BackgroundColor = SelectedColor;
@@ -1521,7 +1503,7 @@ public partial class DinoPage : ContentPage
             {
                 // double click  // open the dino extended info window
                 isDouble = true; canDouble = false;
-                DelayedRefresh();
+                CreateContent();
             }
             else if (selectedID == id && !canDouble) // select same dino over time
             {
@@ -1529,7 +1511,6 @@ public partial class DinoPage : ContentPage
                 canDouble = true;
                 DisableDoubleClick();
             }
-            
         };
 
         // Attach the TapGestureRecognizer to the label
@@ -1540,12 +1521,6 @@ public partial class DinoPage : ContentPage
     {
         await Task.Delay(Shared.doubleClick);
         canDouble = false;
-    }
-
-    private async Task DelayedRefresh()
-    {
-        await Task.Delay(5);
-        CreateContent();
     }
 
     void UnSelectDino(Grid grid)
