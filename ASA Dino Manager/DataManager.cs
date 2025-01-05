@@ -922,6 +922,9 @@ namespace ASA_Dino_Manager
             int rowID = 0;
             foreach (var dino in dinos)
             {
+                // recheck mutations incase any stats were edited
+                MutationDetection(dino);
+
                 string group = GetGroup(dino);
                 string mutes = GetMutes(dino);
 
@@ -1964,120 +1967,115 @@ namespace ASA_Dino_Manager
             string d = "0"; string e = "0"; string f = "0";
             string g = "0";
 
-            // check if mutation count is more than 0
-            // maybe add a check if its gone up from previous generation
-            double muteP = ToDouble(GetFirstColumnData("ID", id, "PapaMute"));
-            double muteM = ToDouble(GetFirstColumnData("ID", id, "MamaMute"));
+            // better than mutation detection is detecting incorrect stats
+            // wich its doing without checking for mutation increase
 
-            if (muteM > 0 || muteP > 0)
+            string mamaID = GetFirstColumnData("ID", id, "Mama");
+            string papaID = GetFirstColumnData("ID", id, "Papa");
+
+            if (mamaID != "" && papaID != "")
             {
-                string mamaID = GetFirstColumnData("ID", id, "Mama");
-                string papaID = GetFirstColumnData("ID", id, "Papa");
+                double dinoHP = Math.Round(ToDouble(GetFirstColumnData("ID", id, "HP")));
+                double mamaHP = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "HP")));
+                double papaHP = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "HP")));
 
-                if (mamaID != "" && papaID != "")
+                if ((mamaHP != 0 && papaHP != 0) && (dinoHP != papaHP && dinoHP != mamaHP))
                 {
-                    double dinoHP = Math.Round(ToDouble(GetFirstColumnData("ID", id, "HP")));
-                    double mamaHP = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "HP")));
-                    double papaHP = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "HP")));
-
-                    if ((mamaHP != 0 && papaHP != 0) && (dinoHP != papaHP && dinoHP != mamaHP))
+                    if (dinoHP > (papaHP + Shared.muteOffset) || dinoHP < (papaHP - Shared.muteOffset))
                     {
-                        if (dinoHP > (papaHP + Shared.muteOffset) || dinoHP < (papaHP - Shared.muteOffset))
+                        if (dinoHP > (mamaHP + Shared.muteOffset) || dinoHP < (mamaHP - Shared.muteOffset))
                         {
-                            if (dinoHP > (mamaHP + Shared.muteOffset) || dinoHP < (mamaHP - Shared.muteOffset))
-                            {
-                                a = "1";
-                            }
+                            a = "1";
                         }
                     }
+                }
 
-                    double dinoStamina = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Stamina")));
-                    double mamaStamina = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Stamina")));
-                    double papaStamina = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Stamina")));
+                double dinoStamina = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Stamina")));
+                double mamaStamina = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Stamina")));
+                double papaStamina = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Stamina")));
 
-                    if ((mamaStamina != 0 && papaStamina != 0) && (dinoStamina != papaStamina && dinoStamina != mamaStamina))
+                if ((mamaStamina != 0 && papaStamina != 0) && (dinoStamina != papaStamina && dinoStamina != mamaStamina))
+                {
+                    if (dinoStamina > (papaStamina + Shared.muteOffset) || dinoStamina < (papaStamina - Shared.muteOffset))
                     {
-                        if (dinoStamina > (papaStamina + Shared.muteOffset) || dinoStamina < (papaStamina - Shared.muteOffset))
+                        if (dinoStamina > (mamaStamina + Shared.muteOffset) || dinoStamina < (mamaStamina - Shared.muteOffset))
                         {
-                            if (dinoStamina > (mamaStamina + Shared.muteOffset) || dinoStamina < (mamaStamina - Shared.muteOffset))
-                            {
-                                b = "1";
-                            }
+                            b = "1";
                         }
                     }
+                }
 
-                    double dinoOxygen = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Oxygen")));
-                    double mamaOxygen = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Oxygen")));
-                    double papaOxygen = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Oxygen")));
+                double dinoOxygen = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Oxygen")));
+                double mamaOxygen = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Oxygen")));
+                double papaOxygen = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Oxygen")));
 
-                    if ((mamaOxygen != 0 && papaOxygen != 0) && (dinoOxygen != papaOxygen && dinoOxygen != mamaOxygen))
+                if ((mamaOxygen != 0 && papaOxygen != 0) && (dinoOxygen != papaOxygen && dinoOxygen != mamaOxygen))
+                {
+                    if (dinoOxygen > (papaOxygen + Shared.muteOffset) || dinoOxygen < (papaOxygen - Shared.muteOffset))
                     {
-                        if (dinoOxygen > (papaOxygen + Shared.muteOffset) || dinoOxygen < (papaOxygen - Shared.muteOffset))
+                        if (dinoOxygen > (mamaOxygen + Shared.muteOffset) || dinoOxygen < (mamaOxygen - Shared.muteOffset))
                         {
-                            if (dinoOxygen > (mamaOxygen + Shared.muteOffset) || dinoOxygen < (mamaOxygen - Shared.muteOffset))
-                            {
-                                c = "1";
-                            }
+                            c = "1";
                         }
                     }
+                }
 
-                    double dinoFood = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Food")));
-                    double mamaFood = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Food")));
-                    double papaFood = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Food")));
+                double dinoFood = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Food")));
+                double mamaFood = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Food")));
+                double papaFood = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Food")));
 
-                    if ((mamaFood != 0 && papaFood != 0) && (dinoFood != papaFood && dinoFood != mamaFood))
+                if ((mamaFood != 0 && papaFood != 0) && (dinoFood != papaFood && dinoFood != mamaFood))
+                {
+                    if (dinoFood > (papaFood + Shared.muteOffset) || dinoFood < (papaFood - Shared.muteOffset))
                     {
-                        if (dinoFood > (papaFood + Shared.muteOffset) || dinoFood < (papaFood - Shared.muteOffset))
+                        if (dinoFood > (mamaFood + Shared.muteOffset) || dinoFood < (mamaFood - Shared.muteOffset))
                         {
-                            if (dinoFood > (mamaFood + Shared.muteOffset) || dinoFood < (mamaFood - Shared.muteOffset))
-                            {
-                                d = "1";
-                            }
+                            d = "1";
                         }
                     }
+                }
 
-                    double dinoWeight = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Weight")));
-                    double mamaWeight = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Weight")));
-                    double papaWeight = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Weight")));
+                double dinoWeight = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Weight")));
+                double mamaWeight = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Weight")));
+                double papaWeight = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Weight")));
 
-                    if ((mamaWeight != 0 && papaWeight != 0) && (dinoWeight != papaWeight && dinoWeight != mamaWeight))
+                if ((mamaWeight != 0 && papaWeight != 0) && (dinoWeight != papaWeight && dinoWeight != mamaWeight))
+                {
+                    if (dinoWeight > (papaWeight + Shared.muteOffset) || dinoWeight < (papaWeight - Shared.muteOffset))
                     {
-                        if (dinoWeight > (papaWeight + Shared.muteOffset) || dinoWeight < (papaWeight - Shared.muteOffset))
+                        if (dinoWeight > (mamaWeight + Shared.muteOffset) || dinoWeight < (mamaWeight - Shared.muteOffset))
                         {
-                            if (dinoWeight > (mamaWeight + Shared.muteOffset) || dinoWeight < (mamaWeight - Shared.muteOffset))
-                            {
-                                e = "1";
-                            }
+                            e = "1";
                         }
                     }
+                }
 
-                    double dinoDamage = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Damage")), 2);
-                    double mamaDamage = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Damage")), 2);
-                    double papaDamage = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Damage")), 2);
+                double dinoDamage = Math.Round(ToDouble(GetFirstColumnData("ID", id, "Damage")), 2);
+                double mamaDamage = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "Damage")), 2);
+                double papaDamage = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "Damage")), 2);
 
-                    if ((mamaDamage != 0 && papaDamage != 0) && (dinoDamage != papaDamage && dinoDamage != mamaDamage))
+                if ((mamaDamage != 0 && papaDamage != 0) && (dinoDamage != papaDamage && dinoDamage != mamaDamage))
+                {
+                    if (dinoDamage > (papaDamage + Shared.muteOffset) || dinoDamage < (papaDamage - Shared.muteOffset))
                     {
-                        if (dinoDamage > (papaDamage + Shared.muteOffset) || dinoDamage < (papaDamage - Shared.muteOffset))
+                        if (dinoDamage > (mamaDamage + Shared.muteOffset) || dinoDamage < (mamaDamage - Shared.muteOffset))
                         {
-                            if (dinoDamage > (mamaDamage + Shared.muteOffset) || dinoDamage < (mamaDamage - Shared.muteOffset))
-                            {
-                                f = "1";
-                            }
+                            f = "1";
                         }
                     }
+                }
 
-                    double dinoCraft = Math.Round(ToDouble(GetFirstColumnData("ID", id, "CraftSkill")), 2);
-                    double mamaCraft = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "CraftSkill")), 2);
-                    double papaCraft = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "CraftSkill")), 2);
+                double dinoCraft = Math.Round(ToDouble(GetFirstColumnData("ID", id, "CraftSkill")), 2);
+                double mamaCraft = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "CraftSkill")), 2);
+                double papaCraft = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "CraftSkill")), 2);
 
-                    if ((mamaCraft != 0 && papaCraft != 0) && (dinoCraft != papaCraft && dinoCraft != mamaCraft))
+                if ((mamaCraft != 0 && papaCraft != 0) && (dinoCraft != papaCraft && dinoCraft != mamaCraft))
+                {
+                    if (dinoCraft > (papaCraft + Shared.muteOffset) || dinoCraft < (papaCraft - Shared.muteOffset))
                     {
-                        if (dinoCraft > (papaCraft + Shared.muteOffset) || dinoCraft < (papaCraft - Shared.muteOffset))
+                        if (dinoCraft > (mamaCraft + Shared.muteOffset) || dinoCraft < (mamaCraft - Shared.muteOffset))
                         {
-                            if (dinoCraft > (mamaCraft + Shared.muteOffset) || dinoCraft < (mamaCraft - Shared.muteOffset))
-                            {
-                                g = "1";
-                            }
+                            g = "1";
                         }
                     }
                 }

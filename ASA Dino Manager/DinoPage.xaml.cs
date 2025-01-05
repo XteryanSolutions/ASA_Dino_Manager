@@ -518,8 +518,6 @@ public partial class DinoPage : ContentPage
             string speed = DataManager.GetFirstColumnData("ID", currentID, "Speed").Replace(".", sep);
             string craft = DataManager.GetFirstColumnData("ID", currentID, "CraftSkill").Replace(".", sep);
 
-
-
             //set the temp variables
             levelText = level;
             hpText = hp;
@@ -546,11 +544,11 @@ public partial class DinoPage : ContentPage
 
             // mutation detection overrides normal coloring -> mutaColor
             string mutes = DataManager.GetMutes(currentID);
-            if (mutes.Length == 8 && !CurrentStats) // dont show mutations on current statview
+            if (mutes.Length >= 7 && !CurrentStats) // dont show mutations on current statview
             {
                 string aC = mutes.Substring(0, 1); string bC = mutes.Substring(1, 1); string cC = mutes.Substring(2, 1);
                 string dC = mutes.Substring(3, 1); string eC = mutes.Substring(4, 1); string fC = mutes.Substring(5, 1);
-                string gC = mutes.Substring(6, 1); string hC = mutes.Substring(7, 1);
+                string gC = mutes.Substring(6, 1);
 
                 if (aC == "1") { cellColor2 = Shared.mutaColor; }
                 if (bC == "1") { cellColor3 = Shared.mutaColor; }
@@ -559,7 +557,6 @@ public partial class DinoPage : ContentPage
                 if (eC == "1") { cellColor6 = Shared.mutaColor; }
                 if (fC == "1") { cellColor7 = Shared.mutaColor; }
                 if (gC == "1") { cellColor8 = Shared.mutaColor; }
-                if (hC == "1") { cellColor9 = Shared.mutaColor; }
 
             }
 

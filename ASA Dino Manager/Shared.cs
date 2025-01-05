@@ -117,7 +117,7 @@
         public static Color goodColor = Color.FromArgb("#90EE90"); // LightGreen
         public static Color bestColor = Color.FromArgb("#008000"); // Green
         public static Color goldColor = Color.FromArgb("#FFFF00"); // Yellow
-        public static Color mutaColor = Color.FromArgb("#9370DB"); // MediumPurple
+        public static Color mutaColor = Color.FromArgb("#ffdb7a"); //
 
 
         // Button colors
