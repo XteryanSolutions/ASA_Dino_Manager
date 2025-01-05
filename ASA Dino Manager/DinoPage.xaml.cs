@@ -88,7 +88,7 @@ public partial class DinoPage : ContentPage
                     {
                         FileManager.Log("Loading All Data", 0);
                         // sort data based on column clicked
-                        DataManager.GetDinoData(Shared.selectedClass, sortM, sortF, ToggleExcluded);
+                        DataManager.GetDinoData(Shared.selectedClass, sortM, sortF, ToggleExcluded , CurrentStats);
 
                         // load this data only when showing all and included
                         if (ToggleExcluded == 0 || ToggleExcluded == 1 || ToggleExcluded == 2)

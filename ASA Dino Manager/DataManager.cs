@@ -1001,9 +1001,9 @@ namespace ASA_Dino_Manager
                     dr["Gen"] = ToDouble(LastStats[rowID][13].ToString());
 
                     // try to link the ID of parent with a name in dataBase
-                    string mama = GetFirstColumnData("ID", FirstStats[rowID][9].ToString(), "Name", "");
+                    string mama = GetLastColumnData("ID", FirstStats[rowID][9].ToString(), "Name", "");
                     if (mama == "") { mama = FirstStats[rowID][9].ToString(); }
-                    string papa = GetFirstColumnData("ID", FirstStats[rowID][10].ToString(), "Name", "");
+                    string papa = GetLastColumnData("ID", FirstStats[rowID][10].ToString(), "Name", "");
                     if (papa == "") { papa = FirstStats[rowID][10].ToString(); }
 
                     dr["Mama"] = mama;
@@ -1319,9 +1319,9 @@ namespace ASA_Dino_Manager
                     dr["Name"] = LastStats[rowID][0].ToString();
 
                     // try to link the ID of parent with a name in dataBase
-                    string mama = GetFirstColumnData("ID", FirstStats[rowID][9].ToString(), "Name", "");
+                    string mama = GetLastColumnData("ID", FirstStats[rowID][9].ToString(), "Name", "");
                     if (mama == "") { mama = FirstStats[rowID][9].ToString(); }
-                    string papa = GetFirstColumnData("ID", FirstStats[rowID][10].ToString(), "Name", "");
+                    string papa = GetLastColumnData("ID", FirstStats[rowID][10].ToString(), "Name", "");
                     if (papa == "") { papa = FirstStats[rowID][10].ToString(); }
                     dr["Mama"] = mama;
                     dr["Papa"] = papa;
