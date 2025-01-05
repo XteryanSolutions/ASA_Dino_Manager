@@ -32,7 +32,6 @@
             FileManager.Log("DataManager initialized", 0);
 
 
-            this.Navigated += OnShellNavigated;
             this.Navigating += OnShellNavigating;
 
 
@@ -67,10 +66,6 @@
             StartTimer();
         }
 
-        private void OnShellNavigated(object sender, ShellNavigatedEventArgs e)
-        {
-            // FileManager.Log($"Navigated to: {e.Current.Location}", 0);
-        }
 
         private void OnShellNavigating(object sender, ShellNavigatingEventArgs e)
         {
@@ -87,15 +82,15 @@
                     UpdateMenuContents(Shared.setPage);
 
                     // reset toggles and unselect dino when navigating
-                    DinoPage.CurrentStats = Shared.DefaultStat; DinoPage.ToggleExcluded = Shared.DefaultToggle;
-                    DinoPage.isSelected = false; DinoPage.isDouble = false; DinoPage.canDouble = false; DinoPage.selectedID = "";
-                    DinoPage.sortM = Shared.DefaultSortM; DinoPage.sortF = Shared.DefaultSortF;
+                    //DinoPage.CurrentStats = Shared.DefaultStat; DinoPage.ToggleExcluded = Shared.DefaultToggle;
+                    //DinoPage.isSelected = false; DinoPage.isDouble = false; DinoPage.canDouble = false; DinoPage.selectedID = "";
+                    //DinoPage.sortM = Shared.DefaultSortM; DinoPage.sortF = Shared.DefaultSortF;
 
-                    BabyPage.ToggleExcluded = Shared.DefaultToggleB; 
-                    BabyPage.isSelected = false; BabyPage.isDouble = false; BabyPage.canDouble = false; BabyPage.selectedID = "";
-                    BabyPage.sortM = Shared.DefaultSortM; BabyPage.sortF = Shared.DefaultSortF; BabyPage.speciesToggle = "All";
+                    //BabyPage.ToggleExcluded = Shared.DefaultToggleB; 
+                    //BabyPage.isSelected = false; BabyPage.isDouble = false; BabyPage.canDouble = false; BabyPage.selectedID = "";
+                    //BabyPage.sortM = Shared.DefaultSortM; BabyPage.sortF = Shared.DefaultSortF; BabyPage.speciesToggle = "All";
 
-                    ArchivePage.isSelected = false; ArchivePage.selectedID = ""; ArchivePage.sortA = Shared.DefaultSortA;
+                    //ArchivePage.isSelected = false; ArchivePage.selectedID = ""; ArchivePage.sortA = Shared.DefaultSortA;
                 }
                 else
                 {

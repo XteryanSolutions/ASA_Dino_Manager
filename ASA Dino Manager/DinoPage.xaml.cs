@@ -7,26 +7,26 @@ namespace ASA_Dino_Manager;
 public partial class DinoPage : ContentPage
 {
     ////////////////////    View Toggles    ////////////////////
-    public static int ToggleExcluded = Shared.DefaultToggle;
-    public static bool CurrentStats = Shared.DefaultStat;
+    private int ToggleExcluded = Shared.DefaultToggle;
+    private bool CurrentStats = Shared.DefaultStat;
 
     ////////////////////    Selecting       ////////////////////
-    public static string selectedID = "";
-    public static bool isSelected = false;
-    public static bool canDouble = false;
-    public static bool isDouble = false;
+    private string selectedID = "";
+    private bool isSelected = false;
+    private bool canDouble = false;
+    private bool isDouble = false;
 
     // keep track of boxviews for recoloring
     private Dictionary<int, BoxView> boxViews = new Dictionary<int, BoxView>();
     private int boxID = 0;
     private int boxRowID = 0;
 
-    Button Button0 = new Button { };
-    Button Button1 = new Button { };
+    Button ExcludeBtn = new Button { };
+    Button ArchiveBtn = new Button { };
 
     ////////////////////    Table Sorting   ////////////////////
-    public static string sortM = Shared.DefaultSortM;
-    public static string sortF = Shared.DefaultSortF;
+    private string sortM = Shared.DefaultSortM;
+    private string sortF = Shared.DefaultSortF;
 
 
     private string levelText = "";
@@ -88,7 +88,7 @@ public partial class DinoPage : ContentPage
                     {
                         FileManager.Log("Loading All Data", 0);
                         // sort data based on column clicked
-                        DataManager.GetDinoData(Shared.selectedClass, sortM, sortF);
+                        DataManager.GetDinoData(Shared.selectedClass, sortM, sortF, ToggleExcluded);
 
                         // load this data only when showing all and included
                         if (ToggleExcluded == 0 || ToggleExcluded == 1 || ToggleExcluded == 2)
@@ -346,32 +346,32 @@ public partial class DinoPage : ContentPage
 
 
 
-        Button0.Text = "Include";
+        ExcludeBtn.Text = "Include";
 
-        Button0 = new Button { Text = "" };
-        Button0.Clicked += ExcludeBtnClicked;
-        AddToGrid(grid, Button0, 5, 0);
+        ExcludeBtn = new Button { Text = "" };
+        ExcludeBtn.Clicked += ExcludeBtnClicked;
+        AddToGrid(grid, ExcludeBtn, 5, 0);
 
-        Button1 = new Button { Text = "" };
-        Button1.Clicked += ArchiveBtnClicked;
-        AddToGrid(grid, Button1, 6, 0);
+        ArchiveBtn = new Button { Text = "" };
+        ArchiveBtn.Clicked += ArchiveBtnClicked;
+        AddToGrid(grid, ArchiveBtn, 6, 0);
 
         string group = DataManager.GetGroup(selectedID);
-        if (group == "Exclude") { Button0.Text = "Include"; Button0.BackgroundColor = Shared.PrimaryColor; }
-        else { Button0.Text = "Exclude"; Button0.BackgroundColor = Shared.SecondaryColor; }
+        if (group == "Exclude") { ExcludeBtn.Text = "Include"; ExcludeBtn.BackgroundColor = Shared.PrimaryColor; }
+        else { ExcludeBtn.Text = "Exclude"; ExcludeBtn.BackgroundColor = Shared.SecondaryColor; }
 
-        if (group == "Archived") { Button1.Text = "Include"; Button1.BackgroundColor = Shared.PrimaryColor; }
-        else { Button1.Text = "Archive"; Button1.BackgroundColor = Shared.TrinaryColor; }
+        if (group == "Archived") { ArchiveBtn.Text = "Include"; ArchiveBtn.BackgroundColor = Shared.PrimaryColor; }
+        else { ArchiveBtn.Text = "Archive"; ArchiveBtn.BackgroundColor = Shared.TrinaryColor; }
 
         if (!isSelected)
         {
-            Button0.IsVisible = false;
-            Button1.IsVisible = false;
+            ExcludeBtn.IsVisible = false;
+            ArchiveBtn.IsVisible = false;
         }
         else
         {
-            Button0.IsVisible = true;
-            Button1.IsVisible = true;
+            ExcludeBtn.IsVisible = true;
+            ArchiveBtn.IsVisible = true;
         }
 
         return grid;
@@ -1322,8 +1322,8 @@ public partial class DinoPage : ContentPage
             selectedID = ""; isSelected = false; this.Title = $"{Shared.setPage.Replace("_", " ")}";
             canDouble = false; editStats = false;
 
-            Button0.IsVisible = false;
-            Button1.IsVisible = false;
+            ExcludeBtn.IsVisible = false;
+            ArchiveBtn.IsVisible = false;
 
             // recolor all rows to default
             DefaultRowColors();
@@ -1345,7 +1345,6 @@ public partial class DinoPage : ContentPage
                 if (boxViews.Count > 0)
                 {
                     int rowsM = DataManager.MaleTable.Rows.Count;
-                    int rowsF = DataManager.FemaleTable.Rows.Count;
                     int rowsT = boxViews.Count;
                     int z = 0;
 
@@ -1356,7 +1355,7 @@ public partial class DinoPage : ContentPage
                         {
                             boxViews[i].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
                         }
-                        else
+                        else // use z instead of i to reset odd & even at new table
                         {
                             boxViews[i].Color = z % 2 == 0 ? OddMPanelColor : MainPanelColor;
                             z++;
@@ -1379,14 +1378,14 @@ public partial class DinoPage : ContentPage
     private void ButtonGroup()
     {
         string group = DataManager.GetGroup(selectedID);
-        if (group == "Exclude") { Button0.Text = "Include"; Button0.BackgroundColor = Shared.PrimaryColor; }
-        else { Button0.Text = "Exclude"; Button0.BackgroundColor = Shared.SecondaryColor; }
+        if (group == "Exclude") { ExcludeBtn.Text = "Include"; ExcludeBtn.BackgroundColor = Shared.PrimaryColor; }
+        else { ExcludeBtn.Text = "Exclude"; ExcludeBtn.BackgroundColor = Shared.SecondaryColor; }
 
-        if (group == "Archived") { Button1.Text = "Include"; Button1.BackgroundColor = Shared.PrimaryColor; }
-        else { Button1.Text = "Archive"; Button1.BackgroundColor = Shared.TrinaryColor; }
+        if (group == "Archived") { ArchiveBtn.Text = "Include"; ArchiveBtn.BackgroundColor = Shared.PrimaryColor; }
+        else { ArchiveBtn.Text = "Archive"; ArchiveBtn.BackgroundColor = Shared.TrinaryColor; }
 
-        Button0.IsVisible = true;
-        Button1.IsVisible = true;
+        ExcludeBtn.IsVisible = true;
+        ArchiveBtn.IsVisible = true;
     }
 
 

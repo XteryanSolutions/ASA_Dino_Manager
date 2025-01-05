@@ -20,8 +20,8 @@ public partial class BabyPage : ContentPage
     private int boxID = 0;
     private int boxRowID = 0;
 
-    Button Button0 = new Button { };
-    Button Button1 = new Button { };
+    Button ExcludeBtn = new Button { };
+    Button ArchiveBtn = new Button { };
 
     ////////////////////    Table Sorting   ////////////////////
     public static string sortM = Shared.DefaultSortM;
@@ -293,31 +293,31 @@ public partial class BabyPage : ContentPage
 
 
         // add dynamic buttons (shown only when dino is selected)
-        Button0 = new Button { Text = "" };
-        Button0.Clicked += ExcludeBtnClicked;
-        AddToGrid(grid, Button0, 5, 0);
+        ExcludeBtn = new Button { Text = "" };
+        ExcludeBtn.Clicked += ExcludeBtnClicked;
+        AddToGrid(grid, ExcludeBtn, 5, 0);
 
-        Button1 = new Button { Text = "" };
-        Button1.Clicked += ArchiveBtnClicked;
-        AddToGrid(grid, Button1, 6, 0);
+        ArchiveBtn = new Button { Text = "" };
+        ArchiveBtn.Clicked += ArchiveBtnClicked;
+        AddToGrid(grid, ArchiveBtn, 6, 0);
 
 
         string group = DataManager.GetGroup(selectedID);
-        if (group == "Exclude") { Button0.Text = "Include"; Button0.BackgroundColor = Shared.PrimaryColor; }
-        else { Button0.Text = "Exclude"; Button0.BackgroundColor = Shared.SecondaryColor; }
+        if (group == "Exclude") { ExcludeBtn.Text = "Include"; ExcludeBtn.BackgroundColor = Shared.PrimaryColor; }
+        else { ExcludeBtn.Text = "Exclude"; ExcludeBtn.BackgroundColor = Shared.SecondaryColor; }
 
-        if (group == "Archived") { Button1.Text = "Include"; Button1.BackgroundColor = Shared.PrimaryColor; }
-        else { Button1.Text = "Archive"; Button1.BackgroundColor = Shared.TrinaryColor; }
+        if (group == "Archived") { ArchiveBtn.Text = "Include"; ArchiveBtn.BackgroundColor = Shared.PrimaryColor; }
+        else { ArchiveBtn.Text = "Archive"; ArchiveBtn.BackgroundColor = Shared.TrinaryColor; }
 
         if (!isSelected)
         {
-            Button0.IsVisible = false;
-            Button1.IsVisible = false;
+            ExcludeBtn.IsVisible = false;
+            ArchiveBtn.IsVisible = false;
         }
         else
         {
-            Button0.IsVisible = true;
-            Button1.IsVisible = true;
+            ExcludeBtn.IsVisible = true;
+            ArchiveBtn.IsVisible = true;
         }
 
         return grid;
@@ -720,7 +720,7 @@ public partial class BabyPage : ContentPage
             {
                 status = "Adolescent";
             }
-            if (ageD > 100 || ageF > 100)
+            if (ageD >= 100 || ageF >= 100)
             {
                 status = "Adult";
             }
@@ -822,7 +822,6 @@ public partial class BabyPage : ContentPage
                 if (boxViews.Count > 0)
                 {
                     int rowsM = DataManager.MaleTable.Rows.Count;
-                    int rowsF = DataManager.FemaleTable.Rows.Count;
                     int rowsT = boxViews.Count;
                     int z = 0;
 
@@ -833,7 +832,7 @@ public partial class BabyPage : ContentPage
                         {
                             boxViews[i].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
                         }
-                        else
+                        else // use z instead of i to reset odd & even at new table
                         {
                             boxViews[i].Color = z % 2 == 0 ? OddMPanelColor : MainPanelColor;
                             z++;
@@ -861,8 +860,8 @@ public partial class BabyPage : ContentPage
             selectedID = ""; isSelected = false; this.Title = $"{Shared.setPage.Replace("_", " ")}";
             canDouble = false; editStats = false;
 
-            Button0.IsVisible = false;
-            Button1.IsVisible = false;
+            ExcludeBtn.IsVisible = false;
+            ArchiveBtn.IsVisible = false;
 
             // recolor all rows to default
             DefaultRowColors();
@@ -878,14 +877,14 @@ public partial class BabyPage : ContentPage
     private void ButtonGroup()
     {
         string group = DataManager.GetGroup(selectedID);
-        if (group == "Exclude") { Button0.Text = "Include"; Button0.BackgroundColor = Shared.PrimaryColor; }
-        else { Button0.Text = "Exclude"; Button0.BackgroundColor = Shared.SecondaryColor; }
+        if (group == "Exclude") { ExcludeBtn.Text = "Include"; ExcludeBtn.BackgroundColor = Shared.PrimaryColor; }
+        else { ExcludeBtn.Text = "Exclude"; ExcludeBtn.BackgroundColor = Shared.SecondaryColor; }
 
-        if (group == "Archived") { Button1.Text = "Include"; Button1.BackgroundColor = Shared.PrimaryColor; }
-        else { Button1.Text = "Archive"; Button1.BackgroundColor = Shared.TrinaryColor; }
+        if (group == "Archived") { ArchiveBtn.Text = "Include"; ArchiveBtn.BackgroundColor = Shared.PrimaryColor; }
+        else { ArchiveBtn.Text = "Archive"; ArchiveBtn.BackgroundColor = Shared.TrinaryColor; }
 
-        Button0.IsVisible = true;
-        Button1.IsVisible = true;
+        ExcludeBtn.IsVisible = true;
+        ArchiveBtn.IsVisible = true;
     }
 
     // Some event handlers

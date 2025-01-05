@@ -917,7 +917,7 @@ namespace ASA_Dino_Manager
             }
         }
 
-        private static void ProcessDinos(string[] dinos, List<string[]> FirstStats, List<string[]> LastStats, DataTable table)
+        private static void ProcessDinos(string[] dinos, List<string[]> FirstStats, List<string[]> LastStats, DataTable table, int toggle)
         {
             int rowID = 0;
             foreach (var dino in dinos)
@@ -928,8 +928,6 @@ namespace ASA_Dino_Manager
                 string group = GetGroup(dino);
                 string mutes = GetMutes(dino);
 
-
-                int toggle = DinoPage.ToggleExcluded;
 
 
                 bool addIT = false;
@@ -1072,7 +1070,7 @@ namespace ASA_Dino_Manager
             return status;
         }
 
-        public static void GetDinoData(string DinoClass, string sortiM = "", string sortiF = "")
+        public static void GetDinoData(string DinoClass, string sortiM = "", string sortiF = "", int toggle = 0, bool CurrentStats = false)
         {
             if (string.IsNullOrEmpty(DinoClass))
             {
@@ -1080,43 +1078,43 @@ namespace ASA_Dino_Manager
             }
 
             // Clear the tables before populating them
-            DataManager.MaleTable.Clear();
-            DataManager.FemaleTable.Clear();
+            MaleTable.Clear();
+            FemaleTable.Clear();
 
             // Retrieve female data
-            string[] females = DataManager.GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Female", "ID");
+            string[] females = GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Female", "ID");
 
             // Retrieve male data
-            string[] males = DataManager.GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Male", "ID");
+            string[] males = GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Male", "ID");
 
 
             LevelMax = 0; HpMax = 0; StaminaMax = 0; OxygenMax = 0;
             FoodMax = 0; WeightMax = 0; DamageMax = 0; SpeedMax = 0;
             CraftMax = 0;
 
-            if (DinoPage.CurrentStats)
+            if (CurrentStats)
             {
                 // Process females
-                List<string[]> MainStatsF = DataManager.GetLastStats(females);
-                List<string[]> BrStatsF = DataManager.GetLastStats(females);
-                ProcessDinos(females, MainStatsF, BrStatsF, DataManager.FemaleTable);
+                List<string[]> FirstStatsF = GetLastStats(females);
+                List<string[]> LastStatsF = GetLastStats(females);
+                ProcessDinos(females, FirstStatsF, LastStatsF, FemaleTable, toggle);
 
                 // Process males
-                List<string[]> MainStatsM = DataManager.GetLastStats(males);
-                List<string[]> BrStatsM = DataManager.GetLastStats(males);
-                ProcessDinos(males, MainStatsM, BrStatsM, DataManager.MaleTable);
+                List<string[]> FirstStatsM = GetLastStats(males);
+                List<string[]> LastStatsM = GetLastStats(males);
+                ProcessDinos(males, FirstStatsM, LastStatsM, MaleTable, toggle);
             }
             else
             {
                 // Process females
-                List<string[]> MainStatsF = DataManager.GetFirstStats(females);
-                List<string[]> BrStatsF = DataManager.GetLastStats(females);
-                ProcessDinos(females, MainStatsF, BrStatsF, DataManager.FemaleTable);
+                List<string[]> FirstStatsF = GetFirstStats(females);
+                List<string[]> LastStatsF = GetLastStats(females);
+                ProcessDinos(females, FirstStatsF, LastStatsF, FemaleTable, toggle);
 
                 // Process males
-                List<string[]> MainStatsM = DataManager.GetFirstStats(males);
-                List<string[]> BrStatsM = DataManager.GetLastStats(males);
-                ProcessDinos(males, MainStatsM, BrStatsM, DataManager.MaleTable);
+                List<string[]> FirstStatsM = GetFirstStats(males);
+                List<string[]> LastStatsM = GetLastStats(males);
+                ProcessDinos(males, FirstStatsM, LastStatsM, MaleTable, toggle);
             }
 
 
@@ -1125,15 +1123,15 @@ namespace ASA_Dino_Manager
             sortiF = ReplaceSymbols(sortiF, Shared.Smap);
 
             // Sort the MaleTable based on the desired column
-            DataView view1 = new DataView(DataManager.MaleTable);
+            DataView view1 = new DataView(MaleTable);
             view1.Sort = sortiM;
-            DataManager.MaleTable = view1.ToTable();
+            MaleTable = view1.ToTable();
 
 
             // Sort the FemaleTable based on the desired column
-            DataView view2 = new DataView(DataManager.FemaleTable);
+            DataView view2 = new DataView(FemaleTable);
             view2.Sort = sortiF;
-            DataManager.FemaleTable = view2.ToTable();
+            FemaleTable = view2.ToTable();
 
 
             //  FileManager.Log("updated data");
