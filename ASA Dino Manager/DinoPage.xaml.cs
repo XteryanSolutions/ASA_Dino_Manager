@@ -7,14 +7,16 @@ namespace ASA_Dino_Manager;
 public partial class DinoPage : ContentPage
 {
     ////////////////////    View Toggles    ////////////////////
-    private int ToggleExcluded = Shared.DefaultToggle;
-    private bool CurrentStats = Shared.DefaultStat;
+    public static int ToggleExcluded = Shared.DefaultToggle;
+    public static bool CurrentStats = Shared.DefaultStat;
 
     ////////////////////    Selecting       ////////////////////
-    private string selectedID = "";
-    private bool isSelected = false;
-    private bool canDouble = false;
-    private bool isDouble = false;
+    public static string selectedID = "";
+    public static bool isSelected = false;
+    public static bool canDouble = false;
+    public static bool isDouble = false;
+    public static bool showTree = false;
+
 
     // keep track of boxviews for recoloring
     private Dictionary<int, BoxView> boxViews = new Dictionary<int, BoxView>();
@@ -25,8 +27,8 @@ public partial class DinoPage : ContentPage
     Button ArchiveBtn = new Button { };
 
     ////////////////////    Table Sorting   ////////////////////
-    private string sortM = Shared.DefaultSortM;
-    private string sortF = Shared.DefaultSortF;
+    public static string sortM = Shared.DefaultSortM;
+    public static string sortF = Shared.DefaultSortF;
 
 
     private string levelText = "";
@@ -88,12 +90,12 @@ public partial class DinoPage : ContentPage
                     {
                         FileManager.Log("Loading All Data", 0);
                         // sort data based on column clicked
-                        DataManager.GetDinoData(Shared.selectedClass, sortM, sortF, ToggleExcluded , CurrentStats);
+                        DataManager.GetDinoData(Shared.selectedClass, sortM, sortF, ToggleExcluded, CurrentStats);
 
                         // load this data only when showing all and included
                         if (ToggleExcluded == 0 || ToggleExcluded == 1 || ToggleExcluded == 2)
                         {
-                            if (!CurrentStats)
+                            if (!CurrentStats && !showTree)
                             {
                                 DataManager.EvaluateDinos();
                                 DataManager.GetBestPartner();
@@ -244,10 +246,10 @@ public partial class DinoPage : ContentPage
                 : 1); // Cover all columns
 
             // dont recolor the bottom panel since its not selectable
-            if (title != "Bottom") 
+            if (title != "Bottom")
             {
                 boxViews[boxID++] = rowBackground;
-            } 
+            }
 
             // make background on row selectable to increase surface area
             if (title != "Bottom") // not the bottom panel
@@ -290,33 +292,33 @@ public partial class DinoPage : ContentPage
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
 
-        var bColor0 = Shared.DefaultBColor;
-        var bColor1 = Shared.PrimaryColor;
+        var ToggleBtnColor = Shared.DefaultBColor;
+        var StatsBtnColor = Shared.PrimaryColor;
 
         if (ToggleExcluded == 0)
         {
-            bColor0 = Shared.DefaultBColor;
+            ToggleBtnColor = Shared.DefaultBColor;
         }
         else if (ToggleExcluded == 1)
         {
-            bColor0 = Shared.PrimaryColor;
+            ToggleBtnColor = Shared.PrimaryColor;
         }
         else if (ToggleExcluded == 2)
         {
-            bColor0 = Shared.SecondaryColor;
+            ToggleBtnColor = Shared.SecondaryColor;
         }
         else if (ToggleExcluded == 3)
         {
-            bColor0 = Shared.TrinaryColor;
+            ToggleBtnColor = Shared.TrinaryColor;
         }
 
-        string btn0Text = "Toggle"; string btn1Text = "Breeding";
-        if (ToggleExcluded == 0) { btn0Text = "All"; }
-        else if (ToggleExcluded == 1) { btn0Text = "Included"; }
-        else if (ToggleExcluded == 2) { btn0Text = "Excluded"; }
-        else if (ToggleExcluded == 3) { btn0Text = "Archived"; }
+        string ToggleBtnText = "Toggle"; string StatsBtnText = "Breeding";
+        if (ToggleExcluded == 0) { ToggleBtnText = "All"; }
+        else if (ToggleExcluded == 1) { ToggleBtnText = "Included"; }
+        else if (ToggleExcluded == 2) { ToggleBtnText = "Excluded"; }
+        else if (ToggleExcluded == 3) { ToggleBtnText = "Archived"; }
 
-        if (CurrentStats) { btn1Text = "Current"; bColor1 = Shared.SecondaryColor; }
+        if (CurrentStats) { StatsBtnText = "Current"; StatsBtnColor = Shared.SecondaryColor; }
 
 
         if (isDouble)
@@ -330,23 +332,32 @@ public partial class DinoPage : ContentPage
             BackBtn.Clicked += BackBtnClicked;
             AddToGrid(grid, BackBtn, 1, 0);
         }
+        else if (showTree)
+        {
+            var BackBtn = new Button { Text = "Back", BackgroundColor = Shared.PrimaryColor };
+            BackBtn.Clicked += BackBtnClicked;
+            AddToGrid(grid, BackBtn, 0, 0);
+        }
         else
         {
-            var topButton0 = new Button { Text = btn0Text, BackgroundColor = bColor0 };
-            topButton0.Clicked += ToggleBtnClicked;
-            AddToGrid(grid, topButton0, 0, 0);
+            var ToggleBtn = new Button { Text = ToggleBtnText, BackgroundColor = ToggleBtnColor };
+            ToggleBtn.Clicked += ToggleBtnClicked;
+            AddToGrid(grid, ToggleBtn, 0, 0);
 
 
-            var topButton1 = new Button { Text = btn1Text, BackgroundColor = bColor1 };
-            topButton1.Clicked += StatsBtnClicked;
-            AddToGrid(grid, topButton1, 1, 0);
+            var StatsBtn = new Button { Text = StatsBtnText, BackgroundColor = StatsBtnColor };
+            StatsBtn.Clicked += StatsBtnClicked;
+            AddToGrid(grid, StatsBtn, 1, 0);
         }
 
+        if (!showTree)
+        {
+            var TreeBtn = new Button { Text = "Tree", BackgroundColor = Shared.PrimaryColor };
+            TreeBtn.Clicked += TreeBtnClicked;
+            AddToGrid(grid, TreeBtn, 2, 0);
+        }
 
-
-
-
-        ExcludeBtn.Text = "Include";
+        // ExcludeBtn.Text = "Include";
 
         ExcludeBtn = new Button { Text = "" };
         ExcludeBtn.Clicked += ExcludeBtnClicked;
@@ -409,7 +420,7 @@ public partial class DinoPage : ContentPage
 
         // FileManager.Log($"barH: {barH} = {rowCount} * {Shared.rowHeight} + {Shared.headerSize} + {ofs}", 0);
 
-        if (CurrentStats || DataManager.BottomTable.Rows.Count < 1) { barH = 0; }
+        if (showTree || CurrentStats || DataManager.BottomTable.Rows.Count < 1) { barH = 0; }
 
         // Define row definitions
         maingrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // Scrollable content
@@ -419,7 +430,7 @@ public partial class DinoPage : ContentPage
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        if (dinoCount > 0 && !isDouble) // more than 0 dinos and not double clicked
+        if (dinoCount > 0 && !isDouble && !showTree) // more than 0 dinos and not double clicked and not in showTree
         {
             // create the row for bottompanel if not in dinoEview
             maingrid.RowDefinitions.Add(new RowDefinition { Height = barH }); // Scrollable content
@@ -467,7 +478,7 @@ public partial class DinoPage : ContentPage
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////
         }
-        else if (dinoCount > 0 && isDouble)
+        else if (dinoCount > 0 && isDouble && !showTree)
         {
             ////////////////////////////////////////////////////////////////////////////////////////////////////
             // make dino info box
@@ -874,6 +885,81 @@ public partial class DinoPage : ContentPage
             AddToGrid(maingrid, scrollView, 0, 0);
             ////////////////////////////////////////////////////////////////////////////////////////////////////
         }
+        else if (showTree)
+        {
+            ////////////////////////////////////////////////////////////////////////////////////////////////////
+            // make tree of life grid
+
+            // Create scrollable content
+            var scrollContent = new StackLayout { Spacing = 20, Padding = 3, };
+
+            // Create Grid for generations
+            var genGrid = new Grid { RowSpacing = 0, ColumnSpacing = 20, Padding = 3 };
+
+            // get amount of generations
+            double gen = DataManager.MaxGenerations(selectedClass);
+
+
+            int i = 0;
+            while (i <= gen)
+            {
+                // Define a column for each generation
+                genGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+
+
+
+                // add stuff to each column for each generation
+                int rowid = 0; // starting at row 0
+
+                var t = new Label { Text = $"Generation: {i}", TextColor = Shared.goldColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+                AddToGrid(genGrid, t, rowid++, i, "", false, true);
+
+
+                string[] pairs = DataManager.GetGenParents(selectedClass, i);
+                foreach (string pair in pairs)
+                {
+                    var parts = pair.Split(',');
+
+                    // Check for missing or empty values
+                    string papaID = parts.Length > 0 && !string.IsNullOrWhiteSpace(parts[0]) ? parts[0] : "UnknownPapa";
+                    string mamaID = parts.Length > 1 && !string.IsNullOrWhiteSpace(parts[1]) ? parts[1] : "UnknownMama";
+
+                    string papaName = DataManager.GetLastColumnData("ID", papaID, "Name");
+                    string mamaName = DataManager.GetLastColumnData("ID", mamaID, "Name");
+
+                    if (papaName == "") { papaName = papaID; }
+                    if (mamaName == "") { mamaName = mamaID; }
+
+                    var t0 = new Label { Text = $"{papaName} + {mamaName}", TextColor = Shared.maleColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+                    AddToGrid(genGrid, t0, rowid++, i, "", false, true);
+
+                    string[] kidsfrompair = DataManager.GetKidsFromPair(selectedClass, pair);
+                    foreach (string kid in kidsfrompair)
+                    {
+                        string kidName = DataManager.GetLastColumnData("ID", kid, "Name");
+
+                        var t1 = new Label { Text = $"{kidName}", TextColor = Shared.bottomColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+                        AddToGrid(genGrid, t1, rowid++, i, "", false, true);
+
+                    }
+                    rowid++;
+                }
+
+                i++;
+            }
+
+
+            scrollContent.Children.Add(genGrid);
+
+            var scrollView = new ScrollView { Content = scrollContent };
+
+            AddToGrid(maingrid, scrollView, 0, 0);
+
+
+
+            DataManager.TreeOfLife(Shared.selectedClass);
+
+        }
         else
         {
             ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -886,6 +972,7 @@ public partial class DinoPage : ContentPage
                 Padding = 3
             };
 
+            // Create grid to put data in
             var grid1 = new Grid
             {
                 RowSpacing = 0,
@@ -938,6 +1025,7 @@ public partial class DinoPage : ContentPage
             ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         }
+
 
         return maingrid;
     }
@@ -1652,7 +1740,7 @@ public partial class DinoPage : ContentPage
         levelText = ""; hpText = ""; staminaText = ""; oxygenText = "";
         foodText = ""; weightText = ""; damageText = ""; notesText = "";
         speedText = ""; craftText = "";
-        isDouble = false;
+        isDouble = false; showTree = false;
         ClearSelection();
         CreateContent();
     }
@@ -1682,6 +1770,15 @@ public partial class DinoPage : ContentPage
         CreateContent();
     }
 
+    private void TreeBtnClicked(object? sender, EventArgs e)
+    {
+        showTree = true;
+
+        dataValid = false;
+        ClearSelection();
+        CreateContent();
+
+    }
 
 
 }

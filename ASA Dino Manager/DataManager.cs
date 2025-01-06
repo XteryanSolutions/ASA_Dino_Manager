@@ -1,5 +1,7 @@
 ﻿using System.Data;
+using System.Data.Common;
 using System.Globalization;
+using System.Xml.Linq;
 
 namespace ASA_Dino_Manager
 {
@@ -678,6 +680,308 @@ namespace ASA_Dino_Manager
             }
             return results;
         }
+
+        public static double MaxGenerations(string DinoClass)
+        {
+            // Retrieve female data
+            string[] females = GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Female", "ID");
+
+            // Retrieve male data
+            string[] males = GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Male", "ID");
+
+            double maxGen = 0;
+            foreach (var dino in males)
+            {
+                string gen = GetFirstColumnData("ID", dino, "Gen");
+                if (ToDouble(gen) >= maxGen) { maxGen = ToDouble(gen); }
+            }
+
+            foreach (var dino in females)
+            {
+                string gen = GetFirstColumnData("ID", dino, "Gen");
+                if (ToDouble(gen) >= maxGen) { maxGen = ToDouble(gen); }
+            }
+
+            return maxGen;
+        }
+
+        public static string[] GetAllParents(string DinoClass)
+        {
+            // Retrieve female data
+            string[] females = GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Female", "ID");
+
+            // Retrieve male data
+            string[] males = GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Male", "ID");
+
+            // Use a HashSet to store distinct values
+            HashSet<string> resultSet = new HashSet<string>();
+
+            foreach (var dino in males)
+            {
+                string papaID = GetFirstColumnData("ID", dino, "Papa");
+                string mamaID = GetFirstColumnData("ID", dino, "Mama");
+
+                // Combine papaID and mamaID into a single string with a delimiter
+                string combined = $"{papaID},{mamaID}";
+
+                // Add the combined value to the result set (distinct pairs)
+                resultSet.Add(combined);
+            }
+
+            foreach (var dino in females)
+            {
+                string papaID = GetFirstColumnData("ID", dino, "Papa");
+                string mamaID = GetFirstColumnData("ID", dino, "Mama");
+
+                // Combine papaID and mamaID into a single string with a delimiter
+                string combined = $"{papaID},{mamaID}";
+
+                // Add the combined value to the result set (distinct pairs)
+                resultSet.Add(combined);
+            }
+
+            // Convert to an array of strings
+            return resultSet.ToArray();
+        }
+
+        public static string[] GetGenParents(string DinoClass, double gen)
+        {
+            // Retrieve female data
+            string[] females = GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Female", "ID");
+
+            // Retrieve male data
+            string[] males = GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Male", "ID");
+
+            // Use a HashSet to store distinct values
+            HashSet<string> resultSet = new HashSet<string>();
+
+            foreach (var dino in males)
+            {
+                string papaID = GetFirstColumnData("ID", dino, "Papa");
+                double papaGen = ToDouble(GetFirstColumnData("ID", papaID, "Gen"));
+
+                string mamaID = GetFirstColumnData("ID", dino, "Mama");
+                double mamaGen = ToDouble(GetFirstColumnData("ID", mamaID, "Gen"));
+
+                if (papaGen == gen && mamaGen == gen)
+                {
+                    // Combine papaID and mamaID into a single string with a delimiter
+                    string combined = $"{papaID},{mamaID}";
+
+                    if (mamaID != "" && papaID != "")
+                    {
+                        // Add the combined value to the result set (distinct pairs)
+                        resultSet.Add(combined);
+                    }
+                }
+            }
+
+            foreach (var dino in females)
+            {
+                string papaID = GetFirstColumnData("ID", dino, "Papa");
+                double papaGen = ToDouble(GetFirstColumnData("ID", papaID, "Gen"));
+
+                string mamaID = GetFirstColumnData("ID", dino, "Mama");
+                double mamaGen = ToDouble(GetFirstColumnData("ID", mamaID, "Gen"));
+
+                if (papaGen == gen && mamaGen == gen)
+                {
+                    // Combine papaID and mamaID into a single string with a delimiter
+                    string combined = $"{papaID},{mamaID}";
+
+                    if (mamaID != "" && papaID != "")
+                    {
+                        // Add the combined value to the result set (distinct pairs)
+                        resultSet.Add(combined);
+                    }
+                }
+            }
+
+            // Convert to an array of strings
+            return resultSet.ToArray();
+        }
+
+        public static string[] GetKidsFromPair(string DinoClass , string pair)
+        {
+            var parts = pair.Split(',');
+
+            // Check for missing or empty values
+            string papaID = parts.Length > 0 && !string.IsNullOrWhiteSpace(parts[0]) ? parts[0] : "";
+            string mamaID = parts.Length > 1 && !string.IsNullOrWhiteSpace(parts[1]) ? parts[1] : "";
+
+
+            // Retrieve female data
+            string[] females = GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Female", "ID");
+
+            // Retrieve male data
+            string[] males = GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Male", "ID");
+
+            // Use a HashSet to store distinct values
+            HashSet<string> resultSet = new HashSet<string>();
+
+            // ignore empty and invalid results
+            if (papaID != "" && mamaID != "")
+            {
+                // get each parents boys here
+                foreach (var dino in males)
+                {
+                    string dinoPapa = GetFirstColumnData("ID", dino, "Papa");
+                    string dinoMama = GetFirstColumnData("ID", dino, "Mama");
+
+                    if (papaID == dinoPapa && mamaID == dinoMama)
+                    {
+                        // add dino id to list
+                        resultSet.Add(dino);
+                    }
+                }
+                // get each parents girls here
+                foreach (var dino in females)
+                {
+                    string dinoPapa = GetFirstColumnData("ID", dino, "Papa");
+                    string dinoMama = GetFirstColumnData("ID", dino, "Mama");
+
+                    if (papaID == dinoPapa && mamaID == dinoMama)
+                    {
+                        // add dino id to list
+                        resultSet.Add(dino);
+                    }
+                }
+            }
+            return resultSet.ToArray();
+        }
+
+
+        public static void TreeOfLife(string DinoClass)
+        {
+            // Retrieve female data
+            string[] females = GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Female", "ID");
+
+            // Retrieve male data
+            string[] males = GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Male", "ID");
+
+            // Use a HashSet to store distinct values
+            HashSet<string> resultSet = new HashSet<string>();
+
+            foreach (var dino in males)
+            {
+                string papaID = GetFirstColumnData("ID", dino, "Papa");
+                string mamaID = GetFirstColumnData("ID", dino, "Mama");
+
+                // Combine papaID and mamaID into a single string with a delimiter
+                string combined = $"{papaID},{mamaID}";
+
+                // Add the combined value to the result set (distinct pairs)
+                resultSet.Add(combined);
+            }
+
+            foreach (var dino in females)
+            {
+                string papaID = GetFirstColumnData("ID", dino, "Papa");
+                string mamaID = GetFirstColumnData("ID", dino, "Mama");
+
+                // Combine papaID and mamaID into a single string with a delimiter
+                string combined = $"{papaID},{mamaID}";
+
+                // Add the combined value to the result set (distinct pairs)
+                resultSet.Add(combined);
+            }
+
+            // Convert to an array of strings
+            string[] distinctParents = resultSet.ToArray();
+
+
+
+            // get max generation
+            double genMax = 0;
+            // list all the pairs
+            foreach (var pair in distinctParents)
+            {
+                var parts = pair.Split(',');
+
+                // Check for missing or empty values
+                string papaID = parts.Length > 0 && !string.IsNullOrWhiteSpace(parts[0]) ? parts[0] : "UnknownPapa";
+                string mamaID = parts.Length > 1 && !string.IsNullOrWhiteSpace(parts[1]) ? parts[1] : "UnknownMama";
+
+                if (papaID != "UnknownPapa" && papaID != "")
+                {
+                    string papaGen = GetFirstColumnData("ID", papaID, "Gen");
+                    if (ToDouble(papaGen) >= genMax) { genMax = ToDouble(papaGen); }
+                }
+                if (mamaID != "UnknownMama" && mamaID != "")
+                {
+                    string mamaGen = GetFirstColumnData("ID", mamaID, "Gen");
+                    if (ToDouble(mamaGen) >= genMax) { genMax = ToDouble(mamaGen); }
+                }
+            }
+
+            int gen = 0;
+            while (gen <= genMax)
+            {
+                // list all the pairs
+                foreach (var pair in distinctParents)
+                {
+                    var parts = pair.Split(',');
+
+                    // Check for missing or empty values
+                    string papaID = parts.Length > 0 && !string.IsNullOrWhiteSpace(parts[0]) ? parts[0] : "UnknownPapa";
+                    string mamaID = parts.Length > 1 && !string.IsNullOrWhiteSpace(parts[1]) ? parts[1] : "UnknownMama";
+
+                    // continue only if found id's
+                    if (papaID != "UnknownPapa" && mamaID != "UnknownMama")
+                    {
+                        string papaName = GetLastColumnData("ID", papaID, "Name");
+                        string papaGen = GetFirstColumnData("ID", papaID, "Gen");
+                        string mamaName = GetLastColumnData("ID", mamaID, "Name");
+                        string mamaGen = GetFirstColumnData("ID", mamaID, "Gen");
+
+                        double genM = 0;
+
+                        if (ToDouble(papaGen) > ToDouble(mamaGen)) { genM = ToDouble(papaGen); }
+                        else { genM = ToDouble(mamaGen); }
+
+                        if (papaName != "" && mamaName != "")
+                        {
+                            if (genM == gen)
+                            {
+                                FileManager.Log($"========= Generation {gen} ================", 0);
+                                FileManager.Log($"Papa: {papaName}, Mama: {mamaName}", 0);
+
+                                // list each parents boys here
+                                foreach (var dino in males)
+                                {
+                                    string papa1ID = GetFirstColumnData("ID", dino, "Papa");
+                                    string mama1ID = GetFirstColumnData("ID", dino, "Mama");
+
+                                    if (papaID == papa1ID && mamaID == mama1ID)
+                                    {
+                                        string dinoName = GetLastColumnData("ID", dino, "Name");
+                                        FileManager.Log($"DinoM: {dinoName}", 0);
+                                    }
+                                }
+                                // list each parents girls here
+                                foreach (var dino in females)
+                                {
+                                    string papa1ID = GetFirstColumnData("ID", dino, "Papa");
+                                    string mama1ID = GetFirstColumnData("ID", dino, "Mama");
+
+                                    if (papaID == papa1ID && mamaID == mama1ID)
+                                    {
+                                        string dinoName = GetLastColumnData("ID", dino, "Name");
+                                        FileManager.Log($"DinoF: {dinoName}", 0);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                gen++;
+            }
+
+            FileManager.Log($"==================================", 0);
+
+        }
+
 
         public static string GrowUpTime(string id)
         {
@@ -1803,7 +2107,7 @@ namespace ASA_Dino_Manager
                 p0--;
             }
 
-           // FileManager.Log("Updated BreedPairs",0);
+            // FileManager.Log("Updated BreedPairs",0);
         }
 
         public static void MakeOffspring(string male, string female, string offspring, string point, string res)
