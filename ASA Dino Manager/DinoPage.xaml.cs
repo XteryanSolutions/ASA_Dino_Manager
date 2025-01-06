@@ -930,6 +930,8 @@ public partial class DinoPage : ContentPage
                     if (papaName == "") { papaName = papaID; }
                     if (mamaName == "") { mamaName = mamaID; }
 
+                   
+
                     var t0 = new Label { Text = $"{papaName} + {mamaName}", TextColor = Shared.maleColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
                     AddToGrid(genGrid, t0, rowid++, i, "", false, true);
 
@@ -938,12 +940,18 @@ public partial class DinoPage : ContentPage
                     {
                         string kidName = DataManager.GetLastColumnData("ID", kid, "Name");
 
+                        if (kidName == "") { kidName = kid; }
+
                         var t1 = new Label { Text = $"{kidName}", TextColor = Shared.bottomColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
                         AddToGrid(genGrid, t1, rowid++, i, "", false, true);
 
                     }
-                    rowid++;
+
+
+                    var t9 = new Label { Text = $" ", TextColor = Shared.maleColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+                    AddToGrid(genGrid, t9, rowid++, i, "", false, true);
                 }
+
 
                 i++;
             }

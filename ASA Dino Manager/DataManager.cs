@@ -763,7 +763,11 @@ namespace ASA_Dino_Manager
                 string mamaID = GetFirstColumnData("ID", dino, "Mama");
                 double mamaGen = ToDouble(GetFirstColumnData("ID", mamaID, "Gen"));
 
-                if (papaGen == gen && mamaGen == gen)
+                double genM = 0;
+                if (papaGen > mamaGen) { genM = papaGen; }
+                else { genM = mamaGen; }
+               
+                if (genM == gen)
                 {
                     // Combine papaID and mamaID into a single string with a delimiter
                     string combined = $"{papaID},{mamaID}";
@@ -784,7 +788,11 @@ namespace ASA_Dino_Manager
                 string mamaID = GetFirstColumnData("ID", dino, "Mama");
                 double mamaGen = ToDouble(GetFirstColumnData("ID", mamaID, "Gen"));
 
-                if (papaGen == gen && mamaGen == gen)
+                double genM = 0;
+                if (papaGen > mamaGen) { genM = papaGen; }
+                else { genM = mamaGen; }
+
+                if (genM == gen)
                 {
                     // Combine papaID and mamaID into a single string with a delimiter
                     string combined = $"{papaID},{mamaID}";
