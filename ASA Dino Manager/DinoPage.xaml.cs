@@ -350,11 +350,11 @@ public partial class DinoPage : ContentPage
             AddToGrid(grid, StatsBtn, 1, 0);
         }
 
-        if (!showTree)
+        if (!showTree && !isDouble)
         {
-            var TreeBtn = new Button { Text = "Tree", BackgroundColor = Shared.PrimaryColor };
+            var TreeBtn = new Button { Text = "Heraldry", BackgroundColor = DefaultBColor };
             TreeBtn.Clicked += TreeBtnClicked;
-            AddToGrid(grid, TreeBtn, 2, 0);
+            AddToGrid(grid, TreeBtn, 3, 0);
         }
 
         // ExcludeBtn.Text = "Include";
@@ -957,16 +957,12 @@ public partial class DinoPage : ContentPage
             }
 
 
+
             scrollContent.Children.Add(genGrid);
 
             var scrollView = new ScrollView { Content = scrollContent };
 
             AddToGrid(maingrid, scrollView, 0, 0);
-
-
-
-            DataManager.TreeOfLife(Shared.selectedClass);
-
         }
         else
         {
