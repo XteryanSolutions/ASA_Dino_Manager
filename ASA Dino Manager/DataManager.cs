@@ -1,7 +1,5 @@
 ﻿using System.Data;
-using System.Data.Common;
 using System.Globalization;
-using System.Xml.Linq;
 
 namespace ASA_Dino_Manager
 {

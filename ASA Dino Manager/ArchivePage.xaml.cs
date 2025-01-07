@@ -1,4 +1,5 @@
 using System.Data;
+using static ASA_Dino_Manager.Shared;
 
 namespace ASA_Dino_Manager;
 
@@ -7,6 +8,15 @@ public partial class ArchivePage : ContentPage
     ////////////////////    Selecting       ////////////////////
     public static string selectedID = "";
     public static bool isSelected = false;
+
+
+    // keep track of boxviews for recoloring
+    private Dictionary<int, BoxView> boxViews = new Dictionary<int, BoxView>();
+    private int boxID = 0;
+    private int boxRowID = 0;
+
+    Button PurgeBtn = new Button { };
+    Button ArchiveBtn = new Button { };
 
     ////////////////////    Table Sorting   ////////////////////
     public static string sortA = Shared.DefaultSortA;
@@ -39,6 +49,8 @@ public partial class ArchivePage : ContentPage
             Grid.SetColumnSpan(rowBackground, grid.ColumnDefinitions.Count > 0
                 ? grid.ColumnDefinitions.Count
                 : 1); // Cover all columns
+
+            boxViews[boxID++] = rowBackground;
 
             // make background on row selectable to increase surface area
             if (id != "") // only when an id is passed
@@ -129,9 +141,7 @@ public partial class ArchivePage : ContentPage
         AddToGrid(mainLayout, scrollView, 0, 0);
 
 
-        // only attach the tapgesture if we have something selected
-        // for now its the only way to force refresh a page
-        // so we attach it to everything so we can click
+        // attach the tapgesture
         UnSelectDino(mainLayout);
 
 
@@ -167,11 +177,8 @@ public partial class ArchivePage : ContentPage
         // Add main panel to right column
         AddToGrid(mainLayout, CreateMainPanel(), 0, 1);
 
-        // attach unselect event after all content has been created
-        if (isSelected)
-        {
-            UnSelectDino(mainLayout);
-        }
+        // attach the tapgesture
+        UnSelectDino(mainLayout);
 
 
         this.Content = mainLayout;
@@ -203,22 +210,31 @@ public partial class ArchivePage : ContentPage
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
 
 
-        // add theese only if we have a dino selected
-        if (isSelected)
+
+
+        ArchiveBtn = new Button { Text = "Restore", BackgroundColor = Shared.PrimaryColor };
+        ArchiveBtn.Clicked += ArchiveBtnClicked;
+        AddToGrid(grid, ArchiveBtn, 0, 0);
+
+        PurgeBtn = new Button { Text = "Purge", BackgroundColor = Shared.TrinaryColor };
+        PurgeBtn.Clicked += PurgeBtnClicked;
+        AddToGrid(grid, PurgeBtn, 5, 0);
+
+        if (!isSelected)
         {
-            var topButton3 = new Button { Text = "Restore", BackgroundColor = Shared.PrimaryColor };
-            topButton3.Clicked += ArchiveBtnClicked;
-            AddToGrid(grid, topButton3, 0, 0);
-
-
-            var topButton4 = new Button { Text = "Purge", BackgroundColor = Shared.TrinaryColor };
-            topButton4.Clicked += PurgeBtnClicked;
-            AddToGrid(grid, topButton4, 5, 0);
+            PurgeBtn.IsVisible = false;
+            ArchiveBtn.IsVisible = false;
+        }
+        else
+        {
+            PurgeBtn.IsVisible = true;
+            ArchiveBtn.IsVisible = true;
         }
 
-        var topButton5 = new Button { Text = "Purge All", BackgroundColor = Shared.TrinaryColor };
-        topButton5.Clicked += PurgeAllBtnClicked;
-        AddToGrid(grid, topButton5, 6, 0);
+
+        var PurgeAllBtn = new Button { Text = "Purge All", BackgroundColor = Shared.TrinaryColor };
+        PurgeAllBtn.Clicked += PurgeAllBtnClicked;
+        AddToGrid(grid, PurgeAllBtn, 6, 0);
 
 
         return grid;
@@ -264,6 +280,10 @@ public partial class ArchivePage : ContentPage
 
         };
 
+        // reset boxViews
+        boxID = 0; boxRowID = 0;
+        boxViews = new Dictionary<int, BoxView>();
+
         // Add male and female tables
         scrollContent.Children.Add(CreateArchiveGrid(DataManager.ArchiveTable, "Archive"));
 
@@ -307,6 +327,8 @@ public partial class ArchivePage : ContentPage
 
         foreach (DataRow row in table.Rows)
         {
+            boxRowID++;
+
             string id = row["ID"].ToString();
             string tag = row["Tag"].ToString();
             string name = row["Name"].ToString();
@@ -337,11 +359,11 @@ public partial class ArchivePage : ContentPage
             var classL = new Label { Text = shortClass, TextColor = cellColor4 };
 
             // Make labels selectable
-            SelectDino(idL, id);
-            SelectDino(tagL, id);
-            SelectDino(nameL, id);
-            SelectDino(levelL, id);
-            SelectDino(classL, id);
+            SelectDino(idL, id, boxRowID);
+            SelectDino(tagL, id, boxRowID);
+            SelectDino(nameL, id, boxRowID);
+            SelectDino(levelL, id, boxRowID);
+            SelectDino(classL, id, boxRowID);
 
             bool selected = false;
             if (id == selectedID) { selected = true; }
@@ -366,6 +388,12 @@ public partial class ArchivePage : ContentPage
         {
             FileManager.Log($"Unselected {selectedID}", 0);
             selectedID = ""; isSelected = false; this.Title = Shared.setPage;
+
+            PurgeBtn.IsVisible = false;
+            ArchiveBtn.IsVisible = false;
+
+            // recolor all rows to default
+            DefaultRowColors();
         }
     }
 
@@ -441,9 +469,39 @@ public partial class ArchivePage : ContentPage
         }
     }
 
+    private void DefaultRowColors()
+    {
+        if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
+        {
+            try
+            {
+                if (boxViews.Count > 0)
+                {
+                    int rowsT = boxViews.Count;
+
+                    for (int i = 0; i < rowsT; i++) // color all male rows
+                    {
+                        // start coloring the rows with Solid color
+                        boxViews[i].Color = i % 2 == 0 ? OddAPanelColor : ArchivePanelColor;
+                    }
+                }
+            }
+            catch { }
+            finally
+            {
+                Monitor.Exit(Shared._dbLock);
+            }
+        }
+        else
+        {
+            FileManager.Log("Recoloring failure", 1);
+        }
+    }
+
+
 
     // Button event handlers
-    private void SelectDino(Label label, string id)
+    private void SelectDino(Label label, string id, int boxid = 0)
     {
         label.GestureRecognizers.Clear();
         // Create a TapGestureRecognizer
@@ -459,7 +517,17 @@ public partial class ArchivePage : ContentPage
 
                 FileManager.Log($"Selected {name} ID: {id}", 0); isSelected = true;
 
-                CreateContent();
+
+                // recolor all rows to default
+                DefaultRowColors();
+
+                boxViews[boxid].Color = SelectedColor;
+
+                // make buttons visible
+                PurgeBtn.IsVisible = true;
+                ArchiveBtn.IsVisible = true;
+
+                // CreateContent();
             }
         };
 
@@ -483,7 +551,16 @@ public partial class ArchivePage : ContentPage
 
                 FileManager.Log($"Selected {name} ID: {id}", 0); isSelected = true;
 
-                CreateContent();
+                // recolor all rows to default
+                DefaultRowColors();
+
+                inp.Color = SelectedColor;
+
+                // make buttons visible
+                PurgeBtn.IsVisible = true;
+                ArchiveBtn.IsVisible = true;
+
+                //CreateContent();
             }
         };
 
@@ -499,7 +576,7 @@ public partial class ArchivePage : ContentPage
         tapGesture.Tapped += (s, e) =>
         {
             ClearSelection();
-            CreateContent();
+            //CreateContent();
         };
 
         // Attach the TapGestureRecognizer to the label
@@ -511,11 +588,9 @@ public partial class ArchivePage : ContentPage
         if (selectedID != "")
         {
             // Handle the click event
-            string status = DataManager.GetGroup(selectedID);
-            if (status == "Archived") { status = ""; FileManager.Log($"Restored ID: {selectedID}", 0); }
-            else if (status == "") { status = "Archived"; FileManager.Log($"Archived ID: {selectedID}", 0); }
-            else if (status == "Exclude") { status = "Archived"; FileManager.Log($"Archived ID: {selectedID}", 0); }
-            DataManager.SetGroup(selectedID, status);
+
+            DataManager.SetGroup(selectedID, "");
+            FileManager.Log($"Restored ID: {selectedID}", 0);
 
             // recompile the archive after archiving or unarchiving
             DataManager.CompileDinoArchive(sortA);
