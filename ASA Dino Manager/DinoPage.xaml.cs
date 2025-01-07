@@ -352,7 +352,7 @@ public partial class DinoPage : ContentPage
 
         if (!showTree && !isDouble)
         {
-            var TreeBtn = new Button { Text = "Heraldry", BackgroundColor = DefaultBColor };
+            var TreeBtn = new Button { Text = "Heritage", BackgroundColor = DefaultBColor };
             TreeBtn.Clicked += TreeBtnClicked;
             AddToGrid(grid, TreeBtn, 3, 0);
         }
