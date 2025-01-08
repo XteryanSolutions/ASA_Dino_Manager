@@ -1314,14 +1314,32 @@ public partial class DinoPage : ContentPage
                 // replace placeholders with symbols
                 status = status.Replace("#", $"{Smap["Identical"]}");
                 status = status.Replace("<", $"{Smap["LessThan"]}");
+
+
             }
 
-            if (!status.Contains(Smap["NewTame"]))
+            // validate info for completion
+
+
+
+            // stuff that needs parents
+            if (mama == "" || papa == "")
+            {
+                if (ToDouble(gen) > 0) { gen += Smap["Warning"]; }
+                if (ToDouble(mamaM) > 0) { mamaM += Smap["Warning"]; }
+                if (ToDouble(papaM) > 0) { papaM += Smap["Warning"]; }
+
+            }
+
+            // stuff that needs parents
+            if (ToDouble(gen) > 0 || ToDouble(papaM) > 0 || ToDouble(mamaM) > 0 || status.Contains(Smap["Grown"]))
             {
                 if (mama == "") { mama = Smap["Missing"]; }
                 if (papa == "") { papa = Smap["Missing"]; }
+
             }
-            else
+
+            if (mama == "" && papa == "" && imprinter == "")
             {
                 // get the tamer string instead of imprinter
                 imprinter = DataManager.GetFirstColumnData("ID", id, "Tribe");
