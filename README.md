@@ -2,8 +2,6 @@
 
 Ark Survival Ascended Dino Manager is a tool designed to assist players in managing their dinos more effectively. Features include breeding support, mutation detection, and more.
 
-Currently, the application targets **Ark: Survival Ascended** and is supported only on **Windows**.
-
 ## Installation Instructions
 
 ### Prerequisites
