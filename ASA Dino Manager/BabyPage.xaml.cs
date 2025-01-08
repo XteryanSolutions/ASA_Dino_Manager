@@ -735,16 +735,18 @@ public partial class BabyPage : ContentPage
                 status = Smap["Notes"] + status;
             }
 
+            string mamaName = DataManager.GetLastColumnData("ID", mama, "Name");
+
+            if (mama == "00") { mamaName = Shared.Smap["Unknown"]; }
+            else if (mama == "" || mama == "N/A") { mamaName = Shared.Smap["Missing"]; }
+
+            string papaName = DataManager.GetLastColumnData("ID", papa, "Name");
+
+            if (papa == "00") { papaName = Shared.Smap["Unknown"]; }
+            else if (papa == "" || papa == "N/A") { papaName = Shared.Smap["Missing"]; }
 
 
-            if (mama == "") { mama = Shared.Smap["Missing"]; }
-            if (papa == "") { papa = Shared.Smap["Missing"]; }
-
-            if (mama == "" && papa == "") { status += Shared.Smap["Warning"]; }
-
-            if (mama == "00") { mama = Shared.Smap["Unknown"]; }
-            if (papa == "00") { papa = Shared.Smap["Unknown"]; }
-
+            if (mamaName == "" && papaName == "" && mama != "00" && papa != "00") { status += Shared.Smap["Warning"]; }
 
 
             // Create a Labels

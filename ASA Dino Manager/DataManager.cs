@@ -1190,7 +1190,7 @@ namespace ASA_Dino_Manager
                             status = $"{Shared.Smap["Grown"]}" + GrowUpTime(dino);
                         }
 
-                        if (mamaName == "" && papaName == "") { status += Shared.Smap["Warning"]; }
+                        if (mamaName == "" && papaName == "" && mama != "00" && papa != "00") { status += Shared.Smap["Warning"]; }
 
                         if (mamaName == "") { mamaName = Shared.Smap["Missing"]; }
                         if (papaName == "") { papaName = Shared.Smap["Missing"]; }
@@ -1561,23 +1561,13 @@ namespace ASA_Dino_Manager
                     dr["ID"] = dino;
                     dr["Name"] = LastStats[rowID][0].ToString();
 
-                    // try to link the ID of parent with a name in dataBase
+
                     string mama = FirstStats[rowID][9].ToString();
-                    string mamaName = GetLastColumnData("ID", mama, "Name");
-
-                    if (mama == "00") { mamaName = Shared.Smap["Unknown"]; }
-                    else if (mama == "" || mama == "N/A") { mamaName = Shared.Smap["Missing"]; }
-
                     string papa = FirstStats[rowID][10].ToString();
-                    string papaName = GetLastColumnData("ID", papa, "Name");
-
-                    if (papa == "00") { papaName = Shared.Smap["Unknown"]; }
-                    else if (papa == "" || papa == "N/A") { papaName = Shared.Smap["Missing"]; }
 
 
-
-                    dr["Mama"] = mamaName;
-                    dr["Papa"] = papaName;
+                    dr["Mama"] = mama;
+                    dr["Papa"] = papa;
 
                     dr["Imprinter"] = LastStats[rowID][18].ToString();
                     dr["Level"] = ToDouble(FirstStats[rowID][1].ToString());
