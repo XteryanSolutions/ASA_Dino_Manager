@@ -1196,8 +1196,8 @@ public partial class DinoPage : ContentPage
         }
 
         // add one xtra id for female header row
-        if (boxRowID > 0) { boxRowID++; }
-
+        if (title == "Female") { boxRowID++; }
+        
         int rowIndex = 1; // Start adding rows below the header
         foreach (DataRow row in table.Rows)
         {

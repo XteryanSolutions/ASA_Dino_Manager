@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using Microsoft.Maui.ApplicationModel;
+using System.Data;
 using System.Globalization;
 
 namespace ASA_Dino_Manager
@@ -764,7 +765,7 @@ namespace ASA_Dino_Manager
                 double genM = 0;
                 if (papaGen > mamaGen) { genM = papaGen; }
                 else { genM = mamaGen; }
-               
+
                 if (genM == gen)
                 {
                     // Combine papaID and mamaID into a single string with a delimiter
@@ -807,7 +808,7 @@ namespace ASA_Dino_Manager
             return resultSet.ToArray();
         }
 
-        public static string[] GetKidsFromPair(string DinoClass , string pair)
+        public static string[] GetKidsFromPair(string DinoClass, string pair)
         {
             var parts = pair.Split(',');
 
@@ -1216,8 +1217,21 @@ namespace ASA_Dino_Manager
             double lastAge = DataManager.ToDouble(DataManager.GetLastColumnData("ID", id, "BabyAge")) * 100;
             string lastTime = DataManager.GetLastColumnData("ID", id, "Time");
 
+            // additionally we check if dino has parents then it has been a baby
+            string lastP = DataManager.GetFirstColumnData("ID", id, "Papa");
+            string lastM = DataManager.GetFirstColumnData("ID", id, "Mama");
+
+            bool hasParents = false;
+            if (lastP != "N/A" && lastP != "")
+            {
+                if (lastM != "N/A" && lastM != "")
+                {
+                    hasParents = true;
+                }
+            }
+
             bool isBaby = false; bool beenBaby = false;
-            if (firstAge < 100) // get the growth stage of the dino
+            if (firstAge < 100 || hasParents) // get the growth stage of the dino
             {
                 beenBaby = true;
             }
@@ -1610,69 +1624,78 @@ namespace ASA_Dino_Manager
                 binaryC = aC + bC + cC + dC + eC + fC + gC;
 
                 string outStatus = "";
+
+                // if not garbage
                 // compare males against others to get the best male to breed
-                foreach (DataRow rowW in MaleTable.Rows)
+                if (binaryC.Contains("1"))
                 {
-                    string with = rowW["ID"].ToString();
-
-                    if (compare != with) // not with eachother
+                    foreach (DataRow rowW in MaleTable.Rows)
                     {
-                        string withStatus = rowW["Status"].ToString();
-                        string aW = "0"; string bW = "0"; string cW = "0";
-                        string dW = "0"; string eW = "0"; string fW = "0";
-                        string gW = "0";
+                        string with = rowW["ID"].ToString();
 
-                        double HpW = ToDouble(rowW["HP"].ToString());
-                        double StaminaW = ToDouble(rowW["Stamina"].ToString());
-                        double OxygenW = ToDouble(rowW["Oxygen"].ToString());
-                        double FoodW = ToDouble(rowW["Food"].ToString());
-                        double WeightW = ToDouble(rowW["Weight"].ToString());
-                        double DamageW = ToDouble(rowW["Damage"].ToString());
-                        double CraftW = ToDouble(rowW["Crafting"].ToString());
-
-                        if (HpW + Shared.statOffset >= DataManager.HpMax) { aW = "1"; }
-                        if (StaminaW + Shared.statOffset >= DataManager.StaminaMax) { bW = "1"; }
-                        if (OxygenW + Shared.statOffset >= DataManager.OxygenMax && hasO2) { cW = "1"; }
-                        if (FoodW + Shared.statOffset >= DataManager.FoodMax) { dW = "1"; }
-                        if (WeightW + Shared.statOffset >= DataManager.WeightMax) { eW = "1"; }
-                        if (DamageW + Shared.statOffset >= DataManager.DamageMax) { fW = "1"; }
-                        if (CraftW + Shared.statOffset >= DataManager.CraftMax && hasCraft) { gW = "1"; }
-
-                        string binaryW = aW + bW + cW + dW + eW + fW + gW;
-
-                        // now that we have both binary strings compare them to figure out if the compare is superceeded or not
-                        string aA = "0"; string bA = "0"; string cA = "0";
-                        string dA = "0"; string eA = "0"; string fA = "0";
-                        string gA = "0";
-
-                        // add up the binary shiz with magical ways known only to the gods of blubs
-                        if (aC == "0" && aW == "0") { aA = "0"; } else if (aC == "0" && aW == "1") { aA = "1"; } else if (aC == "1" && aW == "0") { aA = "2"; } else if (aC == "1" && aW == "1") { aA = "3"; }
-                        if (bC == "0" && bW == "0") { bA = "0"; } else if (bC == "0" && bW == "1") { bA = "1"; } else if (bC == "1" && bW == "0") { bA = "2"; } else if (bC == "1" && bW == "1") { bA = "3"; }
-                        if (cC == "0" && cW == "0") { cA = "0"; } else if (cC == "0" && cW == "1") { cA = "1"; } else if (cC == "1" && cW == "0") { cA = "2"; } else if (cC == "1" && cW == "1") { cA = "3"; }
-                        if (dC == "0" && dW == "0") { dA = "0"; } else if (dC == "0" && dW == "1") { dA = "1"; } else if (dC == "1" && dW == "0") { dA = "2"; } else if (dC == "1" && dW == "1") { dA = "3"; }
-                        if (eC == "0" && eW == "0") { eA = "0"; } else if (eC == "0" && eW == "1") { eA = "1"; } else if (eC == "1" && eW == "0") { eA = "2"; } else if (eC == "1" && eW == "1") { eA = "3"; }
-                        if (fC == "0" && fW == "0") { fA = "0"; } else if (fC == "0" && fW == "1") { fA = "1"; } else if (fC == "1" && fW == "0") { fA = "2"; } else if (fC == "1" && fW == "1") { fA = "3"; }
-                        if (gC == "0" && gW == "0") { gA = "0"; } else if (gC == "0" && gW == "1") { gA = "1"; } else if (gC == "1" && gW == "0") { gA = "2"; } else if (gC == "1" && gW == "1") { gA = "3"; }
-
-                        string binaryA = aA + bA + cA + dA + eA + fA + gA;
-
-                        if (binaryC == binaryW && !withStatus.Contains("<") && !withStatus.Contains("#"))
+                        if (compare != with) // not with eachother
                         {
-                            // both have same stats   MARK IT
-                            outStatus = "# " + rowW["Name"].ToString();  // identical   #with
-                        }
+                            string withStatus = rowW["Status"].ToString();
+                            string aW = "0"; string bW = "0"; string cW = "0";
+                            string dW = "0"; string eW = "0"; string fW = "0";
+                            string gW = "0";
 
-                        if (binaryA.Contains("1") && binaryA.Contains("3") && !binaryA.Contains("2")) // has 1 and 3 but not 2
-                        {
-                            // both have same stats   MARK IT
-                            outStatus = "< " + rowW["Name"].ToString();  // superceeded
+                            double HpW = ToDouble(rowW["HP"].ToString());
+                            double StaminaW = ToDouble(rowW["Stamina"].ToString());
+                            double OxygenW = ToDouble(rowW["Oxygen"].ToString());
+                            double FoodW = ToDouble(rowW["Food"].ToString());
+                            double WeightW = ToDouble(rowW["Weight"].ToString());
+                            double DamageW = ToDouble(rowW["Damage"].ToString());
+                            double CraftW = ToDouble(rowW["Crafting"].ToString());
+
+                            if (HpW + Shared.statOffset >= DataManager.HpMax) { aW = "1"; }
+                            if (StaminaW + Shared.statOffset >= DataManager.StaminaMax) { bW = "1"; }
+                            if (OxygenW + Shared.statOffset >= DataManager.OxygenMax && hasO2) { cW = "1"; }
+                            if (FoodW + Shared.statOffset >= DataManager.FoodMax) { dW = "1"; }
+                            if (WeightW + Shared.statOffset >= DataManager.WeightMax) { eW = "1"; }
+                            if (DamageW + Shared.statOffset >= DataManager.DamageMax) { fW = "1"; }
+                            if (CraftW + Shared.statOffset >= DataManager.CraftMax && hasCraft) { gW = "1"; }
+
+                            string binaryW = aW + bW + cW + dW + eW + fW + gW;
+
+                            // now that we have both binary strings compare them to figure out if the compare is superceeded or not
+                            string aA = "0"; string bA = "0"; string cA = "0";
+                            string dA = "0"; string eA = "0"; string fA = "0";
+                            string gA = "0";
+
+                            // add up the binary shiz with magical ways known only to the gods of blubs
+                            if (aC == "0" && aW == "0") { aA = "0"; } else if (aC == "0" && aW == "1") { aA = "1"; } else if (aC == "1" && aW == "0") { aA = "2"; } else if (aC == "1" && aW == "1") { aA = "3"; }
+                            if (bC == "0" && bW == "0") { bA = "0"; } else if (bC == "0" && bW == "1") { bA = "1"; } else if (bC == "1" && bW == "0") { bA = "2"; } else if (bC == "1" && bW == "1") { bA = "3"; }
+                            if (cC == "0" && cW == "0") { cA = "0"; } else if (cC == "0" && cW == "1") { cA = "1"; } else if (cC == "1" && cW == "0") { cA = "2"; } else if (cC == "1" && cW == "1") { cA = "3"; }
+                            if (dC == "0" && dW == "0") { dA = "0"; } else if (dC == "0" && dW == "1") { dA = "1"; } else if (dC == "1" && dW == "0") { dA = "2"; } else if (dC == "1" && dW == "1") { dA = "3"; }
+                            if (eC == "0" && eW == "0") { eA = "0"; } else if (eC == "0" && eW == "1") { eA = "1"; } else if (eC == "1" && eW == "0") { eA = "2"; } else if (eC == "1" && eW == "1") { eA = "3"; }
+                            if (fC == "0" && fW == "0") { fA = "0"; } else if (fC == "0" && fW == "1") { fA = "1"; } else if (fC == "1" && fW == "0") { fA = "2"; } else if (fC == "1" && fW == "1") { fA = "3"; }
+                            if (gC == "0" && gW == "0") { gA = "0"; } else if (gC == "0" && gW == "1") { gA = "1"; } else if (gC == "1" && gW == "0") { gA = "2"; } else if (gC == "1" && gW == "1") { gA = "3"; }
+
+                            string binaryA = aA + bA + cA + dA + eA + fA + gA;
+
+                            if (binaryC == binaryW && !withStatus.Contains("<") && !withStatus.Contains("#"))
+                            {
+                                // both have same stats   MARK IT
+                                outStatus = "# " + rowW["Name"].ToString();  // identical   #with
+                            }
+
+                            if (binaryA.Contains("1") && binaryA.Contains("3") && !binaryA.Contains("2")) // has 1 and 3 but not 2
+                            {
+                                // both have same stats   MARK IT
+                                outStatus = "< " + rowW["Name"].ToString();  // superceeded
+                            }
                         }
                     }
                 }
+                
+                
+
+
 
                 // edit the row that we show
                 if (outStatus.Contains("<") || outStatus.Contains("#")) { compareStatus = outStatus; }
-                if (binaryC == "0000000") { compareStatus = $"{compareStatus}{Shared.Smap["Garbage"]}"; }
+                if (!binaryC.Contains("1")) { compareStatus = $"{compareStatus}{Shared.Smap["Garbage"]}"; }
                 MaleTable.Rows[rowIDC].SetField("Status", compareStatus);
                 MaleTable.Rows[rowIDC].SetField("Res", binaryC);
                 rowIDC++;
@@ -1709,7 +1732,7 @@ namespace ASA_Dino_Manager
 
 
                 // edit the row we show
-                if (binaryC == "0000000") { compareStatus = $"{compareStatus}{Shared.Smap["Garbage"]}"; }
+                if (!binaryC.Contains("1")) { compareStatus = $"{compareStatus}{Shared.Smap["Garbage"]}"; }
                 FemaleTable.Rows[rowIDC].SetField("Status", compareStatus);
                 FemaleTable.Rows[rowIDC].SetField("Res", binaryC);
                 rowIDC++;
@@ -1963,7 +1986,7 @@ namespace ASA_Dino_Manager
                                             {
                                                 if (aPoints > 0 || agPoints >= maxGP)
                                                 {
-                                                    MakeOffspring(papaID, mamaID, "Breed #" + nr++, $"{gPoints} + {aPoints} = {agPoints}", binC);
+                                                    MakeOffspring(papaID, mamaID, "Breed #" + nr++, binC, maxGP, aPoints, gPoints);
                                                 }
                                             }
                                         }
@@ -1983,7 +2006,7 @@ namespace ASA_Dino_Manager
             // FileManager.Log("Updated BreedPairs",0);
         }
 
-        public static void MakeOffspring(string male, string female, string offspring, string point, string res)
+        public static void MakeOffspring(string male, string female, string offspring, string res,int maxGP, int aPoints, int gPoints)
         {
 
             if (male != "" && female != "")
@@ -2070,7 +2093,11 @@ namespace ASA_Dino_Manager
                 dr["Gen"] = Gen;
                 dr["Mama"] = mama;
                 dr["Papa"] = papa;
-                dr["Status"] = point;
+
+                double agP = aPoints + gPoints;
+
+                dr["Status"] = $"{gPoints} + {aPoints} = {agP}";
+
                 dr["Res"] = res;
 
 

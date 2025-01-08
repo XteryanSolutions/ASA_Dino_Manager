@@ -82,7 +82,7 @@
                 if (Directory.Exists(dir))
                 {
                     string[] exports = Directory.GetFiles(dir + @"\", "*.ini", SearchOption.TopDirectoryOnly);
-                    if (!Shared.ImportEnabled) { Shared.ImportEnabled = true; FileManager.Log("Enabled Importing (Path checks out)", 0); Shared.setPage = "ASA"; }
+                    if (!Shared.ImportEnabled) { Shared.ImportEnabled = true; FileManager.Log("Enabled Importing (Path checks out)", 0); Shared.setPage = "ASA"; SaveConfig(); } // update config file
                     return true;
                 }
                 else { if (Shared.ImportEnabled) { Shared.ImportEnabled = false; FileManager.Log("Disabled Importing (Path not found)", 1); } }
@@ -117,6 +117,7 @@
                     writer.WriteLine("BestStatColor=" + ColorToHex(Shared.bestColor));
                     writer.WriteLine("GoldStatColor=" + ColorToHex(Shared.goldColor));
                     writer.WriteLine("MutatedColor=" + ColorToHex(Shared.mutaColor));
+                    writer.WriteLine("MutatedBadColor=" + ColorToHex(Shared.mutaBadColor));
                     writer.WriteLine("");
                     writer.WriteLine("[Button Colors]");
                     writer.WriteLine("DefaultColor=" + ColorToHex(Shared.DefaultBColor));
@@ -134,7 +135,7 @@
                     writer.WriteLine("ArchivePanelColor=" + ColorToHex(Shared.ArchivePanelColor));
                     writer.WriteLine("OddAPanelColor=" + ColorToHex(Shared.OddAPanelColor));
                 }
-
+                FileManager.Log("Config Saved", 0);
                 return true;
             }
             catch { }
@@ -218,6 +219,10 @@
                                         Shared.goldColor = Color.FromArgb(key.Value);
                                     }
                                     if (key.Key.ToUpper() == "MUTATEDSTATCOLOR")
+                                    {
+                                        Shared.mutaColor = Color.FromArgb(key.Value);
+                                    }
+                                    if (key.Key.ToUpper() == "MUTATEDBADSTATCOLOR")
                                     {
                                         Shared.mutaColor = Color.FromArgb(key.Value);
                                     }
