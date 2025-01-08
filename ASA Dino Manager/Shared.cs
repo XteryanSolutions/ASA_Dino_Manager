@@ -62,8 +62,12 @@
         { "Save", "💾" },
     };
 
+
         //offset for preventing excessive mutation triggers
         public static int muteOffset = 10;
+
+        // offset for a stat considered good enough
+        public static int statOffset = 1;
 
         // Benchmark stuff
         public static int loadCount = 0;
@@ -118,6 +122,7 @@
         public static Color bestColor = Color.FromArgb("#008000"); // Green
         public static Color goldColor = Color.FromArgb("#FFFF00"); // Yellow
         public static Color mutaColor = Color.FromArgb("#ffdb7a"); //
+        public static Color mutaBadColor = Color.FromArgb("#ff1803"); //
 
 
         // Button colors

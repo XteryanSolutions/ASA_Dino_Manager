@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Diagnostics;
 using static ASA_Dino_Manager.Shared;
+using static ASA_Dino_Manager.DataManager;
 
 namespace ASA_Dino_Manager;
 
@@ -1031,6 +1032,8 @@ public partial class DinoPage : ContentPage
         }
 
 
+
+
         return maingrid;
     }
 
@@ -1243,13 +1246,13 @@ public partial class DinoPage : ContentPage
 
 
             //recolor breeding stats
-            if (DataManager.ToDouble(hp) >= DataManager.HpMax) { hpC = Shared.goodColor; }
-            if (DataManager.ToDouble(stamina) >= DataManager.StaminaMax) { staminaC = Shared.goodColor; }
-            if (DataManager.ToDouble(oxygen) >= DataManager.OxygenMax) { oxygenC = Shared.goodColor; }
-            if (DataManager.ToDouble(food) >= DataManager.FoodMax) { foodC = Shared.goodColor; }
-            if (DataManager.ToDouble(weight) >= DataManager.WeightMax) { weightC = Shared.goodColor; }
-            if (DataManager.ToDouble(damage) >= DataManager.DamageMax) { damageC = Shared.goodColor; }
-            if (DataManager.ToDouble(craft) >= DataManager.CraftMax) { craftC = Shared.goodColor; }
+            if (DataManager.ToDouble(hp) + statOffset >= DataManager.HpMax) { hpC = Shared.goodColor; }
+            if (DataManager.ToDouble(stamina) + statOffset >= DataManager.StaminaMax) { staminaC = Shared.goodColor; }
+            if (DataManager.ToDouble(oxygen) + statOffset >= DataManager.OxygenMax) { oxygenC = Shared.goodColor; }
+            if (DataManager.ToDouble(food) + statOffset >= DataManager.FoodMax) { foodC = Shared.goodColor; }
+            if (DataManager.ToDouble(weight) + statOffset >= DataManager.WeightMax) { weightC = Shared.goodColor; }
+            if (DataManager.ToDouble(damage) + statOffset >= DataManager.DamageMax) { damageC = Shared.goodColor; }
+            if (DataManager.ToDouble(craft) + statOffset >= DataManager.CraftMax) { craftC = Shared.goodColor; }
 
 
 
@@ -1261,13 +1264,14 @@ public partial class DinoPage : ContentPage
                 string dC = mutes.Substring(3, 1); string eC = mutes.Substring(4, 1); string fC = mutes.Substring(5, 1);
                 string gC = mutes.Substring(6, 1);
 
-                if (aC == "1") { hpC = Shared.mutaColor; }
-                if (bC == "1") { staminaC = Shared.mutaColor; }
-                if (cC == "1") { oxygenC = Shared.mutaColor; }
-                if (dC == "1") { foodC = Shared.mutaColor; }
-                if (eC == "1") { weightC = Shared.mutaColor; }
-                if (fC == "1") { damageC = Shared.mutaColor; }
-                if (gC == "1") { craftC = Shared.mutaColor; }
+                if (aC == "1" && ToDouble(hp) + statOffset >= HpMax) { hpC = mutaColor; } else if (aC == "1" && ToDouble(hp) - statOffset < HpMax) { hpC = mutaBadColor; }
+                if (bC == "1" && ToDouble(stamina) + statOffset >= StaminaMax) { staminaC = mutaColor; } else if (bC == "1" && ToDouble(stamina) - statOffset < StaminaMax) { staminaC = mutaBadColor; }
+                if (cC == "1" && ToDouble(oxygen) + statOffset >= OxygenMax) { oxygenC = mutaColor; } else if (cC == "1" && ToDouble(oxygen) - statOffset < OxygenMax) { oxygenC = mutaBadColor; }
+                if (dC == "1" && ToDouble(food) + statOffset >= FoodMax) { foodC = mutaColor; } else if (dC == "1" && ToDouble(food) - statOffset < FoodMax) { foodC = mutaBadColor; }
+                if (eC == "1" && ToDouble(weight) + statOffset >= WeightMax) { weightC = mutaColor; } else if (eC == "1" && ToDouble(weight) - statOffset < WeightMax) { weightC = mutaBadColor; }
+                if (fC == "1" && ToDouble(damage) + statOffset >= DamageMax) { damageC = mutaColor; } else if (fC == "1" && ToDouble(damage) - statOffset < DamageMax) { damageC = mutaBadColor; }
+                if (gC == "1" && ToDouble(craft) + statOffset >= CraftMax) { craftC = mutaColor; } else if (gC == "1" && ToDouble(craft) - statOffset < CraftMax) { craftC = mutaBadColor; }
+
             }
 
             // override offspring colors based on breed points
@@ -1743,7 +1747,7 @@ public partial class DinoPage : ContentPage
         // reset toggles etc.
         levelText = ""; hpText = ""; staminaText = ""; oxygenText = "";
         foodText = ""; weightText = ""; damageText = ""; notesText = "";
-        speedText = ""; craftText = "";
+        speedText = ""; craftText = ""; dataValid = false;
         isDouble = false; showTree = false;
         ClearSelection();
         CreateContent();

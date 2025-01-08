@@ -1599,13 +1599,13 @@ namespace ASA_Dino_Manager
                 double DamageC = ToDouble(rowC["Damage"].ToString());
                 double CraftC = ToDouble(rowC["Crafting"].ToString());
 
-                if (HpC >= HpMax) { aC = "1"; }
-                if (StaminaC >= StaminaMax) { bC = "1"; }
-                if (OxygenC >= OxygenMax && hasO2) { cC = "1"; }
-                if (FoodC >= FoodMax) { dC = "1"; }
-                if (WeightC >= WeightMax) { eC = "1"; }
-                if (DamageC >= DamageMax) { fC = "1"; }
-                if (CraftC >= CraftMax && hasCraft) { gC = "1"; }
+                if (HpC + Shared.statOffset >= HpMax) { aC = "1"; }
+                if (StaminaC + Shared.statOffset >= StaminaMax) { bC = "1"; }
+                if (OxygenC + Shared.statOffset >= OxygenMax && hasO2) { cC = "1"; }
+                if (FoodC + Shared.statOffset >= FoodMax) { dC = "1"; }
+                if (WeightC + Shared.statOffset >= WeightMax) { eC = "1"; }
+                if (DamageC + Shared.statOffset >= DamageMax) { fC = "1"; }
+                if (CraftC + Shared.statOffset >= CraftMax && hasCraft) { gC = "1"; }
 
                 binaryC = aC + bC + cC + dC + eC + fC + gC;
 
@@ -1630,13 +1630,13 @@ namespace ASA_Dino_Manager
                         double DamageW = ToDouble(rowW["Damage"].ToString());
                         double CraftW = ToDouble(rowW["Crafting"].ToString());
 
-                        if (HpW >= DataManager.HpMax) { aW = "1"; }
-                        if (StaminaW >= DataManager.StaminaMax) { bW = "1"; }
-                        if (OxygenW >= DataManager.OxygenMax && hasO2) { cW = "1"; }
-                        if (FoodW >= DataManager.FoodMax) { dW = "1"; }
-                        if (WeightW >= DataManager.WeightMax) { eW = "1"; }
-                        if (DamageW >= DataManager.DamageMax) { fW = "1"; }
-                        if (CraftW >= DataManager.CraftMax && hasCraft) { gW = "1"; }
+                        if (HpW + Shared.statOffset >= DataManager.HpMax) { aW = "1"; }
+                        if (StaminaW + Shared.statOffset >= DataManager.StaminaMax) { bW = "1"; }
+                        if (OxygenW + Shared.statOffset >= DataManager.OxygenMax && hasO2) { cW = "1"; }
+                        if (FoodW + Shared.statOffset >= DataManager.FoodMax) { dW = "1"; }
+                        if (WeightW + Shared.statOffset >= DataManager.WeightMax) { eW = "1"; }
+                        if (DamageW + Shared.statOffset >= DataManager.DamageMax) { fW = "1"; }
+                        if (CraftW + Shared.statOffset >= DataManager.CraftMax && hasCraft) { gW = "1"; }
 
                         string binaryW = aW + bW + cW + dW + eW + fW + gW;
 
@@ -1697,13 +1697,13 @@ namespace ASA_Dino_Manager
                 double DamageC = ToDouble(rowC["Damage"].ToString());
                 double CraftC = ToDouble(rowC["Crafting"].ToString());
 
-                if (HpC >= HpMax) { aC = "1"; }
-                if (StaminaC >= StaminaMax) { bC = "1"; }
-                if (OxygenC >= OxygenMax && hasO2) { cC = "1"; }
-                if (FoodC >= FoodMax) { dC = "1"; }
-                if (WeightC >= WeightMax) { eC = "1"; }
-                if (DamageC >= DamageMax) { fC = "1"; }
-                if (CraftC >= CraftMax && hasCraft) { gC = "1"; }
+                if (HpC + Shared.statOffset >= HpMax) { aC = "1"; }
+                if (StaminaC + Shared.statOffset >= StaminaMax) { bC = "1"; }
+                if (OxygenC + Shared.statOffset >= OxygenMax && hasO2) { cC = "1"; }
+                if (FoodC + Shared.statOffset >= FoodMax) { dC = "1"; }
+                if (WeightC + Shared.statOffset >= WeightMax) { eC = "1"; }
+                if (DamageC + Shared.statOffset >= DamageMax) { fC = "1"; }
+                if (CraftC + Shared.statOffset >= CraftMax && hasCraft) { gC = "1"; }
 
                 binaryC = aC + bC + cC + dC + eC + fC + gC;
 
