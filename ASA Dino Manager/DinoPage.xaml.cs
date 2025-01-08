@@ -96,9 +96,9 @@ public partial class DinoPage : ContentPage
                         // load this data only when showing all and included
                         if (ToggleExcluded == 0 || ToggleExcluded == 1 || ToggleExcluded == 2)
                         {
+                            DataManager.EvaluateDinos();
                             if (!CurrentStats && !showTree)
                             {
-                                DataManager.EvaluateDinos();
                                 DataManager.GetBestPartner();
                             }
                         }
