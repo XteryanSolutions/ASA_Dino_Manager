@@ -26,7 +26,7 @@
         // symbols
         public static readonly Dictionary<string, string> Smap = new Dictionary<string, string>
     {
-        { "GoodNo", "❎" },
+        { "Unknown", "🦗" },
         { "Warning", "❗" },
         { "Missing", "❓" },
         { "Garbage", "💩" },

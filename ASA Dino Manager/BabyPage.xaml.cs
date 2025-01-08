@@ -637,7 +637,7 @@ public partial class BabyPage : ContentPage
 
 
         // add one xtra id for female header row
-        if (boxRowID > 0) { boxRowID++; }
+        if (title == "Female") { boxRowID++; }
 
         int rowIndex = 1; // Start adding rows below the header
         foreach (DataRow row in table.Rows)
@@ -670,6 +670,10 @@ public partial class BabyPage : ContentPage
             string dateT = row["Status"].ToString();
 
             string gen = row["Gen"].ToString();
+
+
+
+
             string papa = row["Papa"].ToString();
             string mama = row["Mama"].ToString();
             string papaM = row["PapaMute"].ToString();
@@ -731,18 +735,17 @@ public partial class BabyPage : ContentPage
                 status = Smap["Notes"] + status;
             }
 
-            if (!status.Contains(Smap["NewTame"]))
-            {
-                if (mama == "") { mama = Smap["Missing"]; }
-                if (papa == "") { papa = Smap["Missing"]; }
-            }
-            else
-            {
-                if (mama == "") { mama = Smap["Warning"]; }
-                if (papa == "") { papa = Smap["Warning"]; }
-                // get the tamer string instead of imprinter
-                imprinter = DataManager.GetFirstColumnData("ID", id, "Tribe");
-            }
+
+
+            if (mama == "") { mama = Shared.Smap["Missing"]; }
+            if (papa == "") { papa = Shared.Smap["Missing"]; }
+
+            if (mama == "" && papa == "") { status += Shared.Smap["Warning"]; }
+
+            if (mama == "00") { mama = Shared.Smap["Unknown"]; }
+            if (papa == "00") { papa = Shared.Smap["Unknown"]; }
+
+
 
             // Create a Labels
             var tagL = new Label { Text = dinoClass, TextColor = cellColor0 };

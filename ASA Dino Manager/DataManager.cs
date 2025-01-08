@@ -1,5 +1,6 @@
 ﻿using Microsoft.Maui.ApplicationModel;
 using System.Data;
+using System.Data.Common;
 using System.Globalization;
 
 namespace ASA_Dino_Manager
@@ -1141,15 +1142,73 @@ namespace ASA_Dino_Manager
                 if (addIT)
                 {
                     // at the same time we set the max stats
+                    string name = LastStats[rowID][0].ToString();
                     double LevelM = ToDouble(FirstStats[rowID][1].ToString());
+
                     double HpM = Math.Round(ToDouble(FirstStats[rowID][2].ToString()), 1);
                     double StaminaM = Math.Round(ToDouble(FirstStats[rowID][3].ToString()), 1);
                     double OxygenM = Math.Round(ToDouble(FirstStats[rowID][4].ToString()), 1);
                     double FoodM = Math.Round(ToDouble(FirstStats[rowID][5].ToString()), 1);
                     double WeightM = Math.Round(ToDouble(FirstStats[rowID][6].ToString()), 1);
                     double DamageM = Math.Round((ToDouble(FirstStats[rowID][7].ToString()) + 1) * 100, 1);
-                    double SpeedM = Math.Round((ToDouble(FirstStats[rowID][8].ToString()) + 1) * 100);
                     double CraftM = Math.Round((ToDouble(FirstStats[rowID][20].ToString()) + 1) * 100, 1);
+
+                    double SpeedM = Math.Round((ToDouble(FirstStats[rowID][8].ToString()) + 1) * 100);
+                    string status = "";
+                    double gen = ToDouble(LastStats[rowID][13].ToString());
+                    string mama = FirstStats[rowID][9].ToString();
+                    string papa = FirstStats[rowID][10].ToString();
+                    double mamaMute = ToDouble(FirstStats[rowID][11].ToString());
+                    double papaMute = ToDouble(FirstStats[rowID][12].ToString());
+                    double age = Math.Round(ToDouble(LastStats[rowID][15].ToString()) * 100);
+                    double imprint = Math.Round(ToDouble(LastStats[rowID][17].ToString()) * 100);
+                    string imprinter = FirstStats[rowID][18].ToString();
+
+
+                    // get first known age and time
+                    string firstTime = DataManager.GetFirstColumnData("ID", dino, "Time");
+                    double firstAge = DataManager.ToDouble(DataManager.GetFirstColumnData("ID", dino, "BabyAge")) * 100;
+
+                    // get last known age and time
+                    double lastAge = DataManager.ToDouble(DataManager.GetLastColumnData("ID", dino, "BabyAge")) * 100;
+                    string lastTime = DataManager.GetLastColumnData("ID", dino, "Time");
+
+                    // get the most recent parent names
+                    string papaName = DataManager.GetLastColumnData("ID", papa, "Name");
+                    string mamaName = DataManager.GetLastColumnData("ID", mama, "Name");
+
+
+                    if (imprinter != "") // we haz imprinter = baby dino
+                    {
+                        if (lastAge < 100)
+                        {
+                            DateTime firstTimeD = DateTime.ParseExact(firstTime, "dd/MM/yyyy HH:mm:ss", null);
+                            status = $"{Shared.Smap["Age"]}" + firstTimeD.ToString("dd/MM/yyyy HH:mm:ss");
+                        }
+                        else
+                        {
+                            status = $"{Shared.Smap["Grown"]}" + GrowUpTime(dino);
+                        }
+
+                        if (mamaName == "" && papaName == "") { status += Shared.Smap["Warning"]; }
+
+                        if (mamaName == "") { mamaName = Shared.Smap["Missing"]; }
+                        if (papaName == "") { papaName = Shared.Smap["Missing"]; }
+
+                        if (mama == "00") { mamaName = Shared.Smap["Unknown"]; }
+                        if (papa == "00") { papaName = Shared.Smap["Unknown"]; }
+                    }
+                    else // Fresh adult tame
+                    {
+                        DateTime firstTimeD = DateTime.ParseExact(firstTime, "dd/MM/yyyy HH:mm:ss", null);
+                        status = $"{Shared.Smap["NewTame"]}" + firstTimeD.ToString("dd/MM/yyyy HH:mm:ss");
+
+                        mamaName = Shared.Smap["Unknown"];
+                        papaName = Shared.Smap["Unknown"];
+
+                        imprinter = DataManager.GetLastColumnData("ID", dino, "Tribe");
+                    }
+
 
                     if (LevelM >= LevelMax) { LevelMax = LevelM; }
                     if (HpM >= HpMax) { HpMax = HpM; }
@@ -1164,9 +1223,9 @@ namespace ASA_Dino_Manager
                     // Fill the DataRow
                     DataRow dr = table.NewRow();
                     dr["ID"] = dino;
-                    dr["Name"] = LastStats[rowID][0].ToString();
+                    dr["Name"] = name;
                     dr["Level"] = LevelM;
-
+                    //------breeding stats-------
                     dr["Hp"] = HpM;
                     dr["Stamina"] = StaminaM;
                     dr["Oxygen"] = OxygenM;
@@ -1174,25 +1233,18 @@ namespace ASA_Dino_Manager
                     dr["Weight"] = WeightM;
                     dr["Damage"] = DamageM;
                     dr["Crafting"] = CraftM;
-
+                    //---------------------------
                     dr["Speed"] = SpeedM;
-                    dr["Gen"] = ToDouble(LastStats[rowID][13].ToString());
+                    dr["Gen"] = gen;
+                    dr["Mama"] = mamaName;
+                    dr["Papa"] = papaName;
+                    dr["MamaMute"] = mamaMute;
+                    dr["PapaMute"] = papaMute;
+                    dr["Age"] = age;
+                    dr["Imprint"] = imprint;
+                    dr["Imprinter"] = imprinter;
 
-                    // try to link the ID of parent with a name in dataBase
-                    string mama = GetLastColumnData("ID", FirstStats[rowID][9].ToString(), "Name", "");
-                    if (mama == "") { mama = FirstStats[rowID][9].ToString(); }
-                    string papa = GetLastColumnData("ID", FirstStats[rowID][10].ToString(), "Name", "");
-                    if (papa == "") { papa = FirstStats[rowID][10].ToString(); }
-
-                    dr["Mama"] = mama;
-                    dr["Papa"] = papa;
-                    dr["MamaMute"] = ToDouble(FirstStats[rowID][11].ToString());
-                    dr["PapaMute"] = ToDouble(FirstStats[rowID][12].ToString());
-                    dr["Age"] = Math.Round(ToDouble(LastStats[rowID][15].ToString()) * 100);
-                    dr["Imprint"] = Math.Round(ToDouble(LastStats[rowID][17].ToString()) * 100);
-                    dr["Imprinter"] = FirstStats[rowID][18].ToString();
-
-                    dr["Status"] = CalcStatus(dino);
+                    dr["Status"] = status;
                     dr["Tag"] = ""; // maybe use this at some point just make sure its not null for now
 
                     dr["Mutes"] = mutes;
@@ -1510,12 +1562,22 @@ namespace ASA_Dino_Manager
                     dr["Name"] = LastStats[rowID][0].ToString();
 
                     // try to link the ID of parent with a name in dataBase
-                    string mama = GetLastColumnData("ID", FirstStats[rowID][9].ToString(), "Name", "");
-                    if (mama == "") { mama = FirstStats[rowID][9].ToString(); }
-                    string papa = GetLastColumnData("ID", FirstStats[rowID][10].ToString(), "Name", "");
-                    if (papa == "") { papa = FirstStats[rowID][10].ToString(); }
-                    dr["Mama"] = mama;
-                    dr["Papa"] = papa;
+                    string mama = FirstStats[rowID][9].ToString();
+                    string mamaName = GetLastColumnData("ID", mama, "Name");
+
+                    if (mama == "00") { mamaName = Shared.Smap["Unknown"]; }
+                    else if (mama == "" || mama == "N/A") { mamaName = Shared.Smap["Missing"]; }
+
+                    string papa = FirstStats[rowID][10].ToString();
+                    string papaName = GetLastColumnData("ID", papa, "Name");
+
+                    if (papa == "00") { papaName = Shared.Smap["Unknown"]; }
+                    else if (papa == "" || papa == "N/A") { papaName = Shared.Smap["Missing"]; }
+
+
+
+                    dr["Mama"] = mamaName;
+                    dr["Papa"] = papaName;
 
                     dr["Imprinter"] = LastStats[rowID][18].ToString();
                     dr["Level"] = ToDouble(FirstStats[rowID][1].ToString());
@@ -1688,8 +1750,8 @@ namespace ASA_Dino_Manager
                         }
                     }
                 }
-                
-                
+
+
 
 
 
@@ -1737,180 +1799,6 @@ namespace ASA_Dino_Manager
                 FemaleTable.Rows[rowIDC].SetField("Res", binaryC);
                 rowIDC++;
             }
-        }
-
-        public static void SetBinaryStats()
-        {
-            bool hasO2 = true; bool hasCraft = true;
-            if (DataManager.OxygenMax == 150) { hasO2 = false; }
-            if (DataManager.CraftMax == 100) { hasCraft = false; }
-
-            //BinaryM = new string[MaleTable.Rows.Count];
-            //BinaryF = new string[FemaleTable.Rows.Count];
-
-            // look trough males
-            int rowIDC = 0;
-            foreach (DataRow rowC in MaleTable.Rows)
-            {
-                string compare = rowC["ID"].ToString();
-                string compareStatus = rowC["Status"].ToString();
-
-
-                string aC = "0"; string bC = "0"; string cC = "0";
-                string dC = "0"; string eC = "0"; string fC = "0";
-                string gC = "0";
-                string binaryC = "0000000";
-
-                double HpC = ToDouble(rowC["HP"].ToString());
-                double StaminaC = ToDouble(rowC["Stamina"].ToString());
-                double OxygenC = ToDouble(rowC["Oxygen"].ToString());
-                double FoodC = ToDouble(rowC["Food"].ToString());
-                double WeightC = ToDouble(rowC["Weight"].ToString());
-                double DamageC = ToDouble(rowC["Damage"].ToString());
-                double CraftC = ToDouble(rowC["Crafting"].ToString());
-
-
-                if (HpC >= HpMax) { aC = "1"; }
-                if (StaminaC >= StaminaMax) { bC = "1"; }
-                if (OxygenC >= OxygenMax && hasO2) { cC = "1"; }
-                if (FoodC >= FoodMax) { dC = "1"; }
-                if (WeightC >= WeightMax) { eC = "1"; }
-                if (DamageC >= DamageMax) { fC = "1"; }
-                if (CraftC >= CraftMax && hasCraft) { gC = "1"; }
-
-                binaryC = aC + bC + cC + dC + eC + fC + gC;
-                //BinaryM[rowIDC] = binaryC;
-                string outStatus = "";
-                foreach (DataRow rowW in MaleTable.Rows) // compare males to put useles males in reserve
-                {
-                    string with = rowW["ID"].ToString();
-                    string withStatus = rowW["Status"].ToString();
-
-                    if (compare != with) // not with eachother
-                    {
-                        string aW = "0"; string bW = "0"; string cW = "0";
-                        string dW = "0"; string eW = "0"; string fW = "0";
-                        string gW = "0";
-
-                        double HpW = ToDouble(rowW["HP"].ToString());
-                        double StaminaW = ToDouble(rowW["Stamina"].ToString());
-                        double OxygenW = ToDouble(rowW["Oxygen"].ToString());
-                        double FoodW = ToDouble(rowW["Food"].ToString());
-                        double WeightW = ToDouble(rowW["Weight"].ToString());
-                        double DamageW = ToDouble(rowW["Damage"].ToString());
-                        double CraftW = ToDouble(rowW["Crafting"].ToString());
-
-                        if (HpW >= DataManager.HpMax) { aW = "1"; }
-                        if (StaminaW >= DataManager.StaminaMax) { bW = "1"; }
-                        if (OxygenW >= DataManager.OxygenMax && hasO2) { cW = "1"; }
-                        if (FoodW >= DataManager.FoodMax) { dW = "1"; }
-                        if (WeightW >= DataManager.WeightMax) { eW = "1"; }
-                        if (DamageW >= DataManager.DamageMax) { fW = "1"; }
-                        if (CraftW >= DataManager.CraftMax && hasCraft) { gW = "1"; }
-
-                        string binaryW = aW + bW + cW + dW + eW + fW + gW;
-
-                        // now that we have both binary strings compare them to figure out if the compare is superceeded or not
-                        string aA = "0"; string bA = "0"; string cA = "0";
-                        string dA = "0"; string eA = "0"; string fA = "0";
-                        string gA = "0";
-
-                        // add up the binary shiz with magical ways known only to the gods of blubs
-                        if (aC == "0" && aW == "0") { aA = "0"; } else if (aC == "0" && aW == "1") { aA = "1"; } else if (aC == "1" && aW == "0") { aA = "2"; } else if (aC == "1" && aW == "1") { aA = "3"; }
-                        if (bC == "0" && bW == "0") { bA = "0"; } else if (bC == "0" && bW == "1") { bA = "1"; } else if (bC == "1" && bW == "0") { bA = "2"; } else if (bC == "1" && bW == "1") { bA = "3"; }
-                        if (cC == "0" && cW == "0") { cA = "0"; } else if (cC == "0" && cW == "1") { cA = "1"; } else if (cC == "1" && cW == "0") { cA = "2"; } else if (cC == "1" && cW == "1") { cA = "3"; }
-                        if (dC == "0" && dW == "0") { dA = "0"; } else if (dC == "0" && dW == "1") { dA = "1"; } else if (dC == "1" && dW == "0") { dA = "2"; } else if (dC == "1" && dW == "1") { dA = "3"; }
-                        if (eC == "0" && eW == "0") { eA = "0"; } else if (eC == "0" && eW == "1") { eA = "1"; } else if (eC == "1" && eW == "0") { eA = "2"; } else if (eC == "1" && eW == "1") { eA = "3"; }
-                        if (fC == "0" && fW == "0") { fA = "0"; } else if (fC == "0" && fW == "1") { fA = "1"; } else if (fC == "1" && fW == "0") { fA = "2"; } else if (fC == "1" && fW == "1") { fA = "3"; }
-                        if (gC == "0" && gW == "0") { gA = "0"; } else if (gC == "0" && gW == "1") { gA = "1"; } else if (gC == "1" && gW == "0") { gA = "2"; } else if (gC == "1" && gW == "1") { gA = "3"; }
-
-                        string binaryA = aA + bA + cA + dA + eA + fA + gA;
-
-                        if (binaryC == binaryW && !withStatus.Contains("<") && !withStatus.Contains("#"))
-                        {
-                            // both have same stats   MARK IT
-                            outStatus = "# " + rowW["Name"].ToString();  // identical   #with
-                        }
-
-                        if (binaryA.Contains("1") && binaryA.Contains("3") && !binaryA.Contains("2")) // has 1 and 3 but not 2
-                        {
-                            // both have same stats   MARK IT
-                            outStatus = "< " + rowW["Name"].ToString();  // superceeded
-                        }
-
-                    }
-                }
-
-                string finalStatus = compareStatus;
-
-
-                if (outStatus.Contains("<") || outStatus.Contains("#"))
-                {
-                    finalStatus = outStatus;
-                }
-                // mark as garbage if they have none of the best stats
-                if (binaryC == "0000000")
-                {
-                    finalStatus = $"{compareStatus}{Shared.Smap["Garbage"]}";
-                }
-
-
-                // edit the row that we show
-                MaleTable.Rows[rowIDC].SetField("Status", finalStatus);
-
-
-                rowIDC++;
-            }
-
-            // look trough females
-            rowIDC = 0;
-            foreach (DataRow rowC in FemaleTable.Rows)
-            {
-                string compare = rowC["ID"].ToString();
-                string compareStatus = rowC["Status"].ToString();
-
-
-                string outStatus = "";
-                string aC = "0"; string bC = "0"; string cC = "0";
-                string dC = "0"; string eC = "0"; string fC = "0";
-                string gC = "0";
-                string binaryC = "0000000";
-
-                double HpC = ToDouble(rowC["HP"].ToString());
-                double StaminaC = ToDouble(rowC["Stamina"].ToString());
-                double OxygenC = ToDouble(rowC["Oxygen"].ToString());
-                double FoodC = ToDouble(rowC["Food"].ToString());
-                double WeightC = ToDouble(rowC["Weight"].ToString());
-                double DamageC = ToDouble(rowC["Damage"].ToString());
-                double CraftC = ToDouble(rowC["Crafting"].ToString());
-
-
-                if (HpC >= HpMax) { aC = "1"; }
-                if (StaminaC >= StaminaMax) { bC = "1"; }
-                if (OxygenC >= OxygenMax && hasO2) { cC = "1"; }
-                if (FoodC >= FoodMax) { dC = "1"; }
-                if (WeightC >= WeightMax) { eC = "1"; }
-                if (DamageC >= DamageMax) { fC = "1"; }
-                if (CraftC >= CraftMax && hasCraft) { gC = "1"; }
-
-                binaryC = aC + bC + cC + dC + eC + fC + gC;
-
-                //BinaryF[rowIDC] = binaryC;
-
-                string finalStatus = compareStatus;
-
-                if (binaryC == "0000000")
-                {
-                    finalStatus = $"{compareStatus}{Shared.Smap["Garbage"]}";
-                }
-
-                // edit the row we show
-                FemaleTable.Rows[rowIDC].SetField("Status", finalStatus);
-
-
-                rowIDC++;
-            }
-            // FileManager.Log("updated binary");
         }
 
         public static void GetBestPartner()
@@ -2006,7 +1894,7 @@ namespace ASA_Dino_Manager
             // FileManager.Log("Updated BreedPairs",0);
         }
 
-        public static void MakeOffspring(string male, string female, string offspring, string res,int maxGP, int aPoints, int gPoints)
+        public static void MakeOffspring(string male, string female, string offspring, string res, int maxGP, int aPoints, int gPoints)
         {
 
             if (male != "" && female != "")
@@ -2362,24 +2250,47 @@ namespace ASA_Dino_Manager
 
                         if (change)
                         {
-                            // check for missing data that can be raplaced
-                            bool needInfo = false;
-                            if (CheckDino(id, "Mama", importedNew[11])) { needInfo = true; }
-                            if (CheckDino(id, "Papa", importedNew[12])) { needInfo = true; }
-                            if (CheckDino(id, "MamaMute", importedNew[13])) { needInfo = true; }
-                            if (CheckDino(id, "PapaMute", importedNew[14])) { needInfo = true; }
-                            if (CheckDino(id, "Gen", importedNew[15])) { needInfo = true; }
-                            if (CheckDino(id, "GenM", importedNew[16])) { needInfo = true; }
-                            if (CheckDino(id, "Imprinter", importedNew[20])) { needInfo = true; }
-                            if (CheckDino(id, "Tribe", importedNew[21])) { needInfo = true; }
+                            bool updated = false;
+                            string newMama = importedNew[11];
+                            string newPapa = importedNew[12];
 
-                            if (needInfo)
+                            if (newMama != "" && newMama != "N/A" && newMama != "0" && newPapa != "" && newPapa != "N/A" && newPapa != "0")
                             {
-                                FileManager.Log($"Need to import more data", 1);
+                                int rowID = 0;
+                                foreach (DataRow row in ImportsTable.Rows)
+                                {
+                                    if (id == row["ID"].ToString())
+                                    {
+                                        // check if we haz parents already
+                                        string mama = row["Mama"].ToString();
+                                        string papa = row["Papa"].ToString();
+                                        bool noPapa = false; bool noMama = false;
+                                        if (mama == "" || mama == "N/A" || mama == "0") { noMama = true; }
+                                        if (papa == "" || papa == "N/A" || papa == "0") { noPapa = true; }
+
+                                        if (noPapa && noMama)
+                                        {
+                                            // if we didnt have any previous info then update it all
+                                            ImportsTable.Rows[rowID].SetField("Mama", newMama);
+                                            ImportsTable.Rows[rowID].SetField("Papa", newPapa);
+                                            ImportsTable.Rows[rowID].SetField("MamaMute", importedNew[13]);
+                                            ImportsTable.Rows[rowID].SetField("PapaMute", importedNew[14]);
+                                            ImportsTable.Rows[rowID].SetField("Gen", importedNew[15]);
+                                            ImportsTable.Rows[rowID].SetField("GenM", importedNew[16]);
+                                            updated = true;
+                                        }
+                                    }
+                                    rowID++;
+                                }
+                            }
+                            if (updated)
+                            {
+                                FileManager.Log($"Updated parents for {importedNew[2]}", 0);
                             }
 
+
                             ModC++;
-                            //fileManager.log("Updated dino: " + id);
+
                             ImportsTable.Rows.Add(dr);
                         }
                     }
@@ -2392,48 +2303,6 @@ namespace ASA_Dino_Manager
             if (ModC > 0)
             {
                 FileManager.Log("Updated " + ModC + " dinos", 0);
-            }
-        }
-
-        private static bool CheckDino(string id, string inputColumn, string newData)
-        {
-            string field = DataManager.GetFirstColumnData("ID", id, inputColumn); string valu = "0";
-            if (inputColumn == "Gen" || inputColumn == "GenM" || inputColumn == "MamaMute" || inputColumn == "PapaMute")
-            {
-                valu = "";
-            }
-
-            if (newData != "" && newData != "N/A" && newData != "#" && newData != valu && newData != "00") // have new data
-            {
-                if (field == "N/A" || field == "" || field == "#" || field == valu && field == "00") // no previous info
-                {
-                    if (field != newData)
-                    {
-                        UpdateField(id, inputColumn, newData);
-                        FileManager.Log($"Updated: {inputColumn} - {newData}", 0);
-                    }
-                }
-            }
-            else // we dont have new data
-            {
-                if (field == "N/A" || field == "" || field == "#" || field == "0" || field == "00") // we dont have old data
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private static void UpdateField(string id, string column, string value)
-        {
-            int rowID = 0;
-            foreach (DataRow row in ImportsTable.Rows)
-            {
-                if (id == row["ID"].ToString()) // found dino to edit
-                {
-                    ImportsTable.Rows[rowID].SetField(column, value);
-                }
-                rowID++;
             }
         }
 
@@ -2470,6 +2339,34 @@ namespace ASA_Dino_Manager
                         {
                             resultSet[11] = emptyString;
                             resultSet[12] = emptyString;
+                        }
+                    }
+                    else if (section.Key.ToUpper() == "DINOANCESTORSMALE")
+                    {
+                        if (resultSet[11] == emptyString)
+                        {
+                            try // catch parents separately to leave empty just incase it fails
+                            {
+                                foreach (var key in section.Value)
+                                {
+                                    var split = key.Value.ToString().Split(new[] { @";" }, StringSplitOptions.RemoveEmptyEntries);
+
+                                    var id1P = split[1].Split(new[] { @"=" }, StringSplitOptions.RemoveEmptyEntries);
+                                    var id2P = split[2].Split(new[] { @"=" }, StringSplitOptions.RemoveEmptyEntries);
+
+                                    resultSet[12] = id1P[1] + id2P[1];
+
+                                    var id1M = split[4].Split(new[] { @"=" }, StringSplitOptions.RemoveEmptyEntries);
+                                    var id2M = split[5].Split(new[] { @"=" }, StringSplitOptions.RemoveEmptyEntries);
+
+                                    resultSet[11] = id1M[1] + id2M[1];
+                                }
+                            }
+                            catch
+                            {
+                                resultSet[11] = emptyString;
+                                resultSet[12] = emptyString;
+                            }
                         }
                     }
                     else if (section.Key.ToUpper() == "COLORIZATION")

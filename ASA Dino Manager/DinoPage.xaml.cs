@@ -1311,34 +1311,14 @@ public partial class DinoPage : ContentPage
                 string notes = DataManager.GetNotes(id);
                 if (notes != "") { status += Smap["Notes"]; }
 
+
                 // replace placeholders with symbols
                 status = status.Replace("#", $"{Smap["Identical"]}");
                 status = status.Replace("<", $"{Smap["LessThan"]}");
-
-
             }
 
-            // validate info for completion
 
-
-
-            // stuff that needs parents
-            if (mama == "" || papa == "")
-            {
-                if (ToDouble(gen) > 0) { gen += Smap["Warning"]; }
-                if (ToDouble(mamaM) > 0) { mamaM += Smap["Warning"]; }
-                if (ToDouble(papaM) > 0) { papaM += Smap["Warning"]; }
-
-            }
-
-            // stuff that needs parents
-            if (ToDouble(gen) > 0 || ToDouble(papaM) > 0 || ToDouble(mamaM) > 0 || status.Contains(Smap["Grown"]))
-            {
-                if (mama == "") { mama = Smap["Missing"]; }
-                if (papa == "") { papa = Smap["Missing"]; }
-
-            }
-
+            // replace empty imprinter string with tribe
             if (mama == "" && papa == "" && imprinter == "")
             {
                 // get the tamer string instead of imprinter
