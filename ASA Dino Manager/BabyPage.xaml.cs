@@ -736,30 +736,14 @@ public partial class BabyPage : ContentPage
                 status = Smap["Notes"] + status;
             }
 
-            string mamaName = DataManager.GetLastColumnData("ID", mama, "Name");
-            string papaName = DataManager.GetLastColumnData("ID", papa, "Name");
-
-
-            // warn if dont know any of the parent id's
-            if ((mama == "" || mama == "N/A") && (papa == "" || papa == "N/A"))
+            // mark all generation dependant data as invalid
+            if (mama == Shared.Smap["Warning"] && papa == Shared.Smap["Warning"])
             {
-                mamaName = Shared.Smap["Warning"];
-                papaName = Shared.Smap["Warning"];
-
-                // mark all generation dependant data as invalid
                 papaM = Shared.Smap["Warning"];
                 mamaM = Shared.Smap["Warning"];
                 gen = Shared.Smap["Warning"];
             }
-            else
-            {
-                if (mamaName == "") { mamaName = Shared.Smap["Missing"]; }
-                if (papaName == "") { papaName = Shared.Smap["Missing"]; }
-            }
 
-            if (mama == "00") { mamaName = Shared.Smap["Unknown"]; }
-            if (papa == "00") { papaName = Shared.Smap["Unknown"]; }
-            
 
             // Create a Labels
             var tagL = new Label { Text = dinoClass, TextColor = cellColor0 };
@@ -773,8 +757,8 @@ public partial class BabyPage : ContentPage
             //////////////
             var statusL = new Label { Text = status, TextColor = cellColor8 };
             var genL = new Label { Text = gen, TextColor = cellColor8 };
-            var papaL = new Label { Text = papaName, TextColor = Shared.maleColor };
-            var mamaL = new Label { Text = mamaName, TextColor = Shared.femaleColor };
+            var papaL = new Label { Text = papa, TextColor = Shared.maleColor };
+            var mamaL = new Label { Text = mama, TextColor = Shared.femaleColor };
             var papaML = new Label { Text = papaM, TextColor = Shared.maleColor };
             var mamaML = new Label { Text = mamaM, TextColor = Shared.femaleColor };
             var imprintL = new Label { Text = imprint, TextColor = cellColor8 };

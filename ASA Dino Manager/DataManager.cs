@@ -210,6 +210,38 @@ namespace ASA_Dino_Manager
             }
         }
 
+        public static void MergeDatabases(string dataLocation)
+        {
+            // Load the second table from XML
+            DataTable table2 = new DataTable();
+            table2.ReadXml(dataLocation);
+
+            // Clone structure from the ImportsTable
+            DataTable mergedTable = ImportsTable.Clone();
+
+            // Combine all rows from ImportsTable and table2
+            DataTable allRows = ImportsTable.Copy();
+            allRows.Merge(table2);
+
+            // Group by Dino ID and select the most recent entry (ordered by oldest first)
+            var groupedRows = allRows.AsEnumerable()
+                .GroupBy(row => row["ID"].ToString())
+                .Select(group =>
+                {
+                    // Parse "Time" as DateTime (assume all timestamps are in UTC)
+                    return group.OrderBy(row =>
+                        DateTime.ParseExact(row["Time"].ToString(), "dd/MM/yyyy HH:mm:ss", Culture, DateTimeStyles.AssumeUniversal))
+                        .First();
+                });
+
+            // Clear ImportsTable and add the most recent rows from merged data
+            ImportsTable.Clear();
+            foreach (var row in groupedRows)
+            {
+                ImportsTable.ImportRow(row);
+            }
+        }
+
         public static void DeepCleanDatabase()
         {
             // Get all distinct IDs from the database.
@@ -873,7 +905,7 @@ namespace ASA_Dino_Manager
                         if (ToDouble(ageValue) == 1)
                         {
                             // time when dino reached fullgrown
-                            result = timeValue;
+                            result = ConvertUtcToLocal(timeValue);
                             break;
                         }
                     }
@@ -1183,7 +1215,7 @@ namespace ASA_Dino_Manager
                         if (lastAge < 100)
                         {
                             DateTime firstTimeD = DateTime.ParseExact(firstTime, "dd/MM/yyyy HH:mm:ss", null);
-                            status = $"{Shared.Smap["Age"]}" + firstTimeD.ToString("dd/MM/yyyy HH:mm:ss");
+                            status = $"{Shared.Smap["Age"]}" + ConvertUtcToLocal(firstTimeD.ToString("dd/MM/yyyy HH:mm:ss"));
                         }
                         else
                         {
@@ -1210,7 +1242,7 @@ namespace ASA_Dino_Manager
                     else // Fresh adult tame
                     {
                         DateTime firstTimeD = DateTime.ParseExact(firstTime, "dd/MM/yyyy HH:mm:ss", null);
-                        status = $"{Shared.Smap["NewTame"]}" + firstTimeD.ToString("dd/MM/yyyy HH:mm:ss");
+                        status = $"{Shared.Smap["NewTame"]}" + ConvertUtcToLocal(firstTimeD.ToString("dd/MM/yyyy HH:mm:ss"));
 
                         mamaName = Shared.Smap["Unknown"];
                         papaName = Shared.Smap["Unknown"];
@@ -1266,61 +1298,6 @@ namespace ASA_Dino_Manager
             }
         }
 
-        public static string CalcStatus(string id)
-        {
-            string status = "";
-
-            // get first known age and time
-            string firstTime = DataManager.GetFirstColumnData("ID", id, "Time");
-            double firstAge = DataManager.ToDouble(DataManager.GetFirstColumnData("ID", id, "BabyAge")) * 100;
-
-            // get last known age and time
-            double lastAge = DataManager.ToDouble(DataManager.GetLastColumnData("ID", id, "BabyAge")) * 100;
-            string lastTime = DataManager.GetLastColumnData("ID", id, "Time");
-
-            // additionally we check if dino has parents then it has been a baby
-            string lastP = DataManager.GetFirstColumnData("ID", id, "Papa");
-            string lastM = DataManager.GetFirstColumnData("ID", id, "Mama");
-
-            bool hasParents = false;
-            if (lastP != "N/A" && lastP != "")
-            {
-                if (lastM != "N/A" && lastM != "")
-                {
-                    hasParents = true;
-                }
-            }
-
-            bool isBaby = false; bool beenBaby = false;
-            if (firstAge < 100 || hasParents) // get the growth stage of the dino
-            {
-                beenBaby = true;
-            }
-            if (lastAge < 100)
-            {
-                isBaby = true;
-            }
-
-            if (!beenBaby) // its a tame just add info on when it was tamed
-            {
-                DateTime firstTimeD = DateTime.ParseExact(firstTime, "dd/MM/yyyy HH:mm:ss", null);
-                status = $"{Shared.Smap["NewTame"]}" + firstTimeD.ToString("dd/MM/yyyy HH:mm:ss");
-            }
-            else // has been a baby at some point
-            {
-                if (isBaby)
-                {
-                    DateTime firstTimeD = DateTime.ParseExact(firstTime, "dd/MM/yyyy HH:mm:ss", null);
-                    status = $"{Shared.Smap["Age"]}" + firstTimeD.ToString("dd/MM/yyyy HH:mm:ss");
-                }
-                else
-                {
-                    status = $"{Shared.Smap["Grown"]}" + GrowUpTime(id);
-                }
-            }
-
-            return status;
-        }
 
         public static void GetDinoData(string DinoClass, string sortiM = "", string sortiF = "", int toggle = 0, bool CurrentStats = false)
         {
@@ -1537,7 +1514,7 @@ namespace ASA_Dino_Manager
                     }
 
                     // Estimate data
-                    DateTime nowTime = DateTime.Now;
+                    DateTime nowTime = DateTime.UtcNow;
 
                     double timePassed = (nowTime - lastTimeD).TotalMinutes;
                     double agePassed = timePassed * ageRate;
@@ -1552,7 +1529,7 @@ namespace ASA_Dino_Manager
                     double LastTimeLeft = knownAgeLeft / ageRate; // time left at last data
 
 
-                    DateTime dateT = DateTime.Now;
+                    DateTime dateT = DateTime.UtcNow;
 
                     if (ageRate > 0)
                     {
@@ -1575,6 +1552,27 @@ namespace ASA_Dino_Manager
                     string papa = FirstStats[rowID][10].ToString();
 
 
+                    string mamaName = DataManager.GetLastColumnData("ID", mama, "Name");
+                    string papaName = DataManager.GetLastColumnData("ID", papa, "Name");
+
+
+                    // warn if dont know any of the parent id's
+                    if ((mama == "" || mama == "N/A") && (papa == "" || papa == "N/A"))
+                    {
+                        mamaName = Shared.Smap["Warning"];
+                        papaName = Shared.Smap["Warning"];
+                    }
+                    else
+                    {
+                        if (mamaName == "") { mamaName = Shared.Smap["Missing"]; }
+                        if (papaName == "") { papaName = Shared.Smap["Missing"]; }
+                    }
+
+                    if (mama == "00") { mamaName = Shared.Smap["Unknown"]; }
+                    if (papa == "00") { papaName = Shared.Smap["Unknown"]; }
+
+
+
                     dr["Mama"] = mama;
                     dr["Papa"] = papa;
 
@@ -1586,7 +1584,10 @@ namespace ASA_Dino_Manager
                     dr["Hp"] = estimatedAge;
                     dr["Stamina"] = estTimeLeft;
                     dr["Oxygen"] = ageRate;
-                    dr["Status"] = dateT.ToString("dd/MM/yyyy HH:mm:ss"); // have to use status here because date is a string
+                    // dr["Status"] = dateT.ToString("dd/MM/yyyy HH:mm:ss"); // have to use status here because date is a string
+                    dr["Status"] = ConvertUtcToLocal(dateT.ToString("dd/MM/yyyy HH:mm:ss"));
+
+
 
                     dr["Food"] = 0;
 
@@ -2187,7 +2188,8 @@ namespace ASA_Dino_Manager
                 string id = split2[0].ToString();
 
                 string[] importedNew = FilterDinoStats(file);
-                string Time = File.GetLastWriteTime(file).ToString("dd/MM/yyyy HH:mm:ss");
+                // string Time = File.GetLastWriteTime(file).ToString("dd/MM/yyyy HH:mm:ss");
+                string Time = File.GetLastWriteTimeUtc(file).ToString("dd/MM/yyyy HH:mm:ss");
 
                 if (importedNew.Count() > 0)
                 {
@@ -2531,5 +2533,18 @@ namespace ASA_Dino_Manager
                 }
             }
         }
+
+        public static string ConvertUtcToLocal(string utcTimestamp)
+        {
+            // Parse the UTC timestamp into a DateTime object
+            DateTime utcTime = DateTime.ParseExact(utcTimestamp, "dd/MM/yyyy HH:mm:ss", Culture, DateTimeStyles.AssumeUniversal);
+
+            // Convert to local time
+            DateTime localTime = utcTime.ToLocalTime();
+
+            // Format back to your desired format
+            return localTime.ToString("dd/MM/yyyy HH:mm:ss");
+        }
+
     }
 }
