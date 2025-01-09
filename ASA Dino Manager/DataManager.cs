@@ -1573,8 +1573,8 @@ namespace ASA_Dino_Manager
 
 
 
-                    dr["Mama"] = mama;
-                    dr["Papa"] = papa;
+                    dr["Mama"] = mamaName;
+                    dr["Papa"] = papaName;
 
                     dr["Imprinter"] = LastStats[rowID][18].ToString();
                     dr["Level"] = ToDouble(FirstStats[rowID][1].ToString());
