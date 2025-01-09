@@ -69,7 +69,7 @@
 
         private void OnShellNavigating(object sender, ShellNavigatingEventArgs e)
         {
-            if (!disableNavSet) // make sure we are allowed to set new setPage
+            if (!disableNavSet && !FileManager.Scanning) // make sure we are allowed to set new setPage
             {
                 // now we should have the new target
                 string target = e.Target.Location.ToString();
@@ -305,8 +305,9 @@
                             // handle import files first
                             DataManager.Import();
 
-                            if (DataManager.ModC > 0 || DataManager.AddC > 0 || (Shared.setPage == "Baby_Dinos" && !BabyPage.isDouble))
+                            if (DataManager.ModC > 0 || DataManager.AddC > 0 || (Shared.setPage == "Baby_Dinos" && !BabyPage.isDouble) || FileManager.refreshShell)
                             {
+                                FileManager.refreshShell = false;
                                 UpdateMenuContents(Shared.setPage);
                             }     
 

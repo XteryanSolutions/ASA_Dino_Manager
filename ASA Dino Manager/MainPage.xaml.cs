@@ -4,6 +4,7 @@
 
     public partial class MainPage : ContentPage
     {
+        private bool _isTimerRunning = false; // Timer control flag
 
         public MainPage()
         {
@@ -25,9 +26,9 @@
                     FileManager.Log("Updating GUI -> " + Shared.setPage, 0);
 
                     string test = Shared.setPage;
-                    if (Shared.setPage == @"Looking.for.dinos")
+                    if (Shared.setPage == @"Looking_for_dinos")
                     {
-                        this.Title = "No dinos around here!";
+                        this.Title = "Please wait while scanning for gamePath";
                         DefaultView("Looking for dinos =/");
                     }
                     else
@@ -81,14 +82,13 @@
             AddToGrid(mainLayout, scrollView, 0, 0);
 
             // only attach the tapgesture if we have something selected
-            // for now its the only way to force refresh a page
-            // so we attach it to everything so we can click
-            UnSelectAll(mainLayout);
+            //UnSelectAll(mainLayout);
 
 
             this.Content = null;
             this.Content = mainLayout;
-
+            // https://www.dododex.com/
+            // https://github.com/XteryanSolutions/ASA_Dino_Manager/releases
             var loadedView = new WebView
             {
                 Source = "https://github.com/XteryanSolutions/ASA_Dino_Manager/releases", // Replace with your desired URL

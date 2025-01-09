@@ -9,7 +9,8 @@ namespace ASA_Dino_Manager
         private static readonly string dataLocation = @"\Data";
         private static readonly string logsLocation = @"\Logs";
 
-        private static readonly string exportPattern = @"ShooterGame\Saved\DinoExports";
+        private static readonly string exportPattern = @"Ascended\ShooterGame\Saved\DinoExports";
+        private static readonly string exportPattern2 = @"ARK\ShooterGame\Saved\DinoExports";
 
 
         // Filemanager stuff
@@ -18,7 +19,7 @@ namespace ASA_Dino_Manager
 
         private static string AppPath = "";
         private static string GamePath = "";
-
+        public static bool refreshShell = false;
 
         // scanning for Gamepath
         public static bool Scanning = false;
@@ -84,7 +85,7 @@ namespace ASA_Dino_Manager
                 if (Directory.Exists(dir))
                 {
                     string[] exports = Directory.GetFiles(dir + @"\", "*.ini", SearchOption.TopDirectoryOnly);
-                    if (!Shared.ImportEnabled) { Shared.ImportEnabled = true; FileManager.Log("Enabled Importing (Path checks out)", 0); Shared.setPage = "ASA"; SaveConfig(); } // update config file
+                    if (!Shared.ImportEnabled) { Shared.ImportEnabled = true; FileManager.Log("Enabled Importing (Path checks out)", 0); }
                     return true;
                 }
                 else { if (Shared.ImportEnabled) { Shared.ImportEnabled = false; FileManager.Log("Disabled Importing (Path not found)", 1); } }
@@ -350,16 +351,13 @@ namespace ASA_Dino_Manager
                         Scanning = true;
 
                         string filepath = FileManager.FindFilePath();
-                        GamePath = filepath;
+                        GamePath = filepath; Scanning = false;
+
+                        if (!Shared.ImportEnabled) { Shared.ImportEnabled = true; FileManager.Log("Enabled Importing (Found GamePath)", 0); Shared.setPage = "ASA"; FileManager.refreshShell = true; SaveConfig(); }
 
                         if (CheckPath()) // check if the path we found works
                         {
 
-                            // save config here ======================================================================
-                            SaveConfig();
-
-                            Scanning = false;
-                            if (!Shared.ImportEnabled) { Shared.ImportEnabled = true; FileManager.Log("Enabled Importing (Found GamePath)", 0); }
                         }
                         else
                         {
@@ -518,38 +516,72 @@ namespace ASA_Dino_Manager
         {
             string result = "";
             bool found = false;
-            foreach (var drive in DriveInfo.GetDrives())
+            var drives = DriveInfo.GetDrives().Reverse(); // Reverse the drives
+
+            foreach (var drive in drives)
             {
                 FileManager.Log("Scanning Drive " + drive.Name, 0);
-                var directories = GetDirectories(drive.Name);
+                var directories = GetDirectories(drive.Name); // Reverse the directories
 
-                foreach (var data in directories)
+                foreach (var dir in directories)
                 {
-                    string dirName = data.ToString();
+                    string dirName = dir.ToString();
                     if (dirName.ToUpper().Contains(exportPattern.ToUpper()))
                     {
-                        result = dirName; found = true; FileManager.Log("Found GamePath", 0); break;
+                        result = dirName;
+                        found = true;
+                        FileManager.Log("Found GamePath", 0);
+                        break;
                     }
                 }
                 if (found) { break; }
             }
+
             if (!found)
             {
-                FileManager.Log("didnt find anything", 2);
+                FileManager.Log("didn't find anything", 2);
             }
             return result;
         }
 
         public static List<string> GetDirectories(string path, string searchPattern = "*",
-        SearchOption searchOption = SearchOption.AllDirectories)
+            SearchOption searchOption = SearchOption.AllDirectories)
         {
-            if (searchOption == SearchOption.TopDirectoryOnly)
-                return Directory.GetDirectories(path, searchPattern).ToList();
+            var directories = new List<string>();
 
-            var directories = new List<string>(GetDirectories(path, searchPattern));
+            try
+            {
+                // Get top-level directories
+                directories.AddRange(Directory.GetDirectories(path, searchPattern));
 
-            for (var i = 0; i < directories.Count; i++)
-                directories.AddRange(GetDirectories(directories[i], searchPattern));
+                if (searchOption == SearchOption.AllDirectories)
+                {
+                    // Recursively get subdirectories
+                    foreach (var dir in directories.ToList()) // ToList() ensures safe iteration while modifying the collection
+                    {
+                        try
+                        {
+                            directories.AddRange(GetDirectories(dir, searchPattern, SearchOption.AllDirectories));
+                        }
+                        catch (UnauthorizedAccessException)
+                        {
+                            FileManager.Log($"Access denied to directory: {dir}", 1);
+                        }
+                        catch (Exception ex)
+                        {
+                            FileManager.Log($"Error accessing directory: {dir}. Exception: {ex.Message}", 2);
+                        }
+                    }
+                }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                FileManager.Log($"Access denied to directory: {path}", 1);
+            }
+            catch (Exception ex)
+            {
+                FileManager.Log($"Error accessing directory: {path}. Exception: {ex.Message}", 2);
+            }
 
             return directories;
         }
