@@ -29,7 +29,7 @@
                     if (Shared.setPage == @"Looking_for_dinos")
                     {
                         this.Title = "Please wait while scanning for gamePath";
-                        DefaultView("Looking for dinos =/");
+                        DefaultView("Looking for dinos =/", "egg200.png");
                     }
                     else
                     {
@@ -48,7 +48,7 @@
             }
         }
 
-        private void DefaultView(string labelText)
+        private void DefaultView(string labelText, string imageSource = "dino400.png")
         {
             var mainLayout = new Grid
             {
@@ -65,15 +65,13 @@
                 Padding = 3
             };
 
-            var image1 = new Image { Source = "dino400.png", HeightRequest = 255, Aspect = Aspect.AspectFit, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start };
+            var image1 = new Image { Source = imageSource, HeightRequest = 255, Aspect = Aspect.AspectFit, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start };
 
             var label1 = new Label { Text = labelText, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start, FontAttributes = FontAttributes.Bold, TextColor = Shared.goodColor, FontSize = 22 };
 
 
             AddToGrid(mainLayout, image1, 0, 0);
             AddToGrid(mainLayout, label1, 1, 0);
-
-
 
 
             // Wrap the scrollable content in a ScrollView and add it to the second row
@@ -87,16 +85,21 @@
 
             this.Content = null;
             this.Content = mainLayout;
-            // https://www.dododex.com/
-            // https://github.com/XteryanSolutions/ASA_Dino_Manager/releases
-            var loadedView = new WebView
-            {
-                Source = "https://github.com/XteryanSolutions/ASA_Dino_Manager/releases", // Replace with your desired URL
-                HorizontalOptions = LayoutOptions.FillAndExpand,
-                VerticalOptions = LayoutOptions.FillAndExpand
-            };
 
-            LoadWebView(loadedView);
+            if (Shared.setPage != @"Looking_for_dinos")
+            {
+                // https://www.dododex.com/
+                // https://github.com/XteryanSolutions/ASA_Dino_Manager/releases
+                var loadedView = new WebView
+                {
+                    Source = "https://github.com/XteryanSolutions/ASA_Dino_Manager/releases", // Replace with your desired URL
+                    HorizontalOptions = LayoutOptions.FillAndExpand,
+                    VerticalOptions = LayoutOptions.FillAndExpand
+                };
+
+
+                LoadWebView(loadedView);
+            }
         }
 
         private async Task LoadWebView(WebView loadedView)
