@@ -1333,11 +1333,13 @@ public partial class DinoPage : ContentPage
             // check for stats that someone with a parent should or should not have
             if (hasMama || hasPapa)
             {
+                bool warn = false;
                 // if we have a parent generation cant be 0
-                if (ToDouble(gen) < 1) { gen = Smap["Warning"]; }
+                if (ToDouble(gen) < 1) { warn = true; }
                 // also if we have a mutation generation cant be 0
-                if (ToDouble(mamaM) > 0 && ToDouble(gen) < 1) { gen = Smap["Warning"]; }
-                if (ToDouble(papaM) > 0 && ToDouble(gen) < 1) { gen = Smap["Warning"]; }
+                if (ToDouble(mamaM) > 0 && ToDouble(gen) < 1) { warn = true; }
+                if (ToDouble(papaM) > 0 && ToDouble(gen) < 1) { warn = true; }
+                if (warn) { gen += Smap["Warning"]; }
             }
 
 

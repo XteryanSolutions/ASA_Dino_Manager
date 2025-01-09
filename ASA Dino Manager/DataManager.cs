@@ -803,6 +803,8 @@ namespace ASA_Dino_Manager
                     string papaID = GetFirstColumnData("ID", dino, "Papa");
                     string mamaID = GetFirstColumnData("ID", dino, "Mama");
                     double genD = ToDouble(GetFirstColumnData("ID", dino, "Gen"));
+                    double genDM = ToDouble(GetFirstColumnData("ID", dino, "GenM"));
+                    if (genDM > genD) { genD = genDM; }
 
                     if (genD == gen)
                     {
@@ -826,6 +828,8 @@ namespace ASA_Dino_Manager
                     string papaID = GetFirstColumnData("ID", dino, "Papa");
                     string mamaID = GetFirstColumnData("ID", dino, "Mama");
                     double genD = ToDouble(GetFirstColumnData("ID", dino, "Gen"));
+                    double genDM = ToDouble(GetFirstColumnData("ID", dino, "GenM"));
+                    if (genDM > genD) { genD = genDM; }
 
                     if (genD == gen)
                     {
@@ -1200,6 +1204,8 @@ namespace ASA_Dino_Manager
                     double SpeedM = Math.Round((ToDouble(FirstStats[rowID][8].ToString()) + 1) * 100);
                     string status = "";
                     double gen = ToDouble(LastStats[rowID][13].ToString());
+                    double genM = ToDouble(LastStats[rowID][14].ToString());
+                    if (genM > gen) { gen = genM; }
                     string mama = FirstStats[rowID][9].ToString();
                     string papa = FirstStats[rowID][10].ToString();
                     double mamaMute = ToDouble(FirstStats[rowID][11].ToString());
@@ -1610,7 +1616,11 @@ namespace ASA_Dino_Manager
                     }
                     else { dr["Crafting"] = 0; }
 
-                    dr["Gen"] = ToDouble(LastStats[rowID][13].ToString());
+                    double gen = ToDouble(LastStats[rowID][13].ToString());
+                    double genM = ToDouble(LastStats[rowID][14].ToString());
+                    if (genM > gen) { gen = genM; }
+
+                    dr["Gen"] = gen;
                     dr["MamaMute"] = ToDouble(LastStats[rowID][11].ToString());
                     dr["PapaMute"] = ToDouble(LastStats[rowID][12].ToString());
                     dr["Age"] = Math.Round(ToDouble(LastStats[rowID][15].ToString()) * 100);
@@ -2273,30 +2283,17 @@ namespace ASA_Dino_Manager
                                 {
                                     if (id == row["ID"].ToString())
                                     {
-                                        string mama = row["Mama"].ToString();
-                                        string papa = row["Papa"].ToString();
-
-                                        // check if we haz parents already
-                                        if (mama == "" || mama == "N/A" || mama == "0" || papa == "" || papa == "N/A" || papa == "0")
-                                        {
-                                            // if we didnt have any previous info then update it all
-                                            ImportsTable.Rows[rowID].SetField("Mama", newMama);
-                                            ImportsTable.Rows[rowID].SetField("Papa", newPapa);
-                                            ImportsTable.Rows[rowID].SetField("MamaMute", importedNew[13]);
-                                            ImportsTable.Rows[rowID].SetField("PapaMute", importedNew[14]);
-                                            ImportsTable.Rows[rowID].SetField("Gen", importedNew[15]);
-                                            ImportsTable.Rows[rowID].SetField("GenM", importedNew[16]);
-                                            updated = true;
-                                        }
+                                        // update all info to correct any missing or invalid data
+                                        ImportsTable.Rows[rowID].SetField("Mama", newMama);
+                                        ImportsTable.Rows[rowID].SetField("Papa", newPapa);
+                                        ImportsTable.Rows[rowID].SetField("MamaMute", importedNew[13]);
+                                        ImportsTable.Rows[rowID].SetField("PapaMute", importedNew[14]);
+                                        ImportsTable.Rows[rowID].SetField("Gen", importedNew[15]);
+                                        ImportsTable.Rows[rowID].SetField("GenM", importedNew[16]);
                                     }
                                     rowID++;
                                 }
                             }
-                            if (updated)
-                            {
-                                FileManager.Log($"Updated parents for {importedNew[2]} to: {newMama} + {newPapa}", 0);
-                            }
-
 
                             ModC++;
 
