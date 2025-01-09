@@ -928,10 +928,18 @@ public partial class DinoPage : ContentPage
                     string papaName = DataManager.GetLastColumnData("ID", papaID, "Name");
                     string mamaName = DataManager.GetLastColumnData("ID", mamaID, "Name");
 
-                    if (papaName == "") { papaName = papaID; }
-                    if (mamaName == "") { mamaName = mamaID; }
 
-                   
+                    if (papaName == "")
+                    {
+                        if (papaID == "00") { papaName = Shared.Smap["Unknown"]; }
+                        else { papaName = Shared.Smap["Missing"]; }
+                    }
+                    if (mamaName == "") 
+                    {
+                        if (mamaID == "00") { mamaName = Shared.Smap["Unknown"]; }
+                        else { mamaName = Shared.Smap["Missing"]; }
+                    }
+
 
                     var t0 = new Label { Text = $"{papaName} + {mamaName}", TextColor = Shared.maleColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
                     AddToGrid(genGrid, t0, rowid++, i, "", false, true);
