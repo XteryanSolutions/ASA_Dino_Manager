@@ -1,4 +1,6 @@
-﻿namespace ASA_Dino_Manager
+﻿using System.Text;
+
+namespace ASA_Dino_Manager
 {
 
     class FileManager
@@ -410,6 +412,37 @@
                 {
                     FileManager.Log("==== File write failure ====", 2); // error
                     Console.WriteLine("File write failure");
+                }
+            }
+        }
+
+        public static async Task SaveDataToUrl(string url)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                // Convert the ImportsTable to XML
+                using (StringWriter writer = new StringWriter())
+                {
+                    DataManager.ImportsTable.WriteXml(writer);
+                    string xmlData = writer.ToString();
+
+                    // Upload the data (POST request)
+                    var content = new StringContent(xmlData, Encoding.UTF8, "application/xml");
+                    await client.PostAsync(url, content);
+                }
+            }
+        }
+
+        public static async Task LoadDataFromUrl(string url)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                string xmlData = await client.GetStringAsync(url);
+
+                // Load the XML data into the ImportsTable
+                using (StringReader reader = new StringReader(xmlData))
+                {
+                    DataManager.ImportsTable.ReadXml(reader);
                 }
             }
         }
