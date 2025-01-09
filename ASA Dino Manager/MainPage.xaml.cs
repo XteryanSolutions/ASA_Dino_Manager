@@ -64,7 +64,7 @@
                 Padding = 3
             };
 
-            var image1 = new Image { Source = "dino.png", HeightRequest = 155, Aspect = Aspect.AspectFit, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start };
+            var image1 = new Image { Source = "dino400.png", HeightRequest = 255, Aspect = Aspect.AspectFit, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start };
 
             var label1 = new Label { Text = labelText, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start, FontAttributes = FontAttributes.Bold, TextColor = Shared.goodColor, FontSize = 22 };
 
@@ -88,6 +88,21 @@
 
             this.Content = null;
             this.Content = mainLayout;
+
+            var loadedView = new WebView
+            {
+                Source = "https://github.com/XteryanSolutions/ASA_Dino_Manager/releases", // Replace with your desired URL
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+                VerticalOptions = LayoutOptions.FillAndExpand
+            };
+
+            LoadWebView(loadedView);
+        }
+
+        private async Task LoadWebView(WebView loadedView)
+        {
+            await Task.Delay(5000);
+            this.Content = loadedView;
         }
 
         private void AddToGrid(Grid grid, View view, int row, int column)
