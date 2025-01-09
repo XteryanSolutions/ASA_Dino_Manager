@@ -1299,6 +1299,8 @@ namespace ASA_Dino_Manager
                                 dateT = lastTimeD + timePa;
                             }
                         }
+
+                        age = estimatedAge;
                     }
                     
                     if (imprinter != "") // we haz imprinter = baby dino
@@ -1370,7 +1372,9 @@ namespace ASA_Dino_Manager
                     dr["Papa"] = papaName;
                     dr["MamaMute"] = mamaMute;
                     dr["PapaMute"] = papaMute;
+                    
                     dr["Age"] = age;
+
                     dr["Imprint"] = imprint;
                     dr["Imprinter"] = imprinter;
 
