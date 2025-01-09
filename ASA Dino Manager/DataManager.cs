@@ -724,14 +724,22 @@ namespace ASA_Dino_Manager
             double maxGen = 0;
             foreach (var dino in males)
             {
-                string gen = GetFirstColumnData("ID", dino, "Gen");
-                if (ToDouble(gen) >= maxGen) { maxGen = ToDouble(gen); }
+                string group = GetGroup(dino);
+                if (group != "Archived")
+                {
+                    string gen = GetFirstColumnData("ID", dino, "Gen");
+                    if (ToDouble(gen) >= maxGen) { maxGen = ToDouble(gen); }
+                }
             }
 
             foreach (var dino in females)
             {
-                string gen = GetFirstColumnData("ID", dino, "Gen");
-                if (ToDouble(gen) >= maxGen) { maxGen = ToDouble(gen); }
+                string group = GetGroup(dino);
+                if (group != "Archived")
+                {
+                    string gen = GetFirstColumnData("ID", dino, "Gen");
+                    if (ToDouble(gen) >= maxGen) { maxGen = ToDouble(gen); }
+                }
             }
 
             return maxGen;
@@ -789,50 +797,46 @@ namespace ASA_Dino_Manager
 
             foreach (var dino in males)
             {
-                string papaID = GetFirstColumnData("ID", dino, "Papa");
-                double papaGen = ToDouble(GetFirstColumnData("ID", papaID, "Gen"));
-
-                string mamaID = GetFirstColumnData("ID", dino, "Mama");
-                double mamaGen = ToDouble(GetFirstColumnData("ID", mamaID, "Gen"));
-
-                double genM = 0;
-                if (papaGen > mamaGen) { genM = papaGen; }
-                else { genM = mamaGen; }
-
-                if (genM == gen)
+                string group = GetGroup(dino);
+                if (group != "Archived")
                 {
-                    // Combine papaID and mamaID into a single string with a delimiter
-                    string combined = $"{papaID},{mamaID}";
+                    string papaID = GetFirstColumnData("ID", dino, "Papa");
+                    string mamaID = GetFirstColumnData("ID", dino, "Mama");
+                    double genD = ToDouble(GetFirstColumnData("ID", dino, "Gen"));
 
-                    if (mamaID != "" && papaID != "")
+                    if (genD == gen)
                     {
-                        // Add the combined value to the result set (distinct pairs)
-                        resultSet.Add(combined);
+                        // Combine papaID and mamaID into a single string with a delimiter
+                        string combined = $"{papaID},{mamaID}";
+
+                        if (mamaID != "" && papaID != "")
+                        {
+                            // Add the combined value to the result set (distinct pairs)
+                            resultSet.Add(combined);
+                        }
                     }
                 }
             }
 
             foreach (var dino in females)
             {
-                string papaID = GetFirstColumnData("ID", dino, "Papa");
-                double papaGen = ToDouble(GetFirstColumnData("ID", papaID, "Gen"));
-
-                string mamaID = GetFirstColumnData("ID", dino, "Mama");
-                double mamaGen = ToDouble(GetFirstColumnData("ID", mamaID, "Gen"));
-
-                double genM = 0;
-                if (papaGen > mamaGen) { genM = papaGen; }
-                else { genM = mamaGen; }
-
-                if (genM == gen)
+                string group = GetGroup(dino);
+                if (group != "Archived")
                 {
-                    // Combine papaID and mamaID into a single string with a delimiter
-                    string combined = $"{papaID},{mamaID}";
+                    string papaID = GetFirstColumnData("ID", dino, "Papa");
+                    string mamaID = GetFirstColumnData("ID", dino, "Mama");
+                    double genD = ToDouble(GetFirstColumnData("ID", dino, "Gen"));
 
-                    if (mamaID != "" && papaID != "")
+                    if (genD == gen)
                     {
-                        // Add the combined value to the result set (distinct pairs)
-                        resultSet.Add(combined);
+                        // Combine papaID and mamaID into a single string with a delimiter
+                        string combined = $"{papaID},{mamaID}";
+
+                        if (mamaID != "" && papaID != "")
+                        {
+                            // Add the combined value to the result set (distinct pairs)
+                            resultSet.Add(combined);
+                        }
                     }
                 }
             }
@@ -865,25 +869,33 @@ namespace ASA_Dino_Manager
                 // get each parents boys here
                 foreach (var dino in males)
                 {
-                    string dinoPapa = GetFirstColumnData("ID", dino, "Papa");
-                    string dinoMama = GetFirstColumnData("ID", dino, "Mama");
-
-                    if (papaID == dinoPapa && mamaID == dinoMama)
+                    string group = GetGroup(dino);
+                    if (group != "Archived")
                     {
-                        // add dino id to list
-                        resultSet.Add(dino);
+                        string dinoPapa = GetFirstColumnData("ID", dino, "Papa");
+                        string dinoMama = GetFirstColumnData("ID", dino, "Mama");
+
+                        if (papaID == dinoPapa && mamaID == dinoMama)
+                        {
+                            // add dino id to list
+                            resultSet.Add(dino);
+                        }
                     }
                 }
                 // get each parents girls here
                 foreach (var dino in females)
                 {
-                    string dinoPapa = GetFirstColumnData("ID", dino, "Papa");
-                    string dinoMama = GetFirstColumnData("ID", dino, "Mama");
-
-                    if (papaID == dinoPapa && mamaID == dinoMama)
+                    string group = GetGroup(dino);
+                    if (group != "Archived")
                     {
-                        // add dino id to list
-                        resultSet.Add(dino);
+                        string dinoPapa = GetFirstColumnData("ID", dino, "Papa");
+                        string dinoMama = GetFirstColumnData("ID", dino, "Mama");
+
+                        if (papaID == dinoPapa && mamaID == dinoMama)
+                        {
+                            // add dino id to list
+                            resultSet.Add(dino);
+                        }
                     }
                 }
             }
@@ -1222,14 +1234,13 @@ namespace ASA_Dino_Manager
                             status = $"{Shared.Smap["Grown"]}" + GrowUpTime(dino);
                         }
 
-
                         // warn if dont know any of the parent id's
                         if ((mama == "" || mama == "N/A") && (papa == "" || papa == "N/A"))
                         {
                             mamaName = Shared.Smap["Warning"];
                             papaName = Shared.Smap["Warning"];
                         }
-                        else
+                        else // we has one of the parents id
                         {
                             if (mamaName == "") { mamaName = Shared.Smap["Missing"]; }
                             if (papaName == "") { papaName = Shared.Smap["Missing"]; }
@@ -1237,7 +1248,6 @@ namespace ASA_Dino_Manager
 
                         if (mama == "00") { mamaName = Shared.Smap["Unknown"]; }
                         if (papa == "00") { papaName = Shared.Smap["Unknown"]; }
-
                     }
                     else // Fresh adult tame
                     {
@@ -1297,7 +1307,6 @@ namespace ASA_Dino_Manager
                 rowID++;
             }
         }
-
 
         public static void GetDinoData(string DinoClass, string sortiM = "", string sortiF = "", int toggle = 0, bool CurrentStats = false)
         {
@@ -2255,21 +2264,20 @@ namespace ASA_Dino_Manager
                             string newMama = importedNew[11];
                             string newPapa = importedNew[12];
 
+                            // check if new data is valid
                             if (newMama != "" && newMama != "N/A" && newMama != "0" && newPapa != "" && newPapa != "N/A" && newPapa != "0")
                             {
+                                // replace old data assuming new data is bettah
                                 int rowID = 0;
                                 foreach (DataRow row in ImportsTable.Rows)
                                 {
                                     if (id == row["ID"].ToString())
                                     {
-                                        // check if we haz parents already
                                         string mama = row["Mama"].ToString();
                                         string papa = row["Papa"].ToString();
-                                        bool noPapa = false; bool noMama = false;
-                                        if (mama == "" || mama == "N/A" || mama == "0") { noMama = true; }
-                                        if (papa == "" || papa == "N/A" || papa == "0") { noPapa = true; }
 
-                                        if (noPapa && noMama)
+                                        // check if we haz parents already
+                                        if (mama == "" || mama == "N/A" || mama == "0" || papa == "" || papa == "N/A" || papa == "0")
                                         {
                                             // if we didnt have any previous info then update it all
                                             ImportsTable.Rows[rowID].SetField("Mama", newMama);
@@ -2286,7 +2294,7 @@ namespace ASA_Dino_Manager
                             }
                             if (updated)
                             {
-                                FileManager.Log($"Updated parents for {importedNew[2]}", 0);
+                                FileManager.Log($"Updated parents for {importedNew[2]} to: {newMama} + {newPapa}", 0);
                             }
 
 

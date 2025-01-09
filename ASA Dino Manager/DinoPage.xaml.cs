@@ -1325,6 +1325,22 @@ public partial class DinoPage : ContentPage
                 status = status.Replace("<", $"{Smap["LessThan"]}");
             }
 
+            bool hasMama = false; bool hasPapa = false;
+            // if not missing and not unknown = something with a name
+            if (!mama.Contains(Smap["Warning"]) && !mama.Contains(Smap["Unknown"])) { hasMama = true; }
+            if (!papa.Contains(Smap["Warning"]) && !papa.Contains(Smap["Unknown"])) { hasPapa = true; }
+
+            // check for stats that someone with a parent should or should not have
+            if (hasMama || hasPapa)
+            {
+                // if we have a parent generation cant be 0
+                if (ToDouble(gen) < 1) { gen = Smap["Warning"]; }
+                // also if we have a mutation generation cant be 0
+                if (ToDouble(mamaM) > 0 && ToDouble(gen) < 1) { gen = Smap["Warning"]; }
+                if (ToDouble(papaM) > 0 && ToDouble(gen) < 1) { gen = Smap["Warning"]; }
+            }
+
+
             // mark all generation dependant data as invalid
             if (mama == Shared.Smap["Warning"] && papa == Shared.Smap["Warning"])
             {
