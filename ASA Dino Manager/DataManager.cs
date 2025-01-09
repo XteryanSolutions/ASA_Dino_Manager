@@ -1190,13 +1190,22 @@ namespace ASA_Dino_Manager
                             status = $"{Shared.Smap["Grown"]}" + GrowUpTime(dino);
                         }
 
-                        if (mamaName == "" && papaName == "" && mama != "00" && papa != "00") { status += Shared.Smap["Warning"]; }
 
-                        if (mamaName == "") { mamaName = Shared.Smap["Missing"]; }
-                        if (papaName == "") { papaName = Shared.Smap["Missing"]; }
+                        // warn if dont know any of the parent id's
+                        if ((mama == "" || mama == "N/A") && (papa == "" || papa == "N/A"))
+                        {
+                            mamaName = Shared.Smap["Warning"];
+                            papaName = Shared.Smap["Warning"];
+                        }
+                        else
+                        {
+                            if (mamaName == "") { mamaName = Shared.Smap["Missing"]; }
+                            if (papaName == "") { papaName = Shared.Smap["Missing"]; }
+                        }
 
                         if (mama == "00") { mamaName = Shared.Smap["Unknown"]; }
                         if (papa == "00") { papaName = Shared.Smap["Unknown"]; }
+
                     }
                     else // Fresh adult tame
                     {

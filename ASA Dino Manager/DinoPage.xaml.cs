@@ -1317,6 +1317,14 @@ public partial class DinoPage : ContentPage
                 status = status.Replace("<", $"{Smap["LessThan"]}");
             }
 
+            // mark all generation dependant data as invalid
+            if (mama == Shared.Smap["Warning"] && papa == Shared.Smap["Warning"])
+            {
+                papaM = Shared.Smap["Warning"];
+                mamaM = Shared.Smap["Warning"];
+                gen = Shared.Smap["Warning"];
+            }
+
 
             // replace empty imprinter string with tribe
             if (mama == "" && papa == "" && imprinter == "")
