@@ -911,8 +911,9 @@ public partial class DinoPage : ContentPage
 
                 // add stuff to each column for each generation
                 int rowid = 0; // starting at row 0
-
-                var t = new Label { Text = $"Generation: {i}", TextColor = Shared.goldColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+                string bText = $"Generation: {i}";
+                if (i == 0) { bText = $"Generation: {Smap["Missing"]}"; }
+                var t = new Label { Text = bText, TextColor = Shared.goldColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
                 AddToGrid(genGrid, t, rowid++, i, "", false, true);
 
 
@@ -1339,7 +1340,7 @@ public partial class DinoPage : ContentPage
                 // also if we have a mutation generation cant be 0
                 if (ToDouble(mamaM) > 0 && ToDouble(gen) < 1) { warn = true; }
                 if (ToDouble(papaM) > 0 && ToDouble(gen) < 1) { warn = true; }
-                if (warn) { gen += Smap["Warning"]; }
+                if (warn) { gen = Smap["Warning"]; }
             }
 
 

@@ -54,7 +54,10 @@ public partial class BabyPage : ContentPage
                 {
                     FileManager.Log("Loading Baby Data", 0);
                     // sort data based on column clicked
-                    DataManager.GetDinoBabies(sortM, sortF);
+
+                    DataManager.GetDinoData("", sortM, sortF, ToggleExcluded, false, true);
+                   // DataManager.GetDinoBabies(sortM, sortF);
+
                     dataValid = true;
                 }
 
@@ -664,11 +667,11 @@ public partial class BabyPage : ContentPage
             string level = row["Level"].ToString();
             //////////////
             double ageF = DataManager.ToDouble(DataManager.GetLastColumnData("ID", id, "BabyAge")) * 100;
-            double ageD = Math.Round(DataManager.ToDouble(row["Hp"].ToString()), 1);
+            double ageD = Math.Round(DataManager.ToDouble(row["Age"].ToString()), 1);
             string ageT = ageD + "%";
-            string timeT = row["Stamina"].ToString();
-            string rateT = row["Oxygen"].ToString();
-            string dateT = row["Status"].ToString();
+            string timeT = row["Time"].ToString();
+            string rateT = row["Rate"].ToString();
+            string dateT = row["DateT"].ToString();
 
             string gen = row["Gen"].ToString();
 

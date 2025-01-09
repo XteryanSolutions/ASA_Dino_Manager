@@ -108,6 +108,7 @@ namespace ASA_Dino_Manager
                 FemaleTable.Columns.Add("Food", typeof(double));
                 FemaleTable.Columns.Add("Weight", typeof(double));
                 FemaleTable.Columns.Add("Damage", typeof(double));
+                FemaleTable.Columns.Add("Crafting", typeof(double));
                 // ==============
                 FemaleTable.Columns.Add("Speed", typeof(double));
                 FemaleTable.Columns.Add("Gen", typeof(double));
@@ -120,10 +121,14 @@ namespace ASA_Dino_Manager
                 FemaleTable.Columns.Add("Imprinter", typeof(string));
                 FemaleTable.Columns.Add("ID", typeof(string));
                 FemaleTable.Columns.Add("Tag", typeof(string));
-                FemaleTable.Columns.Add("Crafting", typeof(double));
                 FemaleTable.Columns.Add("Mutes", typeof(string));
                 FemaleTable.Columns.Add("Group", typeof(string));
                 FemaleTable.Columns.Add("Res", typeof(string));
+                // babytab stuff
+                FemaleTable.Columns.Add("DateT", typeof(string));
+                FemaleTable.Columns.Add("Time", typeof(double));
+                FemaleTable.Columns.Add("Rate", typeof(double));
+
 
 
                 MaleTable.Clear();
@@ -137,6 +142,7 @@ namespace ASA_Dino_Manager
                 MaleTable.Columns.Add("Food", typeof(double));
                 MaleTable.Columns.Add("Weight", typeof(double));
                 MaleTable.Columns.Add("Damage", typeof(double));
+                MaleTable.Columns.Add("Crafting", typeof(double));
                 // ==============
                 MaleTable.Columns.Add("Speed", typeof(double));
                 MaleTable.Columns.Add("Gen", typeof(double));
@@ -149,10 +155,13 @@ namespace ASA_Dino_Manager
                 MaleTable.Columns.Add("Imprinter", typeof(string));
                 MaleTable.Columns.Add("ID", typeof(string));
                 MaleTable.Columns.Add("Tag", typeof(string));
-                MaleTable.Columns.Add("Crafting", typeof(double));
                 MaleTable.Columns.Add("Mutes", typeof(string));
                 MaleTable.Columns.Add("Group", typeof(string));
                 MaleTable.Columns.Add("Res", typeof(string));
+                // babytab stuff
+                MaleTable.Columns.Add("DateT", typeof(string));
+                MaleTable.Columns.Add("Time", typeof(double));
+                MaleTable.Columns.Add("Rate", typeof(double));
 
 
                 BottomTable.Clear();
@@ -728,6 +737,9 @@ namespace ASA_Dino_Manager
                 if (group != "Archived")
                 {
                     string gen = GetFirstColumnData("ID", dino, "Gen");
+                    string genM = GetFirstColumnData("ID", dino, "GenM");
+                    if (ToDouble(genM) > ToDouble(gen)) { gen = genM; }
+
                     if (ToDouble(gen) >= maxGen) { maxGen = ToDouble(gen); }
                 }
             }
@@ -738,6 +750,8 @@ namespace ASA_Dino_Manager
                 if (group != "Archived")
                 {
                     string gen = GetFirstColumnData("ID", dino, "Gen");
+                    string genM = GetFirstColumnData("ID", dino, "GenM");
+                    if (ToDouble(genM) > ToDouble(gen)) { gen = genM; }
                     if (ToDouble(gen) >= maxGen) { maxGen = ToDouble(gen); }
                 }
             }
@@ -1144,7 +1158,7 @@ namespace ASA_Dino_Manager
             }
         }
 
-        private static void ProcessDinos(string[] dinos, List<string[]> FirstStats, List<string[]> LastStats, DataTable table, int toggle)
+        private static void ProcessDinos(string[] dinos, List<string[]> FirstStats, List<string[]> LastStats, DataTable table, int toggle , bool baby = false)
         {
             int rowID = 0;
             foreach (var dino in dinos)
@@ -1203,8 +1217,8 @@ namespace ASA_Dino_Manager
 
                     double SpeedM = Math.Round((ToDouble(FirstStats[rowID][8].ToString()) + 1) * 100);
                     string status = "";
-                    double gen = ToDouble(LastStats[rowID][13].ToString());
-                    double genM = ToDouble(LastStats[rowID][14].ToString());
+                    double gen = ToDouble(FirstStats[rowID][13].ToString());
+                    double genM = ToDouble(FirstStats[rowID][14].ToString());
                     if (genM > gen) { gen = genM; }
                     string mama = FirstStats[rowID][9].ToString();
                     string papa = FirstStats[rowID][10].ToString();
@@ -1214,6 +1228,7 @@ namespace ASA_Dino_Manager
                     double imprint = Math.Round(ToDouble(LastStats[rowID][17].ToString()) * 100);
                     string imprinter = FirstStats[rowID][18].ToString();
 
+                    string id = dino;
 
                     // get first known age and time
                     string firstTime = DataManager.GetFirstColumnData("ID", dino, "Time");
@@ -1228,6 +1243,64 @@ namespace ASA_Dino_Manager
                     string mamaName = DataManager.GetLastColumnData("ID", mama, "Name");
 
 
+                    double estTimeLeft = 0;
+                    double ageRate = 0;
+                    DateTime dateT = DateTime.UtcNow;
+
+                    string dinoClass = DataManager.GetLastColumnData("ID", id, "Class");
+                    string shortClass = DataManager.LongClassToShort(dinoClass);
+
+                    if (baby)
+                    {
+                        double knownAgeLeft = 100 - lastAge;
+
+                        // convert units
+                        DateTime firstTimeD = DateTime.ParseExact(firstTime, "dd/MM/yyyy HH:mm:ss", null);
+                        DateTime lastTimeD = DateTime.ParseExact(lastTime, "dd/MM/yyyy HH:mm:ss", null);
+
+                        // Calculate differences
+                        double timeDiffMinutes = (lastTimeD - firstTimeD).TotalMinutes;
+                        double ageDiff = lastAge - firstAge;
+
+                        // check if manual aging rate is set for this species
+                        string rate = DataManager.GetRate(shortClass);
+                        double rateD = ToDouble(rate);
+
+                       
+                        if (rateD > 0)
+                        {
+                            ageRate = rateD / 60;
+                        }
+                        else
+                        {
+                            // Calculate rates age % per minute
+                            ageRate = ageDiff / timeDiffMinutes;
+                        }
+                        // Estimate data
+                        DateTime nowTime = DateTime.UtcNow;
+
+                        double timePassed = (nowTime - lastTimeD).TotalMinutes;
+                        double agePassed = timePassed * ageRate;
+
+                        // Convert minutes to TimeSpan
+                        TimeSpan timePassedD = TimeSpan.FromMinutes(timePassed);
+
+                        double estimatedAge = lastAge + agePassed;
+                        double estAgeLeft = 100 - estimatedAge;
+                        estTimeLeft = estAgeLeft / ageRate;
+                        double LastTimeLeft = knownAgeLeft / ageRate; // time left at last data
+
+                        
+                        if (ageRate > 0)
+                        {
+                            if (!double.IsNaN(LastTimeLeft))
+                            {
+                                TimeSpan timePa = TimeSpan.FromMinutes(LastTimeLeft);
+                                dateT = lastTimeD + timePa;
+                            }
+                        }
+                    }
+                    
                     if (imprinter != "") // we haz imprinter = baby dino
                     {
                         if (lastAge < 100)
@@ -1302,10 +1375,16 @@ namespace ASA_Dino_Manager
                     dr["Imprinter"] = imprinter;
 
                     dr["Status"] = status;
-                    dr["Tag"] = ""; // maybe use this at some point just make sure its not null for now
+                    dr["Tag"] = shortClass; // maybe use this at some point just make sure its not null for now
 
                     dr["Mutes"] = mutes;
                     dr["Group"] = group;
+
+                    // baby tab stuff
+                    dr["Time"] = estTimeLeft;
+                    dr["Rate"] = ageRate;
+                    dr["DateT"] = ConvertUtcToLocal(dateT.ToString("dd/MM/yyyy HH:mm:ss"));
+
 
                     table.Rows.Add(dr);
                 }
@@ -1314,22 +1393,36 @@ namespace ASA_Dino_Manager
             }
         }
 
-        public static void GetDinoData(string DinoClass, string sortiM = "", string sortiF = "", int toggle = 0, bool CurrentStats = false)
+        public static void GetDinoData(string DinoClass, string sortiM = "", string sortiF = "", int toggle = 0, bool CurrentStats = false, bool baby = false)
         {
-            if (string.IsNullOrEmpty(DinoClass))
-            {
-                return; // Exit early if tag is empty
-            }
-
             // Clear the tables before populating them
             MaleTable.Clear();
             FemaleTable.Clear();
 
-            // Retrieve female data
-            string[] females = GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Female", "ID");
+            string[] males = Array.Empty<string>();
+            string[] females = Array.Empty<string>();
 
-            // Retrieve male data
-            string[] males = GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Male", "ID");
+            if (baby)
+            {
+                // Retrieve female babies data
+                females = GetDistinctFilteredColumnDataB("Sex", "Female", "ID");
+
+                // Retrieve male babies data
+                males = GetDistinctFilteredColumnDataB("Sex", "Male", "ID");
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(DinoClass))
+                {
+                    return; // Exit early if tag is empty
+                }
+
+                // Retrieve female data
+                females = GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Female", "ID");
+
+                // Retrieve male data
+                males = GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Male", "ID");
+            }
 
 
             LevelMax = 0; HpMax = 0; StaminaMax = 0; OxygenMax = 0;
@@ -1341,30 +1434,37 @@ namespace ASA_Dino_Manager
                 // Process females
                 List<string[]> FirstStatsF = GetLastStats(females);
                 List<string[]> LastStatsF = GetLastStats(females);
-                ProcessDinos(females, FirstStatsF, LastStatsF, FemaleTable, toggle);
+                ProcessDinos(females, FirstStatsF, LastStatsF, FemaleTable, toggle, baby);
 
                 // Process males
                 List<string[]> FirstStatsM = GetLastStats(males);
                 List<string[]> LastStatsM = GetLastStats(males);
-                ProcessDinos(males, FirstStatsM, LastStatsM, MaleTable, toggle);
+                ProcessDinos(males, FirstStatsM, LastStatsM, MaleTable, toggle, baby);
             }
             else
             {
                 // Process females
                 List<string[]> FirstStatsF = GetFirstStats(females);
                 List<string[]> LastStatsF = GetLastStats(females);
-                ProcessDinos(females, FirstStatsF, LastStatsF, FemaleTable, toggle);
+                ProcessDinos(females, FirstStatsF, LastStatsF, FemaleTable, toggle, baby);
 
                 // Process males
                 List<string[]> FirstStatsM = GetFirstStats(males);
                 List<string[]> LastStatsM = GetLastStats(males);
-                ProcessDinos(males, FirstStatsM, LastStatsM, MaleTable, toggle);
+                ProcessDinos(males, FirstStatsM, LastStatsM, MaleTable, toggle, baby);
             }
 
 
             // remove symbols to use correct name in sorting
             sortiM = ReplaceSymbols(sortiM, Shared.Smap);
             sortiF = ReplaceSymbols(sortiF, Shared.Smap);
+
+            if (baby)
+            {
+                sortiM = sortiM.Replace("Class", "Tag");
+                sortiF = sortiF.Replace("Class", "Tag");
+            }
+
 
             // Sort the MaleTable based on the desired column
             DataView view1 = new DataView(MaleTable);
@@ -1381,62 +1481,6 @@ namespace ASA_Dino_Manager
             //  FileManager.Log("updated data");
         }
 
-        public static void GetDinoBabies(string sortiM = "", string sortiF = "")
-        {
-            // Clear the tables before populating them
-            DataManager.MaleTable.Clear();
-            DataManager.FemaleTable.Clear();
-
-            // Retrieve female babies data
-            string[] females = DataManager.GetDistinctFilteredColumnDataB("Sex", "Female", "ID");
-
-            // Retrieve male babies data
-            string[] males = DataManager.GetDistinctFilteredColumnDataB("Sex", "Male", "ID");
-
-
-            // Process females
-            List<string[]> MainStatsF = DataManager.GetFirstStats(females);
-            List<string[]> BrStatsF = DataManager.GetLastStats(females);
-            ProcessDinoBabies(females, MainStatsF, BrStatsF, DataManager.FemaleTable);
-
-            // Process males
-            List<string[]> MainStatsM = DataManager.GetFirstStats(males);
-            List<string[]> BrStatsM = DataManager.GetLastStats(males);
-            ProcessDinoBabies(males, MainStatsM, BrStatsM, DataManager.MaleTable);
-
-
-            // remove symbols to use correct name in sorting
-            sortiM = ReplaceSymbols(sortiM, Shared.Smap);
-            sortiF = ReplaceSymbols(sortiF, Shared.Smap);
-
-            sortiM = sortiM.Replace("Class", "Tag");
-            sortiF = sortiF.Replace("Class", "Tag");
-
-            sortiM = sortiM.Replace("Age", "Hp");
-            sortiF = sortiF.Replace("Age", "Hp");
-
-            sortiM = sortiM.Replace("Time", "Stamina");
-            sortiF = sortiF.Replace("Time", "Stamina");
-
-            sortiM = sortiM.Replace("Rate", "Oxygen");
-            sortiF = sortiF.Replace("Rate", "Oxygen");
-
-
-            // Sort the MaleTable based on the desired column
-            DataView view1 = new DataView(DataManager.MaleTable);
-            view1.Sort = sortiM;
-            DataManager.MaleTable = view1.ToTable();
-
-
-            // Sort the FemaleTable based on the desired column
-            DataView view2 = new DataView(DataManager.FemaleTable);
-            view2.Sort = sortiF;
-            DataManager.FemaleTable = view2.ToTable();
-
-
-            //  FileManager.Log("updated data");
-        }
-
         public static string ReplaceSymbols(string input, Dictionary<string, string> symbolMap)
         {
             foreach (var symbol in symbolMap.Values)
@@ -1447,194 +1491,6 @@ namespace ASA_Dino_Manager
                 }
             }
             return input;
-        }
-
-        private static void ProcessDinoBabies(string[] dinos, List<string[]> FirstStats, List<string[]> LastStats, DataTable table)
-        {
-            int rowID = 0;
-            foreach (var dino in dinos)
-            {
-                string group = GetGroup(dino);
-                int toggle = BabyPage.ToggleExcluded;
-
-                bool addIT = false;
-                if (toggle == 0)
-                {
-                    if (group != "Archived")
-                    {
-                        addIT = true;
-                    }
-                }
-                else if (toggle == 1)
-                {
-                    if (group != "Archived" && group != "Exclude")
-                    {
-                        addIT = true;
-                    }
-                }
-                else if (toggle == 2)
-                {
-                    if (group != "Archived" && group == "Exclude")
-                    {
-                        addIT = true;
-                    }
-                }
-                else if (toggle == 3)
-                {
-                    if (group == "Archived")
-                    {
-                        addIT = true;
-                    }
-                }
-
-
-                if (addIT)
-                {
-                    string id = dino;
-                    // get first known age and time
-                    double firstAge = ToDouble(GetFirstColumnData("ID", id, "BabyAge")) * 100;
-                    string firstTime = GetFirstColumnData("ID", id, "Time");
-
-
-                    // get last known age and time
-                    double lastAge = ToDouble(GetLastColumnData("ID", id, "BabyAge")) * 100;
-                    string lastTime = GetLastColumnData("ID", id, "Time");
-                    double knownAgeLeft = 100 - lastAge;
-
-                    // convert units
-                    DateTime firstTimeD = DateTime.ParseExact(firstTime, "dd/MM/yyyy HH:mm:ss", null);
-                    DateTime lastTimeD = DateTime.ParseExact(lastTime, "dd/MM/yyyy HH:mm:ss", null);
-
-
-                    // Calculate differences
-                    double timeDiffMinutes = (lastTimeD - firstTimeD).TotalMinutes;
-                    double ageDiff = lastAge - firstAge;
-
-
-                    // check if manual aging rate is set for this species
-                    string dinoClass = DataManager.GetLastColumnData("ID", id, "Class");
-                    string shortClass = DataManager.LongClassToShort(dinoClass);
-                    string rate = DataManager.GetRate(shortClass);
-                    double rateD = ToDouble(rate);
-
-                    double ageRate = 0;
-                    if (rateD > 0)
-                    {
-                        ageRate = rateD / 60;
-                    }
-                    else
-                    {
-                        // Calculate rates age % per minute
-                        ageRate = ageDiff / timeDiffMinutes;
-                    }
-
-                    // Estimate data
-                    DateTime nowTime = DateTime.UtcNow;
-
-                    double timePassed = (nowTime - lastTimeD).TotalMinutes;
-                    double agePassed = timePassed * ageRate;
-
-                    // Convert minutes to TimeSpan
-                    TimeSpan timePassedD = TimeSpan.FromMinutes(timePassed);
-
-
-                    double estimatedAge = lastAge + agePassed;
-                    double estAgeLeft = 100 - estimatedAge;
-                    double estTimeLeft = estAgeLeft / ageRate;
-                    double LastTimeLeft = knownAgeLeft / ageRate; // time left at last data
-
-
-                    DateTime dateT = DateTime.UtcNow;
-
-                    if (ageRate > 0)
-                    {
-                        if (!double.IsNaN(LastTimeLeft))
-                        {
-                            TimeSpan timePa = TimeSpan.FromMinutes(LastTimeLeft);
-                            dateT = lastTimeD + timePa;
-                        }
-                    }
-
-
-
-                    // Fill the DataRow
-                    DataRow dr = table.NewRow();
-                    dr["ID"] = dino;
-                    dr["Name"] = LastStats[rowID][0].ToString();
-
-
-                    string mama = FirstStats[rowID][9].ToString();
-                    string papa = FirstStats[rowID][10].ToString();
-
-
-                    string mamaName = DataManager.GetLastColumnData("ID", mama, "Name");
-                    string papaName = DataManager.GetLastColumnData("ID", papa, "Name");
-
-
-                    // warn if dont know any of the parent id's
-                    if ((mama == "" || mama == "N/A") && (papa == "" || papa == "N/A"))
-                    {
-                        mamaName = Shared.Smap["Warning"];
-                        papaName = Shared.Smap["Warning"];
-                    }
-                    else
-                    {
-                        if (mamaName == "") { mamaName = Shared.Smap["Missing"]; }
-                        if (papaName == "") { papaName = Shared.Smap["Missing"]; }
-                    }
-
-                    if (mama == "00") { mamaName = Shared.Smap["Unknown"]; }
-                    if (papa == "00") { papaName = Shared.Smap["Unknown"]; }
-
-
-
-                    dr["Mama"] = mamaName;
-                    dr["Papa"] = papaName;
-
-                    dr["Imprinter"] = LastStats[rowID][18].ToString();
-                    dr["Level"] = ToDouble(FirstStats[rowID][1].ToString());
-
-
-                    // change theese stats to baby tracking stuff
-                    dr["Hp"] = estimatedAge;
-                    dr["Stamina"] = estTimeLeft;
-                    dr["Oxygen"] = ageRate;
-                    // dr["Status"] = dateT.ToString("dd/MM/yyyy HH:mm:ss"); // have to use status here because date is a string
-                    dr["Status"] = ConvertUtcToLocal(dateT.ToString("dd/MM/yyyy HH:mm:ss"));
-
-
-
-                    dr["Food"] = 0;
-
-                    dr["Weight"] = Math.Round(ToDouble(FirstStats[rowID][6].ToString()), 1);
-                    dr["Damage"] = Math.Round((ToDouble(FirstStats[rowID][7].ToString()) + 1) * 100, 1);
-                    dr["Speed"] = Math.Round((ToDouble(LastStats[rowID][8].ToString()) + 1) * 100);
-
-                    if (FirstStats[rowID][20].ToString() != "")
-                    {
-                        dr["Crafting"] = Math.Round((ToDouble(FirstStats[rowID][20].ToString()) + 1) * 100);
-                    }
-                    else { dr["Crafting"] = 0; }
-
-                    double gen = ToDouble(LastStats[rowID][13].ToString());
-                    double genM = ToDouble(LastStats[rowID][14].ToString());
-                    if (genM > gen) { gen = genM; }
-
-                    dr["Gen"] = gen;
-                    dr["MamaMute"] = ToDouble(LastStats[rowID][11].ToString());
-                    dr["PapaMute"] = ToDouble(LastStats[rowID][12].ToString());
-                    dr["Age"] = Math.Round(ToDouble(LastStats[rowID][15].ToString()) * 100);
-                    dr["Imprint"] = Math.Round(ToDouble(LastStats[rowID][17].ToString()) * 100);
-                    dr["Tag"] = shortClass;
-                    dr["Mutes"] = "0000000";
-                    dr["Group"] = group;
-
-
-                    table.Rows.Add(dr);
-                }
-
-                rowID++;
-            }
         }
 
         public static void CompileDinoArchive(string sortC = "")
