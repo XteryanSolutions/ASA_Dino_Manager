@@ -1,4 +1,6 @@
+using Microsoft.Maui.Controls;
 using System.Data;
+using System.Xml.Linq;
 using static Ark_Dino_Manager.Shared;
 
 namespace Ark_Dino_Manager;
@@ -9,6 +11,8 @@ public partial class ArchivePage : ContentPage
     public static string selectedID = "";
     public static bool isSelected = false;
 
+    ////////////////////    Table Sorting   ////////////////////
+    public static string sortA = Shared.DefaultSortA;
 
     // keep track of boxviews for recoloring
     private Dictionary<int, BoxView> boxViews = new Dictionary<int, BoxView>();
@@ -17,10 +21,7 @@ public partial class ArchivePage : ContentPage
 
     Button PurgeBtn = new Button { };
     Button ArchiveBtn = new Button { };
-
-    ////////////////////    Table Sorting   ////////////////////
-    public static string sortA = Shared.DefaultSortA;
-
+    Button PurgeAllBtn = new Button { };
 
     public ArchivePage()
     {
@@ -194,22 +195,14 @@ public partial class ArchivePage : ContentPage
             BackgroundColor = Shared.SidePanelColor
         };
 
-
-        // Define columns
-        //grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto}); // 0
-
-
-        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
-        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
-
-        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
-        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
-        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // Scrollable content
-
-        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
-        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
-
-
+        // Create rows for buttons
+        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // 0
+        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // 1
+        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // 2
+        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // 3
+        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // Autosize this row to keep following buttons at bottom
+        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // 5
+        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // 6
 
 
         ArchiveBtn = new Button { Text = "Restore", BackgroundColor = Shared.PrimaryColor };
@@ -220,22 +213,29 @@ public partial class ArchivePage : ContentPage
         PurgeBtn.Clicked += PurgeBtnClicked;
         AddToGrid(grid, PurgeBtn, 5, 0);
 
-        if (!isSelected)
+        PurgeAllBtn = new Button { Text = "Purge All", BackgroundColor = Shared.TrinaryColor };
+        PurgeAllBtn.Clicked += PurgeAllBtnClicked;
+        AddToGrid(grid, PurgeAllBtn, 6, 0);
+
+
+        if (!isSelected) // Hide buttons when nothing is selected
         {
             PurgeBtn.IsVisible = false;
             ArchiveBtn.IsVisible = false;
         }
         else
         {
-            PurgeBtn.IsVisible = true;
             ArchiveBtn.IsVisible = true;
+            PurgeBtn.IsVisible = true;
         }
-
-
-        var PurgeAllBtn = new Button { Text = "Purge All", BackgroundColor = Shared.TrinaryColor };
-        PurgeAllBtn.Clicked += PurgeAllBtnClicked;
-        AddToGrid(grid, PurgeAllBtn, 6, 0);
-
+        if (DataManager.ArchiveTable.Rows.Count > 0)
+        {
+            PurgeAllBtn.IsVisible = true;
+        }
+        else
+        {
+            PurgeAllBtn.IsVisible = false;
+        }
 
         return grid;
     }
@@ -252,23 +252,8 @@ public partial class ArchivePage : ContentPage
         // Define columns
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 0
 
-
-        // dynamically adjust the bottom bar height
-        int rowCount = DataManager.BottomTable.Rows.Count;
-        int barH = (rowCount * Shared.rowHeight) + Shared.rowHeight + 12;
-        if (rowCount > 5) { barH = (Shared.rowHeight * 5) + Shared.rowHeight + 5; }
-
-        if (!isSelected) { barH = 0; }
-
-
         // Define row definitions
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // Scrollable content
-
-
-        var bColor1 = Colors.LightBlue;
-        var bColor2 = Colors.LightBlue;
-
-
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -277,7 +262,6 @@ public partial class ArchivePage : ContentPage
         {
             Spacing = 20,
             Padding = 3
-
         };
 
         // reset boxViews
@@ -293,8 +277,6 @@ public partial class ArchivePage : ContentPage
         AddToGrid(grid, scrollView, 0, 1);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 
         return grid;
     }
@@ -316,12 +298,48 @@ public partial class ArchivePage : ContentPage
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 4
 
 
+        // add sorting symbol to the sorted column
+        string sortChar = "";
+
+        string tableSort = sortA;
+
+        string newTest = "";
+        if (tableSort.Contains("ASC")) { newTest = tableSort.Substring(0, tableSort.Length - 4); }
+        if (tableSort.Contains("DESC")) { newTest = tableSort.Substring(0, tableSort.Length - 5); }
+
+        string upChar = Smap["SortUp"];
+        string downChar = Smap["SortDown"];
+
+
+        sortChar = ""; if (newTest == $"{Smap["ID"]}ID") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var idH = new Label { Text = $"{Smap["ID"]}ID{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
+
+        sortChar = ""; if (newTest == $"{Smap["Tag"]}Tag") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var tagH = new Label { Text = $"{Smap["Tag"]}Tag{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
+
+        sortChar = ""; if (newTest == $"{Smap["Name"]}Name") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var nameH = new Label { Text = $"{Smap["Name"]}Name{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
+
+        sortChar = ""; if (newTest == $"{Smap["Level"]}Level") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var levelH = new Label { Text = $"{Smap["Level"]}Level{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
+
+        sortChar = ""; if (newTest == $"{Smap["Class"]}Class") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var classH = new Label { Text = $"{Smap["Class"]}Class{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
+
+
         // Add header row
-        AddToGrid(grid, new Label { Text = "ID", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor }, 0, 0);
-        AddToGrid(grid, new Label { Text = "Tag", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor }, 0, 1);
-        AddToGrid(grid, new Label { Text = "Name", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor }, 0, 2);
-        AddToGrid(grid, new Label { Text = "Level", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor }, 0, 3);
-        AddToGrid(grid, new Label { Text = "Class", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor }, 0, 4);
+        AddToGrid(grid, idH, 0, 0);
+        AddToGrid(grid, tagH, 0, 1);
+        AddToGrid(grid, nameH, 0, 2);
+        AddToGrid(grid, levelH, 0, 3);
+        AddToGrid(grid, classH, 0, 4);
+
+        // make columns sortable
+        SortColumn(idH);
+        SortColumn(tagH);
+        SortColumn(nameH);
+        SortColumn(levelH);
+        SortColumn(classH);
 
         int rowIndex = 1; // Start adding rows below the header
 
@@ -335,28 +353,18 @@ public partial class ArchivePage : ContentPage
             string level = row["Level"].ToString();
             string dinoclass = row["Class"].ToString();
 
-
-            // set color based on sex
-            Color DefaultColor = Shared.bottomColor;
+            // Set color based on sex
+            Color cellColor = Shared.bottomColor;
             string sex = DataManager.GetLastColumnData("ID", id, "Sex");
-            if (sex == "Female") { DefaultColor = Shared.femaleColor; }
-            else { DefaultColor = Shared.maleColor; }
+            if (sex == "Female") { cellColor = Shared.femaleColor; }
+            else { cellColor = Shared.maleColor; }
 
-            var cellColor0 = DefaultColor;
-            var cellColor1 = DefaultColor;
-            var cellColor2 = DefaultColor;
-            var cellColor3 = DefaultColor;
-            var cellColor4 = DefaultColor;
-
-            // translate the long class to a short readable class
-            string shortClass = DataManager.LongClassToShort(dinoclass);
-
-            // Create a Label
-            var idL = new Label { Text = id, TextColor = cellColor0 };
-            var tagL = new Label { Text = tag, TextColor = cellColor1 };
-            var nameL = new Label { Text = name, TextColor = cellColor2 };
-            var levelL = new Label { Text = level, TextColor = cellColor3 };
-            var classL = new Label { Text = shortClass, TextColor = cellColor4 };
+            // Create Labels
+            var idL = new Label { Text = id, TextColor = cellColor };
+            var tagL = new Label { Text = tag, TextColor = cellColor };
+            var nameL = new Label { Text = name, TextColor = cellColor };
+            var levelL = new Label { Text = level, TextColor = cellColor };
+            var classL = new Label { Text = dinoclass, TextColor = cellColor };
 
             // Make labels selectable
             SelectDino(idL, id, boxRowID);
@@ -375,11 +383,61 @@ public partial class ArchivePage : ContentPage
             AddToGrid(grid, levelL, rowIndex, 3, selected, id);
             AddToGrid(grid, classL, rowIndex, 4, selected, id);
 
-
             rowIndex++;
         }
 
         return grid;
+    }
+
+    void SortColumn(Label label)
+    {
+        label.GestureRecognizers.Clear();
+        // Create a TapGestureRecognizer
+        var tapGesture1 = new TapGestureRecognizer();
+        tapGesture1.Tapped += (s, e) =>
+        {
+            // Handle the click event and pass additional data
+            string column = label.Text;
+
+            if (column.Contains(Smap["SortUp"]) || column.Contains(Smap["SortDown"]))
+            {
+                column = column.Substring(0, column.Length - 2);
+            }
+
+            var splitA = sortA.Split(new[] { @" " }, StringSplitOptions.RemoveEmptyEntries);
+
+            string outA = "";
+
+            if (splitA.Length > 0)
+            {
+                outA = splitA[0];
+            }
+
+            // are we clicking the same column then toggle sorting
+            if (outA == column)
+            {
+                if (sortA.Contains("ASC")) // then switch to descending
+                {
+                    sortA = column + " DESC";
+                }
+                else if (sortA.Contains("DESC")) // finally turn it off
+                {
+                    sortA = "";
+                }
+            }
+            else // first sort ascending
+            {
+                sortA = column + " ASC";
+            }
+
+            FileManager.Log($"Sorted: {sortA}", 0);
+
+            ClearSelection();
+            CreateContent();
+        };
+
+        // Attach the TapGestureRecognizer to the label
+        label.GestureRecognizers.Add(tapGesture1);
     }
 
     private void ClearSelection()

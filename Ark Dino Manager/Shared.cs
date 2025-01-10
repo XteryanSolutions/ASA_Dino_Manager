@@ -13,7 +13,7 @@
 
         ////////////////////    Default values         ////////////////////
         // Sorting
-        public static string DefaultSortA = "Class ASC"; // default sorting for archive
+        public static string DefaultSortA = ""; // default sorting for archive
         public static string DefaultSortM = ""; // default sorting for male dinos
         public static string DefaultSortF = ""; // default sorting for female dinos
         // Navigation
@@ -60,6 +60,8 @@
         { "SortUp", "▲" },
         { "SortDown", "▼" },
         { "Save", "💾" },
+        { "ID", "💳" },
+        { "Tag", "📌" },
     };
 
 

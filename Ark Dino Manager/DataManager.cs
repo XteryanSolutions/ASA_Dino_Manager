@@ -1479,18 +1479,26 @@ namespace Ark_Dino_Manager
                 string status = GetGroup(dino);
                 if (status == "Archived")
                 {
+                    // Translate the long class to a short readable class
+                    string shortClass = DataManager.LongClassToShort(GetLastColumnData("ID", dino, "Class"));
+
                     DataRow dr = ArchiveTable.NewRow();
                     dr["ID"] = dino;
                     dr["Tag"] = GetLastColumnData("ID", dino, "Tag");
                     dr["Name"] = GetLastColumnData("ID", dino, "Name");
                     dr["Level"] = GetLastColumnData("ID", dino, "Level");
-                    dr["Class"] = GetLastColumnData("ID", dino, "Class");
-
-
+                    dr["Class"] = shortClass;
 
                     ArchiveTable.Rows.Add(dr);
                 }
             }
+
+            // remove symbols to use correct name in sorting
+            sortC = ReplaceSymbols(sortC, Shared.Smap);
+
+
+            sortC = sortC.Replace("Dmg", "Damage");
+
 
             // Sort the MaleTable based on the desired column
             DataView view1 = new DataView(DataManager.ArchiveTable);
