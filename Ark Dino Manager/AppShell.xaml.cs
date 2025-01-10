@@ -34,6 +34,7 @@
 
             this.Navigating += OnShellNavigating;
 
+            FileManager.SaveConfig();
 
             // create default shell
             CreateContent();

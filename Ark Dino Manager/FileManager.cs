@@ -47,6 +47,7 @@ namespace Ark_Dino_Manager
                 // load config file check if path works return true
                 if (LoadConfig()) // loaded
                 {
+                    Shared.ImportEnabled = true;
                     return true;
                 }
                 else
@@ -56,7 +57,6 @@ namespace Ark_Dino_Manager
                     {
                         FileManager.Log($"Game is installed at: {installPath}", 0);
                         GamePath = Path.Combine(installPath, @"ShooterGame\Saved\DinoExports");
-                        SaveConfig();
                         Shared.ImportEnabled = true;
                         return true;
                     }
@@ -80,7 +80,6 @@ namespace Ark_Dino_Manager
 
                                     FileManager.Log($"Game path: {gamePath}", 0);
 
-                                    SaveConfig();
                                     Shared.ImportEnabled = true;
                                     return true;
                                 }

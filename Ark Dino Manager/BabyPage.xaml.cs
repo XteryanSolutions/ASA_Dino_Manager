@@ -99,7 +99,7 @@ public partial class BabyPage : ContentPage
             Padding = 3
         };
 
-        var image1 = new Image { Source = "dino.png", HeightRequest = 155, Aspect = Aspect.AspectFit, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start };
+        var image1 = new Image { Source = "dino.png", HeightRequest = 400, Aspect = Aspect.AspectFit, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start };
         var label1 = new Label { Text = labelText, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start, FontAttributes = FontAttributes.Bold, TextColor = Shared.PrimaryColor, FontSize = 22 };
 
 
@@ -475,7 +475,7 @@ public partial class BabyPage : ContentPage
             var image = new Image
             {
                 Source = "dino.png",
-                HeightRequest = 155,
+                HeightRequest = 400,
                 Aspect = Aspect.AspectFit
             };
 
