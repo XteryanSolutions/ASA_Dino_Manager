@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "ASA_Dino_Manager": {
+    "Ark_Dino_Manager": {
       "commandName": "MsixPackage",
       "workingDirectory": ".",
       "hotReloadEnabled": false

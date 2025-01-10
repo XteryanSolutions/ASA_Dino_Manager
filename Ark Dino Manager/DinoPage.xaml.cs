@@ -1,9 +1,9 @@
 ﻿using System.Data;
 using System.Diagnostics;
-using static ASA_Dino_Manager.Shared;
-using static ASA_Dino_Manager.DataManager;
+using static Ark_Dino_Manager.Shared;
+using static Ark_Dino_Manager.DataManager;
 
-namespace ASA_Dino_Manager;
+namespace Ark_Dino_Manager;
 
 public partial class DinoPage : ContentPage
 {

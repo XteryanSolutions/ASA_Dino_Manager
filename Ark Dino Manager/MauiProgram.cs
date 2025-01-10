@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace ASA_Dino_Manager
+namespace Ark_Dino_Manager
 {
     public static class MauiProgram
     {

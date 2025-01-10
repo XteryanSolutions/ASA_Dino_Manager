@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ASA_Dino_Manager.Properties {
+namespace Ark_Dino_Manager.Properties {
     using System;
     
     

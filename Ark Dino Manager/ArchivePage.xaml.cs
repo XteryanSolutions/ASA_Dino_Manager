@@ -1,7 +1,7 @@
 using System.Data;
-using static ASA_Dino_Manager.Shared;
+using static Ark_Dino_Manager.Shared;
 
-namespace ASA_Dino_Manager;
+namespace Ark_Dino_Manager;
 
 public partial class ArchivePage : ContentPage
 {

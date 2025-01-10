@@ -3,7 +3,7 @@ using System.Data;
 using System.Data.Common;
 using System.Globalization;
 
-namespace ASA_Dino_Manager
+namespace Ark_Dino_Manager
 {
     class DataManager
     {

@@ -1,8 +1,8 @@
-﻿using ASA_Dino_Manager.WinUI;
+﻿using Ark_Dino_Manager.WinUI;
 using Microsoft.Win32;
 using System.Text;
 
-namespace ASA_Dino_Manager
+namespace Ark_Dino_Manager
 {
 
     class FileManager

@@ -1,9 +1,6 @@
-﻿using Microsoft.Maui;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific;
-using Application = Microsoft.Maui.Controls.Application;
+﻿using Application = Microsoft.Maui.Controls.Application;
 
-namespace ASA_Dino_Manager;
+namespace Ark_Dino_Manager;
 
 public partial class App : Application
 {

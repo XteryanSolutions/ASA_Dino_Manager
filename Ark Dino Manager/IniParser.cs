@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ASA_Dino_Manager
+namespace Ark_Dino_Manager
 {
     class IniParser
     {

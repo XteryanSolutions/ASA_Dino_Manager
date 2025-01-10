@@ -1,10 +1,10 @@
-﻿namespace ASA_Dino_Manager
+﻿namespace Ark_Dino_Manager
 {
 
     internal class Shared
     {
         ////////////////////    Title version   ////////////////////
-        public static string version = "ASA Dino Manager 0.04.62";
+        public static string version = "Ark Dino Manager 0.04.62";
 
 
         ////////////////////////////////////////////////////////////

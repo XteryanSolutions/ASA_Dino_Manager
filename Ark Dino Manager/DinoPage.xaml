@@ -1,11 +1,11 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ASA_Dino_Manager.MainPage">
+             x:Class="Ark_Dino_Manager.DinoPage">
 
-    
-    
-    
+
+
+
     <ScrollView>
         <VerticalStackLayout
             Padding="30,0"
@@ -18,7 +18,7 @@
 
             <Label
                 x:Name="Label1"
-                Text="Oops! Didn't expect to end up here"
+                Text="Loading..."
                 Style="{StaticResource Headline}"
                 SemanticProperties.HeadingLevel="Level1" />
 
@@ -27,7 +27,7 @@
         </VerticalStackLayout>
     </ScrollView>
 
-    
-    
-    
+
+
+
 </ContentPage>

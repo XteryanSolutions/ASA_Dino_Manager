@@ -1,8 +1,8 @@
 ﻿<maui:MauiWinUIApplication
-    x:Class="ASA_Dino_Manager.WinUI.App"
+    x:Class="Ark_Dino_Manager.WinUI.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:maui="using:Microsoft.Maui"
-    xmlns:local="using:ASA_Dino_Manager.WinUI">
+    xmlns:local="using:Ark_Dino_Manager.WinUI">
 
 </maui:MauiWinUIApplication>
