@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using Microsoft.Win32;
+using System.Text;
 
 namespace ASA_Dino_Manager
 {
@@ -9,22 +10,13 @@ namespace ASA_Dino_Manager
         private static readonly string dataLocation = @"\Data";
         private static readonly string logsLocation = @"\Logs";
 
-        // this will set if we accept ascended or evolved
-        // for now we use only ascended
-        private static readonly string exportPattern = @"Ascended\ShooterGame\Saved\DinoExports";
-        private static readonly string exportPattern2 = @"ARK\ShooterGame\Saved\DinoExports";
-
-
         // Filemanager stuff
         private static DateTime TimeStart = DateTime.Now;
         private static bool RunOnce = true; // toggle off at init
 
         private static string AppPath = "";
         private static string GamePath = "";
-        public static bool refreshShell = false;
-
-        // scanning for Gamepath
-        public static bool Scanning = false;
+        private static string appId = "2399830";
 
         // do we need to save files
         public static bool needSave = false;
@@ -33,18 +25,11 @@ namespace ASA_Dino_Manager
         public static string LogText = "";
 
 
-
         public static bool InitFileManager()
         {
             try
             {
                 if (RunOnce) { TimeStart = DateTime.Now; RunOnce = false; }
-
-                //AppPath = Path.GetDirectoryName(Application.ExecutablePath).ToString();
-                //AppPath = Path.GetDirectoryName(assemblyPath);
-                //string assemblyPath = Assembly.GetExecutingAssembly().Location;
-                // AppPath = Path.GetDirectoryName(documentsPath);
-
 
                 // get the users document folder and put data in there
                 string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
@@ -58,19 +43,28 @@ namespace ASA_Dino_Manager
                 if (!Directory.Exists(AppPath + logsLocation)) { Directory.CreateDirectory(AppPath + logsLocation); }
                 if (!Directory.Exists(AppPath + dataLocation)) { Directory.CreateDirectory(AppPath + dataLocation); }
 
-                // if (!LoadColorFile()) { return false; }
 
+                // load config file check if path works return true
                 if (LoadConfig()) // loaded
                 {
-                    if (CheckPath()) { return true; }
-                    else
-                    {
-                        if (ScanPath()) { return true; }
-                    }
+                    return true;
                 }
                 else
                 {
-                    if (ScanPath()) { return true; }
+                    string installPath = GetGameInstallPath(appId);
+                    if (installPath != null)
+                    {
+                        FileManager.Log($"Game is installed at: {installPath}", 0);
+                        GamePath = installPath + @"\ShooterGame\Saved\DinoExports";
+                        SaveConfig();
+                        Shared.ImportEnabled = true;
+                        return true;
+                    }
+                    else
+                    { 
+                        FileManager.Log("Game is not installed.", 1);
+                        return false;
+                    }
                 }
             }
             catch { }
@@ -82,8 +76,9 @@ namespace ASA_Dino_Manager
         public static bool CheckPath()
         {
             try
-            {
+            {  
                 string dir = GamePath;
+
                 if (Directory.Exists(dir))
                 {
                     string[] exports = Directory.GetFiles(dir + @"\", "*.ini", SearchOption.TopDirectoryOnly);
@@ -140,7 +135,7 @@ namespace ASA_Dino_Manager
                     writer.WriteLine("ArchivePanelColor=" + ColorToHex(Shared.ArchivePanelColor));
                     writer.WriteLine("OddAPanelColor=" + ColorToHex(Shared.OddAPanelColor));
                 }
-                FileManager.Log("Config Saved", 0);
+                FileManager.Log("Config Saved/Updated", 0);
                 return true;
             }
             catch { }
@@ -339,46 +334,6 @@ namespace ASA_Dino_Manager
             }
         }
 
-        public static bool ScanPath()
-        {
-            if (!Scanning)
-            {
-                bool result = true;
-                FileManager.Log("Scanning for gamePath...", 0);
-
-                Thread thread = new Thread(delegate ()
-                { // start calculation thread
-                    try
-                    {
-                        Scanning = true;
-
-                        string filepath = FileManager.FindFilePath();
-                        GamePath = filepath; Scanning = false;
-
-                        if (!Shared.ImportEnabled) { Shared.ImportEnabled = true; FileManager.Log("Enabled Importing (Found GamePath)", 0); Shared.setPage = "ASA"; FileManager.refreshShell = true; SaveConfig(); }
-
-                        if (CheckPath()) // check if the path we found works
-                        {
-
-                        }
-                        else
-                        {
-                            Shared.ImportEnabled = false;
-                            FileManager.Log("Didnt find gamePath", 3);
-                        }
-                    }
-                    catch
-                    {
-                        Scanning = false;
-                        result = false;
-                    }
-                });
-                thread.Start();
-                return result;
-            }
-            return false;
-        }
-
         public static void LoadFiles()
         {
             try
@@ -514,98 +469,51 @@ namespace ASA_Dino_Manager
             }
         }
 
-        public static string FindFilePath()
+        public static string GetSteamPath()
         {
-            string result = "";
-            bool found = false;
-            var drives = DriveInfo.GetDrives().Reverse(); // Reverse the drives
-
-            foreach (var drive in drives)
-            {
-                FileManager.Log("Scanning Drive " + drive.Name, 0);
-                var directories = GetDirectories(drive.Name); // Reverse the directories
-
-                foreach (var dir in directories)
-                {
-                    string dirName = dir.ToString();
-                    if (dirName.ToUpper().Contains(exportPattern.ToUpper()))
-                    {
-                        result = dirName;
-                        found = true;
-                        FileManager.Log("Found GamePath", 0);
-                        break;
-                    }
-                }
-                if (found) { break; }
-            }
-
-            if (!found)
-            {
-                FileManager.Log("didn't find anything", 2);
-            }
-            return result;
+            return (string)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Valve\Steam", "InstallPath", null)
+                   ?? throw new Exception("Steam is not installed or the path could not be found.");
         }
 
-        public static List<string> GetDirectories(string path, string searchPattern = "*",
-            SearchOption searchOption = SearchOption.AllDirectories)
+        public static string GetGameInstallPath(string appId)
         {
-            var directories = new List<string>();
-
-            try
+            string steamPath = GetSteamPath();
+            string libraryFile = Path.Combine(steamPath, "steamapps", "libraryfolders.vdf");
+            if (!File.Exists(libraryFile))
             {
-                // Get top-level directories
-                directories.AddRange(Directory.GetDirectories(path, searchPattern));
+                throw new Exception("Steam library file not found.");
+            }
 
-                if (searchOption == SearchOption.AllDirectories)
+            // Read all library folders
+            var libraries = new System.Collections.Generic.List<string> { Path.Combine(steamPath, "steamapps") };
+            foreach (var line in File.ReadLines(libraryFile))
+            {
+                if (line.Contains("path"))
                 {
-                    // Recursively get subdirectories
-                    foreach (var dir in directories.ToList()) // ToList() ensures safe iteration while modifying the collection
+                    string path = line.Split('"')[3]; // Get the path value
+                    libraries.Add(Path.Combine(path, "steamapps"));
+                }
+            }
+
+            // Search for the game in each library
+            foreach (var library in libraries)
+            {
+                string acfPath = Path.Combine(library, $"appmanifest_{appId}.acf");
+                if (File.Exists(acfPath))
+                {
+                    // Parse the ACF file to find installdir
+                    foreach (var line in File.ReadLines(acfPath))
                     {
-                        try
+                        if (line.Contains("installdir"))
                         {
-                            directories.AddRange(GetDirectories(dir, searchPattern, SearchOption.AllDirectories));
-                        }
-                        catch (UnauthorizedAccessException)
-                        {
-                            FileManager.Log($"Access denied to directory: {dir}", 1);
-                        }
-                        catch (Exception ex)
-                        {
-                            FileManager.Log($"Error accessing directory: {dir}. Exception: {ex.Message}", 2);
+                            string installDir = line.Split('"')[3]; // Get the installdir value
+                            return Path.Combine(library, "common", installDir);
                         }
                     }
                 }
             }
-            catch (UnauthorizedAccessException)
-            {
-                FileManager.Log($"Access denied to directory: {path}", 1);
-            }
-            catch (Exception ex)
-            {
-                FileManager.Log($"Error accessing directory: {path}. Exception: {ex.Message}", 2);
-            }
 
-            return directories;
-        }
-
-        private static List<string> GetDirectories(string path, string searchPattern)
-        {
-            try
-            {
-                if (path.Length < 248)
-                {
-                    return Directory.GetDirectories(path, searchPattern).ToList();
-                }
-                else
-                {
-                    return new List<string>();
-                }
-
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return new List<string>();
-            }
+            return null; // Game not found
         }
 
     }

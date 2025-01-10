@@ -81,6 +81,7 @@
 
         ////////////////////    IMPORTING       ////////////////////
         public static bool ImportEnabled = false;
+        public static bool firstImport = false;
         public static int Delay = 5; // initial import delay
         public static int DefaultDelay = 10; // default import delay in seconds
         public static int CurrentDelay = 10;

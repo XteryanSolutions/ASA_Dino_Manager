@@ -4,8 +4,6 @@
 
     public partial class MainPage : ContentPage
     {
-        private bool _isTimerRunning = false; // Timer control flag
-
         public MainPage()
         {
             InitializeComponent();
@@ -25,11 +23,13 @@
                 {
                     FileManager.Log("Updating GUI -> " + Shared.setPage, 0);
 
-                    string test = Shared.setPage;
+
                     if (Shared.setPage == @"Looking_for_dinos")
                     {
-                        this.Title = "Please wait while scanning for gamePath";
-                        DefaultView("Looking for dinos =/", "egg200.png");
+                        this.Title = "Ready to start importing data";
+                        DefaultView("Looking for dino exports 🔎", "egg200.png");
+                        // redirect to start page once first import is run
+                        Shared.firstImport = true; Shared.setPage = "ASA";
                     }
                     else
                     {

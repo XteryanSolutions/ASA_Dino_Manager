@@ -44,7 +44,7 @@
             string[] classList = DataManager.GetAllClassesShort();
 
             // if manager initialized and we are not scanning and there is dinos in taglist
-            if (!FileManager.Scanning && classList.Length > 0)
+            if (classList.Length > 0)
             {
                // DataManager.CleanDataBaseByID();
                 DataManager.DeepCleanDatabase();
@@ -52,6 +52,7 @@
             }
             else
             {
+                disableNavSet = true;
                 Items.Clear();
                 var shellContent = new ShellContent
                 {
@@ -62,6 +63,7 @@
                 Items.Add(shellContent);
                 FileManager.Log("No dinos =(", 0);
                 Shared.setPage = $"Looking_for_dinos";
+                disableNavSet = false;
             }
             StartTimer();
         }
@@ -69,7 +71,7 @@
 
         private void OnShellNavigating(object sender, ShellNavigatingEventArgs e)
         {
-            if (!disableNavSet && !FileManager.Scanning) // make sure we are allowed to set new setPage
+            if (!disableNavSet) // make sure we are allowed to set new setPage
             {
                 // now we should have the new target
                 string target = e.Target.Location.ToString();
@@ -173,7 +175,7 @@
 
         public void UpdateMenuContents(string page)
         {
-            if (page != "")
+            if (page != "" && !disableNavSet)
             {
                 disableNavSet = true; // FileManager.Log("Disabled setPage", 0);
                 string[] classList = DataManager.GetAllClassesShort();
@@ -305,9 +307,9 @@
                             // handle import files first
                             DataManager.Import();
 
-                            if (DataManager.ModC > 0 || DataManager.AddC > 0 || (Shared.setPage == "Baby_Dinos" && !BabyPage.isDouble) || FileManager.refreshShell)
+                            if (DataManager.ModC > 0 || DataManager.AddC > 0 || (Shared.setPage == "Baby_Dinos" && !BabyPage.isDouble) || Shared.firstImport)
                             {
-                                FileManager.refreshShell = false;
+                                Shared.firstImport = false;
                                 UpdateMenuContents(Shared.setPage);
                             }     
 
@@ -394,7 +396,7 @@
                 else
                 {
                     // scan for a new path and save it
-                    FileManager.ScanPath();
+                    // FileManager.ScanPath();
                 }
             }
         }
