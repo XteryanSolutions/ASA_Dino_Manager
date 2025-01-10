@@ -1126,8 +1126,8 @@ public partial class DinoPage : ContentPage
         var foodH = new Label { Text = $"{Smap["Food"]}Food{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         sortChar = ""; if (newTest == $"{Smap["Weight"]}Weight") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var weightH = new Label { Text = $"{Smap["Weight"]}Weight{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["Damage"]}Damage") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var damageH = new Label { Text = $"{Smap["Damage"]}Damage{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{Smap["Damage"]}Dmg") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var damageH = new Label { Text = $"{Smap["Damage"]}Dmg{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         sortChar = ""; if (newTest == $"{Smap["Crafting"]}Crafting") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var craftH = new Label { Text = $"{Smap["Crafting"]}Crafting{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
@@ -1141,10 +1141,10 @@ public partial class DinoPage : ContentPage
         var header10 = new Label { Text = $"{Smap["Papa"]}Papa{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleHeaderColor, FontSize = fSize };
         sortChar = ""; if (newTest == $"{Smap["Mama"]}Mama") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header11 = new Label { Text = $"{Smap["Mama"]}Mama{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.femaleHeaderColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["Mutation"]}PapaMute") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var header12 = new Label { Text = $"{Smap["Mutation"]}PapaMute{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleHeaderColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["Mutation"]}MamaMute") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var header13 = new Label { Text = $"{Smap["Mutation"]}MamaMute{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.femaleHeaderColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{Smap["Mutation"]}pM") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var header12 = new Label { Text = $"{Smap["Mutation"]}pM{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleHeaderColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{Smap["Mutation"]}mM") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var header13 = new Label { Text = $"{Smap["Mutation"]}mM{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.femaleHeaderColor, FontSize = fSize };
         sortChar = ""; if (newTest == $"{Smap["Imprint"]}Imprint") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var header14 = new Label { Text = $"{Smap["Imprint"]}Imprint{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         sortChar = ""; if (newTest == $"{Smap["Imprinter"]}Imprinter") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }

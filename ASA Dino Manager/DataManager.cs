@@ -1430,6 +1430,14 @@ namespace ASA_Dino_Manager
                 sortiF = sortiF.Replace("Class", "Tag");
             }
 
+            sortiM = sortiM.Replace("pM", "PapaMute");
+            sortiF = sortiF.Replace("pM", "PapaMute");
+            sortiM = sortiM.Replace("mM", "MamaMute");
+            sortiF = sortiF.Replace("mM", "MamaMute");
+
+            sortiM = sortiM.Replace("Dmg", "Damage");
+            sortiF = sortiF.Replace("Dmg", "Damage");
+
 
             // Sort the MaleTable based on the desired column
             DataView view1 = new DataView(MaleTable);

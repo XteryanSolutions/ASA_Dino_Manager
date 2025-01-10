@@ -64,29 +64,37 @@ namespace ASA_Dino_Manager
                     { 
                         FileManager.Log("Ascended is not installed.", 1);
                         string installPath2 = GetGameInstallPath("346110"); // appID for Evolved
-                        if (installPath != null)
+                        if (installPath2 != null)
                         {
                             FileManager.Log($"Game is installed at: {installPath2}", 0);
                             string dinoExportsPath = Path.Combine(installPath2, @"ShooterGame\Saved\DinoExports");
-                            string[] subfolders = Directory.GetDirectories(GamePath);
-                            if (subfolders.Length > 0)
+
+                            if (Directory.Exists(dinoExportsPath))
                             {
-                                // Use the first subfolder found
-                                string userID = new DirectoryInfo(subfolders[0]).Name;
-                                string gamePath = Path.Combine(dinoExportsPath, userID);
+                                string[] subfolders = Directory.GetDirectories(GamePath);
+                                if (subfolders.Length > 0)
+                                {
+                                    // Use the first subfolder found
+                                    string userID = new DirectoryInfo(subfolders[0]).Name;
+                                    string gamePath = Path.Combine(dinoExportsPath, userID);
 
-                                FileManager.Log($"Game path: {gamePath}", 0);
+                                    FileManager.Log($"Game path: {gamePath}", 0);
 
-                                SaveConfig();
-                                Shared.ImportEnabled = true;
-                                return true;
+                                    SaveConfig();
+                                    Shared.ImportEnabled = true;
+                                    return true;
+                                }
+                                else
+                                {
+                                    FileManager.Log("No subfolder in dino exports", 1);
+                                    return false;
+                                }
                             }
                             else
                             {
-                                FileManager.Log("No subfolder in dino exports", 1);
+                                FileManager.Log($"The directory {dinoExportsPath} does not exist.", 1);
                                 return false;
                             }
-
                         }
                         else
                         {
