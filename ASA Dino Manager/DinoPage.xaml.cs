@@ -35,7 +35,7 @@ public partial class DinoPage : ContentPage
     private string levelText = "";
     private string hpText = "";
     private string staminaText = "";
-    private string oxygenText = "";
+    private string O2Text = "";
     private string foodText = "";
     private string weightText = "";
     private string damageText = "";
@@ -524,7 +524,7 @@ public partial class DinoPage : ContentPage
             string level = DataManager.GetFirstColumnData("ID", currentID, "Level").Replace(".", sep);
             string hp = DataManager.GetFirstColumnData("ID", currentID, "Hp").Replace(".", sep);
             string stamina = DataManager.GetFirstColumnData("ID", currentID, "Stamina").Replace(".", sep);
-            string oxygen = DataManager.GetFirstColumnData("ID", currentID, "Oxygen").Replace(".", sep);
+            string O2 = DataManager.GetFirstColumnData("ID", currentID, "Oxygen").Replace(".", sep);
             string food = DataManager.GetFirstColumnData("ID", currentID, "Food").Replace(".", sep);
             string weight = DataManager.GetFirstColumnData("ID", currentID, "Weight").Replace(".", sep);
             string damage = DataManager.GetFirstColumnData("ID", currentID, "Damage").Replace(".", sep);
@@ -536,7 +536,7 @@ public partial class DinoPage : ContentPage
             levelText = level;
             hpText = hp;
             staminaText = stamina;
-            oxygenText = oxygen;
+            O2Text = O2;
             foodText = food;
             weightText = weight;
             damageText = damage;
@@ -548,7 +548,7 @@ public partial class DinoPage : ContentPage
             if (DataManager.ToDouble(level) >= (DataManager.LevelMax - 0.1)) { cellColor1 = Shared.goodColor; }
             if (DataManager.ToDouble(hp) >= DataManager.HpMax - 0.1) { cellColor2 = Shared.goodColor; }
             if (DataManager.ToDouble(stamina) >= DataManager.StaminaMax - 0.1) { cellColor3 = Shared.goodColor; }
-            if (DataManager.ToDouble(oxygen) >= DataManager.OxygenMax - 0.1) { cellColor4 = Shared.goodColor; }
+            if (DataManager.ToDouble(O2) >= DataManager.O2Max - 0.1) { cellColor4 = Shared.goodColor; }
             if (DataManager.ToDouble(food) >= DataManager.FoodMax - 0.1) { cellColor5 = Shared.goodColor; }
             if (DataManager.ToDouble(weight) >= DataManager.WeightMax - 0.1) { cellColor6 = Shared.goodColor; }
             if ((DataManager.ToDouble(damage) + 1) * 100 >= DataManager.DamageMax - 0.1) { cellColor7 = Shared.goodColor; }
@@ -581,7 +581,7 @@ public partial class DinoPage : ContentPage
             var t1 = new Label { Text = "Level", TextColor = cellColor1, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
             var t2 = new Label { Text = "Hp", TextColor = cellColor2, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
             var t3 = new Label { Text = "Stamina", TextColor = cellColor3, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var t4 = new Label { Text = "Oxygen", TextColor = cellColor4, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var t4 = new Label { Text = "O2", TextColor = cellColor4, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
             var t5 = new Label { Text = "Food", TextColor = cellColor5, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
             var t6 = new Label { Text = "Weight", TextColor = cellColor6, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
             var t7 = new Label { Text = "Damage", TextColor = cellColor7, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
@@ -620,7 +620,7 @@ public partial class DinoPage : ContentPage
             var textBox1 = new Entry { Text = level, Placeholder = "Level", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor1, BackgroundColor = Shared.OddMPanelColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start };
             var textBox2 = new Entry { Text = hp, Placeholder = "Hp", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor2, BackgroundColor = Shared.OddMPanelColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start };
             var textBox3 = new Entry { Text = stamina, Placeholder = "Stamina", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor3, BackgroundColor = Shared.OddMPanelColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start };
-            var textBox4 = new Entry { Text = oxygen, Placeholder = "Oxygen", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor4, BackgroundColor = Shared.OddMPanelColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start };
+            var textBox4 = new Entry { Text = O2, Placeholder = "O2", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor4, BackgroundColor = Shared.OddMPanelColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start };
             var textBox5 = new Entry { Text = food, Placeholder = "Food", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor5, BackgroundColor = Shared.OddMPanelColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start };
             var textBox6 = new Entry { Text = weight, Placeholder = "Weight", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor6, BackgroundColor = Shared.OddMPanelColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start };
             var textBox7 = new Entry { Text = damage, Placeholder = "Damage", WidthRequest = 200, HeightRequest = 10, TextColor = cellColor7, BackgroundColor = Shared.OddMPanelColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start };
@@ -648,7 +648,7 @@ public partial class DinoPage : ContentPage
             textBox4.TextChanged += (sender, e) =>
             {
                 if (!IsValidDouble(e.NewTextValue)) { ((Entry)sender).Text = e.OldTextValue; }
-                else { oxygenText = e.NewTextValue; }
+                else { O2Text = e.NewTextValue; }
             };
             textBox5.TextChanged += (sender, e) =>
             {
@@ -710,7 +710,7 @@ public partial class DinoPage : ContentPage
             string levelP = DataManager.GetFirstColumnData("ID", papaID, "Level").Replace(".", sep);
             string hpP = DataManager.GetFirstColumnData("ID", papaID, "Hp").Replace(".", sep);
             string staminaP = DataManager.GetFirstColumnData("ID", papaID, "Stamina").Replace(".", sep);
-            string oxygenP = DataManager.GetFirstColumnData("ID", papaID, "Oxygen").Replace(".", sep);
+            string O2P = DataManager.GetFirstColumnData("ID", papaID, "Oxygen").Replace(".", sep);
             string foodP = DataManager.GetFirstColumnData("ID", papaID, "Food").Replace(".", sep);
             string weightP = DataManager.GetFirstColumnData("ID", papaID, "Weight").Replace(".", sep);
             string damageP = DataManager.GetFirstColumnData("ID", papaID, "Damage").Replace(".", sep);
@@ -737,7 +737,7 @@ public partial class DinoPage : ContentPage
             if (DataManager.ToDouble(levelP) >= (DataManager.LevelMax - 0.1)) { cellColor1 = Shared.goodColor; }
             if (DataManager.ToDouble(hpP) >= DataManager.HpMax - 0.1) { cellColor2 = Shared.goodColor; }
             if (DataManager.ToDouble(staminaP) >= DataManager.StaminaMax - 0.1) { cellColor3 = Shared.goodColor; }
-            if (DataManager.ToDouble(oxygenP) >= DataManager.OxygenMax - 0.1) { cellColor4 = Shared.goodColor; }
+            if (DataManager.ToDouble(O2P) >= DataManager.O2Max - 0.1) { cellColor4 = Shared.goodColor; }
             if (DataManager.ToDouble(foodP) >= DataManager.FoodMax - 0.1) { cellColor5 = Shared.goodColor; }
             if (DataManager.ToDouble(weightP) >= DataManager.WeightMax - 0.1) { cellColor6 = Shared.goodColor; }
             if ((DataManager.ToDouble(damageP) + 1) * 100 >= DataManager.DamageMax - 0.1) { cellColor7 = Shared.goodColor; }
@@ -751,7 +751,7 @@ public partial class DinoPage : ContentPage
             var labelP1 = new Label { Text = levelP, TextColor = cellColor1, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
             var labelP2 = new Label { Text = hpP, TextColor = cellColor2, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
             var labelP3 = new Label { Text = staminaP, TextColor = cellColor3, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelP4 = new Label { Text = oxygenP, TextColor = cellColor4, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelP4 = new Label { Text = O2P, TextColor = cellColor4, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
             var labelP5 = new Label { Text = foodP, TextColor = cellColor5, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
             var labelP6 = new Label { Text = weightP, TextColor = cellColor6, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
             var labelP7 = new Label { Text = damageP, TextColor = cellColor7, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
@@ -778,7 +778,7 @@ public partial class DinoPage : ContentPage
             string levelM = DataManager.GetFirstColumnData("ID", mamaID, "Level").Replace(".", sep);
             string hpM = DataManager.GetFirstColumnData("ID", mamaID, "Hp").Replace(".", sep);
             string staminaM = DataManager.GetFirstColumnData("ID", mamaID, "Stamina").Replace(".", sep);
-            string oxygenM = DataManager.GetFirstColumnData("ID", mamaID, "Oxygen").Replace(".", sep);
+            string O2M = DataManager.GetFirstColumnData("ID", mamaID, "Oxygen").Replace(".", sep);
             string foodM = DataManager.GetFirstColumnData("ID", mamaID, "Food").Replace(".", sep);
             string weightM = DataManager.GetFirstColumnData("ID", mamaID, "Weight").Replace(".", sep);
             string damageM = DataManager.GetFirstColumnData("ID", mamaID, "Damage").Replace(".", sep);
@@ -803,7 +803,7 @@ public partial class DinoPage : ContentPage
             if (DataManager.ToDouble(levelM) >= (DataManager.LevelMax - 0.1)) { cellColor1 = Shared.goodColor; }
             if (DataManager.ToDouble(hpM) >= DataManager.HpMax - 0.1) { cellColor2 = Shared.goodColor; }
             if (DataManager.ToDouble(staminaM) >= DataManager.StaminaMax - 0.1) { cellColor3 = Shared.goodColor; }
-            if (DataManager.ToDouble(oxygenM) >= DataManager.OxygenMax - 0.1) { cellColor4 = Shared.goodColor; }
+            if (DataManager.ToDouble(O2M) >= DataManager.O2Max - 0.1) { cellColor4 = Shared.goodColor; }
             if (DataManager.ToDouble(foodM) >= DataManager.FoodMax - 0.1) { cellColor5 = Shared.goodColor; }
             if (DataManager.ToDouble(weightM) >= DataManager.WeightMax - 0.1) { cellColor6 = Shared.goodColor; }
             if ((DataManager.ToDouble(damageM) + 1) * 100 >= DataManager.DamageMax - 0.1) { cellColor7 = Shared.goodColor; }
@@ -817,7 +817,7 @@ public partial class DinoPage : ContentPage
             var labelM1 = new Label { Text = levelM, TextColor = cellColor1, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
             var labelM2 = new Label { Text = hpM, TextColor = cellColor2, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
             var labelM3 = new Label { Text = staminaM, TextColor = cellColor3, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-            var labelM4 = new Label { Text = oxygenM, TextColor = cellColor4, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var labelM4 = new Label { Text = O2M, TextColor = cellColor4, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
             var labelM5 = new Label { Text = foodM, TextColor = cellColor5, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
             var labelM6 = new Label { Text = weightM, TextColor = cellColor6, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
             var labelM7 = new Label { Text = damageM, TextColor = cellColor7, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
@@ -1082,7 +1082,7 @@ public partial class DinoPage : ContentPage
 
         // check for sats we dont need
         bool hasO2 = true; bool hasSpeed = false; bool hasCraft = true;
-        if (DataManager.OxygenMax == 150) { hasO2 = false; }
+        if (DataManager.O2Max == 150) { hasO2 = false; }
         if (DataManager.CraftMax == 100) { hasCraft = false; }
 
         if (title != "Bottom") { hasSpeed = true; } // dont activate for offspring since speed doesnt breed
@@ -1120,8 +1120,8 @@ public partial class DinoPage : ContentPage
         var hpH = new Label { Text = $"{Smap["Hp"]}Hp{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         sortChar = ""; if (newTest == $"{Smap["Stamina"]}Stamina") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var staminaH = new Label { Text = $"{Smap["Stamina"]}Stamina{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["Oxygen"]}Oxygen") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var oxygenH = new Label { Text = $"{Smap["Oxygen"]}Oxygen{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{Smap["O2"]}O2") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var O2H = new Label { Text = $"{Smap["O2"]}O2{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         sortChar = ""; if (newTest == $"{Smap["Food"]}Food") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var foodH = new Label { Text = $"{Smap["Food"]}Food{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         sortChar = ""; if (newTest == $"{Smap["Weight"]}Weight") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
@@ -1158,7 +1158,7 @@ public partial class DinoPage : ContentPage
             //---------------------
             SortColumn(hpH, title);
             SortColumn(staminaH, title);
-            if (hasO2) { SortColumn(oxygenH, title); }
+            if (hasO2) { SortColumn(O2H, title); }
             SortColumn(foodH, title);
             SortColumn(weightH, title);
             SortColumn(damageH, title);
@@ -1183,7 +1183,7 @@ public partial class DinoPage : ContentPage
         //---------------------
         AddToGrid(grid, hpH, 0, startID++, title);
         AddToGrid(grid, staminaH, 0, startID++, title);
-        if (hasO2) { AddToGrid(grid, oxygenH, 0, startID++, title); }
+        if (hasO2) { AddToGrid(grid, O2H, 0, startID++, title); }
         AddToGrid(grid, foodH, 0, startID++, title);
         AddToGrid(grid, weightH, 0, startID++, title);
         AddToGrid(grid, damageH, 0, startID++, title);
@@ -1218,7 +1218,7 @@ public partial class DinoPage : ContentPage
             //////////////
             string hp = row["Hp"].ToString();
             string stamina = row["Stamina"].ToString();
-            string oxygen = row["Oxygen"].ToString();
+            string O2 = row["O2"].ToString();
             string food = row["Food"].ToString();
             string weight = row["Weight"].ToString();
             string damage = row["Damage"].ToString();
@@ -1244,7 +1244,7 @@ public partial class DinoPage : ContentPage
             ////////////
             var hpC = DefaultColor;
             var staminaC = DefaultColor;
-            var oxygenC = DefaultColor;
+            var O2C = DefaultColor;
             var foodC = DefaultColor;
             var weightC = DefaultColor;
             var damageC = DefaultColor;
@@ -1257,7 +1257,7 @@ public partial class DinoPage : ContentPage
             //recolor breeding stats
             if (DataManager.ToDouble(hp) + statOffset >= DataManager.HpMax) { hpC = Shared.goodColor; }
             if (DataManager.ToDouble(stamina) + statOffset >= DataManager.StaminaMax) { staminaC = Shared.goodColor; }
-            if (DataManager.ToDouble(oxygen) + statOffset >= DataManager.OxygenMax) { oxygenC = Shared.goodColor; }
+            if (DataManager.ToDouble(O2) + statOffset >= DataManager.O2Max) { O2C = Shared.goodColor; }
             if (DataManager.ToDouble(food) + statOffset >= DataManager.FoodMax) { foodC = Shared.goodColor; }
             if (DataManager.ToDouble(weight) + statOffset >= DataManager.WeightMax) { weightC = Shared.goodColor; }
             if (DataManager.ToDouble(damage) + statOffset >= DataManager.DamageMax) { damageC = Shared.goodColor; }
@@ -1275,7 +1275,7 @@ public partial class DinoPage : ContentPage
 
                 if (aC == "1" && ToDouble(hp) + statOffset >= HpMax) { hpC = mutaColor; } else if (aC == "1" && ToDouble(hp) - statOffset < HpMax) { hpC = mutaBadColor; }
                 if (bC == "1" && ToDouble(stamina) + statOffset >= StaminaMax) { staminaC = mutaColor; } else if (bC == "1" && ToDouble(stamina) - statOffset < StaminaMax) { staminaC = mutaBadColor; }
-                if (cC == "1" && ToDouble(oxygen) + statOffset >= OxygenMax) { oxygenC = mutaColor; } else if (cC == "1" && ToDouble(oxygen) - statOffset < OxygenMax) { oxygenC = mutaBadColor; }
+                if (cC == "1" && ToDouble(O2) + statOffset >= O2Max) { O2C = mutaColor; } else if (cC == "1" && ToDouble(O2) - statOffset < O2Max) { O2C = mutaBadColor; }
                 if (dC == "1" && ToDouble(food) + statOffset >= FoodMax) { foodC = mutaColor; } else if (dC == "1" && ToDouble(food) - statOffset < FoodMax) { foodC = mutaBadColor; }
                 if (eC == "1" && ToDouble(weight) + statOffset >= WeightMax) { weightC = mutaColor; } else if (eC == "1" && ToDouble(weight) - statOffset < WeightMax) { weightC = mutaBadColor; }
                 if (fC == "1" && ToDouble(damage) + statOffset >= DamageMax) { damageC = mutaColor; } else if (fC == "1" && ToDouble(damage) - statOffset < DamageMax) { damageC = mutaBadColor; }
@@ -1293,7 +1293,7 @@ public partial class DinoPage : ContentPage
 
                 if (aC == "2") { hpC = Shared.bestColor; }
                 if (bC == "2") { staminaC = Shared.bestColor; }
-                if (cC == "2") { oxygenC = Shared.bestColor; }
+                if (cC == "2") { O2C = Shared.bestColor; }
                 if (dC == "2") { foodC = Shared.bestColor; }
                 if (eC == "2") { weightC = Shared.bestColor; }
                 if (fC == "2") { damageC = Shared.bestColor; }
@@ -1306,7 +1306,7 @@ public partial class DinoPage : ContentPage
                     // here is a golden offspring with all the best stats
                     hpC = Shared.goldColor;
                     staminaC = Shared.goldColor;
-                    oxygenC = Shared.goldColor;
+                    O2C = Shared.goldColor;
                     foodC = Shared.goldColor;
                     weightC = Shared.goldColor;
                     damageC = Shared.goldColor;
@@ -1367,7 +1367,7 @@ public partial class DinoPage : ContentPage
             //////////////
             var hpL = new Label { Text = hp, TextColor = hpC };
             var staminaL = new Label { Text = stamina, TextColor = staminaC };
-            var oxygenL = new Label { Text = oxygen, TextColor = oxygenC };
+            var O2L = new Label { Text = O2, TextColor = O2C };
             var foodL = new Label { Text = food, TextColor = foodC };
             var weightL = new Label { Text = weight, TextColor = weightC };
             var damageL = new Label { Text = damage, TextColor = damageC };
@@ -1395,7 +1395,7 @@ public partial class DinoPage : ContentPage
                 //------------------------------------------
                 SelectDino(hpL, id, boxRowID);
                 SelectDino(staminaL, id, boxRowID);
-                if (hasO2) { SelectDino(oxygenL, id, boxRowID); }
+                if (hasO2) { SelectDino(O2L, id, boxRowID); }
                 SelectDino(foodL, id, boxRowID);
                 SelectDino(weightL, id, boxRowID);
                 SelectDino(damageL, id, boxRowID);
@@ -1421,7 +1421,7 @@ public partial class DinoPage : ContentPage
             //-------------------
             AddToGrid(grid, hpL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, staminaL, rowIndex, startID++, title, selected, false, id);
-            if (hasO2) { AddToGrid(grid, oxygenL, rowIndex, startID++, title, selected, false, id); }
+            if (hasO2) { AddToGrid(grid, O2L, rowIndex, startID++, title, selected, false, id); }
             AddToGrid(grid, foodL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, weightL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, damageL, rowIndex, startID++, title, selected, false, id);
@@ -1778,7 +1778,7 @@ public partial class DinoPage : ContentPage
     private void BackBtnClicked(object? sender, EventArgs e)
     {
         // reset toggles etc.
-        levelText = ""; hpText = ""; staminaText = ""; oxygenText = "";
+        levelText = ""; hpText = ""; staminaText = ""; O2Text = "";
         foodText = ""; weightText = ""; damageText = ""; notesText = "";
         speedText = ""; craftText = ""; dataValid = false;
         isDouble = false; showTree = false;
@@ -1796,13 +1796,13 @@ public partial class DinoPage : ContentPage
 
         if (editStats)
         {
-            DataManager.EditBreedStats(selectedID, levelText, hpText, staminaText, oxygenText, foodText, weightText, damageText, notesText, speedText, craftText);
+            DataManager.EditBreedStats(selectedID, levelText, hpText, staminaText, O2Text, foodText, weightText, damageText, notesText, speedText, craftText);
             FileManager.needSave = true;
             dataValid = false;
         }
 
         // reset toggles etc.
-        levelText = ""; hpText = ""; staminaText = ""; oxygenText = "";
+        levelText = ""; hpText = ""; staminaText = ""; O2Text = "";
         foodText = ""; weightText = ""; damageText = ""; notesText = "";
         speedText = ""; craftText = "";
         isDouble = false;

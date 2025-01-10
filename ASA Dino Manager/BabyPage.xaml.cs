@@ -753,10 +753,10 @@ public partial class BabyPage : ContentPage
             var nameL = new Label { Text = name, TextColor = cellColor0 };
             var levelL = new Label { Text = level, TextColor = cellColor1 };
             //////////////
-            var hpL = new Label { Text = ageT, TextColor = cellColor2 };
-            var staminaL = new Label { Text = timeT, TextColor = cellColor3 };
-            var oxygenL = new Label { Text = rateT, TextColor = cellColor4 };
-            var foodL = new Label { Text = dateT, TextColor = cellColor5 };
+            var ageL = new Label { Text = ageT, TextColor = cellColor2 };
+            var timeL = new Label { Text = timeT, TextColor = cellColor3 };
+            var rateL = new Label { Text = rateT, TextColor = cellColor4 };
+            var dateL = new Label { Text = dateT, TextColor = cellColor5 };
             //////////////
             var statusL = new Label { Text = status, TextColor = cellColor8 };
             var genL = new Label { Text = gen, TextColor = cellColor8 };
@@ -774,10 +774,10 @@ public partial class BabyPage : ContentPage
             SelectDino(tagL, id, boxRowID);
             SelectDino(nameL, id, boxRowID);
             SelectDino(levelL, id, boxRowID);
-            SelectDino(hpL, id, boxRowID);
-            SelectDino(staminaL, id, boxRowID);
-            SelectDino(oxygenL, id, boxRowID);
-            SelectDino(foodL, id, boxRowID);
+            SelectDino(ageL, id, boxRowID);
+            SelectDino(timeL, id, boxRowID);
+            SelectDino(rateL, id, boxRowID);
+            SelectDino(dateL, id, boxRowID);
             SelectDino(statusL, id, boxRowID);
             SelectDino(genL, id, boxRowID);
             SelectDino(papaL, id, boxRowID);
@@ -798,10 +798,10 @@ public partial class BabyPage : ContentPage
             AddToGrid(grid, tagL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, nameL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, levelL, rowIndex, startID++, title, selected, false, id);
-            AddToGrid(grid, hpL, rowIndex, startID++, title, selected, false, id);
-            AddToGrid(grid, staminaL, rowIndex, startID++, title, selected, false, id);
-            AddToGrid(grid, oxygenL, rowIndex, startID++, title, selected, false, id);
-            AddToGrid(grid, foodL, rowIndex, startID++, title, selected, false, id);
+            AddToGrid(grid, ageL, rowIndex, startID++, title, selected, false, id);
+            AddToGrid(grid, timeL, rowIndex, startID++, title, selected, false, id);
+            AddToGrid(grid, rateL, rowIndex, startID++, title, selected, false, id);
+            AddToGrid(grid, dateL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, imprintL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, genL, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, statusL, rowIndex, startID++, title, selected, false, id);
@@ -1159,7 +1159,7 @@ public partial class BabyPage : ContentPage
     {
         if (editStats)
         {
-            // DataManager.EditBreedStats(selectedID, levelText, hpText, staminaText, oxygenText, foodText, weightText, damageText, notesText);
+            // DataManager.EditBreedStats(selectedID, levelText, hpText, staminaText, O2Text, foodText, weightText, damageText, notesText);
             DataManager.SetRate(classText, rateText);
 
 

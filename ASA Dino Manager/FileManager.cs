@@ -9,6 +9,8 @@ namespace ASA_Dino_Manager
         private static readonly string dataLocation = @"\Data";
         private static readonly string logsLocation = @"\Logs";
 
+        // this will set if we accept ascended or evolved
+        // for now we use only ascended
         private static readonly string exportPattern = @"Ascended\ShooterGame\Saved\DinoExports";
         private static readonly string exportPattern2 = @"ARK\ShooterGame\Saved\DinoExports";
 

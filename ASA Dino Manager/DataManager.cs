@@ -41,7 +41,7 @@ namespace ASA_Dino_Manager
         public static double LevelMax = 0;
         public static double HpMax = 0;
         public static double StaminaMax = 0;
-        public static double OxygenMax = 0;
+        public static double O2Max = 0;
         public static double FoodMax = 0;
         public static double WeightMax = 0;
         public static double DamageMax = 0;
@@ -104,7 +104,7 @@ namespace ASA_Dino_Manager
                 // ==============
                 FemaleTable.Columns.Add("HP", typeof(double));
                 FemaleTable.Columns.Add("Stamina", typeof(double));
-                FemaleTable.Columns.Add("Oxygen", typeof(double));
+                FemaleTable.Columns.Add("O2", typeof(double));
                 FemaleTable.Columns.Add("Food", typeof(double));
                 FemaleTable.Columns.Add("Weight", typeof(double));
                 FemaleTable.Columns.Add("Damage", typeof(double));
@@ -138,7 +138,7 @@ namespace ASA_Dino_Manager
                 // ==============
                 MaleTable.Columns.Add("HP", typeof(double));
                 MaleTable.Columns.Add("Stamina", typeof(double));
-                MaleTable.Columns.Add("Oxygen", typeof(double));
+                MaleTable.Columns.Add("O2", typeof(double));
                 MaleTable.Columns.Add("Food", typeof(double));
                 MaleTable.Columns.Add("Weight", typeof(double));
                 MaleTable.Columns.Add("Damage", typeof(double));
@@ -171,7 +171,7 @@ namespace ASA_Dino_Manager
                 // ==============
                 BottomTable.Columns.Add("HP", typeof(double));
                 BottomTable.Columns.Add("Stamina", typeof(double));
-                BottomTable.Columns.Add("Oxygen", typeof(double));
+                BottomTable.Columns.Add("O2", typeof(double));
                 BottomTable.Columns.Add("Food", typeof(double));
                 BottomTable.Columns.Add("Weight", typeof(double));
                 BottomTable.Columns.Add("Damage", typeof(double));
@@ -759,45 +759,6 @@ namespace ASA_Dino_Manager
             return maxGen;
         }
 
-        public static string[] GetAllParents(string DinoClass)
-        {
-            // Retrieve female data
-            string[] females = GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Female", "ID");
-
-            // Retrieve male data
-            string[] males = GetDistinctFilteredColumnData("Class", DinoClass, "Sex", "Male", "ID");
-
-            // Use a HashSet to store distinct values
-            HashSet<string> resultSet = new HashSet<string>();
-
-            foreach (var dino in males)
-            {
-                string papaID = GetFirstColumnData("ID", dino, "Papa");
-                string mamaID = GetFirstColumnData("ID", dino, "Mama");
-
-                // Combine papaID and mamaID into a single string with a delimiter
-                string combined = $"{papaID},{mamaID}";
-
-                // Add the combined value to the result set (distinct pairs)
-                resultSet.Add(combined);
-            }
-
-            foreach (var dino in females)
-            {
-                string papaID = GetFirstColumnData("ID", dino, "Papa");
-                string mamaID = GetFirstColumnData("ID", dino, "Mama");
-
-                // Combine papaID and mamaID into a single string with a delimiter
-                string combined = $"{papaID},{mamaID}";
-
-                // Add the combined value to the result set (distinct pairs)
-                resultSet.Add(combined);
-            }
-
-            // Convert to an array of strings
-            return resultSet.ToArray();
-        }
-
         public static string[] GetGenParents(string DinoClass, double gen)
         {
             // Retrieve female data
@@ -1209,7 +1170,7 @@ namespace ASA_Dino_Manager
 
                     double HpM = Math.Round(ToDouble(FirstStats[rowID][2].ToString()), 1);
                     double StaminaM = Math.Round(ToDouble(FirstStats[rowID][3].ToString()), 1);
-                    double OxygenM = Math.Round(ToDouble(FirstStats[rowID][4].ToString()), 1);
+                    double O2M = Math.Round(ToDouble(FirstStats[rowID][4].ToString()), 1);
                     double FoodM = Math.Round(ToDouble(FirstStats[rowID][5].ToString()), 1);
                     double WeightM = Math.Round(ToDouble(FirstStats[rowID][6].ToString()), 1);
                     double DamageM = Math.Round((ToDouble(FirstStats[rowID][7].ToString()) + 1) * 100, 1);
@@ -1345,7 +1306,7 @@ namespace ASA_Dino_Manager
                     if (LevelM >= LevelMax) { LevelMax = LevelM; }
                     if (HpM >= HpMax) { HpMax = HpM; }
                     if (StaminaM >= StaminaMax) { StaminaMax = StaminaM; }
-                    if (OxygenM >= OxygenMax) { OxygenMax = OxygenM; }
+                    if (O2M >= O2Max) { O2Max = O2M; }
                     if (FoodM >= FoodMax) { FoodMax = FoodM; }
                     if (WeightM >= WeightMax) { WeightMax = WeightM; }
                     if (DamageM >= DamageMax) { DamageMax = DamageM; }
@@ -1360,7 +1321,7 @@ namespace ASA_Dino_Manager
                     //------breeding stats-------
                     dr["Hp"] = HpM;
                     dr["Stamina"] = StaminaM;
-                    dr["Oxygen"] = OxygenM;
+                    dr["O2"] = O2M;
                     dr["Food"] = FoodM;
                     dr["Weight"] = WeightM;
                     dr["Damage"] = DamageM;
@@ -1429,7 +1390,7 @@ namespace ASA_Dino_Manager
             }
 
 
-            LevelMax = 0; HpMax = 0; StaminaMax = 0; OxygenMax = 0;
+            LevelMax = 0; HpMax = 0; StaminaMax = 0; O2Max = 0;
             FoodMax = 0; WeightMax = 0; DamageMax = 0; SpeedMax = 0;
             CraftMax = 0;
 
@@ -1532,7 +1493,7 @@ namespace ASA_Dino_Manager
         public static void EvaluateDinos()
         {
             bool hasO2 = true; bool hasCraft = true;
-            if (OxygenMax == 150) { hasO2 = false; }
+            if (O2Max == 150) { hasO2 = false; }
             if (CraftMax == 100) { hasCraft = false; }
 
             int rowIDC = 0; // Male dinos
@@ -1548,7 +1509,7 @@ namespace ASA_Dino_Manager
 
                 double HpC = ToDouble(rowC["HP"].ToString());
                 double StaminaC = ToDouble(rowC["Stamina"].ToString());
-                double OxygenC = ToDouble(rowC["Oxygen"].ToString());
+                double O2C = ToDouble(rowC["O2"].ToString());
                 double FoodC = ToDouble(rowC["Food"].ToString());
                 double WeightC = ToDouble(rowC["Weight"].ToString());
                 double DamageC = ToDouble(rowC["Damage"].ToString());
@@ -1556,7 +1517,7 @@ namespace ASA_Dino_Manager
 
                 if (HpC + Shared.statOffset >= HpMax) { aC = "1"; }
                 if (StaminaC + Shared.statOffset >= StaminaMax) { bC = "1"; }
-                if (OxygenC + Shared.statOffset >= OxygenMax && hasO2) { cC = "1"; }
+                if (O2C + Shared.statOffset >= O2Max && hasO2) { cC = "1"; }
                 if (FoodC + Shared.statOffset >= FoodMax) { dC = "1"; }
                 if (WeightC + Shared.statOffset >= WeightMax) { eC = "1"; }
                 if (DamageC + Shared.statOffset >= DamageMax) { fC = "1"; }
@@ -1583,7 +1544,7 @@ namespace ASA_Dino_Manager
 
                             double HpW = ToDouble(rowW["HP"].ToString());
                             double StaminaW = ToDouble(rowW["Stamina"].ToString());
-                            double OxygenW = ToDouble(rowW["Oxygen"].ToString());
+                            double O2W = ToDouble(rowW["O2"].ToString());
                             double FoodW = ToDouble(rowW["Food"].ToString());
                             double WeightW = ToDouble(rowW["Weight"].ToString());
                             double DamageW = ToDouble(rowW["Damage"].ToString());
@@ -1591,7 +1552,7 @@ namespace ASA_Dino_Manager
 
                             if (HpW + Shared.statOffset >= DataManager.HpMax) { aW = "1"; }
                             if (StaminaW + Shared.statOffset >= DataManager.StaminaMax) { bW = "1"; }
-                            if (OxygenW + Shared.statOffset >= DataManager.OxygenMax && hasO2) { cW = "1"; }
+                            if (O2W + Shared.statOffset >= DataManager.O2Max && hasO2) { cW = "1"; }
                             if (FoodW + Shared.statOffset >= DataManager.FoodMax) { dW = "1"; }
                             if (WeightW + Shared.statOffset >= DataManager.WeightMax) { eW = "1"; }
                             if (DamageW + Shared.statOffset >= DataManager.DamageMax) { fW = "1"; }
@@ -1655,7 +1616,7 @@ namespace ASA_Dino_Manager
 
                 double HpC = ToDouble(rowC["HP"].ToString());
                 double StaminaC = ToDouble(rowC["Stamina"].ToString());
-                double OxygenC = ToDouble(rowC["Oxygen"].ToString());
+                double O2C = ToDouble(rowC["O2"].ToString());
                 double FoodC = ToDouble(rowC["Food"].ToString());
                 double WeightC = ToDouble(rowC["Weight"].ToString());
                 double DamageC = ToDouble(rowC["Damage"].ToString());
@@ -1663,7 +1624,7 @@ namespace ASA_Dino_Manager
 
                 if (HpC + Shared.statOffset >= HpMax) { aC = "1"; }
                 if (StaminaC + Shared.statOffset >= StaminaMax) { bC = "1"; }
-                if (OxygenC + Shared.statOffset >= OxygenMax && hasO2) { cC = "1"; }
+                if (O2C + Shared.statOffset >= O2Max && hasO2) { cC = "1"; }
                 if (FoodC + Shared.statOffset >= FoodMax) { dC = "1"; }
                 if (WeightC + Shared.statOffset >= WeightMax) { eC = "1"; }
                 if (DamageC + Shared.statOffset >= DamageMax) { fC = "1"; }
@@ -1683,7 +1644,7 @@ namespace ASA_Dino_Manager
         public static void GetBestPartner()
         {
             int check = 7; int maxGP = 5; // max stat points we can have = hp,st,o2,fo,we,da,cr
-            if (DataManager.OxygenMax != 150) { maxGP++; } // have o2
+            if (DataManager.O2Max != 150) { maxGP++; } // have o2
             if (DataManager.CraftMax != 100) { maxGP++; } // have craft
 
             BottomTable.Clear();
@@ -1778,7 +1739,7 @@ namespace ASA_Dino_Manager
 
             if (male != "" && female != "")
             {
-                double Hp = 0; double Stamina = 0; double Oxygen = 0;
+                double Hp = 0; double Stamina = 0; double O2 = 0;
                 double Food = 0; double Weight = 0; double Damage = 0;
                 double Craft = 0;
                 double Gen = 0; double LevelB = 0;
@@ -1794,7 +1755,7 @@ namespace ASA_Dino_Manager
                         papa = namM;
                         double HpM = ToDouble(rowM["HP"].ToString());
                         double StaminaM = ToDouble(rowM["Stamina"].ToString());
-                        double OxygenM = ToDouble(rowM["Oxygen"].ToString());
+                        double O2M = ToDouble(rowM["O2"].ToString());
                         double FoodM = ToDouble(rowM["Food"].ToString());
                         double WeightM = ToDouble(rowM["Weight"].ToString());
                         double DamageM = ToDouble(rowM["Damage"].ToString());
@@ -1811,7 +1772,7 @@ namespace ASA_Dino_Manager
                                 mama = namF;
                                 double HpF = ToDouble(rowF["HP"].ToString());
                                 double StaminaF = ToDouble(rowF["Stamina"].ToString());
-                                double OxygenF = ToDouble(rowF["Oxygen"].ToString());
+                                double O2F = ToDouble(rowF["O2"].ToString());
                                 double FoodF = ToDouble(rowF["Food"].ToString());
                                 double WeightF = ToDouble(rowF["Weight"].ToString());
                                 double DamageF = ToDouble(rowF["Damage"].ToString());
@@ -1830,7 +1791,7 @@ namespace ASA_Dino_Manager
 
                                 if (HpM > HpF) { Hp = HpM; } else { Hp = HpF; }
                                 if (StaminaM > StaminaF) { Stamina = StaminaM; } else { Stamina = StaminaF; }
-                                if (OxygenM > OxygenF) { Oxygen = OxygenM; } else { Oxygen = OxygenF; }
+                                if (O2M > O2F) { O2 = O2M; } else { O2 = O2F; }
                                 if (FoodM > FoodF) { Food = FoodM; } else { Food = FoodF; }
                                 if (WeightM > WeightF) { Weight = WeightM; } else { Weight = WeightF; }
                                 if (DamageM > DamageF) { Damage = DamageM; } else { Damage = DamageF; }
@@ -1852,7 +1813,7 @@ namespace ASA_Dino_Manager
                 dr["Level"] = LevelB;
                 dr["Hp"] = Hp;
                 dr["Stamina"] = Stamina;
-                dr["Oxygen"] = Oxygen;
+                dr["O2"] = O2;
                 dr["Food"] = Food;
                 dr["Weight"] = Weight;
                 dr["Damage"] = Damage;
