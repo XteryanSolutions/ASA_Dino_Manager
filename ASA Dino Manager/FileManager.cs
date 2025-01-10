@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using ASA_Dino_Manager.WinUI;
+using Microsoft.Win32;
 using System.Text;
 
 namespace ASA_Dino_Manager
@@ -16,7 +17,6 @@ namespace ASA_Dino_Manager
 
         private static string AppPath = "";
         private static string GamePath = "";
-        private static string appId = "2399830";
 
         // do we need to save files
         public static bool needSave = false;
@@ -51,19 +51,48 @@ namespace ASA_Dino_Manager
                 }
                 else
                 {
-                    string installPath = GetGameInstallPath(appId);
+                    string installPath = GetGameInstallPath("2399830"); // appID for Ascended
                     if (installPath != null)
                     {
                         FileManager.Log($"Game is installed at: {installPath}", 0);
-                        GamePath = installPath + @"\ShooterGame\Saved\DinoExports";
+                        GamePath = Path.Combine(installPath, @"ShooterGame\Saved\DinoExports");
                         SaveConfig();
                         Shared.ImportEnabled = true;
                         return true;
                     }
                     else
                     { 
-                        FileManager.Log("Game is not installed.", 1);
-                        return false;
+                        FileManager.Log("Ascended is not installed.", 1);
+                        string installPath2 = GetGameInstallPath("346110"); // appID for Evolved
+                        if (installPath != null)
+                        {
+                            FileManager.Log($"Game is installed at: {installPath2}", 0);
+                            string dinoExportsPath = Path.Combine(installPath2, @"ShooterGame\Saved\DinoExports");
+                            string[] subfolders = Directory.GetDirectories(GamePath);
+                            if (subfolders.Length > 0)
+                            {
+                                // Use the first subfolder found
+                                string userID = new DirectoryInfo(subfolders[0]).Name;
+                                string gamePath = Path.Combine(dinoExportsPath, userID);
+
+                                FileManager.Log($"Game path: {gamePath}", 0);
+
+                                SaveConfig();
+                                Shared.ImportEnabled = true;
+                                return true;
+                            }
+                            else
+                            {
+                                FileManager.Log("No subfolder in dino exports", 1);
+                                return false;
+                            }
+
+                        }
+                        else
+                        {
+                            FileManager.Log("Evolved is not installed.", 1);
+                            return false;
+                        }
                     }
                 }
             }
