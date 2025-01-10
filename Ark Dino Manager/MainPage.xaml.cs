@@ -48,7 +48,7 @@
             }
         }
 
-        private void DefaultView(string labelText, string imageSource = "dino400.png")
+        private void DefaultView(string labelText, string imageSource = "dino.png")
         {
             var mainLayout = new Grid
             {
@@ -65,7 +65,7 @@
                 Padding = 3
             };
 
-            var image1 = new Image { Source = imageSource, HeightRequest = 255, Aspect = Aspect.AspectFit, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start };
+            var image1 = new Image { Source = imageSource, HeightRequest = 400, Aspect = Aspect.AspectFit, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start };
 
             var label1 = new Label { Text = labelText, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start, FontAttributes = FontAttributes.Bold, TextColor = Shared.goodColor, FontSize = 22 };
 
@@ -89,10 +89,10 @@
             if (Shared.setPage != @"Looking_for_dinos")
             {
                 // https://www.dododex.com/
-                // https://github.com/XteryanSolutions/ASA_Dino_Manager/releases
+                // https://github.com/XteryanSolutions/Ark_Dino_Manager/releases
                 var loadedView = new WebView
                 {
-                    Source = "https://github.com/XteryanSolutions/ASA_Dino_Manager/releases", // Replace with your desired URL
+                    Source = "https://github.com/XteryanSolutions/Ark_Dino_Manager/releases",
                     HorizontalOptions = LayoutOptions.FillAndExpand,
                     VerticalOptions = LayoutOptions.FillAndExpand
                 };
