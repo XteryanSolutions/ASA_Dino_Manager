@@ -25,11 +25,6 @@ Ark Dino Manager is a tool designed to assist players in managing their dinos mo
 1. Install the latest `.msix` package to update the application.
 
 
-![image](https://github.com/user-attachments/assets/9d9ec711-19de-434f-bd5b-6b1a8535f9f5)
+![image](https://github.com/user-attachments/assets/78f735c2-1b4a-4d5e-9b5f-a5c9fbbb6227)
 
-![image](https://github.com/user-attachments/assets/e46193ab-75e0-420c-941f-683e009a82ea)
-
-![image](https://github.com/user-attachments/assets/e27c449b-f232-4ad9-bc71-d6177ff8bb43)
-
-![image](https://github.com/user-attachments/assets/f630fea8-20fe-4b1e-b7ee-1aeae7869dc5)
-
+![image](https://github.com/user-attachments/assets/46951965-f678-4a4e-8eba-21125bb31375)
