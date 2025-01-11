@@ -390,9 +390,16 @@ namespace Ark_Dino_Manager
                 var classSplit = longClass.Split(new[] { @"/" }, StringSplitOptions.RemoveEmptyEntries);
 
                 // <Class>  Game    PrimalEarth     Dinos   Stego   BionicStego_Character_BP.BionicStego_Character_BP_C<    Class>
-                if (classSplit.Length > 2)
+
+                // this grabs the next part after Dinos wich is most likely to be the class of the dino
+                bool takeNext = false;
+                foreach (string part in classSplit)
                 {
-                    dinoClass = $"TEK_{classSplit[3].Trim()}";
+                    if (takeNext) { dinoClass = $"TEK_{part.Trim()}"; break; }
+                    if (part.ToUpper().Contains("DINOS"))
+                    {
+                        takeNext = true;
+                    }
                 }
             }
             else if (longClass.ToUpper().Contains("ABERRANT"))
@@ -404,9 +411,15 @@ namespace Ark_Dino_Manager
 
                 // <Class>  Game    PrimalEarth     Dinos   Lystrosaurus    Lystro_Character_BP_Aberrant.Lystro_Character_BP_Aberrant_C<    Class>
 
-                if (classSplit.Length > 2)
+                // this grabs the next part after Dinos wich is most likely to be the class of the dino
+                bool takeNext = false;
+                foreach (string part in classSplit)
                 {
-                    dinoClass = $"Aberrant_{classSplit[3].Trim()}";
+                    if (takeNext) { dinoClass = $"Aberrant_{part.Trim()}"; break; }
+                    if (part.ToUpper().Contains("DINOS"))
+                    {
+                        takeNext = true;
+                    }
                 }
             }
             else
@@ -416,15 +429,25 @@ namespace Ark_Dino_Manager
                 // <Class>/Game/PrimalEarth/Dinos/Lystrosaurus/Lystro_Character_BP.Lystro_Character_BP_C</Class>
                 // <Class>/Game/PrimalEarth/Dinos/Ankylo/Ankylo_Character_BP.Ankylo_Character_BP_C</Class>
 
+                // DinoClass=/Game/Packs/Steampunk/Dinos/JumpingSpider/JumpingSpider_Character_BP.JumpingSpider_Character_BP_C
+
                 var classSplit = longClass.Split(new[] { @"/" }, StringSplitOptions.RemoveEmptyEntries);
 
-                // <Class>  Game    PrimalEarth     Dinos   Doedicurus      Doed_Character_BP.Doed_Character_BP_C<      Class>
-                // <Class>  Game    PrimalEarth     Dinos   Lystrosaurus    Lystro_Character_BP.Lystro_Character_BP_C<  Class>
-                // <Class>  Game    PrimalEarth     Dinos   Ankylo          Ankylo_Character_BP.Ankylo_Character_BP_C<  Class>
+                // <Class>  Game    Packs           Steampunk   Dinos           JumpingSpider                               JumpingSpider_Character_BP.JumpingSpider_Character_BP_C<    Class>
+                // <Class>  Game    PrimalEarth     Dinos       Doedicurus      Doed_Character_BP.Doed_Character_BP_C<      Class>
+                // <Class>  Game    PrimalEarth     Dinos       Lystrosaurus    Lystro_Character_BP.Lystro_Character_BP_C<  Class>
+                // <Class>  Game    PrimalEarth     Dinos       Ankylo          Ankylo_Character_BP.Ankylo_Character_BP_C<  Class>
 
-                if (classSplit.Length > 2)
+
+                // this grabs the next part after Dinos wich is most likely to be the class of the dino
+                bool takeNext = false;
+                foreach (string part in classSplit)
                 {
-                    dinoClass = classSplit[3].Trim();
+                    if (takeNext) { dinoClass = part.Trim(); break; }
+                    if (part.ToUpper().Contains("DINOS"))
+                    {
+                        takeNext = true;
+                    }
                 }
             }
             return dinoClass;
@@ -1119,7 +1142,7 @@ namespace Ark_Dino_Manager
             }
         }
 
-        private static void ProcessDinos(string[] dinos, List<string[]> FirstStats, List<string[]> LastStats, DataTable table, int toggle , bool baby = false)
+        private static void ProcessDinos(string[] dinos, List<string[]> FirstStats, List<string[]> LastStats, DataTable table, int toggle, bool baby = false)
         {
             int rowID = 0;
             foreach (var dino in dinos)
@@ -1227,7 +1250,7 @@ namespace Ark_Dino_Manager
                         string rate = DataManager.GetRate(shortClass);
                         double rateD = ToDouble(rate);
 
-                       
+
                         if (rateD > 0)
                         {
                             ageRate = rateD / 60;
@@ -1251,7 +1274,7 @@ namespace Ark_Dino_Manager
                         estTimeLeft = estAgeLeft / ageRate;
                         double LastTimeLeft = knownAgeLeft / ageRate; // time left at last data
 
-                        
+
                         if (ageRate > 0)
                         {
                             if (!double.IsNaN(LastTimeLeft))
@@ -1263,7 +1286,7 @@ namespace Ark_Dino_Manager
 
                         age = estimatedAge;
                     }
-                    
+
                     if (imprinter != "") // we haz imprinter = baby dino
                     {
                         if (lastAge < 100)
@@ -1333,7 +1356,7 @@ namespace Ark_Dino_Manager
                     dr["Papa"] = papaName;
                     dr["MamaMute"] = mamaMute;
                     dr["PapaMute"] = papaMute;
-                    
+
                     dr["Age"] = age;
 
                     dr["Imprint"] = imprint;
