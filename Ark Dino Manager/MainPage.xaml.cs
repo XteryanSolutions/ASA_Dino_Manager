@@ -104,7 +104,7 @@
 
         private async Task LoadWebView(WebView loadedView)
         {
-            await Task.Delay(5000);
+            await Task.Delay(10000);
             this.Content = loadedView;
         }
 

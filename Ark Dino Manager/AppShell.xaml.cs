@@ -49,6 +49,7 @@
             {
                // DataManager.CleanDataBaseByID();
                 DataManager.DeepCleanDatabase();
+                Shared.setPage = "ASA";
                 CreateMenuContents();
             }
             else

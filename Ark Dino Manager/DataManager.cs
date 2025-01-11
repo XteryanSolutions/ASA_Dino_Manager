@@ -47,6 +47,8 @@ namespace Ark_Dino_Manager
         public static double DamageMax = 0;
         public static double SpeedMax = 0;
         public static double CraftMax = 0;
+        public static double RegenMax = 0;
+        public static double CapacityMax = 0;
 
 
 
@@ -136,6 +138,9 @@ namespace Ark_Dino_Manager
                 FemaleTable.Columns.Add("Time", typeof(double));
                 FemaleTable.Columns.Add("Rate", typeof(double));
 
+                FemaleTable.Columns.Add("Regen", typeof(double));
+                FemaleTable.Columns.Add("Capacity", typeof(double));
+
 
 
                 MaleTable.Clear();
@@ -170,6 +175,11 @@ namespace Ark_Dino_Manager
                 MaleTable.Columns.Add("Time", typeof(double));
                 MaleTable.Columns.Add("Rate", typeof(double));
 
+                MaleTable.Columns.Add("Regen", typeof(double));
+                MaleTable.Columns.Add("Capacity", typeof(double));
+
+
+
 
                 BottomTable.Clear();
                 BottomTable.Columns.Add("Status", typeof(string));
@@ -197,6 +207,11 @@ namespace Ark_Dino_Manager
                 BottomTable.Columns.Add("Mutes", typeof(string));
                 BottomTable.Columns.Add("Group", typeof(string));
                 BottomTable.Columns.Add("Res", typeof(string));
+
+                BottomTable.Columns.Add("Regen", typeof(double));
+                BottomTable.Columns.Add("Capacity", typeof(double));
+
+
 
 
                 StatTable.Clear();
@@ -716,7 +731,7 @@ namespace Ark_Dino_Manager
                 string[] columns = {
                     "Name", "Level", "HP", "Stamina", "Oxygen", "Food", "Weight", "Damage", "Speed"
                     , "Mama", "Papa", "MamaMute", "PapaMute", "Gen", "GenM", "BabyAge", "Neutered", "Imprint"
-                    , "Imprinter", "Tribe", "CraftSkill"
+                    , "Imprinter", "Tribe", "CraftSkill", "ChargeRegen" , "ChargeCapacity"
                 };
                 string[] stats = new string[columns.Count()];
                 int i = 0;
@@ -738,7 +753,7 @@ namespace Ark_Dino_Manager
                 string[] columns = {
                     "Name", "Level", "HP", "Stamina", "Oxygen", "Food", "Weight", "Damage", "Speed"
                     , "Mama", "Papa", "MamaMute", "PapaMute", "Gen", "GenM", "BabyAge", "Neutered", "Imprint"
-                    , "Imprinter", "Tribe", "CraftSkill"
+                    , "Imprinter", "Tribe", "CraftSkill", "ChargeRegen" , "ChargeCapacity"
                 };
                 string[] stats = new string[columns.Count()];
                 int i = 0;
@@ -1206,6 +1221,11 @@ namespace Ark_Dino_Manager
                     double DamageM = Math.Round((ToDouble(FirstStats[rowID][7].ToString()) + 1) * 100, 1);
                     double CraftM = Math.Round((ToDouble(FirstStats[rowID][20].ToString()) + 1) * 100, 1);
 
+                    double RegM = Math.Round(ToDouble(FirstStats[rowID][21].ToString()), 1);
+                    double CapM = Math.Round(ToDouble(FirstStats[rowID][22].ToString()), 1);
+
+
+
                     double SpeedM = Math.Round((ToDouble(FirstStats[rowID][8].ToString()) + 1) * 100);
                     string status = "";
                     double gen = ToDouble(FirstStats[rowID][13].ToString());
@@ -1343,6 +1363,11 @@ namespace Ark_Dino_Manager
                     if (SpeedM >= SpeedMax) { SpeedMax = SpeedM; }
                     if (CraftM >= CraftMax) { CraftMax = CraftM; }
 
+                    if (RegM >= RegenMax) { RegenMax = RegM; }
+                    if (CapM >= CapacityMax) { CapacityMax = CapM; }
+
+
+
                     // Fill the DataRow
                     DataRow dr = table.NewRow();
                     dr["ID"] = dino;
@@ -1357,6 +1382,10 @@ namespace Ark_Dino_Manager
                     dr["Damage"] = DamageM;
                     dr["Crafting"] = CraftM;
                     //---------------------------
+                    dr["Regen"] = RegM;
+                    dr["Capacity"] = CapM;
+
+
                     dr["Speed"] = SpeedM;
                     dr["Gen"] = gen;
                     dr["Mama"] = mamaName;
@@ -1422,7 +1451,7 @@ namespace Ark_Dino_Manager
 
             LevelMax = 0; HpMax = 0; StaminaMax = 0; O2Max = 0;
             FoodMax = 0; WeightMax = 0; DamageMax = 0; SpeedMax = 0;
-            CraftMax = 0;
+            CraftMax = 0; RegenMax = 0; CapacityMax = 0;
 
             if (CurrentStats)
             {
@@ -1538,9 +1567,12 @@ namespace Ark_Dino_Manager
 
         public static void EvaluateDinos()
         {
-            bool hasO2 = true; bool hasCraft = true;
-            if (O2Max == 150) { hasO2 = false; }
-            if (CraftMax == 100) { hasCraft = false; }
+            bool hasCharge = true;
+            bool hasO2 = true; bool hasCraft = true; bool hasStamina = true;
+            if (StaminaMax == 0) { hasStamina = false; }
+            if (O2Max == 150 || O2Max == 0) { hasO2 = false; }
+            if (CraftMax == 100 || CraftMax == 0) { hasCraft = false; }
+            if (RegenMax == 0) { hasCharge = false; }
 
             int rowIDC = 0; // Male dinos
             foreach (DataRow rowC in MaleTable.Rows)
@@ -1550,8 +1582,8 @@ namespace Ark_Dino_Manager
 
                 string aC = "0"; string bC = "0"; string cC = "0";
                 string dC = "0"; string eC = "0"; string fC = "0";
-                string gC = "0";
-                string binaryC = "0000000";
+                string gC = "0"; string hC = "0"; string iC = "0";
+                string binaryC = "000000000";
 
                 double HpC = ToDouble(rowC["HP"].ToString());
                 double StaminaC = ToDouble(rowC["Stamina"].ToString());
@@ -1560,16 +1592,22 @@ namespace Ark_Dino_Manager
                 double WeightC = ToDouble(rowC["Weight"].ToString());
                 double DamageC = ToDouble(rowC["Damage"].ToString());
                 double CraftC = ToDouble(rowC["Crafting"].ToString());
+                double RegenC = ToDouble(rowC["Regen"].ToString());
+                double CapacityC = ToDouble(rowC["Capacity"].ToString());
+
 
                 if (HpC + Shared.statOffset >= HpMax) { aC = "1"; }
-                if (StaminaC + Shared.statOffset >= StaminaMax) { bC = "1"; }
+                if (StaminaC + Shared.statOffset >= StaminaMax && hasStamina) { bC = "1"; }
                 if (O2C + Shared.statOffset >= O2Max && hasO2) { cC = "1"; }
                 if (FoodC + Shared.statOffset >= FoodMax) { dC = "1"; }
                 if (WeightC + Shared.statOffset >= WeightMax) { eC = "1"; }
                 if (DamageC + Shared.statOffset >= DamageMax) { fC = "1"; }
                 if (CraftC + Shared.statOffset >= CraftMax && hasCraft) { gC = "1"; }
+                if (RegenC + Shared.statOffset >= RegenMax && hasCharge) { hC = "1"; }
+                if (CapacityC + Shared.statOffset >= CapacityMax && hasCharge) { iC = "1"; }
 
-                binaryC = aC + bC + cC + dC + eC + fC + gC;
+
+                binaryC = aC + bC + cC + dC + eC + fC + gC + hC + iC;
 
                 string outStatus = "";
 
@@ -1586,7 +1624,7 @@ namespace Ark_Dino_Manager
                             string withStatus = rowW["Status"].ToString();
                             string aW = "0"; string bW = "0"; string cW = "0";
                             string dW = "0"; string eW = "0"; string fW = "0";
-                            string gW = "0";
+                            string gW = "0"; string hW = "0"; string iW = "0";
 
                             double HpW = ToDouble(rowW["HP"].ToString());
                             double StaminaW = ToDouble(rowW["Stamina"].ToString());
@@ -1595,21 +1633,27 @@ namespace Ark_Dino_Manager
                             double WeightW = ToDouble(rowW["Weight"].ToString());
                             double DamageW = ToDouble(rowW["Damage"].ToString());
                             double CraftW = ToDouble(rowW["Crafting"].ToString());
+                            double RegenW = ToDouble(rowW["Regen"].ToString());
+                            double CapacityW = ToDouble(rowW["Capacity"].ToString());
+
 
                             if (HpW + Shared.statOffset >= DataManager.HpMax) { aW = "1"; }
-                            if (StaminaW + Shared.statOffset >= DataManager.StaminaMax) { bW = "1"; }
+                            if (StaminaW + Shared.statOffset >= DataManager.StaminaMax && hasStamina) { bW = "1"; }
                             if (O2W + Shared.statOffset >= DataManager.O2Max && hasO2) { cW = "1"; }
                             if (FoodW + Shared.statOffset >= DataManager.FoodMax) { dW = "1"; }
                             if (WeightW + Shared.statOffset >= DataManager.WeightMax) { eW = "1"; }
                             if (DamageW + Shared.statOffset >= DataManager.DamageMax) { fW = "1"; }
                             if (CraftW + Shared.statOffset >= DataManager.CraftMax && hasCraft) { gW = "1"; }
+                            if (RegenW + Shared.statOffset >= DataManager.RegenMax && hasCharge) { hW = "1"; }
+                            if (CapacityW + Shared.statOffset >= DataManager.CapacityMax && hasCharge) { iW = "1"; }
 
-                            string binaryW = aW + bW + cW + dW + eW + fW + gW;
+
+                            string binaryW = aW + bW + cW + dW + eW + fW + gW +hW + iW;
 
                             // now that we have both binary strings compare them to figure out if the compare is superceeded or not
                             string aA = "0"; string bA = "0"; string cA = "0";
                             string dA = "0"; string eA = "0"; string fA = "0";
-                            string gA = "0";
+                            string gA = "0"; string hA = "0"; string iA = "0";
 
                             // add up the binary shiz with magical ways known only to the gods of blubs
                             if (aC == "0" && aW == "0") { aA = "0"; } else if (aC == "0" && aW == "1") { aA = "1"; } else if (aC == "1" && aW == "0") { aA = "2"; } else if (aC == "1" && aW == "1") { aA = "3"; }
@@ -1619,8 +1663,11 @@ namespace Ark_Dino_Manager
                             if (eC == "0" && eW == "0") { eA = "0"; } else if (eC == "0" && eW == "1") { eA = "1"; } else if (eC == "1" && eW == "0") { eA = "2"; } else if (eC == "1" && eW == "1") { eA = "3"; }
                             if (fC == "0" && fW == "0") { fA = "0"; } else if (fC == "0" && fW == "1") { fA = "1"; } else if (fC == "1" && fW == "0") { fA = "2"; } else if (fC == "1" && fW == "1") { fA = "3"; }
                             if (gC == "0" && gW == "0") { gA = "0"; } else if (gC == "0" && gW == "1") { gA = "1"; } else if (gC == "1" && gW == "0") { gA = "2"; } else if (gC == "1" && gW == "1") { gA = "3"; }
+                            if (hC == "0" && hW == "0") { hA = "0"; } else if (hC == "0" && hW == "1") { hA = "1"; } else if (hC == "1" && hW == "0") { hA = "2"; } else if (hC == "1" && hW == "1") { hA = "3"; }
+                            if (iC == "0" && iW == "0") { iA = "0"; } else if (iC == "0" && iW == "1") { iA = "1"; } else if (iC == "1" && iW == "0") { iA = "2"; } else if (iC == "1" && iW == "1") { iA = "3"; }
 
-                            string binaryA = aA + bA + cA + dA + eA + fA + gA;
+
+                            string binaryA = aA + bA + cA + dA + eA + fA + gA + hA + iA;
 
                             if (binaryC == binaryW && !withStatus.Contains("<") && !withStatus.Contains("#"))
                             {
@@ -1657,8 +1704,8 @@ namespace Ark_Dino_Manager
 
                 string aC = "0"; string bC = "0"; string cC = "0";
                 string dC = "0"; string eC = "0"; string fC = "0";
-                string gC = "0";
-                string binaryC = "0000000";
+                string gC = "0"; string hC = "0"; string iC = "0";
+                string binaryC = "000000000";
 
                 double HpC = ToDouble(rowC["HP"].ToString());
                 double StaminaC = ToDouble(rowC["Stamina"].ToString());
@@ -1667,17 +1714,22 @@ namespace Ark_Dino_Manager
                 double WeightC = ToDouble(rowC["Weight"].ToString());
                 double DamageC = ToDouble(rowC["Damage"].ToString());
                 double CraftC = ToDouble(rowC["Crafting"].ToString());
+                double RegenC = ToDouble(rowC["Regen"].ToString());
+                double CapacityC = ToDouble(rowC["Capacity"].ToString());
+
+
 
                 if (HpC + Shared.statOffset >= HpMax) { aC = "1"; }
-                if (StaminaC + Shared.statOffset >= StaminaMax) { bC = "1"; }
+                if (StaminaC + Shared.statOffset >= StaminaMax && hasStamina) { bC = "1"; }
                 if (O2C + Shared.statOffset >= O2Max && hasO2) { cC = "1"; }
                 if (FoodC + Shared.statOffset >= FoodMax) { dC = "1"; }
                 if (WeightC + Shared.statOffset >= WeightMax) { eC = "1"; }
                 if (DamageC + Shared.statOffset >= DamageMax) { fC = "1"; }
                 if (CraftC + Shared.statOffset >= CraftMax && hasCraft) { gC = "1"; }
+                if (RegenC + Shared.statOffset >= RegenMax && hasCharge) { hC = "1"; }
+                if (CapacityC + Shared.statOffset >= CapacityMax && hasCharge) { iC = "1"; }
 
-                binaryC = aC + bC + cC + dC + eC + fC + gC;
-
+                binaryC = aC + bC + cC + dC + eC + fC + gC + hC + iC;
 
                 // edit the row we show
                 if (!binaryC.Contains("1")) { compareStatus = $"{compareStatus}{Shared.Smap["Garbage"]}"; }
@@ -1689,9 +1741,20 @@ namespace Ark_Dino_Manager
 
         public static void GetBestPartner()
         {
-            int check = 7; int maxGP = 5; // max stat points we can have = hp,st,o2,fo,we,da,cr
-            if (DataManager.O2Max != 150) { maxGP++; } // have o2
-            if (DataManager.CraftMax != 100) { maxGP++; } // have craft
+            int check = 9; int maxGP = 4; // max stat points we can have = hp,st,o2,fo,we,da,cr
+
+            bool hasCharge = true;
+            bool hasO2 = true; bool hasCraft = true; bool hasStamina = true;
+            if (StaminaMax == 0) { hasStamina = false; }
+            if (O2Max == 150 || O2Max == 0) { hasO2 = false; }
+            if (CraftMax == 100 || CraftMax == 0) { hasCraft = false; }
+            if (RegenMax == 0) { hasCharge = false; }
+
+            if (hasStamina) { maxGP++; }
+            if (hasO2) { maxGP++; }
+            if (hasCraft) { maxGP++; }
+            if (hasCharge) { maxGP++; maxGP++; }
+
 
             BottomTable.Clear();
             // ==================================================================================================
@@ -1721,7 +1784,7 @@ namespace Ark_Dino_Manager
                                 {
                                     string aB = "0"; string bB = "0"; string cB = "0";
                                     string dB = "0"; string eB = "0"; string fB = "0";
-                                    string gB = "0";
+                                    string gB = "0"; string hB = "0"; string iB = "0";
 
                                     string IDF1 = rowF["Res"].ToString();
                                     string mamaID = rowF["ID"].ToString();
@@ -1730,17 +1793,17 @@ namespace Ark_Dino_Manager
 
                                     string aM = IDM1.Substring(0, 1); string bM = IDM1.Substring(1, 1); string cM = IDM1.Substring(2, 1);
                                     string dM = IDM1.Substring(3, 1); string eM = IDM1.Substring(4, 1); string fM = IDM1.Substring(5, 1);
-                                    string gM = IDM1.Substring(6, 1);
+                                    string gM = IDM1.Substring(6, 1); string hM = IDM1.Substring(7, 1); string iM = IDM1.Substring(8, 1);
 
                                     string aF = IDF1.Substring(0, 1); string bF = IDF1.Substring(1, 1); string cF = IDF1.Substring(2, 1);
                                     string dF = IDF1.Substring(3, 1); string eF = IDF1.Substring(4, 1); string fF = IDF1.Substring(5, 1);
-                                    string gF = IDF1.Substring(6, 1);
+                                    string gF = IDF1.Substring(6, 1); string hF = IDF1.Substring(7, 1); string iF = IDF1.Substring(8, 1);
 
                                     int gPoints = 0;
                                     int aPoints = 0;
                                     int nPoints = 0;
 
-                                    string binC = "0000000";
+                                    string binC = "000000000";
                                     if (aM == "1" && aF == "1") { gPoints++; aB = "2"; } else if (aM == "1" || aF == "1") { aPoints++; aB = "1"; } else { aB = "0"; nPoints++; }
                                     if (bM == "1" && bF == "1") { gPoints++; bB = "2"; } else if (bM == "1" || bF == "1") { aPoints++; bB = "1"; } else { bB = "0"; nPoints++; }
                                     if (cM == "1" && cF == "1") { gPoints++; cB = "2"; } else if (cM == "1" || cF == "1") { aPoints++; cB = "1"; } else { cB = "0"; nPoints++; }
@@ -1748,8 +1811,11 @@ namespace Ark_Dino_Manager
                                     if (eM == "1" && eF == "1") { gPoints++; eB = "2"; } else if (eM == "1" || eF == "1") { aPoints++; eB = "1"; } else { eB = "0"; nPoints++; }
                                     if (fM == "1" && fF == "1") { gPoints++; fB = "2"; } else if (fM == "1" || fF == "1") { aPoints++; fB = "1"; } else { fB = "0"; nPoints++; }
                                     if (gM == "1" && gF == "1") { gPoints++; gB = "2"; } else if (gM == "1" || gF == "1") { aPoints++; gB = "1"; } else { gB = "0"; nPoints++; }
+                                    if (hM == "1" && hF == "1") { gPoints++; hB = "2"; } else if (hM == "1" || hF == "1") { aPoints++; hB = "1"; } else { hB = "0"; nPoints++; }
+                                    if (iM == "1" && iF == "1") { gPoints++; iB = "2"; } else if (iM == "1" || iF == "1") { aPoints++; iB = "1"; } else { iB = "0"; nPoints++; }
 
-                                    binC = aB + bB + cB + dB + eB + fB + gB;
+
+                                    binC = aB + bB + cB + dB + eB + fB + gB + hB + iB;
                                     int agPoints = gPoints + aPoints;
 
                                     if (p0 == agPoints)
@@ -1787,7 +1853,7 @@ namespace Ark_Dino_Manager
             {
                 double Hp = 0; double Stamina = 0; double O2 = 0;
                 double Food = 0; double Weight = 0; double Damage = 0;
-                double Craft = 0;
+                double Craft = 0; double Regen = 0; double Capacity = 0;
                 double Gen = 0; double LevelB = 0;
                 string mama = ""; string papa = "";
                 int MrowID = 0;
@@ -1806,6 +1872,10 @@ namespace Ark_Dino_Manager
                         double WeightM = ToDouble(rowM["Weight"].ToString());
                         double DamageM = ToDouble(rowM["Damage"].ToString());
                         double CraftM = ToDouble(rowM["Crafting"].ToString());
+                        double RegenM = ToDouble(rowM["Regen"].ToString());
+                        double CapacityM = ToDouble(rowM["Capacity"].ToString());
+
+
                         double GenM = ToDouble(rowM["Gen"].ToString());
                         double levelM = ToDouble(rowM["Level"].ToString());
                         int FrowID = 0;
@@ -1825,6 +1895,9 @@ namespace Ark_Dino_Manager
                                 double CraftF = ToDouble(rowF["Crafting"].ToString());
                                 double GenF = ToDouble(rowF["Gen"].ToString());
                                 double levelF = ToDouble(rowF["Level"].ToString());
+                                double RegenF = ToDouble(rowF["Regen"].ToString());
+                                double CapacityF = ToDouble(rowF["Capacity"].ToString());
+
 
                                 if (GenM >= GenF)
                                 {
@@ -1842,6 +1915,8 @@ namespace Ark_Dino_Manager
                                 if (WeightM > WeightF) { Weight = WeightM; } else { Weight = WeightF; }
                                 if (DamageM > DamageF) { Damage = DamageM; } else { Damage = DamageF; }
                                 if (CraftM > CraftF) { Craft = CraftM; } else { Craft = CraftF; }
+                                if (RegenM > RegenF) { Regen = RegenM; } else { Regen = RegenF; }
+                                if (CapacityM > CapacityF) { Capacity = CapacityM; } else { Capacity = CapacityF; }
 
                                 // average out the level for now
                                 if ((levelM + levelF) > 0) { LevelB = Math.Round((levelM + levelF) / 2); }
@@ -1864,6 +1939,8 @@ namespace Ark_Dino_Manager
                 dr["Weight"] = Weight;
                 dr["Damage"] = Damage;
                 dr["Crafting"] = Craft;
+                dr["Regen"] = Regen;
+                dr["Capacity"] = Capacity;
                 dr["Gen"] = Gen;
                 dr["Mama"] = mama;
                 dr["Papa"] = papa;
@@ -1941,7 +2018,7 @@ namespace Ark_Dino_Manager
         {
             string a = "0"; string b = "0"; string c = "0";
             string d = "0"; string e = "0"; string f = "0";
-            string g = "0";
+            string g = "0"; string h = "0"; string i = "0";
 
             // better than mutation detection is detecting incorrect stats
             // wich its doing without checking for mutation increase
@@ -2055,9 +2132,39 @@ namespace Ark_Dino_Manager
                         }
                     }
                 }
+
+                double dinoRegen = Math.Round(ToDouble(GetFirstColumnData("ID", id, "ChargeRegen")), 2);
+                double mamaRegen = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "ChargeRegen")), 2);
+                double papaRegen = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "ChargeRegen")), 2);
+
+                if ((mamaRegen != 0 && papaRegen != 0) && (dinoRegen != papaRegen && dinoRegen != mamaRegen))
+                {
+                    if (dinoRegen > (papaRegen + Shared.muteOffset) || dinoRegen < (papaRegen - Shared.muteOffset))
+                    {
+                        if (dinoRegen > (mamaRegen + Shared.muteOffset) || dinoRegen < (mamaRegen - Shared.muteOffset))
+                        {
+                            h = "1";
+                        }
+                    }
+                }
+
+                double dinoCapacity = Math.Round(ToDouble(GetFirstColumnData("ID", id, "ChargeCapacity")), 2);
+                double mamaCapacity = Math.Round(ToDouble(GetFirstColumnData("ID", mamaID, "ChargeCapacity")), 2);
+                double papaCapacity = Math.Round(ToDouble(GetFirstColumnData("ID", papaID, "ChargeCapacity")), 2);
+
+                if ((mamaCapacity != 0 && papaCapacity != 0) && (dinoCapacity != papaCapacity && dinoCapacity != mamaCapacity))
+                {
+                    if (dinoCapacity > (papaCapacity + Shared.muteOffset) || dinoCapacity < (papaCapacity - Shared.muteOffset))
+                    {
+                        if (dinoCapacity > (mamaCapacity + Shared.muteOffset) || dinoCapacity < (mamaCapacity - Shared.muteOffset))
+                        {
+                            i = "1";
+                        }
+                    }
+                }
             }
 
-            string mutes = a + b + c + d + e + f + g;
+            string mutes = a + b + c + d + e + f + g + h + i;
             SetMutes(id, mutes);
         }
 
