@@ -1006,7 +1006,7 @@ public partial class DinoPage : ContentPage
             var image = new Image
             {
                 Source = "dino.png",
-                HeightRequest = 400,
+                HeightRequest = 200,
                 Aspect = Aspect.AspectFit
             };
 
