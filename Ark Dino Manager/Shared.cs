@@ -4,7 +4,7 @@
     internal class Shared
     {
         ////////////////////    Title version   ////////////////////
-        public static string version = "Ark Dino Manager 0.04.62";
+        public static string version = "Ark Dino Manager 0.04.63";
 
 
         ////////////////////////////////////////////////////////////
@@ -26,7 +26,7 @@
         // symbols
         public static readonly Dictionary<string, string> Smap = new Dictionary<string, string>
     {
-        { "Unknown", "🦗" },
+        { "Unknown", "👽" },
         { "Warning", "❗" },
         { "Missing", "❓" },
         { "Garbage", "💩" },
@@ -49,7 +49,7 @@
         { "Damage", "💪" },
         { "Crafting", "🔨" },
         { "Speed", "🐌" },
-        { "Gen", "🧬" },
+        { "Gen", "👪" },
         { "Papa", "👨" },
         { "Mama", "👩" },
         { "Mutation", "🧪" },
@@ -61,7 +61,7 @@
         { "SortDown", "▼" },
         { "Save", "💾" },
         { "ID", "💳" },
-        { "Tag", "📌" },
+        { "Tag", "🔖" },
         { "Regen", "⚡" },
         { "Capacity", "🔋" },
     };
