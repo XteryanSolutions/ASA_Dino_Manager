@@ -94,6 +94,13 @@ namespace Ark_Dino_Manager
                 ImportsTable.Columns.Add("Time", typeof(string));
                 ImportsTable.Columns.Add("Colors", typeof(string));
                 ImportsTable.Columns.Add("CraftSkill", typeof(string));
+                // new data to track
+                ImportsTable.Columns.Add("ChargeRegen", typeof(string));
+                ImportsTable.Columns.Add("ChargeCapacity", typeof(string));
+                ImportsTable.Columns.Add("Temperature", typeof(string));
+                ImportsTable.Columns.Add("Torpidity", typeof(string));
+                ImportsTable.Columns.Add("Fortitude", typeof(string));
+                ImportsTable.Columns.Add("Water", typeof(string));
 
 
 
@@ -2111,6 +2118,14 @@ namespace Ark_Dino_Manager
                     dr["Colors"] = importedNew[23];
                     dr["CraftSkill"] = importedNew[24];
 
+                    dr["ChargeRegen"] = importedNew[25];
+                    dr["ChargeCapacity"] = importedNew[26];
+                    dr["Temperature"] = importedNew[27];
+                    dr["Torpidity"] = importedNew[28];
+                    dr["Fortitude"] = importedNew[29];
+                    dr["Water"] = importedNew[30];
+
+
                     if (!found)
                     {
                         // add it to mutation list
@@ -2174,7 +2189,7 @@ namespace Ark_Dino_Manager
 
         private static string[] FilterDinoStats(string filename, string emptyString = "N/A")
         {
-            string[] resultSet = Enumerable.Repeat(emptyString, 25).ToArray();
+            string[] resultSet = Enumerable.Repeat(emptyString, 31).ToArray();
 
             try
             {
@@ -2356,6 +2371,30 @@ namespace Ark_Dino_Manager
                             else if (key.Key.ToUpper() == "CRAFTING SKILL")
                             {
                                 resultSet[24] = key.Value;
+                            }
+                            else if (key.Key.ToUpper() == "CHARGE REGEN")
+                            {
+                                resultSet[25] = key.Value;
+                            }
+                            else if (key.Key.ToUpper() == "CHARGE CAPACITY")
+                            {
+                                resultSet[26] = key.Value;
+                            }
+                            else if (key.Key.ToUpper() == "TEMPERATURE")
+                            {
+                                resultSet[27] = key.Value;
+                            }
+                            else if (key.Key.ToUpper() == "TORPIDITY")
+                            {
+                                resultSet[28] = key.Value;
+                            }
+                            else if (key.Key.ToUpper() == "FORTITUDE")
+                            {
+                                resultSet[29] = key.Value;
+                            }
+                            else if (key.Key.ToUpper() == "WATER")
+                            {
+                                resultSet[30] = key.Value;
                             }
                         }
 
