@@ -233,11 +233,10 @@ public partial class DinoPage : ContentPage
                 ? evenRowColor // Even rows
                 : oddRowColor; // Odd rows
 
-
             // Override if row is selected
             if (selected) { rowColor = Shared.SelectedColor; }
 
-            // Override if in dino extended view or empty row
+            // Override if in dino extended view
             if (isDoubl) { rowColor = Shared.MainPanelColor; }
 
             // Add a background color to the row
@@ -1413,14 +1412,21 @@ public partial class DinoPage : ContentPage
                 }
 
                 boxRowID++;
+
                 // add empty row between tables
                 var emptyH = new Label { Text = "" };
                 AddToGrid(grid, emptyH, rowIndex, startID, "Empty");
                 rowIndex++; boxRowID++;
+
+
+                // add empty row between tables
+                var emptyH2 = new Label { Text = "" };
+                AddToGrid(grid, emptyH2, rowIndex, startID, "Empty");
+                rowIndex++; boxRowID++;
             }
 
             // add one xtra id for female header row
-            rowIndex++; boxRowID++; 
+            rowIndex++; boxRowID++;
             title = "Female";
             if (title == "Female" && DataManager.FemaleTable.Rows.Count > 0)
             {
@@ -2028,52 +2034,42 @@ public partial class DinoPage : ContentPage
 
     private void DefaultRowColors()
     {
-        if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
-        {
-            try
-            {
-                if (boxViews.Count > 0)
-                {
-                    int rowsM = DataManager.MaleTable.Rows.Count;
-                    int rowsT = boxViews.Count;
-                    int z = 0;
 
-                    for (int i = 0; i < rowsT; i++) // color all male rows
-                    {
-                        // start coloring the rows with Solid color
-                        if (i <= rowsM)
-                        {
-                            boxViews[i].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
-                        }
-                        else if (i == rowsM + 1 && rowsM > 0)
-                        {
-                            boxViews[i].Color = MainPanelColor;
-                        }
-                        else if (rowsM > 0)
-                        {
-                            // use z instead of i to reset odd & even at new table
-                            boxViews[i].Color = z % 2 == 0 ? MainPanelColor : OddMPanelColor;
-                            z++;
-                        }
-                        else
-                        {
-                            // use z instead of i to reset odd & even at new table
-                            boxViews[i].Color = z % 2 == 0 ? OddMPanelColor : MainPanelColor;
-                            z++;
-                        }
-                    }
-                }
-            }
-            catch { }
-            finally
-            {
-                Monitor.Exit(Shared._dbLock);
-            }
-        }
-        else
+        try
         {
-            FileManager.Log("Recoloring failure", 1);
+            if (boxViews.Count > 0)
+            {
+                int rowsM = DataManager.MaleTable.Rows.Count;
+                int rowsF = DataManager.FemaleTable.Rows.Count;
+                int rowsT = boxViews.Count;
+
+                int i = 0; int z = 0;
+
+                while (i <= rowsT)
+                {
+
+                    if (i <= rowsM && rowsM > 0)
+                    {
+                        boxViews[i].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
+                    }
+                    else if (i <= (rowsM + 2) && rowsM > 0)
+                    {
+                        boxViews[i].Color = MainPanelColor;
+                    }
+                    else
+                    {
+                        boxViews[i].Color = z % 2 == 0 ? MainPanelColor : OddMPanelColor;
+                        z++;
+                    }
+
+
+                    i++;
+                }
+
+            }
         }
+        catch { }
+
     }
 
     private void ButtonGroup()
