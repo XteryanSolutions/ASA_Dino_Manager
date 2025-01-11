@@ -1058,6 +1058,8 @@ public partial class DinoPage : ContentPage
         string tableSort = "";
         if (title == "Male") { tableSort = sortM; headerColor = Shared.maleHeaderColor; }
         else if (title == "Female") { tableSort = sortF; headerColor = Shared.femaleHeaderColor; }
+        else if (title == "Bottom") { headerColor = Shared.bottomHeaderColor; }
+
 
         if (tableSort.Contains("ASC")) { sortString = tableSort.Substring(0, tableSort.Length - 4); }
         if (tableSort.Contains("DESC")) { sortString = tableSort.Substring(0, tableSort.Length - 5); }
