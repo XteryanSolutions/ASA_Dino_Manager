@@ -35,7 +35,6 @@ public partial class DinoPage : ContentPage
     public static string sortM = Shared.DefaultSortM;
     public static string sortF = Shared.DefaultSortF;
 
-
     private string levelText = "";
     private string hpText = "";
     private string staminaText = "";
@@ -46,11 +45,19 @@ public partial class DinoPage : ContentPage
     private string notesText = "";
     private string speedText = "";
     private string craftText = "";
+    private string regenText = "";
+    private string capacityText = "";
 
     ////////////////////    Data   ////////////////////
     private bool editStats = false;
     private bool dataValid = false;
     private int dinoCount = 0;
+
+    private bool hasO2 = true;
+    private bool hasSpeed = false;
+    private bool hasCraft = true;
+    private bool hasCharge = false;
+    private bool hasStamina = true;
 
     private Stopwatch timer1 = Stopwatch.StartNew();
 
@@ -96,6 +103,12 @@ public partial class DinoPage : ContentPage
                         FileManager.Log("Loading All Data", 0);
                         // sort data based on column clicked
                         DataManager.GetDinoData(Shared.selectedClass, sortM, sortF, ToggleExcluded, CurrentStats);
+
+                        // check for sats we dont need
+                        if (DataManager.StaminaMax == 0) { hasStamina = false; } else { hasStamina = true; }
+                        if (DataManager.O2Max == 150 || DataManager.O2Max == 0) { hasO2 = false; } else { hasO2 = true; }
+                        if (DataManager.CraftMax == 100 || DataManager.CraftMax == 0) { hasCraft = false; } else { hasCraft = true; }
+                        if (DataManager.RegenMax == 0) { hasCharge = false; } else { hasCharge = true; }
 
                         // load this data only when showing all and included
                         if (ToggleExcluded == 0 || ToggleExcluded == 1 || ToggleExcluded == 2)
@@ -1184,72 +1197,59 @@ public partial class DinoPage : ContentPage
         var grid = new Grid { RowSpacing = 0, ColumnSpacing = 20, Padding = 3 };
 
         // Define columns
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 0
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 1
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 2
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 3
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 4
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 5
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 6
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 7
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 8
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 9
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 10
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 11
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 12
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 13
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 14
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 15
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 0  Name
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 1  Level
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 2  Hp
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 3  Stamina / Regen
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 4  O2 / Capacity
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 5  Food
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 6  Damage
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 7  Craft
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 8  Status
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 9  Gen
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 10 Papa
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 11 Mama
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 12 pM
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 13 mM
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 14 Imprint
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 15 Imprinter
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 16
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 17
 
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 18
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 17
 
-
-        // check for sats we dont need
-        bool hasO2 = true; bool hasSpeed = false; bool hasCraft = true; bool hasCharge = false; bool hasStamina = true;
-        if (DataManager.StaminaMax == 0) { hasStamina = false; }
-        if (DataManager.O2Max == 150 || DataManager.O2Max == 0) { hasO2 = false; }
-        if (DataManager.CraftMax == 100 || DataManager.CraftMax == 0) { hasCraft = false; }
-        if (DataManager.RegenMax > 0) { hasCharge = true; }
-
-        Color DefaultColor = Shared.maleColor;
+        int columnID = 0;
+        int rowIndex = 0;
 
         if (title != "Bottom")
         {
-            int startID = 0;
-            int rowIndex = 0; // Start adding rows below the header
-
-            title = "Male";
-            if (title == "Male" && DataManager.MaleTable.Rows.Count > 0)
+            if (DataManager.MaleTable.Rows.Count > 0)
             {
-                DefaultColor = Shared.maleColor;
-                hasSpeed = true;
+                title = "Male"; hasSpeed = true;
 
                 // Reset startID for new row
-                startID = 0;
+                columnID = 0;
 
                 // Add base header row
-                AddToGrid(grid, HeaderLabel("Name", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("Level", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("Hp", title), rowIndex, startID++, title);
-                if (hasStamina) { AddToGrid(grid, HeaderLabel("Stamina", title), rowIndex, startID++, title); }
-                if (hasO2) { AddToGrid(grid, HeaderLabel("O2", title), rowIndex, startID++, title); }
-                if (hasCharge) { AddToGrid(grid, HeaderLabel("Regen", title), rowIndex, startID++, title); }
-                if (hasCharge) { AddToGrid(grid, HeaderLabel("Capacity", title), rowIndex, startID++, title); }
-                AddToGrid(grid, HeaderLabel("Food", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("Weight", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("Dmg", title), rowIndex, startID++, title);
-                if (hasCraft) { AddToGrid(grid, HeaderLabel("Crafting", title), rowIndex, startID++, title); }
-                if (hasSpeed) { AddToGrid(grid, HeaderLabel("Speed", title), rowIndex, startID++, title); }
-                AddToGrid(grid, HeaderLabel("Status", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("Gen", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("Papa", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("Mama", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("pM", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("mM", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("Imprint", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("Imprinter", title), rowIndex, startID++, title);
+                AddToGrid(grid, HeaderLabel("Name", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("Level", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("Hp", title), rowIndex, columnID++, title);
+                if (hasStamina) { AddToGrid(grid, HeaderLabel("Stamina", title), rowIndex, columnID++, title); }
+                if (hasO2) { AddToGrid(grid, HeaderLabel("O2", title), rowIndex, columnID++, title); }
+                if (hasCharge) { AddToGrid(grid, HeaderLabel("Regen", title), rowIndex, columnID++, title); }
+                if (hasCharge) { AddToGrid(grid, HeaderLabel("Capacity", title), rowIndex, columnID++, title); }
+                AddToGrid(grid, HeaderLabel("Food", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("Weight", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("Dmg", title), rowIndex, columnID++, title);
+                if (hasCraft) { AddToGrid(grid, HeaderLabel("Crafting", title), rowIndex, columnID++, title); }
+                if (hasSpeed) { AddToGrid(grid, HeaderLabel("Speed", title), rowIndex, columnID++, title); }
+                AddToGrid(grid, HeaderLabel("Status", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("Gen", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("Papa", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("Mama", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("pM", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("mM", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("Imprint", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("Imprinter", title), rowIndex, columnID++, title);
 
 
                 // increase row index for header row
@@ -1266,28 +1266,28 @@ public partial class DinoPage : ContentPage
                     if (id == selectedID) { selected = true; }
 
                     // Reset startID for new row
-                    startID = 0;
+                    columnID = 0;
 
-                    AddToGrid(grid, RowLabel("Name", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("Level", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("Hp", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    if (hasStamina) { AddToGrid(grid, RowLabel("Stamina", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id); }
-                    if (hasO2) { AddToGrid(grid, RowLabel("O2", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id); }
-                    if (hasCharge) { AddToGrid(grid, RowLabel("Regen", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id); }
-                    if (hasCharge) { AddToGrid(grid, RowLabel("Capacity", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id); }
-                    AddToGrid(grid, RowLabel("Food", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("Weight", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("Damage", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    if (hasCraft) { AddToGrid(grid, RowLabel("Crafting", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id); }
-                    if (hasSpeed) { AddToGrid(grid, RowLabel("Speed", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id); }
-                    AddToGrid(grid, RowLabel("Status", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("Gen", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("Papa", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("Mama", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("PapaMute", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("MamaMute", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("Imprint", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("Imprinter", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Name", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Level", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Hp", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    if (hasStamina) { AddToGrid(grid, RowLabel("Stamina", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
+                    if (hasO2) { AddToGrid(grid, RowLabel("O2", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
+                    if (hasCharge) { AddToGrid(grid, RowLabel("Regen", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
+                    if (hasCharge) { AddToGrid(grid, RowLabel("Capacity", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
+                    AddToGrid(grid, RowLabel("Food", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Weight", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Damage", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    if (hasCraft) { AddToGrid(grid, RowLabel("Crafting", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
+                    if (hasSpeed) { AddToGrid(grid, RowLabel("Speed", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
+                    AddToGrid(grid, RowLabel("Status", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Gen", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Papa", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Mama", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("PapaMute", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("MamaMute", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Imprint", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Imprinter", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
 
                     rowIndex++;
                 }
@@ -1296,48 +1296,47 @@ public partial class DinoPage : ContentPage
 
                 // add empty row between tables
                 var emptyH = new Label { Text = "" };
-                AddToGrid(grid, emptyH, rowIndex, startID, "Empty");
+                AddToGrid(grid, emptyH, rowIndex, columnID, "Empty");
                 rowIndex++; boxRowID++;
 
 
                 // add empty row between tables
                 var emptyH2 = new Label { Text = "" };
-                AddToGrid(grid, emptyH2, rowIndex, startID, "Empty");
+                AddToGrid(grid, emptyH2, rowIndex, columnID, "Empty");
                 rowIndex++; boxRowID++;
             }
 
             // add one xtra id for female header row
             rowIndex++; boxRowID++;
-            title = "Female";
-            if (title == "Female" && DataManager.FemaleTable.Rows.Count > 0)
+
+            if (DataManager.FemaleTable.Rows.Count > 0)
             {
-                DefaultColor = Shared.femaleColor;
-                hasSpeed = true;
+                title = "Female"; hasSpeed = true;
 
                 // Reset startID for new row
-                startID = 0;
+                columnID = 0;
 
                 // Add base header row
-                AddToGrid(grid, HeaderLabel("Name", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("Level", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("Hp", title), rowIndex, startID++, title);
-                if (hasStamina) { AddToGrid(grid, HeaderLabel("Stamina", title), rowIndex, startID++, title); }
-                if (hasO2) { AddToGrid(grid, HeaderLabel("O2", title), rowIndex, startID++, title); }
-                if (hasCharge) { AddToGrid(grid, HeaderLabel("Regen", title), rowIndex, startID++, title); }
-                if (hasCharge) { AddToGrid(grid, HeaderLabel("Capacity", title), rowIndex, startID++, title); }
-                AddToGrid(grid, HeaderLabel("Food", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("Weight", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("Dmg", title), rowIndex, startID++, title);
-                if (hasCraft) { AddToGrid(grid, HeaderLabel("Crafting", title), rowIndex, startID++, title); }
-                if (hasSpeed) { AddToGrid(grid, HeaderLabel("Speed", title), rowIndex, startID++, title); }
-                AddToGrid(grid, HeaderLabel("Status", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("Gen", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("Papa", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("Mama", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("pM", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("mM", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("Imprint", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("Imprinter", title), rowIndex, startID++, title);
+                AddToGrid(grid, HeaderLabel("Name", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("Level", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("Hp", title), rowIndex, columnID++, title);
+                if (hasStamina) { AddToGrid(grid, HeaderLabel("Stamina", title), rowIndex, columnID++, title); }
+                if (hasO2) { AddToGrid(grid, HeaderLabel("O2", title), rowIndex, columnID++, title); }
+                if (hasCharge) { AddToGrid(grid, HeaderLabel("Regen", title), rowIndex, columnID++, title); }
+                if (hasCharge) { AddToGrid(grid, HeaderLabel("Capacity", title), rowIndex, columnID++, title); }
+                AddToGrid(grid, HeaderLabel("Food", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("Weight", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("Dmg", title), rowIndex, columnID++, title);
+                if (hasCraft) { AddToGrid(grid, HeaderLabel("Crafting", title), rowIndex, columnID++, title); }
+                if (hasSpeed) { AddToGrid(grid, HeaderLabel("Speed", title), rowIndex, columnID++, title); }
+                AddToGrid(grid, HeaderLabel("Status", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("Gen", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("Papa", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("Mama", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("pM", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("mM", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("Imprint", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("Imprinter", title), rowIndex, columnID++, title);
 
                 rowIndex++;
 
@@ -1352,96 +1351,87 @@ public partial class DinoPage : ContentPage
                     if (id == selectedID) { selected = true; }
 
                     // Reset startID for new row
-                    startID = 0;
+                    columnID = 0;
 
-                    AddToGrid(grid, RowLabel("Name", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("Level", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("Hp", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    if (hasStamina) { AddToGrid(grid, RowLabel("Stamina", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id); }
-                    if (hasO2) { AddToGrid(grid, RowLabel("O2", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id); }
-                    if (hasCharge) { AddToGrid(grid, RowLabel("Regen", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id); }
-                    if (hasCharge) { AddToGrid(grid, RowLabel("Capacity", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id); }
-                    AddToGrid(grid, RowLabel("Food", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("Weight", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("Damage", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    if (hasCraft) { AddToGrid(grid, RowLabel("Crafting", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id); }
-                    if (hasSpeed) { AddToGrid(grid, RowLabel("Speed", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id); }
-                    AddToGrid(grid, RowLabel("Status", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("Gen", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("Papa", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("Mama", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("PapaMute", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("MamaMute", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("Imprint", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("Imprinter", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Name", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Level", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Hp", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    if (hasStamina) { AddToGrid(grid, RowLabel("Stamina", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
+                    if (hasO2) { AddToGrid(grid, RowLabel("O2", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
+                    if (hasCharge) { AddToGrid(grid, RowLabel("Regen", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
+                    if (hasCharge) { AddToGrid(grid, RowLabel("Capacity", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
+                    AddToGrid(grid, RowLabel("Food", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Weight", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Damage", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    if (hasCraft) { AddToGrid(grid, RowLabel("Crafting", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
+                    if (hasSpeed) { AddToGrid(grid, RowLabel("Speed", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
+                    AddToGrid(grid, RowLabel("Status", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Gen", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Papa", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Mama", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("PapaMute", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("MamaMute", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Imprint", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Imprinter", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
 
                     rowIndex++;
                 }
             }
         }
-        else
+        else if (title == "Bottom")
         {
-            int startID = 0;
-            int rowIndex = 0; // Start adding rows below the header
-            title = "Bottom";
-            if (title == "Bottom")
+            hasSpeed = false; // dont activate for offspring since speed doesnt breed
+
+            // Add base header row
+            AddToGrid(grid, HeaderLabel("Name", title), rowIndex, columnID++, title);
+            AddToGrid(grid, HeaderLabel("Level", title), rowIndex, columnID++, title);
+            AddToGrid(grid, HeaderLabel("Hp", title), rowIndex, columnID++, title);
+            if (hasStamina) { AddToGrid(grid, HeaderLabel("Stamina", title), rowIndex, columnID++, title); }
+            if (hasO2) { AddToGrid(grid, HeaderLabel("O2", title), rowIndex, columnID++, title); }
+            if (hasCharge) { AddToGrid(grid, HeaderLabel("Regen", title), rowIndex, columnID++, title); }
+            if (hasCharge) { AddToGrid(grid, HeaderLabel("Capacity", title), rowIndex, columnID++, title); }
+            AddToGrid(grid, HeaderLabel("Food", title), rowIndex, columnID++, title);
+            AddToGrid(grid, HeaderLabel("Weight", title), rowIndex, columnID++, title);
+            AddToGrid(grid, HeaderLabel("Dmg", title), rowIndex, columnID++, title);
+            if (hasCraft) { AddToGrid(grid, HeaderLabel("Crafting", title), rowIndex, columnID++, title); }
+            if (hasSpeed) { AddToGrid(grid, HeaderLabel("Speed", title), rowIndex, columnID++, title); }
+            AddToGrid(grid, HeaderLabel("Status", title), rowIndex, columnID++, title);
+            AddToGrid(grid, HeaderLabel("Gen", title), rowIndex, columnID++, title);
+            AddToGrid(grid, HeaderLabel("Papa", title), rowIndex, columnID++, title);
+            AddToGrid(grid, HeaderLabel("Mama", title), rowIndex, columnID++, title);
+
+
+
+            rowIndex = 1; // Start adding rows below the header
+            foreach (DataRow row in DataManager.BottomTable.Rows)
             {
-                DefaultColor = Shared.bottomColor;
-                hasSpeed = false; // dont activate for offspring since speed doesnt breed
+                columnID = 0;
+                AddToGrid(grid, RowLabel("Name", title, row), rowIndex, columnID++, title);
+                AddToGrid(grid, RowLabel("Level", title, row), rowIndex, columnID++, title);
 
-                // Reset startID for new row
-                startID = 0;
+                AddToGrid(grid, RowLabel("Hp", title, row), rowIndex, columnID++, title);
+                if (hasStamina) { AddToGrid(grid, RowLabel("Stamina", title, row), rowIndex, columnID++, title); }
+                if (hasO2) { AddToGrid(grid, RowLabel("O2", title, row), rowIndex, columnID++, title); }
+                if (hasCharge) { AddToGrid(grid, RowLabel("Regen", title, row), rowIndex, columnID++, title); }
+                if (hasCharge) { AddToGrid(grid, RowLabel("Capacity", title, row), rowIndex, columnID++, title); }
+                AddToGrid(grid, RowLabel("Food", title, row), rowIndex, columnID++, title);
+                AddToGrid(grid, RowLabel("Weight", title, row), rowIndex, columnID++, title);
+                AddToGrid(grid, RowLabel("Damage", title, row), rowIndex, columnID++, title);
+                if (hasCraft) { AddToGrid(grid, RowLabel("Crafting", title, row), rowIndex, columnID++, title); }
+                if (hasSpeed) { AddToGrid(grid, RowLabel("Speed", title, row), rowIndex, columnID++, title); }
 
-                // Add base header row
-                AddToGrid(grid, HeaderLabel("Name", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("Level", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("Hp", title), rowIndex, startID++, title);
-                if (hasStamina) { AddToGrid(grid, HeaderLabel("Stamina", title), rowIndex, startID++, title); }
-                if (hasO2) { AddToGrid(grid, HeaderLabel("O2", title), rowIndex, startID++, title); }
-                if (hasCharge) { AddToGrid(grid, HeaderLabel("Regen", title), rowIndex, startID++, title); }
-                if (hasCharge) { AddToGrid(grid, HeaderLabel("Capacity", title), rowIndex, startID++, title); }
-                AddToGrid(grid, HeaderLabel("Food", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("Weight", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("Dmg", title), rowIndex, startID++, title);
-                if (hasCraft) { AddToGrid(grid, HeaderLabel("Crafting", title), rowIndex, startID++, title); }
-                if (hasSpeed) { AddToGrid(grid, HeaderLabel("Speed", title), rowIndex, startID++, title); }
-                AddToGrid(grid, HeaderLabel("Status", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("Gen", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("Papa", title), rowIndex, startID++, title);
-                AddToGrid(grid, HeaderLabel("Mama", title), rowIndex, startID++, title);
+                AddToGrid(grid, RowLabel("Status", title, row), rowIndex, columnID++, title);
+                AddToGrid(grid, RowLabel("Gen", title, row), rowIndex, columnID++, title);
+                AddToGrid(grid, RowLabel("Papa", title, row), rowIndex, columnID++, title);
+                AddToGrid(grid, RowLabel("Mama", title, row), rowIndex, columnID++, title);
+                AddToGrid(grid, RowLabel("PapaMute", title, row), rowIndex, columnID++, title);
+                AddToGrid(grid, RowLabel("MamaMute", title, row), rowIndex, columnID++, title);
+                AddToGrid(grid, RowLabel("Imprint", title, row), rowIndex, columnID++, title);
+                AddToGrid(grid, RowLabel("Imprinter", title, row), rowIndex, columnID++, title);
 
-
-
-                rowIndex = 1; // Start adding rows below the header
-                foreach (DataRow row in DataManager.BottomTable.Rows)
-                {
-                    startID = 0;
-                    AddToGrid(grid, RowLabel("Name", title, row), rowIndex, startID++, title);
-                    AddToGrid(grid, RowLabel("Level", title, row), rowIndex, startID++, title);
-
-                    AddToGrid(grid, RowLabel("Hp", title, row), rowIndex, startID++, title);
-                    if (hasStamina) { AddToGrid(grid, RowLabel("Stamina", title, row), rowIndex, startID++, title); }
-                    if (hasO2) { AddToGrid(grid, RowLabel("O2", title, row), rowIndex, startID++, title); }
-                    if (hasCharge) { AddToGrid(grid, RowLabel("Regen", title, row), rowIndex, startID++, title); }
-                    if (hasCharge) { AddToGrid(grid, RowLabel("Capacity", title, row), rowIndex, startID++, title); }
-                    AddToGrid(grid, RowLabel("Food", title, row), rowIndex, startID++, title);
-                    AddToGrid(grid, RowLabel("Weight", title, row), rowIndex, startID++, title);
-                    AddToGrid(grid, RowLabel("Damage", title, row), rowIndex, startID++, title);
-                    if (hasCraft) { AddToGrid(grid, RowLabel("Crafting", title, row), rowIndex, startID++, title); }
-                    if (hasSpeed) { AddToGrid(grid, RowLabel("Speed", title, row), rowIndex, startID++, title); }
-
-                    AddToGrid(grid, RowLabel("Status", title, row), rowIndex, startID++, title);
-                    AddToGrid(grid, RowLabel("Gen", title, row), rowIndex, startID++, title);
-                    AddToGrid(grid, RowLabel("Papa", title, row), rowIndex, startID++, title);
-                    AddToGrid(grid, RowLabel("Mama", title, row), rowIndex, startID++, title);
-                    AddToGrid(grid, RowLabel("PapaMute", title, row), rowIndex, startID++, title);
-                    AddToGrid(grid, RowLabel("MamaMute", title, row), rowIndex, startID++, title);
-                    AddToGrid(grid, RowLabel("Imprint", title, row), rowIndex, startID++, title);
-                    AddToGrid(grid, RowLabel("Imprinter", title, row), rowIndex, startID++, title);
-
-                    rowIndex++;
-                }
+                rowIndex++;
             }
+
         }
 
         return grid;
