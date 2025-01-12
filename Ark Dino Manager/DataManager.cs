@@ -950,7 +950,7 @@ namespace Ark_Dino_Manager
             return result;
         }
 
-        public static void EditBreedStats(string id, string level, string hp, string st, string ox, string fo, string we, string da, string notes, string speed, string craft)
+        public static void EditBreedStats(string id, string level, string hp, string st, string ox, string fo, string we, string da, string notes, string speed, string craft, string regen, string capacity)
         {
             if (id != "")
             {
@@ -969,7 +969,10 @@ namespace Ark_Dino_Manager
                         ImportsTable.Rows[rowID].SetField("Damage", da);
                         ImportsTable.Rows[rowID].SetField("Speed", speed);
                         ImportsTable.Rows[rowID].SetField("CraftSkill", craft);
+                        ImportsTable.Rows[rowID].SetField("ChargeRegen", regen);
+                        ImportsTable.Rows[rowID].SetField("ChargeCapacity", capacity);
 
+                        // break here to only edit the first row of stats
                         break;
                     }
                     rowID++;
