@@ -488,8 +488,8 @@ public partial class DinoPage : ContentPage
         if (rowText == "Damage") { damageText = value; tesValue = DataManager.DamageMax; }
         if (rowText == "Speed") { speedText = value; tesValue = DataManager.SpeedMax; }
         if (rowText == "CraftSkill") { craftText = value; tesValue = DataManager.CraftMax; }
-        if (rowText == "Regen") { levelText = value; tesValue = DataManager.RegenMax; }
-        if (rowText == "Capacity") { levelText = value; tesValue = DataManager.CapacityMax; }
+        if (rowText == "Regen") { regenText = value; tesValue = DataManager.RegenMax; }
+        if (rowText == "Capacity") { capacityText = value; tesValue = DataManager.CapacityMax; }
 
 
         if (DataManager.ToDouble(value) >= (tesValue - 0.1)) { fontColor = Shared.goodColor; }
