@@ -128,7 +128,7 @@ public partial class DinoPage : ContentPage
         ToHere("Time1"); // Stop timer and show results
     }
 
-    private void DefaultView(string labelText)
+    private void DefaultView(string labelText, string imageSource = "bigegg.png")
     {
         var mainLayout = new Grid();
 
@@ -142,7 +142,7 @@ public partial class DinoPage : ContentPage
             Padding = 3
         };
 
-        var image1 = new Image { Source = "dino.png", HeightRequest = 400, Aspect = Aspect.AspectFit, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start };
+        var image1 = new Image { Source = imageSource, HeightRequest = 400, Aspect = Aspect.AspectFit, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start };
         var label1 = new Label { Text = labelText, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start, FontAttributes = FontAttributes.Bold, TextColor = Shared.PrimaryColor, FontSize = 22 };
 
 
@@ -1003,7 +1003,7 @@ public partial class DinoPage : ContentPage
 
             var image = new Image
             {
-                Source = "dino.png",
+                Source = "crystalegg.png",
                 HeightRequest = 200,
                 Aspect = Aspect.AspectFit
             };
@@ -1013,7 +1013,7 @@ public partial class DinoPage : ContentPage
 
             var label1 = new Label
             {
-                Text = "No dinos in here :/",
+                Text = "No dinos in here 🔎",
                 HorizontalOptions = LayoutOptions.Center,
                 VerticalOptions = LayoutOptions.Center,
                 Style = (Style)Application.Current.Resources["Headline"],

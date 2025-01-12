@@ -27,7 +27,7 @@
                     if (Shared.setPage == @"Looking_for_dinos")
                     {
                         this.Title = "Ready to start importing data";
-                        DefaultView("Looking for dino exports 🔎", "egg200.png");
+                        DefaultView("Looking for dino exports 🔎", "bigegg.png");
                         // redirect to start page once first import is run
                         Shared.firstImport = true; Shared.setPage = "ASA";
                     }
@@ -48,7 +48,7 @@
             }
         }
 
-        private void DefaultView(string labelText, string imageSource = "dino.png")
+        private void DefaultView(string labelText, string imageSource = "bigegg.png")
         {
             var mainLayout = new Grid
             {
