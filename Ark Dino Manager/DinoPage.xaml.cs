@@ -3,6 +3,9 @@ using System.Diagnostics;
 using static Ark_Dino_Manager.Shared;
 using static Ark_Dino_Manager.DataManager;
 using Microsoft.Maui.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using System.Xml.Linq;
+using System.Text.RegularExpressions;
 
 namespace Ark_Dino_Manager;
 
@@ -1089,6 +1092,93 @@ public partial class DinoPage : ContentPage
         return nameH;
     }
 
+    private Label RowLabel(string column, string title, DataRow row, int boxID = 0, string id = "")
+    {
+        // Set the text color of the label based on the title
+        Color RowLabelColor = Shared.bottomColor;
+        if (title == "Male") { RowLabelColor = Shared.maleColor; }
+        else if (title == "Female") { RowLabelColor = Shared.femaleColor; }
+
+        string rowText = row[column].ToString();
+
+        if (rowText == "") { column = Smap["Missing"]; }
+        else
+        {
+
+            // Override coloring on breeding stats
+            if (column == "Hp") { if (DataManager.ToDouble(rowText) + statOffset >= DataManager.HpMax) { RowLabelColor = Shared.goodColor; } }
+            if (column == "Stamina") { if (DataManager.ToDouble(rowText) + statOffset >= DataManager.StaminaMax) { RowLabelColor = Shared.goodColor; } }
+            if (column == "O2") { if (DataManager.ToDouble(rowText) + statOffset >= DataManager.O2Max) { RowLabelColor = Shared.goodColor; } }
+            if (column == "Food") { if (DataManager.ToDouble(rowText) + statOffset >= DataManager.FoodMax) { RowLabelColor = Shared.goodColor; } }
+            if (column == "Weight") { if (DataManager.ToDouble(rowText) + statOffset >= DataManager.WeightMax) { RowLabelColor = Shared.goodColor; } }
+            if (column == "Damage") { if (DataManager.ToDouble(rowText) + statOffset >= DataManager.DamageMax) { RowLabelColor = Shared.goodColor; } }
+            if (column == "Crafting") { if (DataManager.ToDouble(rowText) + statOffset >= DataManager.CraftMax) { RowLabelColor = Shared.goodColor; } }
+            if (column == "Regen") { if (DataManager.ToDouble(rowText) + statOffset >= DataManager.RegenMax) { RowLabelColor = Shared.goodColor; } }
+            if (column == "Capacity") { if (DataManager.ToDouble(rowText) + statOffset >= DataManager.CapacityMax) { RowLabelColor = Shared.goodColor; } }
+
+            if (title == "Bottom")
+            {
+                // this column only exist in bottom table
+                string IDC = row["Res"].ToString();
+
+                if (IDC.Length > 8)
+                {
+                    // override offspring colors based on breed points
+                    if (column == "Hp") { if (IDC.Substring(0, 1) == "2") { RowLabelColor = Shared.bestColor; } }
+                    if (column == "Stamina") { if (IDC.Substring(1, 1) == "2") { RowLabelColor = Shared.bestColor; } }
+                    if (column == "O2") { if (IDC.Substring(2, 1) == "2") { RowLabelColor = Shared.bestColor; } }
+                    if (column == "Food") { if (IDC.Substring(3, 1) == "2") { RowLabelColor = Shared.bestColor; } }
+                    if (column == "Weight") { if (IDC.Substring(4, 1) == "2") { RowLabelColor = Shared.bestColor; } }
+                    if (column == "Damage") { if (IDC.Substring(5, 1) == "2") { RowLabelColor = Shared.bestColor; } }
+                    if (column == "Crafting") { if (IDC.Substring(6, 1) == "2") { RowLabelColor = Shared.bestColor; } }
+                    if (column == "Regen") { if (IDC.Substring(7, 1) == "2") { RowLabelColor = Shared.bestColor; } }
+                    if (column == "Capacity") { if (IDC.Substring(8, 1) == "2") { RowLabelColor = Shared.bestColor; } }
+                }
+            }
+            else
+            {
+                // this column doesn not excist in bottom table
+                string mutes = row["Mutes"].ToString();
+
+                // mutation detection overrides normal coloring -> mutaColor
+                if (mutes.Length >= 9 && !CurrentStats) // dont show mutations on current statview
+                {
+                    double testStat = 0;
+                    string aC = "";
+
+                    if (column == "Hp") { aC = mutes.Substring(0, 1); testStat = HpMax; }
+                    if (column == "Stamina") { aC = mutes.Substring(1, 1); testStat = StaminaMax; }
+                    if (column == "O2") { aC = mutes.Substring(2, 1); testStat = O2Max; }
+                    if (column == "Food") { aC = mutes.Substring(3, 1); testStat = FoodMax; }
+                    if (column == "Weight") { aC = mutes.Substring(4, 1); testStat = WeightMax; }
+                    if (column == "Damage") { aC = mutes.Substring(5, 1); testStat = DamageMax; }
+                    if (column == "Crafting") { aC = mutes.Substring(6, 1); testStat = CraftMax; }
+                    if (column == "Regen") { aC = mutes.Substring(7, 1); testStat = RegenMax; }
+                    if (column == "Capacity") { aC = mutes.Substring(8, 1); testStat = CapacityMax; }
+
+                    if (aC == "1" && ToDouble(rowText) + statOffset >= testStat) { RowLabelColor = mutaColor; } else if (aC == "1" && ToDouble(rowText) - statOffset < testStat) { RowLabelColor = mutaBadColor; }
+                }
+            }
+
+        }
+
+        if (column == "Status")
+        {
+            rowText = rowText.Replace("#", Shared.Smap["Identical"]);
+            rowText = rowText.Replace("<", Shared.Smap["LessThan"]);
+        }
+
+        Label OutLabel = new Label { Text = rowText, TextColor = RowLabelColor };
+
+        if (title != "Bottom")
+        {
+            // make the label selectable if not bottom panel
+            SelectDino(OutLabel, id, boxID);
+        }
+
+        return OutLabel;
+    }
+
     private Grid CreateDinoGrid(string title)
     {
         var grid = new Grid { RowSpacing = 0, ColumnSpacing = 20, Padding = 3 };
@@ -1170,205 +1260,34 @@ public partial class DinoPage : ContentPage
                     boxRowID++;
 
                     string id = row["ID"].ToString();
-                    string name = row["Name"].ToString();
-                    string level = row["Level"].ToString();
-                    //////////////
-                    string hp = row["Hp"].ToString();
-                    string stamina = row["Stamina"].ToString();
-                    string O2 = row["O2"].ToString();
-                    string food = row["Food"].ToString();
-                    string weight = row["Weight"].ToString();
-                    string damage = row["Damage"].ToString();
-                    string craft = row["Crafting"].ToString();
-                    string regen = row["Regen"].ToString();
-                    string capacity = row["Capacity"].ToString();
-                    //////////////
-                    string speed = row["Speed"].ToString();
-                    string status = row["Status"].ToString();
-                    string gen = row["Gen"].ToString();
-                    string papa = row["Papa"].ToString();
-                    string mama = row["Mama"].ToString();
-                    string papaM = row["PapaMute"].ToString();
-                    string mamaM = row["MamaMute"].ToString();
-                    string imprint = row["Imprint"].ToString();
-                    string imprinter = row["Imprinter"].ToString();
-                    string mutes = row["Mutes"].ToString();
-
-
-                    if (name == "") { name = "Name me"; }
-
-                    var nameC = DefaultColor;
-                    var levelC = DefaultColor;
-                    ////////////
-                    var hpC = DefaultColor;
-                    var staminaC = DefaultColor;
-                    var O2C = DefaultColor;
-                    var foodC = DefaultColor;
-                    var weightC = DefaultColor;
-                    var damageC = DefaultColor;
-                    var craftC = DefaultColor;
-                    var regenC = DefaultColor;
-                    var capacityC = DefaultColor;
-                    ////////////
-                    var speedC = DefaultColor;
-
-                    var defaultC = DefaultColor;
-
-
-                    //recolor breeding stats
-                    if (DataManager.ToDouble(hp) + statOffset >= DataManager.HpMax) { hpC = Shared.goodColor; }
-                    if (DataManager.ToDouble(stamina) + statOffset >= DataManager.StaminaMax) { staminaC = Shared.goodColor; }
-                    if (DataManager.ToDouble(O2) + statOffset >= DataManager.O2Max) { O2C = Shared.goodColor; }
-                    if (DataManager.ToDouble(food) + statOffset >= DataManager.FoodMax) { foodC = Shared.goodColor; }
-                    if (DataManager.ToDouble(weight) + statOffset >= DataManager.WeightMax) { weightC = Shared.goodColor; }
-                    if (DataManager.ToDouble(damage) + statOffset >= DataManager.DamageMax) { damageC = Shared.goodColor; }
-                    if (DataManager.ToDouble(craft) + statOffset >= DataManager.CraftMax) { craftC = Shared.goodColor; }
-
-                    if (DataManager.ToDouble(regen) + statOffset >= DataManager.RegenMax) { regenC = Shared.goodColor; }
-                    if (DataManager.ToDouble(capacity) + statOffset >= DataManager.CapacityMax) { capacityC = Shared.goodColor; }
-
-
-
-                    // mutation detection overrides normal coloring -> mutaColor
-                    if (mutes.Length >= 9 && !CurrentStats) // dont show mutations on current statview
-                    {
-                        string aC = mutes.Substring(0, 1); string bC = mutes.Substring(1, 1); string cC = mutes.Substring(2, 1);
-                        string dC = mutes.Substring(3, 1); string eC = mutes.Substring(4, 1); string fC = mutes.Substring(5, 1);
-                        string gC = mutes.Substring(6, 1); string hC = mutes.Substring(7, 1); string iC = mutes.Substring(8, 1);
-
-                        if (aC == "1" && ToDouble(hp) + statOffset >= HpMax) { hpC = mutaColor; } else if (aC == "1" && ToDouble(hp) - statOffset < HpMax) { hpC = mutaBadColor; }
-                        if (bC == "1" && ToDouble(stamina) + statOffset >= StaminaMax) { staminaC = mutaColor; } else if (bC == "1" && ToDouble(stamina) - statOffset < StaminaMax) { staminaC = mutaBadColor; }
-                        if (cC == "1" && ToDouble(O2) + statOffset >= O2Max) { O2C = mutaColor; } else if (cC == "1" && ToDouble(O2) - statOffset < O2Max) { O2C = mutaBadColor; }
-                        if (dC == "1" && ToDouble(food) + statOffset >= FoodMax) { foodC = mutaColor; } else if (dC == "1" && ToDouble(food) - statOffset < FoodMax) { foodC = mutaBadColor; }
-                        if (eC == "1" && ToDouble(weight) + statOffset >= WeightMax) { weightC = mutaColor; } else if (eC == "1" && ToDouble(weight) - statOffset < WeightMax) { weightC = mutaBadColor; }
-                        if (fC == "1" && ToDouble(damage) + statOffset >= DamageMax) { damageC = mutaColor; } else if (fC == "1" && ToDouble(damage) - statOffset < DamageMax) { damageC = mutaBadColor; }
-                        if (gC == "1" && ToDouble(craft) + statOffset >= CraftMax) { craftC = mutaColor; } else if (gC == "1" && ToDouble(craft) - statOffset < CraftMax) { craftC = mutaBadColor; }
-
-                        if (hC == "1" && ToDouble(regen) + statOffset >= RegenMax) { regenC = mutaColor; } else if (hC == "1" && ToDouble(regen) - statOffset < RegenMax) { regenC = mutaBadColor; }
-                        if (iC == "1" && ToDouble(capacity) + statOffset >= CapacityMax) { capacityC = mutaColor; } else if (iC == "1" && ToDouble(capacity) - statOffset < CapacityMax) { capacityC = mutaBadColor; }
-                    }
-
-
-                    // Add notes symbol if notes are set
-                    string notes = DataManager.GetNotes(id);
-                    if (notes != "") { status += Smap["Notes"]; }
-
-                    // replace placeholders with symbols
-                    status = status.Replace("#", $"{Smap["Identical"]}");
-                    status = status.Replace("<", $"{Smap["LessThan"]}");
-
-
-                    bool hasMama = false; bool hasPapa = false;
-                    // if not missing and not unknown = something with a name
-                    if (!mama.Contains(Smap["Warning"]) && !mama.Contains(Smap["Unknown"])) { hasMama = true; }
-                    if (!papa.Contains(Smap["Warning"]) && !papa.Contains(Smap["Unknown"])) { hasPapa = true; }
-
-                    // check for stats that someone with a parent should or should not have
-                    if (hasMama || hasPapa)
-                    {
-                        bool warn = false;
-                        // if we have a parent generation cant be 0
-                        if (ToDouble(gen) < 1) { warn = true; }
-                        // also if we have a mutation generation cant be 0
-                        if (ToDouble(mamaM) > 0 && ToDouble(gen) < 1) { warn = true; }
-                        if (ToDouble(papaM) > 0 && ToDouble(gen) < 1) { warn = true; }
-                        if (warn) { gen = Smap["Warning"]; }
-                    }
-
-                    // mark all generation dependant data as invalid
-                    if (mama == Shared.Smap["Warning"] && papa == Shared.Smap["Warning"])
-                    {
-                        papaM = Shared.Smap["Warning"];
-                        mamaM = Shared.Smap["Warning"];
-                        gen = Shared.Smap["Warning"];
-                    }
-
-                    // replace empty imprinter string with tribe
-                    if (mama == "" && papa == "" && imprinter == "")
-                    {
-                        // get the tamer string instead of imprinter
-                        imprinter = DataManager.GetFirstColumnData("ID", id, "Tribe");
-                    }
-
-                    // Create a Labels
-                    var nameL = new Label { Text = name, TextColor = nameC };
-                    var levelL = new Label { Text = level, TextColor = levelC };
-                    //////////////
-                    var hpL = new Label { Text = hp, TextColor = hpC };
-                    var staminaL = new Label { Text = stamina, TextColor = staminaC };
-                    var O2L = new Label { Text = O2, TextColor = O2C };
-                    var foodL = new Label { Text = food, TextColor = foodC };
-                    var weightL = new Label { Text = weight, TextColor = weightC };
-                    var damageL = new Label { Text = damage, TextColor = damageC };
-                    var craftL = new Label { Text = craft, TextColor = craftC };
-                    var regenL = new Label { Text = regen, TextColor = regenC };
-                    var capacityL = new Label { Text = capacity, TextColor = capacityC };
-                    //////////////
-                    var speedL = new Label { Text = speed, TextColor = speedC };
-                    var statusL = new Label { Text = status, TextColor = defaultC };
-                    var genL = new Label { Text = gen, TextColor = defaultC };
-                    var papaL = new Label { Text = papa, TextColor = Shared.maleColor };
-                    var mamaL = new Label { Text = mama, TextColor = Shared.femaleColor };
-                    var papaML = new Label { Text = papaM, TextColor = Shared.maleColor };
-                    var mamaML = new Label { Text = mamaM, TextColor = Shared.femaleColor };
-                    var imprintL = new Label { Text = imprint, TextColor = defaultC };
-                    var imprinterL = new Label { Text = imprinter, TextColor = defaultC };
-
-                    bool selected = false;
 
                     // figure out if we have this dino selected for row coloring purposes
+                    bool selected = false;
                     if (id == selectedID) { selected = true; }
-
-                    // Attach TapGesture to all labels
-                    SelectDino(nameL, id, boxRowID);
-                    SelectDino(levelL, id, boxRowID);
-                    //------------------------------------------
-                    SelectDino(hpL, id, boxRowID);
-                    if (hasStamina) { SelectDino(staminaL, id, boxRowID); }
-                    if (hasO2) { SelectDino(O2L, id, boxRowID); }
-                    if (hasCharge) { SelectDino(regenL, id, boxRowID); }
-                    if (hasCharge) { SelectDino(capacityL, id, boxRowID); }
-                    SelectDino(foodL, id, boxRowID);
-                    SelectDino(weightL, id, boxRowID);
-                    SelectDino(damageL, id, boxRowID);
-                    if (hasCraft) { SelectDino(craftL, id, boxRowID); }
-                    //------------------------------------------
-                    if (hasSpeed) { SelectDino(speedL, id, boxRowID); }
-                    SelectDino(statusL, id, boxRowID);
-                    SelectDino(genL, id, boxRowID);
-                    SelectDino(papaL, id, boxRowID);
-                    SelectDino(mamaL, id, boxRowID);
-                    SelectDino(papaML, id, boxRowID);
-                    SelectDino(mamaML, id, boxRowID);
-                    SelectDino(imprintL, id, boxRowID);
-                    SelectDino(imprinterL, id, boxRowID);
 
                     // Reset startID for new row
                     startID = 0;
 
-                    // Add base items to the grid
-                    AddToGrid(grid, nameL, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, levelL, rowIndex, startID++, title, selected, false, id);
-                    //-------------------
-                    AddToGrid(grid, hpL, rowIndex, startID++, title, selected, false, id);
-                    if (hasStamina) { AddToGrid(grid, staminaL, rowIndex, startID++, title, selected, false, id); }
-                    if (hasO2) { AddToGrid(grid, O2L, rowIndex, startID++, title, selected, false, id); }
-                    if (hasCharge) { AddToGrid(grid, regenL, rowIndex, startID++, title, selected, false, id); }
-                    if (hasCharge) { AddToGrid(grid, capacityL, rowIndex, startID++, title, selected, false, id); }
-                    AddToGrid(grid, foodL, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, weightL, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, damageL, rowIndex, startID++, title, selected, false, id);
-                    if (hasCraft) { AddToGrid(grid, craftL, rowIndex, startID++, title, selected, false, id); }
-                    //-------------------
-                    if (hasSpeed) { AddToGrid(grid, speedL, rowIndex, startID++, title, selected, false, id); }
-                    AddToGrid(grid, statusL, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, genL, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, papaL, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, mamaL, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, papaML, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, mamaML, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, imprintL, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, imprinterL, rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Name", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Level", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Hp", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    if (hasStamina) { AddToGrid(grid, RowLabel("Stamina", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id); }
+                    if (hasO2) { AddToGrid(grid, RowLabel("O2", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id); }
+                    if (hasCharge) { AddToGrid(grid, RowLabel("Regen", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id); }
+                    if (hasCharge) { AddToGrid(grid, RowLabel("Capacity", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id); }
+                    AddToGrid(grid, RowLabel("Food", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Weight", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Damage", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    if (hasCraft) { AddToGrid(grid, RowLabel("Crafting", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id); }
+                    if (hasSpeed) { AddToGrid(grid, RowLabel("Speed", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id); }
+                    AddToGrid(grid, RowLabel("Status", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Gen", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Papa", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Mama", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("PapaMute", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("MamaMute", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Imprint", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Imprinter", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
 
                     rowIndex++;
                 }
@@ -1425,197 +1344,36 @@ public partial class DinoPage : ContentPage
                 foreach (DataRow row in DataManager.FemaleTable.Rows)
                 {
                     boxRowID++;
+
                     string id = row["ID"].ToString();
-                    string name = row["Name"].ToString();
-                    string level = row["Level"].ToString();
-                    //////////////
-                    string hp = row["Hp"].ToString();
-                    string stamina = row["Stamina"].ToString();
-                    string O2 = row["O2"].ToString();
-                    string food = row["Food"].ToString();
-                    string weight = row["Weight"].ToString();
-                    string damage = row["Damage"].ToString();
-                    string craft = row["Crafting"].ToString();
-                    //////////////
-
-                    string regen = row["Regen"].ToString();
-                    string capacity = row["Capacity"].ToString();
-
-                    string speed = row["Speed"].ToString();
-                    string status = row["Status"].ToString();
-                    string gen = row["Gen"].ToString();
-                    string papa = row["Papa"].ToString();
-                    string mama = row["Mama"].ToString();
-                    string papaM = row["PapaMute"].ToString();
-                    string mamaM = row["MamaMute"].ToString();
-                    string imprint = row["Imprint"].ToString();
-                    string imprinter = row["Imprinter"].ToString();
-                    string mutes = row["Mutes"].ToString();
-
-
-
-                    if (name == "") { name = "Name me"; }
-
-                    var nameC = DefaultColor;
-                    var levelC = DefaultColor;
-                    ////////////
-                    var hpC = DefaultColor;
-                    var staminaC = DefaultColor;
-                    var O2C = DefaultColor;
-                    var foodC = DefaultColor;
-                    var weightC = DefaultColor;
-                    var damageC = DefaultColor;
-                    var craftC = DefaultColor;
-                    ////////////
-                    var speedC = DefaultColor;
-                    var regenC = DefaultColor;
-                    var capacityC = DefaultColor;
-
-                    var defaultC = DefaultColor;
-
-
-                    //recolor breeding stats
-                    if (DataManager.ToDouble(hp) + statOffset >= DataManager.HpMax) { hpC = Shared.goodColor; }
-                    if (DataManager.ToDouble(stamina) + statOffset >= DataManager.StaminaMax) { staminaC = Shared.goodColor; }
-                    if (DataManager.ToDouble(O2) + statOffset >= DataManager.O2Max) { O2C = Shared.goodColor; }
-                    if (DataManager.ToDouble(food) + statOffset >= DataManager.FoodMax) { foodC = Shared.goodColor; }
-                    if (DataManager.ToDouble(weight) + statOffset >= DataManager.WeightMax) { weightC = Shared.goodColor; }
-                    if (DataManager.ToDouble(damage) + statOffset >= DataManager.DamageMax) { damageC = Shared.goodColor; }
-                    if (DataManager.ToDouble(craft) + statOffset >= DataManager.CraftMax) { craftC = Shared.goodColor; }
-                    if (DataManager.ToDouble(regen) + statOffset >= DataManager.RegenMax) { regenC = Shared.goodColor; }
-                    if (DataManager.ToDouble(capacity) + statOffset >= DataManager.CapacityMax) { capacityC = Shared.goodColor; }
-
-
-                    // mutation detection overrides normal coloring -> mutaColor
-                    if (mutes.Length >= 9 && !CurrentStats) // dont show mutations on current statview
-                    {
-                        string aC = mutes.Substring(0, 1); string bC = mutes.Substring(1, 1); string cC = mutes.Substring(2, 1);
-                        string dC = mutes.Substring(3, 1); string eC = mutes.Substring(4, 1); string fC = mutes.Substring(5, 1);
-                        string gC = mutes.Substring(6, 1); string hC = mutes.Substring(7, 1); string iC = mutes.Substring(8, 1);
-
-                        if (aC == "1" && ToDouble(hp) + statOffset >= HpMax) { hpC = mutaColor; } else if (aC == "1" && ToDouble(hp) - statOffset < HpMax) { hpC = mutaBadColor; }
-                        if (bC == "1" && ToDouble(stamina) + statOffset >= StaminaMax) { staminaC = mutaColor; } else if (bC == "1" && ToDouble(stamina) - statOffset < StaminaMax) { staminaC = mutaBadColor; }
-                        if (cC == "1" && ToDouble(O2) + statOffset >= O2Max) { O2C = mutaColor; } else if (cC == "1" && ToDouble(O2) - statOffset < O2Max) { O2C = mutaBadColor; }
-                        if (dC == "1" && ToDouble(food) + statOffset >= FoodMax) { foodC = mutaColor; } else if (dC == "1" && ToDouble(food) - statOffset < FoodMax) { foodC = mutaBadColor; }
-                        if (eC == "1" && ToDouble(weight) + statOffset >= WeightMax) { weightC = mutaColor; } else if (eC == "1" && ToDouble(weight) - statOffset < WeightMax) { weightC = mutaBadColor; }
-                        if (fC == "1" && ToDouble(damage) + statOffset >= DamageMax) { damageC = mutaColor; } else if (fC == "1" && ToDouble(damage) - statOffset < DamageMax) { damageC = mutaBadColor; }
-                        if (gC == "1" && ToDouble(craft) + statOffset >= CraftMax) { craftC = mutaColor; } else if (gC == "1" && ToDouble(craft) - statOffset < CraftMax) { craftC = mutaBadColor; }
-
-                        if (hC == "1" && ToDouble(regen) + statOffset >= RegenMax) { regenC = mutaColor; } else if (hC == "1" && ToDouble(regen) - statOffset < RegenMax) { regenC = mutaBadColor; }
-                        if (iC == "1" && ToDouble(capacity) + statOffset >= CapacityMax) { capacityC = mutaColor; } else if (iC == "1" && ToDouble(capacity) - statOffset < CapacityMax) { capacityC = mutaBadColor; }
-                    }
-
-                    bool hasMama = false; bool hasPapa = false;
-                    // if not missing and not unknown = something with a name
-                    if (!mama.Contains(Smap["Warning"]) && !mama.Contains(Smap["Unknown"])) { hasMama = true; }
-                    if (!papa.Contains(Smap["Warning"]) && !papa.Contains(Smap["Unknown"])) { hasPapa = true; }
-
-                    // check for stats that someone with a parent should or should not have
-                    if (hasMama || hasPapa)
-                    {
-                        bool warn = false;
-                        // if we have a parent generation cant be 0
-                        if (ToDouble(gen) < 1) { warn = true; }
-                        // also if we have a mutation generation cant be 0
-                        if (ToDouble(mamaM) > 0 && ToDouble(gen) < 1) { warn = true; }
-                        if (ToDouble(papaM) > 0 && ToDouble(gen) < 1) { warn = true; }
-                        if (warn) { gen = Smap["Warning"]; }
-                    }
-
-                    // mark all generation dependant data as invalid
-                    if (mama == Shared.Smap["Warning"] && papa == Shared.Smap["Warning"])
-                    {
-                        papaM = Shared.Smap["Warning"];
-                        mamaM = Shared.Smap["Warning"];
-                        gen = Shared.Smap["Warning"];
-                    }
-
-                    // replace empty imprinter string with tribe
-                    if (mama == "" && papa == "" && imprinter == "")
-                    {
-                        // get the tamer string instead of imprinter
-                        imprinter = DataManager.GetFirstColumnData("ID", id, "Tribe");
-                    }
-
-                    // Create a Labels
-                    var nameL = new Label { Text = name, TextColor = nameC };
-                    var levelL = new Label { Text = level, TextColor = levelC };
-                    //////////////
-                    var hpL = new Label { Text = hp, TextColor = hpC };
-                    var staminaL = new Label { Text = stamina, TextColor = staminaC };
-                    var O2L = new Label { Text = O2, TextColor = O2C };
-                    var foodL = new Label { Text = food, TextColor = foodC };
-                    var weightL = new Label { Text = weight, TextColor = weightC };
-                    var damageL = new Label { Text = damage, TextColor = damageC };
-                    var craftL = new Label { Text = craft, TextColor = craftC };
-                    var regenL = new Label { Text = regen, TextColor = regenC };
-                    var capacityL = new Label { Text = capacity, TextColor = capacityC };
-                    //////////////
-                    var speedL = new Label { Text = speed, TextColor = speedC };
-                    var statusL = new Label { Text = status, TextColor = defaultC };
-                    var genL = new Label { Text = gen, TextColor = defaultC };
-                    var papaL = new Label { Text = papa, TextColor = Shared.maleColor };
-                    var mamaL = new Label { Text = mama, TextColor = Shared.femaleColor };
-                    var papaML = new Label { Text = papaM, TextColor = Shared.maleColor };
-                    var mamaML = new Label { Text = mamaM, TextColor = Shared.femaleColor };
-                    var imprintL = new Label { Text = imprint, TextColor = defaultC };
-                    var imprinterL = new Label { Text = imprinter, TextColor = defaultC };
-
-                    bool selected = false;
 
                     // figure out if we have this dino selected for row coloring purposes
+                    bool selected = false;
                     if (id == selectedID) { selected = true; }
-
-                    // Attach TapGesture to all labels
-                    SelectDino(nameL, id, boxRowID);
-                    SelectDino(levelL, id, boxRowID);
-                    //------------------------------------------
-                    SelectDino(hpL, id, boxRowID);
-                    if (hasStamina) { SelectDino(staminaL, id, boxRowID); }
-                    if (hasO2) { SelectDino(O2L, id, boxRowID); }
-                    if (hasCharge) { SelectDino(regenL, id, boxRowID); }
-                    if (hasCharge) { SelectDino(capacityL, id, boxRowID); }
-                    SelectDino(foodL, id, boxRowID);
-                    SelectDino(weightL, id, boxRowID);
-                    SelectDino(damageL, id, boxRowID);
-                    if (hasCraft) { SelectDino(craftL, id, boxRowID); }
-                    //------------------------------------------
-                    if (hasSpeed) { SelectDino(speedL, id, boxRowID); }
-                    SelectDino(statusL, id, boxRowID);
-                    SelectDino(genL, id, boxRowID);
-                    SelectDino(papaL, id, boxRowID);
-                    SelectDino(mamaL, id, boxRowID);
-                    SelectDino(papaML, id, boxRowID);
-                    SelectDino(mamaML, id, boxRowID);
-                    SelectDino(imprintL, id, boxRowID);
-                    SelectDino(imprinterL, id, boxRowID);
 
                     // Reset startID for new row
                     startID = 0;
 
-                    // Add base items to the grid
-                    AddToGrid(grid, nameL, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, levelL, rowIndex, startID++, title, selected, false, id);
-                    //-------------------
-                    AddToGrid(grid, hpL, rowIndex, startID++, title, selected, false, id);
-                    if (hasStamina) { AddToGrid(grid, staminaL, rowIndex, startID++, title, selected, false, id); }
-                    if (hasO2) { AddToGrid(grid, O2L, rowIndex, startID++, title, selected, false, id); }
-                    if (hasCharge) { AddToGrid(grid, regenL, rowIndex, startID++, title, selected, false, id); }
-                    if (hasCharge) { AddToGrid(grid, capacityL, rowIndex, startID++, title, selected, false, id); }
-                    AddToGrid(grid, foodL, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, weightL, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, damageL, rowIndex, startID++, title, selected, false, id);
-                    if (hasCraft) { AddToGrid(grid, craftL, rowIndex, startID++, title, selected, false, id); }
-                    //-------------------
-                    if (hasSpeed) { AddToGrid(grid, speedL, rowIndex, startID++, title, selected, false, id); }
-                    AddToGrid(grid, statusL, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, genL, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, papaL, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, mamaL, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, papaML, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, mamaML, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, imprintL, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, imprinterL, rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Name", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Level", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Hp", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    if (hasStamina) { AddToGrid(grid, RowLabel("Stamina", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id); }
+                    if (hasO2) { AddToGrid(grid, RowLabel("O2", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id); }
+                    if (hasCharge) { AddToGrid(grid, RowLabel("Regen", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id); }
+                    if (hasCharge) { AddToGrid(grid, RowLabel("Capacity", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id); }
+                    AddToGrid(grid, RowLabel("Food", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Weight", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Damage", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    if (hasCraft) { AddToGrid(grid, RowLabel("Crafting", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id); }
+                    if (hasSpeed) { AddToGrid(grid, RowLabel("Speed", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id); }
+                    AddToGrid(grid, RowLabel("Status", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Gen", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Papa", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Mama", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("PapaMute", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("MamaMute", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Imprint", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Imprinter", title, row, boxRowID, id), rowIndex, startID++, title, selected, false, id);
 
                     rowIndex++;
                 }
@@ -1657,211 +1415,29 @@ public partial class DinoPage : ContentPage
                 rowIndex = 1; // Start adding rows below the header
                 foreach (DataRow row in DataManager.BottomTable.Rows)
                 {
-                    string id = row["ID"].ToString();
-                    string name = row["Name"].ToString();
-                    string level = row["Level"].ToString();
-                    //////////////
-                    string hp = row["Hp"].ToString();
-                    string stamina = row["Stamina"].ToString();
-                    string O2 = row["O2"].ToString();
-                    string food = row["Food"].ToString();
-                    string weight = row["Weight"].ToString();
-                    string damage = row["Damage"].ToString();
-                    string craft = row["Crafting"].ToString();
-                    //////////////
-
-                    string regen = row["Regen"].ToString();
-                    string capacity = row["Capacity"].ToString();
-
-                    string speed = row["Speed"].ToString();
-                    string status = row["Status"].ToString();
-                    string gen = row["Gen"].ToString();
-                    string papa = row["Papa"].ToString();
-                    string mama = row["Mama"].ToString();
-                    string papaM = row["PapaMute"].ToString();
-                    string mamaM = row["MamaMute"].ToString();
-                    string imprint = row["Imprint"].ToString();
-                    string imprinter = row["Imprinter"].ToString();
-                    string mutes = row["Mutes"].ToString();
-
-
-
-                    if (name == "") { name = "Name me"; }
-
-                    var nameC = DefaultColor;
-                    var levelC = DefaultColor;
-                    ////////////
-                    var hpC = DefaultColor;
-                    var staminaC = DefaultColor;
-                    var O2C = DefaultColor;
-                    var foodC = DefaultColor;
-                    var weightC = DefaultColor;
-                    var damageC = DefaultColor;
-                    var craftC = DefaultColor;
-                    ////////////
-                    var speedC = DefaultColor;
-                    var regenC = DefaultColor;
-                    var capacityC = DefaultColor;
-
-                    var defaultC = DefaultColor;
-
-
-                    //recolor breeding stats
-                    if (DataManager.ToDouble(hp) + statOffset >= DataManager.HpMax) { hpC = Shared.goodColor; }
-                    if (DataManager.ToDouble(stamina) + statOffset >= DataManager.StaminaMax) { staminaC = Shared.goodColor; }
-                    if (DataManager.ToDouble(O2) + statOffset >= DataManager.O2Max) { O2C = Shared.goodColor; }
-                    if (DataManager.ToDouble(food) + statOffset >= DataManager.FoodMax) { foodC = Shared.goodColor; }
-                    if (DataManager.ToDouble(weight) + statOffset >= DataManager.WeightMax) { weightC = Shared.goodColor; }
-                    if (DataManager.ToDouble(damage) + statOffset >= DataManager.DamageMax) { damageC = Shared.goodColor; }
-                    if (DataManager.ToDouble(craft) + statOffset >= DataManager.CraftMax) { craftC = Shared.goodColor; }
-
-                    if (DataManager.ToDouble(regen) + statOffset >= DataManager.RegenMax) { regenC = Shared.goodColor; }
-                    if (DataManager.ToDouble(capacity) + statOffset >= DataManager.CapacityMax) { capacityC = Shared.goodColor; }
-
-
-
-                    // mutation detection overrides normal coloring -> mutaColor
-                    if (mutes.Length >= 9 && !CurrentStats) // dont show mutations on current statview
-                    {
-                        string aC = mutes.Substring(0, 1); string bC = mutes.Substring(1, 1); string cC = mutes.Substring(2, 1);
-                        string dC = mutes.Substring(3, 1); string eC = mutes.Substring(4, 1); string fC = mutes.Substring(5, 1);
-                        string gC = mutes.Substring(6, 1); string hC = mutes.Substring(7, 1); string iC = mutes.Substring(8, 1);
-
-                        if (aC == "1" && ToDouble(hp) + statOffset >= HpMax) { hpC = mutaColor; } else if (aC == "1" && ToDouble(hp) - statOffset < HpMax) { hpC = mutaBadColor; }
-                        if (bC == "1" && ToDouble(stamina) + statOffset >= StaminaMax) { staminaC = mutaColor; } else if (bC == "1" && ToDouble(stamina) - statOffset < StaminaMax) { staminaC = mutaBadColor; }
-                        if (cC == "1" && ToDouble(O2) + statOffset >= O2Max) { O2C = mutaColor; } else if (cC == "1" && ToDouble(O2) - statOffset < O2Max) { O2C = mutaBadColor; }
-                        if (dC == "1" && ToDouble(food) + statOffset >= FoodMax) { foodC = mutaColor; } else if (dC == "1" && ToDouble(food) - statOffset < FoodMax) { foodC = mutaBadColor; }
-                        if (eC == "1" && ToDouble(weight) + statOffset >= WeightMax) { weightC = mutaColor; } else if (eC == "1" && ToDouble(weight) - statOffset < WeightMax) { weightC = mutaBadColor; }
-                        if (fC == "1" && ToDouble(damage) + statOffset >= DamageMax) { damageC = mutaColor; } else if (fC == "1" && ToDouble(damage) - statOffset < DamageMax) { damageC = mutaBadColor; }
-                        if (gC == "1" && ToDouble(craft) + statOffset >= CraftMax) { craftC = mutaColor; } else if (gC == "1" && ToDouble(craft) - statOffset < CraftMax) { craftC = mutaBadColor; }
-
-                        if (hC == "1" && ToDouble(regen) + statOffset >= RegenMax) { regenC = mutaColor; } else if (hC == "1" && ToDouble(regen) - statOffset < RegenMax) { regenC = mutaBadColor; }
-                        if (iC == "1" && ToDouble(capacity) + statOffset >= CapacityMax) { capacityC = mutaColor; } else if (iC == "1" && ToDouble(capacity) - statOffset < CapacityMax) { capacityC = mutaBadColor; }
-                    }
-
-                    // override offspring colors based on breed points
-                    if (title == "Bottom")
-                    {
-                        string IDC = row["Res"].ToString(); // this column only exist in bottom table
-                        string aC = IDC.Substring(0, 1); string bC = IDC.Substring(1, 1); string cC = IDC.Substring(2, 1);
-                        string dC = IDC.Substring(3, 1); string eC = IDC.Substring(4, 1); string fC = IDC.Substring(5, 1);
-                        string gC = IDC.Substring(6, 1); string hC = IDC.Substring(7, 1); string iC = IDC.Substring(8, 1);
-
-                        if (aC == "2") { hpC = Shared.bestColor; }
-                        if (bC == "2") { staminaC = Shared.bestColor; }
-                        if (cC == "2") { O2C = Shared.bestColor; }
-                        if (dC == "2") { foodC = Shared.bestColor; }
-                        if (eC == "2") { weightC = Shared.bestColor; }
-                        if (fC == "2") { damageC = Shared.bestColor; }
-                        if (gC == "2") { craftC = Shared.bestColor; }
-                        if (hC == "2") { regenC = Shared.bestColor; }
-                        if (iC == "2") { capacityC = Shared.bestColor; }
-
-
-                        if (!hasStamina) { bC = "2"; }
-                        if (!hasO2) { cC = "2"; }
-                        if (!hasCraft) { gC = "2"; }
-                        if (!hasCharge) { hC = "2"; }
-                        if (!hasCharge) { iC = "2"; }
-                        if ((aC + bC + cC + dC + eC + fC + gC + hC + iC) == "222222222")
-                        {
-                            // here is a golden offspring with all the best stats
-                            hpC = Shared.goldColor;
-                            staminaC = Shared.goldColor;
-                            O2C = Shared.goldColor;
-                            foodC = Shared.goldColor;
-                            weightC = Shared.goldColor;
-                            damageC = Shared.goldColor;
-                            craftC = Shared.goldColor;
-                            regenC = Shared.goldColor;
-                            capacityC = Shared.goldColor;
-                        }
-                    }
-
-                    bool hasMama = false; bool hasPapa = false;
-                    // if not missing and not unknown = something with a name
-                    if (!mama.Contains(Smap["Warning"]) && !mama.Contains(Smap["Unknown"])) { hasMama = true; }
-                    if (!papa.Contains(Smap["Warning"]) && !papa.Contains(Smap["Unknown"])) { hasPapa = true; }
-
-                    // check for stats that someone with a parent should or should not have
-                    if (hasMama || hasPapa)
-                    {
-                        bool warn = false;
-                        // if we have a parent generation cant be 0
-                        if (ToDouble(gen) < 1) { warn = true; }
-                        // also if we have a mutation generation cant be 0
-                        if (ToDouble(mamaM) > 0 && ToDouble(gen) < 1) { warn = true; }
-                        if (ToDouble(papaM) > 0 && ToDouble(gen) < 1) { warn = true; }
-                        if (warn) { gen = Smap["Warning"]; }
-                    }
-
-                    // mark all generation dependant data as invalid
-                    if (mama == Shared.Smap["Warning"] && papa == Shared.Smap["Warning"])
-                    {
-                        papaM = Shared.Smap["Warning"];
-                        mamaM = Shared.Smap["Warning"];
-                        gen = Shared.Smap["Warning"];
-                    }
-
-                    // replace empty imprinter string with tribe
-                    if (mama == "" && papa == "" && imprinter == "")
-                    {
-                        // get the tamer string instead of imprinter
-                        imprinter = DataManager.GetFirstColumnData("ID", id, "Tribe");
-                    }
-
-                    // Create a Labels
-                    var nameL = new Label { Text = name, TextColor = nameC };
-                    var levelL = new Label { Text = level, TextColor = levelC };
-                    //////////////
-                    var hpL = new Label { Text = hp, TextColor = hpC };
-                    var staminaL = new Label { Text = stamina, TextColor = staminaC };
-                    var O2L = new Label { Text = O2, TextColor = O2C };
-                    var foodL = new Label { Text = food, TextColor = foodC };
-                    var weightL = new Label { Text = weight, TextColor = weightC };
-                    var damageL = new Label { Text = damage, TextColor = damageC };
-                    var craftL = new Label { Text = craft, TextColor = craftC };
-                    var regenL = new Label { Text = regen, TextColor = regenC };
-                    var capacityL = new Label { Text = capacity, TextColor = capacityC };
-                    //////////////
-                    var speedL = new Label { Text = speed, TextColor = speedC };
-                    var statusL = new Label { Text = status, TextColor = defaultC };
-                    var genL = new Label { Text = gen, TextColor = defaultC };
-                    var papaL = new Label { Text = papa, TextColor = Shared.maleColor };
-                    var mamaL = new Label { Text = mama, TextColor = Shared.femaleColor };
-                    var papaML = new Label { Text = papaM, TextColor = Shared.maleColor };
-                    var mamaML = new Label { Text = mamaM, TextColor = Shared.femaleColor };
-                    var imprintL = new Label { Text = imprint, TextColor = defaultC };
-                    var imprinterL = new Label { Text = imprinter, TextColor = defaultC };
-
-                    bool selected = false;
-
-                    // Reset startID for new row
                     startID = 0;
+                    AddToGrid(grid, RowLabel("Name", title, row), rowIndex, startID++, title);
+                    AddToGrid(grid, RowLabel("Level", title, row), rowIndex, startID++, title);
 
-                    // Add base items to the grid
-                    AddToGrid(grid, nameL, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, levelL, rowIndex, startID++, title, selected, false, id);
-                    //-------------------
-                    AddToGrid(grid, hpL, rowIndex, startID++, title, selected, false, id);
-                    if (hasStamina) { AddToGrid(grid, staminaL, rowIndex, startID++, title, selected, false, id); }
-                    if (hasO2) { AddToGrid(grid, O2L, rowIndex, startID++, title, selected, false, id); }
-                    if (hasCharge) { AddToGrid(grid, regenL, rowIndex, startID++, title, selected, false, id); }
-                    if (hasCharge) { AddToGrid(grid, capacityL, rowIndex, startID++, title, selected, false, id); }
-                    AddToGrid(grid, foodL, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, weightL, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, damageL, rowIndex, startID++, title, selected, false, id);
-                    if (hasCraft) { AddToGrid(grid, craftL, rowIndex, startID++, title, selected, false, id); }
-                    //-------------------
-                    if (hasSpeed) { AddToGrid(grid, speedL, rowIndex, startID++, title, selected, false, id); }
-                    AddToGrid(grid, statusL, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, genL, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, papaL, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, mamaL, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, papaML, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, mamaML, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, imprintL, rowIndex, startID++, title, selected, false, id);
-                    AddToGrid(grid, imprinterL, rowIndex, startID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("Hp", title, row), rowIndex, startID++, title);
+                    if (hasStamina) { AddToGrid(grid, RowLabel("Stamina", title, row), rowIndex, startID++, title); }
+                    if (hasO2) { AddToGrid(grid, RowLabel("O2", title, row), rowIndex, startID++, title); }
+                    if (hasCharge) { AddToGrid(grid, RowLabel("Regen", title, row), rowIndex, startID++, title); }
+                    if (hasCharge) { AddToGrid(grid, RowLabel("Capacity", title, row), rowIndex, startID++, title); }
+                    AddToGrid(grid, RowLabel("Food", title, row), rowIndex, startID++, title);
+                    AddToGrid(grid, RowLabel("Weight", title, row), rowIndex, startID++, title);
+                    AddToGrid(grid, RowLabel("Damage", title, row), rowIndex, startID++, title);
+                    if (hasCraft) { AddToGrid(grid, RowLabel("Crafting", title, row), rowIndex, startID++, title); }
+                    if (hasSpeed) { AddToGrid(grid, RowLabel("Speed", title, row), rowIndex, startID++, title); }
+
+                    AddToGrid(grid, RowLabel("Status", title, row), rowIndex, startID++, title);
+                    AddToGrid(grid, RowLabel("Gen", title, row), rowIndex, startID++, title);
+                    AddToGrid(grid, RowLabel("Papa", title, row), rowIndex, startID++, title);
+                    AddToGrid(grid, RowLabel("Mama", title, row), rowIndex, startID++, title);
+                    AddToGrid(grid, RowLabel("PapaMute", title, row), rowIndex, startID++, title);
+                    AddToGrid(grid, RowLabel("MamaMute", title, row), rowIndex, startID++, title);
+                    AddToGrid(grid, RowLabel("Imprint", title, row), rowIndex, startID++, title);
+                    AddToGrid(grid, RowLabel("Imprinter", title, row), rowIndex, startID++, title);
 
                     rowIndex++;
                 }

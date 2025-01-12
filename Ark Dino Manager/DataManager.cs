@@ -1367,6 +1367,12 @@ namespace Ark_Dino_Manager
                     if (CapM >= CapacityMax) { CapacityMax = CapM; }
 
 
+                    // replace empty imprinter string with tribe
+                    if (mama == "" && papa == "" && imprinter == "")
+                    {
+                        // get the tamer string instead of imprinter
+                        imprinter = DataManager.GetFirstColumnData("ID", id, "Tribe");
+                    }
 
                     // Fill the DataRow
                     DataRow dr = table.NewRow();
