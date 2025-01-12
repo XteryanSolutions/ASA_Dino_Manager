@@ -117,7 +117,7 @@ namespace Ark_Dino_Manager
                 FemaleTable.Columns.Add("Food", typeof(double));
                 FemaleTable.Columns.Add("Weight", typeof(double));
                 FemaleTable.Columns.Add("Damage", typeof(double));
-                FemaleTable.Columns.Add("Crafting", typeof(double));
+                FemaleTable.Columns.Add("CraftSkill", typeof(double));
                 // ==============
                 FemaleTable.Columns.Add("Speed", typeof(double));
                 FemaleTable.Columns.Add("Gen", typeof(double));
@@ -154,7 +154,7 @@ namespace Ark_Dino_Manager
                 MaleTable.Columns.Add("Food", typeof(double));
                 MaleTable.Columns.Add("Weight", typeof(double));
                 MaleTable.Columns.Add("Damage", typeof(double));
-                MaleTable.Columns.Add("Crafting", typeof(double));
+                MaleTable.Columns.Add("CraftSkill", typeof(double));
                 // ==============
                 MaleTable.Columns.Add("Speed", typeof(double));
                 MaleTable.Columns.Add("Gen", typeof(double));
@@ -203,7 +203,7 @@ namespace Ark_Dino_Manager
                 BottomTable.Columns.Add("Imprint", typeof(double));
                 BottomTable.Columns.Add("Imprinter", typeof(string));
                 BottomTable.Columns.Add("ID", typeof(string));
-                BottomTable.Columns.Add("Crafting", typeof(double));
+                BottomTable.Columns.Add("CraftSkill", typeof(double));
                 BottomTable.Columns.Add("Mutes", typeof(string));
                 BottomTable.Columns.Add("Group", typeof(string));
                 BottomTable.Columns.Add("Res", typeof(string));
@@ -1389,7 +1389,7 @@ namespace Ark_Dino_Manager
                     dr["Food"] = FoodM;
                     dr["Weight"] = WeightM;
                     dr["Damage"] = DamageM;
-                    dr["Crafting"] = CraftM;
+                    dr["CraftSkill"] = CraftM;
                     //---------------------------
                     dr["Regen"] = RegM;
                     dr["Capacity"] = CapM;
@@ -1506,6 +1506,9 @@ namespace Ark_Dino_Manager
             sortiM = sortiM.Replace("Dmg", "Damage");
             sortiF = sortiF.Replace("Dmg", "Damage");
 
+            sortiM = sortiM.Replace("Craft", "CraftSkill");
+            sortiF = sortiF.Replace("Craft", "CraftSkill");
+
 
             // Sort the MaleTable based on the desired column
             DataView view1 = new DataView(MaleTable);
@@ -1600,7 +1603,7 @@ namespace Ark_Dino_Manager
                 double FoodC = ToDouble(rowC["Food"].ToString());
                 double WeightC = ToDouble(rowC["Weight"].ToString());
                 double DamageC = ToDouble(rowC["Damage"].ToString());
-                double CraftC = ToDouble(rowC["Crafting"].ToString());
+                double CraftC = ToDouble(rowC["CraftSkill"].ToString());
                 double RegenC = ToDouble(rowC["Regen"].ToString());
                 double CapacityC = ToDouble(rowC["Capacity"].ToString());
 
@@ -1641,7 +1644,7 @@ namespace Ark_Dino_Manager
                             double FoodW = ToDouble(rowW["Food"].ToString());
                             double WeightW = ToDouble(rowW["Weight"].ToString());
                             double DamageW = ToDouble(rowW["Damage"].ToString());
-                            double CraftW = ToDouble(rowW["Crafting"].ToString());
+                            double CraftW = ToDouble(rowW["CraftSkill"].ToString());
                             double RegenW = ToDouble(rowW["Regen"].ToString());
                             double CapacityW = ToDouble(rowW["Capacity"].ToString());
 
@@ -1722,7 +1725,7 @@ namespace Ark_Dino_Manager
                 double FoodC = ToDouble(rowC["Food"].ToString());
                 double WeightC = ToDouble(rowC["Weight"].ToString());
                 double DamageC = ToDouble(rowC["Damage"].ToString());
-                double CraftC = ToDouble(rowC["Crafting"].ToString());
+                double CraftC = ToDouble(rowC["CraftSkill"].ToString());
                 double RegenC = ToDouble(rowC["Regen"].ToString());
                 double CapacityC = ToDouble(rowC["Capacity"].ToString());
 
@@ -1880,7 +1883,7 @@ namespace Ark_Dino_Manager
                         double FoodM = ToDouble(rowM["Food"].ToString());
                         double WeightM = ToDouble(rowM["Weight"].ToString());
                         double DamageM = ToDouble(rowM["Damage"].ToString());
-                        double CraftM = ToDouble(rowM["Crafting"].ToString());
+                        double CraftM = ToDouble(rowM["CraftSkill"].ToString());
                         double RegenM = ToDouble(rowM["Regen"].ToString());
                         double CapacityM = ToDouble(rowM["Capacity"].ToString());
 
@@ -1901,7 +1904,7 @@ namespace Ark_Dino_Manager
                                 double FoodF = ToDouble(rowF["Food"].ToString());
                                 double WeightF = ToDouble(rowF["Weight"].ToString());
                                 double DamageF = ToDouble(rowF["Damage"].ToString());
-                                double CraftF = ToDouble(rowF["Crafting"].ToString());
+                                double CraftF = ToDouble(rowF["CraftSkill"].ToString());
                                 double GenF = ToDouble(rowF["Gen"].ToString());
                                 double levelF = ToDouble(rowF["Level"].ToString());
                                 double RegenF = ToDouble(rowF["Regen"].ToString());
@@ -1947,7 +1950,7 @@ namespace Ark_Dino_Manager
                 dr["Food"] = Food;
                 dr["Weight"] = Weight;
                 dr["Damage"] = Damage;
-                dr["Crafting"] = Craft;
+                dr["CraftSkill"] = Craft;
                 dr["Regen"] = Regen;
                 dr["Capacity"] = Capacity;
                 dr["Gen"] = Gen;

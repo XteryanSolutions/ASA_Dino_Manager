@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using static Ark_Dino_Manager.DataManager;
 using static Ark_Dino_Manager.Shared;
@@ -965,6 +966,9 @@ public partial class DinoPage : ContentPage
             }
         }
 
+        if (textL == "Mama") { headerColor = Shared.femaleColor; }
+        if (textL == "Papa") { headerColor = Shared.maleColor; }
+
         Label nameH = new Label { Text = $"{Smap[textL]}{textL}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
         if (title != "Bottom")
@@ -995,7 +999,7 @@ public partial class DinoPage : ContentPage
             if (column == "Food") { if (DataManager.ToDouble(rowText) + statOffset >= DataManager.FoodMax) { RowLabelColor = Shared.goodColor; } }
             if (column == "Weight") { if (DataManager.ToDouble(rowText) + statOffset >= DataManager.WeightMax) { RowLabelColor = Shared.goodColor; } }
             if (column == "Damage") { if (DataManager.ToDouble(rowText) + statOffset >= DataManager.DamageMax) { RowLabelColor = Shared.goodColor; } }
-            if (column == "Crafting") { if (DataManager.ToDouble(rowText) + statOffset >= DataManager.CraftMax) { RowLabelColor = Shared.goodColor; } }
+            if (column == "CraftSkill") { if (DataManager.ToDouble(rowText) + statOffset >= DataManager.CraftMax) { RowLabelColor = Shared.goodColor; } }
             if (column == "Regen") { if (DataManager.ToDouble(rowText) + statOffset >= DataManager.RegenMax) { RowLabelColor = Shared.goodColor; } }
             if (column == "Capacity") { if (DataManager.ToDouble(rowText) + statOffset >= DataManager.CapacityMax) { RowLabelColor = Shared.goodColor; } }
 
@@ -1024,7 +1028,7 @@ public partial class DinoPage : ContentPage
                     if (column == "Food") { if (dC == "2") { RowLabelColor = Shared.bestColor; } }
                     if (column == "Weight") { if (eC == "2") { RowLabelColor = Shared.bestColor; } }
                     if (column == "Damage") { if (fC == "2") { RowLabelColor = Shared.bestColor; } }
-                    if (column == "Crafting") { if (gC == "2") { RowLabelColor = Shared.bestColor; } }
+                    if (column == "CraftSkill") { if (gC == "2") { RowLabelColor = Shared.bestColor; } }
                     if (column == "Regen") { if (hC == "2") { RowLabelColor = Shared.bestColor; } }
                     if (column == "Capacity") { if (iC == "2") { RowLabelColor = Shared.bestColor; } }
 
@@ -1033,7 +1037,7 @@ public partial class DinoPage : ContentPage
                     if (!hasCraft) { gC = "2"; }
                     if (!hasCharge) { hC = "2"; iC = "2"; }
 
-                    if (column == "Hp" || column == "Stamina" || column == "O2" || column == "Food" || column == "Weight" || column == "Damage" || column == "Crafting" || column == "Regen" || column == "Capacity")
+                    if (column == "Hp" || column == "Stamina" || column == "O2" || column == "Food" || column == "Weight" || column == "Damage" || column == "CraftSkill" || column == "Regen" || column == "Capacity")
                     {
                         if ((aC + bC + cC + dC + eC + fC + gC + hC + iC) == "222222222") { RowLabelColor = Shared.goldColor; }
                     }
@@ -1056,7 +1060,7 @@ public partial class DinoPage : ContentPage
                     if (column == "Food") { aC = mutes.Substring(3, 1); testStat = FoodMax; }
                     if (column == "Weight") { aC = mutes.Substring(4, 1); testStat = WeightMax; }
                     if (column == "Damage") { aC = mutes.Substring(5, 1); testStat = DamageMax; }
-                    if (column == "Crafting") { aC = mutes.Substring(6, 1); testStat = CraftMax; }
+                    if (column == "CraftSkill") { aC = mutes.Substring(6, 1); testStat = CraftMax; }
                     if (column == "Regen") { aC = mutes.Substring(7, 1); testStat = RegenMax; }
                     if (column == "Capacity") { aC = mutes.Substring(8, 1); testStat = CapacityMax; }
 
@@ -1070,7 +1074,12 @@ public partial class DinoPage : ContentPage
         {
             rowText = rowText.Replace("#", Shared.Smap["Identical"]);
             rowText = rowText.Replace("<", Shared.Smap["LessThan"]);
+
+            string notes = DataManager.GetNotes(id);
+            if (notes != "") { rowText +=  Shared.Smap["Notes"]; }
         }
+        if (column == "Mama")  {  RowLabelColor = Shared.femaleColor;  }
+        if (column == "Papa") { RowLabelColor = Shared.maleColor; }
 
         Label OutLabel = new Label { Text = rowText, TextColor = RowLabelColor };
 
@@ -1095,7 +1104,7 @@ public partial class DinoPage : ContentPage
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 4  O2 / Capacity
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 5  Food
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 6  Damage
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 7  Craft
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 7  CraftSkill
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 8  Status
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 9  Gen
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 10 Papa
@@ -1131,7 +1140,7 @@ public partial class DinoPage : ContentPage
                 AddToGrid(grid, HeaderLabel("Food", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Weight", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Dmg", title), rowIndex, columnID++, title);
-                if (hasCraft) { AddToGrid(grid, HeaderLabel("Crafting", title), rowIndex, columnID++, title); }
+                if (hasCraft) { AddToGrid(grid, HeaderLabel("Craft", title), rowIndex, columnID++, title); }
                 if (hasSpeed) { AddToGrid(grid, HeaderLabel("Speed", title), rowIndex, columnID++, title); }
                 AddToGrid(grid, HeaderLabel("Status", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Gen", title), rowIndex, columnID++, title);
@@ -1169,7 +1178,7 @@ public partial class DinoPage : ContentPage
                     AddToGrid(grid, RowLabel("Food", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Weight", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Damage", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
-                    if (hasCraft) { AddToGrid(grid, RowLabel("Crafting", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
+                    if (hasCraft) { AddToGrid(grid, RowLabel("CraftSkill", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
                     if (hasSpeed) { AddToGrid(grid, RowLabel("Speed", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
                     AddToGrid(grid, RowLabel("Status", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Gen", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
@@ -1218,7 +1227,7 @@ public partial class DinoPage : ContentPage
                 AddToGrid(grid, HeaderLabel("Food", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Weight", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Dmg", title), rowIndex, columnID++, title);
-                if (hasCraft) { AddToGrid(grid, HeaderLabel("Crafting", title), rowIndex, columnID++, title); }
+                if (hasCraft) { AddToGrid(grid, HeaderLabel("Craft", title), rowIndex, columnID++, title); }
                 if (hasSpeed) { AddToGrid(grid, HeaderLabel("Speed", title), rowIndex, columnID++, title); }
                 AddToGrid(grid, HeaderLabel("Status", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Gen", title), rowIndex, columnID++, title);
@@ -1254,7 +1263,7 @@ public partial class DinoPage : ContentPage
                     AddToGrid(grid, RowLabel("Food", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Weight", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Damage", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
-                    if (hasCraft) { AddToGrid(grid, RowLabel("Crafting", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
+                    if (hasCraft) { AddToGrid(grid, RowLabel("CraftSkill", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
                     if (hasSpeed) { AddToGrid(grid, RowLabel("Speed", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
                     AddToGrid(grid, RowLabel("Status", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Gen", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
@@ -1284,7 +1293,7 @@ public partial class DinoPage : ContentPage
             AddToGrid(grid, HeaderLabel("Food", title), rowIndex, columnID++, title);
             AddToGrid(grid, HeaderLabel("Weight", title), rowIndex, columnID++, title);
             AddToGrid(grid, HeaderLabel("Dmg", title), rowIndex, columnID++, title);
-            if (hasCraft) { AddToGrid(grid, HeaderLabel("Crafting", title), rowIndex, columnID++, title); }
+            if (hasCraft) { AddToGrid(grid, HeaderLabel("CraftSkill", title), rowIndex, columnID++, title); }
             if (hasSpeed) { AddToGrid(grid, HeaderLabel("Speed", title), rowIndex, columnID++, title); }
             AddToGrid(grid, HeaderLabel("Status", title), rowIndex, columnID++, title);
             AddToGrid(grid, HeaderLabel("Gen", title), rowIndex, columnID++, title);
@@ -1308,7 +1317,7 @@ public partial class DinoPage : ContentPage
                 AddToGrid(grid, RowLabel("Food", title, row), rowIndex, columnID++, title);
                 AddToGrid(grid, RowLabel("Weight", title, row), rowIndex, columnID++, title);
                 AddToGrid(grid, RowLabel("Damage", title, row), rowIndex, columnID++, title);
-                if (hasCraft) { AddToGrid(grid, RowLabel("Crafting", title, row), rowIndex, columnID++, title); }
+                if (hasCraft) { AddToGrid(grid, RowLabel("CraftSkill", title, row), rowIndex, columnID++, title); }
                 if (hasSpeed) { AddToGrid(grid, RowLabel("Speed", title, row), rowIndex, columnID++, title); }
 
                 AddToGrid(grid, RowLabel("Status", title, row), rowIndex, columnID++, title);
