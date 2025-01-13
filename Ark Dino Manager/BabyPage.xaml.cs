@@ -700,7 +700,7 @@ public partial class BabyPage : ContentPage
             double age2D = DataManager.ToDouble(age2);
             if (age2D > 0)
             {
-                cellColor4 = goodColor;
+                cellColor4 = SecondaryColor;
             }
 
             rateT = $"{ageRateHr} %/hr";
@@ -747,6 +747,15 @@ public partial class BabyPage : ContentPage
                 gen = Shared.Smap["Warning"];
             }
 
+
+            if (ageD >= 100 || ageF >= 100 || totalMinutes < 0) 
+            { 
+                cellColor2 = TrinaryColor;
+                cellColor3 = TrinaryColor;
+                cellColor5 = TrinaryColor;
+            }
+
+            
 
             // Create a Labels
             var tagL = new Label { Text = dinoClass, TextColor = cellColor0 };
