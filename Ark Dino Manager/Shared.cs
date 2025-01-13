@@ -71,11 +71,15 @@
     };
 
 
-        //offset for preventing excessive mutation triggers
+        //offset when detecting mutations (if dino stat != parents +- offset)
         public static int muteOffset = 10;
 
-        // offset for a stat considered good enough
+        // offset for a stat considered good enough (if dino stat + offset >= maxStat)
         public static int statOffset = 1;
+
+        // offset for viewing stats 
+        public static int statViewOffset = 1;
+
 
         // Benchmark stuff
         public static int loadCount = 0;

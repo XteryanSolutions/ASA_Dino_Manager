@@ -1,6 +1,4 @@
-﻿using Microsoft.Maui.ApplicationModel;
-using System.Data;
-using System.Data.Common;
+﻿using System.Data;
 using System.Globalization;
 
 namespace Ark_Dino_Manager
@@ -1167,6 +1165,36 @@ namespace Ark_Dino_Manager
             }
         }
 
+        private static double StatToLevel(double inputStat, double baseStat, double statRate)
+        {
+            return (inputStat - baseStat) / statRate;
+        }
+
+        public static double PointsFromStat(string dinoClass, string statString, double inStat , double defaultOut = 0)
+        {
+            if (!StatPoints.Groups.ContainsKey(dinoClass) || !StatPoints.Groups[dinoClass].ContainsKey(statString))
+            {
+                return defaultOut; // Default value if the stat doesn't exist
+            }
+
+            var dinoStats = StatPoints.Groups[dinoClass][statString];
+
+            double hpPoints = StatToLevel(inStat, dinoStats.BaseStat, dinoStats.StatRate);
+
+            return hpPoints;
+        }
+
+        public static void ConvertPoints(string dinoClass)
+        {
+            // Convert Hp stat to Points for a Gacha with 4200hp
+            var dinoHpStats = StatPoints.Groups[dinoClass]["Hp"];
+
+
+            double hpPoints = StatToLevel(4200, dinoHpStats.BaseStat, dinoHpStats.StatRate);
+
+
+        }
+
         private static void ProcessDinos(string[] dinos, List<string[]> FirstStats, List<string[]> LastStats, DataTable table, int toggle, bool baby = false)
         {
             int rowID = 0;
@@ -1660,7 +1688,7 @@ namespace Ark_Dino_Manager
                             if (CapacityW + Shared.statOffset >= DataManager.CapacityMax && hasCharge) { iW = "1"; }
 
 
-                            string binaryW = aW + bW + cW + dW + eW + fW + gW +hW + iW;
+                            string binaryW = aW + bW + cW + dW + eW + fW + gW + hW + iW;
 
                             // now that we have both binary strings compare them to figure out if the compare is superceeded or not
                             string aA = "0"; string bA = "0"; string cA = "0";

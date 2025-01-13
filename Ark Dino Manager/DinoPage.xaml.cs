@@ -1,5 +1,4 @@
 ﻿using System.Data;
-using System.Data.Common;
 using System.Diagnostics;
 using static Ark_Dino_Manager.DataManager;
 using static Ark_Dino_Manager.Shared;
@@ -446,7 +445,7 @@ public partial class DinoPage : ContentPage
         if (rowText == "Capacity") { tesValue = DataManager.CapacityMax; }
 
 
-        if (DataManager.ToDouble(value) >= (tesValue - 0.1)) { fontColor = Shared.goodColor; }
+        if ((DataManager.ToDouble(value) + statViewOffset) >= tesValue) { fontColor = Shared.goodColor; }
 
         // mutation detection overrides normal coloring -> mutaColor
         string mutes = DataManager.GetMutes(selectedID);
@@ -466,6 +465,31 @@ public partial class DinoPage : ContentPage
         if (what != "D") { rowText = value; }
 
         Label outLabel = new Label { Text = rowText, TextColor = fontColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+
+        return outLabel;
+    }
+
+    private Label EditRowPoints(string rowText, Color fontColor)
+    {
+        string sep = DataManager.DecimalSeparator;
+        string tester = rowText.Replace("O2", "Oxygen");
+        tester = tester.Replace("Regen", "ChargeRegen");
+        tester = tester.Replace("Capacity", "ChargeCapacity");
+
+        string value = DataManager.GetFirstColumnData("ID", selectedID, tester).Replace(".", sep);
+
+        double putz = ToDouble(value);
+
+        if (rowText == "Damage") { putz = (ToDouble(value) + 1) * 100; }
+        if (rowText == "CraftSkill") { putz = (ToDouble(value) + 1) * 100; }
+
+
+        string shorClass = LongClassToShort(selectedClass);
+
+        double point = Math.Round(PointsFromStat(shorClass, rowText, putz), 0, MidpointRounding.ToNegativeInfinity);
+
+
+        Label outLabel = new Label { Text = point.ToString(), TextColor = fontColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
 
         return outLabel;
     }
@@ -565,6 +589,7 @@ public partial class DinoPage : ContentPage
         // Define row definitions
         maingrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // Scrollable content
 
+        // PointsFromStat(string dinoClass, string statString, double inStat , double defaultOut = 0)
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         if (dinoCount > 0 && !isDouble && !showTree) // more than 0 dinos and not double clicked and not in showTree
@@ -628,6 +653,7 @@ public partial class DinoPage : ContentPage
             statGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 1
             statGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 2
             statGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 3
+            statGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 4
 
 
             // Get info about selected dino
@@ -657,6 +683,7 @@ public partial class DinoPage : ContentPage
             AddToGrid(statGrid, EditHeader("Breeding Stats", DefaultColor), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditHeader(papaName, Shared.maleColor), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditHeader(mamaName, Shared.femaleColor), rowID, colID++, "", false, true);
+            //AddToGrid(statGrid, EditHeader("Points", DefaultColor), rowID, colID++, "", false, true);
 
             labelT = "Level"; rowID++; colID = 0;
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
@@ -669,60 +696,70 @@ public partial class DinoPage : ContentPage
             AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
+            //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
 
             labelT = "Stamina"; rowID++; colID = 0;
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
+            //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
 
             labelT = "O2"; rowID++; colID = 0;
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
+            //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
 
             labelT = "Food"; rowID++; colID = 0;
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
+            //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
 
             labelT = "Weight"; rowID++; colID = 0;
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
+            //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
 
             labelT = "Damage"; rowID++; colID = 0;
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
+            //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
 
             labelT = "Speed"; rowID++; colID = 0;
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
+            //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
 
             labelT = "CraftSkill"; rowID++; colID = 0;
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
+            //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
 
             labelT = "Regen"; rowID++; colID = 0;
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
+            //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
 
             labelT = "Capacity"; rowID++; colID = 0;
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
+            //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
 
 
             scrollContent.Children.Add(statGrid);
@@ -988,20 +1025,24 @@ public partial class DinoPage : ContentPage
 
         string rowText = row[column].ToString();
 
-        if (rowText == "") { column = Smap["Missing"]; }
+        if (rowText == "")
+        {
+            // this puts missing symbol in bottom panel
+            //  rowText = Smap["Missing"]; 
+        }
         else
         {
 
             // Override coloring on breeding stats
-            if (column == "Hp") { if (DataManager.ToDouble(rowText) + statOffset >= DataManager.HpMax) { RowLabelColor = Shared.goodColor; } }
-            if (column == "Stamina") { if (DataManager.ToDouble(rowText) + statOffset >= DataManager.StaminaMax) { RowLabelColor = Shared.goodColor; } }
-            if (column == "O2") { if (DataManager.ToDouble(rowText) + statOffset >= DataManager.O2Max) { RowLabelColor = Shared.goodColor; } }
-            if (column == "Food") { if (DataManager.ToDouble(rowText) + statOffset >= DataManager.FoodMax) { RowLabelColor = Shared.goodColor; } }
-            if (column == "Weight") { if (DataManager.ToDouble(rowText) + statOffset >= DataManager.WeightMax) { RowLabelColor = Shared.goodColor; } }
-            if (column == "Damage") { if (DataManager.ToDouble(rowText) + statOffset >= DataManager.DamageMax) { RowLabelColor = Shared.goodColor; } }
-            if (column == "CraftSkill") { if (DataManager.ToDouble(rowText) + statOffset >= DataManager.CraftMax) { RowLabelColor = Shared.goodColor; } }
-            if (column == "Regen") { if (DataManager.ToDouble(rowText) + statOffset >= DataManager.RegenMax) { RowLabelColor = Shared.goodColor; } }
-            if (column == "Capacity") { if (DataManager.ToDouble(rowText) + statOffset >= DataManager.CapacityMax) { RowLabelColor = Shared.goodColor; } }
+            if (column == "Hp") { if (DataManager.ToDouble(rowText) + statViewOffset >= DataManager.HpMax) { RowLabelColor = Shared.goodColor; } }
+            if (column == "Stamina") { if (DataManager.ToDouble(rowText) + statViewOffset >= DataManager.StaminaMax) { RowLabelColor = Shared.goodColor; } }
+            if (column == "O2") { if (DataManager.ToDouble(rowText) + statViewOffset >= DataManager.O2Max) { RowLabelColor = Shared.goodColor; } }
+            if (column == "Food") { if (DataManager.ToDouble(rowText) + statViewOffset >= DataManager.FoodMax) { RowLabelColor = Shared.goodColor; } }
+            if (column == "Weight") { if (DataManager.ToDouble(rowText) + statViewOffset >= DataManager.WeightMax) { RowLabelColor = Shared.goodColor; } }
+            if (column == "Damage") { if (DataManager.ToDouble(rowText) + statViewOffset >= DataManager.DamageMax) { RowLabelColor = Shared.goodColor; } }
+            if (column == "CraftSkill") { if (DataManager.ToDouble(rowText) + statViewOffset >= DataManager.CraftMax) { RowLabelColor = Shared.goodColor; } }
+            if (column == "Regen") { if (DataManager.ToDouble(rowText) + statViewOffset >= DataManager.RegenMax) { RowLabelColor = Shared.goodColor; } }
+            if (column == "Capacity") { if (DataManager.ToDouble(rowText) + statViewOffset >= DataManager.CapacityMax) { RowLabelColor = Shared.goodColor; } }
 
             if (title == "Bottom")
             {
@@ -1076,9 +1117,9 @@ public partial class DinoPage : ContentPage
             rowText = rowText.Replace("<", Shared.Smap["LessThan"]);
 
             string notes = DataManager.GetNotes(id);
-            if (notes != "") { rowText +=  Shared.Smap["Notes"]; }
+            if (notes != "") { rowText += Shared.Smap["Notes"]; }
         }
-        if (column == "Mama")  {  RowLabelColor = Shared.femaleColor;  }
+        if (column == "Mama") { RowLabelColor = Shared.femaleColor; }
         if (column == "Papa") { RowLabelColor = Shared.maleColor; }
 
         Label OutLabel = new Label { Text = rowText, TextColor = RowLabelColor };
