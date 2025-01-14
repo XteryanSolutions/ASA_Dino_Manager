@@ -123,7 +123,7 @@ public partial class ArchivePage : ContentPage
             Padding = 3
         };
 
-        var image1 = new Image { Source = "dino.png", HeightRequest = 400, Aspect = Aspect.AspectFit, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start };
+        var image1 = new Image { Source = "bigegg.png", HeightRequest = 400, Aspect = Aspect.AspectFit, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start };
 
         var label1 = new Label { Text = labelText, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start, FontAttributes = FontAttributes.Bold, TextColor = Shared.PrimaryColor, FontSize = 22 };
 
@@ -309,20 +309,20 @@ public partial class ArchivePage : ContentPage
         string downChar = Smap["SortDown"];
 
 
-        sortChar = ""; if (newTest == $"{Smap["ID"]}") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var idH = new Label { Text = $"{Smap["ID"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
+        sortChar = ""; if (newTest == $"{StatMap["ID"]}") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var idH = new Label { Text = $"{StatMap["ID"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
 
-        sortChar = ""; if (newTest == $"{Smap["Tag"]}") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var tagH = new Label { Text = $"{Smap["Tag"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
+        sortChar = ""; if (newTest == $"{StatMap["Tag"]}") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var tagH = new Label { Text = $"{StatMap["Tag"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
 
-        sortChar = ""; if (newTest == $"{Smap["Name"]}") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var nameH = new Label { Text = $"{Smap["Name"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
+        sortChar = ""; if (newTest == $"{StatMap["Name"]}") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var nameH = new Label { Text = $"{StatMap["Name"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
 
-        sortChar = ""; if (newTest == $"{Smap["Level"]}") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var levelH = new Label { Text = $"{Smap["Level"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
+        sortChar = ""; if (newTest == $"{StatMap["Level"]}") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var levelH = new Label { Text = $"{StatMap["Level"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
 
-        sortChar = ""; if (newTest == $"{Smap["Class"]}") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var classH = new Label { Text = $"{Smap["Class"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
+        sortChar = ""; if (newTest == $"{StatMap["Class"]}") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var classH = new Label { Text = $"{StatMap["Class"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
 
 
         // Add header row

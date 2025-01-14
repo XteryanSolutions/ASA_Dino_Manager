@@ -23,22 +23,12 @@
         public static int doubleClick = 500;
 
 
-        // symbols have to be unique
-        public static readonly Dictionary<string, string> Smap = new Dictionary<string, string>
+        // column symbols have to be unique for sorting purposes
+        public static readonly Dictionary<string, string> StatMap = new Dictionary<string, string>
     {
-        { "Unknown", "❔" },
-        { "Warning", "⚠" },
-        { "Missing", "❓" },
-        { "Garbage", "💩" },
-        { "NewTame", "🧬" },
-        { "Age", "🐤" },
-        { "Grown", "🦖" },
-        { "LessThan", "📉" },
-        { "Identical", "🔀" },
-        { "Notes", "📋" },
-        { "Time", "⌛" },
-        { "Rate", "📶" },
-        { "Date", "📆" },
+        { "ID", "💳" },
+        { "Tag", "🔖" },
+        { "Class", "📚" },
         { "Name", "🔤" },
         { "Level", "💯" },
         { "Hp", "💚" },
@@ -57,14 +47,31 @@
         { "Status", "📑" },
         { "Imprint", "💖" },
         { "Imprinter", "💑" },
-        { "Class", "📚" },
-        { "SortUp", "▲" },
-        { "SortDown", "▼" },
-        { "ID", "💳" },
-        { "Tag", "🔖" },
+        { "Age", "🐣" },
+        { "Time", "⌛" },
+        { "Rate", "📶" },
+        { "Date", "📆" },
         { "Regen", "🔌" },
         { "Capacity", "🔋" },
-        { "Group", "🔗" },
+        { "Group", "🔗" }
+    };
+
+
+        // symbols
+        public static readonly Dictionary<string, string> Smap = new Dictionary<string, string>
+    {
+        { "Unknown", "❔" },
+        { "Warning", "⚠" },
+        { "Missing", "❓" },
+        { "Garbage", "💩" },
+        { "NewTame", "🧬" },
+        { "Baby", "🐣" },
+        { "Grown", "🦖" },
+        { "LessThan", "📉" },
+        { "Identical", "🔀" },
+        { "Notes", "📋" },
+        { "SortUp", "▲" },
+        { "SortDown", "▼" },
         { "Breeding", "🐣" },
         { "Current", "🐓" },
         { "Back", "🔙" },
@@ -73,10 +80,10 @@
         { "All", "📚" },
         { "Include", "📗" },
         { "Exclude", "📘" },
-        { "Archive", "🗑" },
-        { "Restore", "❎" },
-        { "Purge", "🔥" },
-        { "PurgeAll", "🧨" },
+        { "Archive", "🧨" },
+        { "Restore", "📗" },
+        { "Purge", "🧨" },
+        { "PurgeAll", "⛔" },
     };
 
 

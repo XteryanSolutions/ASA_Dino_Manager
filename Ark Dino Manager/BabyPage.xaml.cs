@@ -98,7 +98,7 @@ public partial class BabyPage : ContentPage
             Padding = 3
         };
 
-        var image1 = new Image { Source = "dino.png", HeightRequest = 400, Aspect = Aspect.AspectFit, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start };
+        var image1 = new Image { Source = "bigegg.png", HeightRequest = 400, Aspect = Aspect.AspectFit, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start };
         var label1 = new Label { Text = labelText, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start, FontAttributes = FontAttributes.Bold, TextColor = Shared.PrimaryColor, FontSize = 22 };
 
 
@@ -473,8 +473,8 @@ public partial class BabyPage : ContentPage
 
             var image = new Image
             {
-                Source = "dino.png",
-                HeightRequest = 400,
+                Source = "crystalegg.png",
+                HeightRequest = 200,
                 Aspect = Aspect.AspectFit
             };
 
@@ -568,39 +568,39 @@ public partial class BabyPage : ContentPage
         // int[] cellW = { 110, 100 }; // maybe figure out the max width of any cells
 
 
-        if (newTest == $"{Smap["Class"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var tagH = new Label { Text = $"{Smap["Class"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["Name"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var nameH = new Label { Text = $"{Smap["Name"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["Level"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var levelH = new Label { Text = $"{Smap["Level"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["Age"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var ageH = new Label { Text = $"{Smap["Age"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["Time"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var timeH = new Label { Text = $"{Smap["Time"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["Rate"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var rateH = new Label { Text = $"{Smap["Rate"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        if (newTest == $"{StatMap["Class"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var tagH = new Label { Text = $"{StatMap["Class"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{StatMap["Name"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var nameH = new Label { Text = $"{StatMap["Name"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{StatMap["Level"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var levelH = new Label { Text = $"{StatMap["Level"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{StatMap["Age"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var ageH = new Label { Text = $"{StatMap["Age"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{StatMap["Time"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var timeH = new Label { Text = $"{StatMap["Time"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{StatMap["Rate"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var rateH = new Label { Text = $"{StatMap["Rate"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         // no need to sort date
-        var dateH = new Label { Text = $"{Smap["Date"]}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var dateH = new Label { Text = $"{StatMap["Date"]}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
-        sortChar = ""; if (newTest == $"{Smap["Status"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var statusH = new Label { Text = $"{Smap["Status"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["Gen"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var genH = new Label { Text = $"{Smap["Gen"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["Papa"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var papaH = new Label { Text = $"{Smap["Papa"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleHeaderColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["Mama"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var mamaH = new Label { Text = $"{Smap["Mama"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.femaleHeaderColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["pM"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var papamH = new Label { Text = $"{Smap["pM"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleHeaderColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["mM"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var mamamH = new Label { Text = $"{Smap["mM"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.femaleHeaderColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["Imprint"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var imprintH = new Label { Text = $"{Smap["Imprint"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["Imprinter"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var imprinterH = new Label { Text = $"{Smap["Imprinter"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{StatMap["Status"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var statusH = new Label { Text = $"{StatMap["Status"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{StatMap["Gen"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var genH = new Label { Text = $"{StatMap["Gen"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{StatMap["Papa"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var papaH = new Label { Text = $"{StatMap["Papa"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleHeaderColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{StatMap["Mama"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var mamaH = new Label { Text = $"{StatMap["Mama"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.femaleHeaderColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{StatMap["pM"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var papamH = new Label { Text = $"{StatMap["pM"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleHeaderColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{StatMap["mM"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var mamamH = new Label { Text = $"{StatMap["mM"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.femaleHeaderColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{StatMap["Imprint"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var imprintH = new Label { Text = $"{StatMap["Imprint"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{StatMap["Imprinter"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var imprinterH = new Label { Text = $"{StatMap["Imprinter"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
-        var groupH = new Label { Text = $"{Smap["Group"]}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var groupH = new Label { Text = $"{StatMap["Group"]}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
 
         // make columns sortable

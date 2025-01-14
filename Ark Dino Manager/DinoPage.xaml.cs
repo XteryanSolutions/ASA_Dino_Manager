@@ -968,7 +968,7 @@ public partial class DinoPage : ContentPage
         string upChar = Smap["SortUp"];
         string downChar = Smap["SortDown"];
 
-        if (sortString == $"{Smap[textL]}")
+        if (sortString == $"{StatMap[textL]}")
         {
             if (tableSort.Contains("ASC"))
             {
@@ -983,7 +983,7 @@ public partial class DinoPage : ContentPage
         if (textL == "Mama") { headerColor = Shared.femaleColor; }
         if (textL == "Papa") { headerColor = Shared.maleColor; }
 
-        Label nameH = new Label { Text = $"{Smap[textL]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        Label nameH = new Label { Text = $"{StatMap[textL]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
         if (title != "Bottom")
         {
@@ -1109,9 +1109,9 @@ public partial class DinoPage : ContentPage
                 string age = row["Age"].ToString();
                 if (ToDouble(age) < 100) // recolor if its a garbage dino
                 {
-                    if (!rowText.Contains(Smap["Age"]))
+                    if (!rowText.Contains(Smap["Baby"]))
                     {
-                        rowText = Shared.Smap["Age"] + rowText;
+                        rowText = Shared.Smap["Baby"] + rowText;
                     }
                 }
             }

@@ -1341,7 +1341,7 @@ namespace Ark_Dino_Manager
                         if (lastAge < 100)
                         {
                             DateTime firstTimeD = DateTime.ParseExact(firstTime, "dd/MM/yyyy HH:mm:ss", null);
-                            status = $"{Shared.Smap["Age"]}" + ConvertUtcToLocal(firstTimeD.ToString("dd/MM/yyyy HH:mm:ss"));
+                            status = $"{Shared.Smap["Baby"]}" + ConvertUtcToLocal(firstTimeD.ToString("dd/MM/yyyy HH:mm:ss"));
                         }
                         else
                         {
@@ -1513,13 +1513,13 @@ namespace Ark_Dino_Manager
 
             if (baby)
             {
-                sortiM = ReplaceSymbols(sortiM, Shared.Smap, true);
-                sortiF = ReplaceSymbols(sortiF, Shared.Smap, true);
+                sortiM = ReplaceSymbols(sortiM, Shared.StatMap, true);
+                sortiF = ReplaceSymbols(sortiF, Shared.StatMap, true);
             }
             else
             {
-                sortiM = ReplaceSymbols(sortiM, Shared.Smap);
-                sortiF = ReplaceSymbols(sortiF, Shared.Smap);
+                sortiM = ReplaceSymbols(sortiM, Shared.StatMap);
+                sortiF = ReplaceSymbols(sortiF, Shared.StatMap);
             }
 
             // Sort the MaleTable based on the desired column
@@ -1618,7 +1618,7 @@ namespace Ark_Dino_Manager
             }
 
             // remove symbols to use correct name in sorting
-            sortC = ReplaceSymbols(sortC, Shared.Smap);
+            sortC = ReplaceSymbols(sortC, Shared.StatMap);
 
 
             // Sort the MaleTable based on the desired column
