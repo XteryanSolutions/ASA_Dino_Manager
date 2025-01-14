@@ -309,20 +309,20 @@ public partial class ArchivePage : ContentPage
         string downChar = Smap["SortDown"];
 
 
-        sortChar = ""; if (newTest == $"{Smap["ID"]}ID") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var idH = new Label { Text = $"{Smap["ID"]}ID{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
+        sortChar = ""; if (newTest == $"{Smap["ID"]}") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var idH = new Label { Text = $"{Smap["ID"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
 
-        sortChar = ""; if (newTest == $"{Smap["Tag"]}Tag") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var tagH = new Label { Text = $"{Smap["Tag"]}Tag{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
+        sortChar = ""; if (newTest == $"{Smap["Tag"]}") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var tagH = new Label { Text = $"{Smap["Tag"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
 
-        sortChar = ""; if (newTest == $"{Smap["Name"]}Name") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var nameH = new Label { Text = $"{Smap["Name"]}Name{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
+        sortChar = ""; if (newTest == $"{Smap["Name"]}") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var nameH = new Label { Text = $"{Smap["Name"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
 
-        sortChar = ""; if (newTest == $"{Smap["Level"]}Level") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var levelH = new Label { Text = $"{Smap["Level"]}Level{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
+        sortChar = ""; if (newTest == $"{Smap["Level"]}") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var levelH = new Label { Text = $"{Smap["Level"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
 
-        sortChar = ""; if (newTest == $"{Smap["Class"]}Class") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var classH = new Label { Text = $"{Smap["Class"]}Class{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
+        sortChar = ""; if (newTest == $"{Smap["Class"]}") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var classH = new Label { Text = $"{Smap["Class"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
 
 
         // Add header row

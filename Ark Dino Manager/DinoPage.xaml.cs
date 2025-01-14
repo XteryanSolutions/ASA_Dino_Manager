@@ -194,7 +194,7 @@ public partial class DinoPage : ContentPage
         mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // 0
 
 
-        mainLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = 100 }); // 0
+        mainLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = 100 }); // 0 // width of the sidepanel
         mainLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 1
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -302,6 +302,7 @@ public partial class DinoPage : ContentPage
 
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
+
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // Scrollable content
 
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Scrollable content
@@ -335,6 +336,7 @@ public partial class DinoPage : ContentPage
 
         if (CurrentStats) { StatsBtnText = "Current"; StatsBtnColor = Shared.SecondaryColor; }
 
+        var BackBtn = new Button { Text = "Back", BackgroundColor = Shared.PrimaryColor };
 
         if (isDouble)
         {
@@ -342,14 +344,11 @@ public partial class DinoPage : ContentPage
             SaveBtn.Clicked += SaveBtnClicked;
             AddToGrid(grid, SaveBtn, 0, 0);
 
-
-            var BackBtn = new Button { Text = "Back", BackgroundColor = Shared.PrimaryColor };
             BackBtn.Clicked += BackBtnClicked;
             AddToGrid(grid, BackBtn, 1, 0);
         }
         else if (showTree)
         {
-            var BackBtn = new Button { Text = "Back", BackgroundColor = Shared.PrimaryColor };
             BackBtn.Clicked += BackBtnClicked;
             AddToGrid(grid, BackBtn, 0, 0);
         }
@@ -465,31 +464,6 @@ public partial class DinoPage : ContentPage
         if (what != "D") { rowText = value; }
 
         Label outLabel = new Label { Text = rowText, TextColor = fontColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
-
-        return outLabel;
-    }
-
-    private Label EditRowPoints(string rowText, Color fontColor)
-    {
-        string sep = DataManager.DecimalSeparator;
-        string tester = rowText.Replace("O2", "Oxygen");
-        tester = tester.Replace("Regen", "ChargeRegen");
-        tester = tester.Replace("Capacity", "ChargeCapacity");
-
-        string value = DataManager.GetFirstColumnData("ID", selectedID, tester).Replace(".", sep);
-
-        double putz = ToDouble(value);
-
-        if (rowText == "Damage") { putz = (ToDouble(value) + 1) * 100; }
-        if (rowText == "CraftSkill") { putz = (ToDouble(value) + 1) * 100; }
-
-
-        string shorClass = LongClassToShort(selectedClass);
-
-        double point = Math.Round(PointsFromStat(shorClass, rowText, putz), 0, MidpointRounding.ToNegativeInfinity);
-
-
-        Label outLabel = new Label { Text = point.ToString(), TextColor = fontColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
 
         return outLabel;
     }
@@ -991,7 +965,7 @@ public partial class DinoPage : ContentPage
         string upChar = Smap["SortUp"];
         string downChar = Smap["SortDown"];
 
-        if (sortString == $"{Smap[textL]}{textL}")
+        if (sortString == $"{Smap[textL]}")
         {
             if (tableSort.Contains("ASC"))
             {
@@ -1006,7 +980,7 @@ public partial class DinoPage : ContentPage
         if (textL == "Mama") { headerColor = Shared.femaleColor; }
         if (textL == "Papa") { headerColor = Shared.maleColor; }
 
-        Label nameH = new Label { Text = $"{Smap[textL]}{textL}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        Label nameH = new Label { Text = $"{Smap[textL]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
         if (title != "Bottom")
         {
@@ -1086,6 +1060,11 @@ public partial class DinoPage : ContentPage
             }
             else
             {
+                if (row["Status"].ToString().Contains(Shared.Smap["Garbage"])) // recolor if its a garbage dino
+                {
+                    RowLabelColor = garbageColor;
+                }
+
                 // this column doesn not excist in bottom table
                 string mutes = row["Mutes"].ToString();
 
@@ -1106,7 +1085,7 @@ public partial class DinoPage : ContentPage
                     if (column == "Capacity") { aC = mutes.Substring(8, 1); testStat = CapacityMax; }
 
 
-                    if (aC == "1" && ToDouble(rowText) + statOffset >= testStat) { RowLabelColor = mutaGoodColor; } 
+                    if (aC == "1" && ToDouble(rowText) + statOffset >= testStat) { RowLabelColor = mutaGoodColor; }
                     else if (aC == "1" && ToDouble(rowText) - statOffset < testStat) { RowLabelColor = mutaColor; }
                     if (aC == "2") { RowLabelColor = mutaBadColor; }
                 }
@@ -1121,7 +1100,20 @@ public partial class DinoPage : ContentPage
 
             string notes = DataManager.GetNotes(id);
             if (notes != "") { rowText += Shared.Smap["Notes"]; }
+
+            if (title != "Bottom")
+            {
+                string age = row["Age"].ToString();
+                if (ToDouble(age) < 100) // recolor if its a garbage dino
+                {
+                    if (!rowText.Contains(Smap["Age"]))
+                    {
+                        rowText = Shared.Smap["Age"] + rowText;
+                    }
+                }
+            }
         }
+
         if (column == "Mama") { RowLabelColor = Shared.femaleColor; }
         if (column == "Papa") { RowLabelColor = Shared.maleColor; }
 
@@ -1183,8 +1175,8 @@ public partial class DinoPage : ContentPage
                 if (hasCharge) { AddToGrid(grid, HeaderLabel("Capacity", title), rowIndex, columnID++, title); }
                 AddToGrid(grid, HeaderLabel("Food", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Weight", title), rowIndex, columnID++, title);
-                AddToGrid(grid, HeaderLabel("Dmg", title), rowIndex, columnID++, title);
-                if (hasCraft) { AddToGrid(grid, HeaderLabel("Craft", title), rowIndex, columnID++, title); }
+                AddToGrid(grid, HeaderLabel("Damage", title), rowIndex, columnID++, title);
+                if (hasCraft) { AddToGrid(grid, HeaderLabel("CraftSkill", title), rowIndex, columnID++, title); }
                 if (hasSpeed) { AddToGrid(grid, HeaderLabel("Speed", title), rowIndex, columnID++, title); }
                 AddToGrid(grid, HeaderLabel("Status", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Gen", title), rowIndex, columnID++, title);
@@ -1270,8 +1262,8 @@ public partial class DinoPage : ContentPage
                 if (hasCharge) { AddToGrid(grid, HeaderLabel("Capacity", title), rowIndex, columnID++, title); }
                 AddToGrid(grid, HeaderLabel("Food", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Weight", title), rowIndex, columnID++, title);
-                AddToGrid(grid, HeaderLabel("Dmg", title), rowIndex, columnID++, title);
-                if (hasCraft) { AddToGrid(grid, HeaderLabel("Craft", title), rowIndex, columnID++, title); }
+                AddToGrid(grid, HeaderLabel("Damage", title), rowIndex, columnID++, title);
+                if (hasCraft) { AddToGrid(grid, HeaderLabel("CraftSkill", title), rowIndex, columnID++, title); }
                 if (hasSpeed) { AddToGrid(grid, HeaderLabel("Speed", title), rowIndex, columnID++, title); }
                 AddToGrid(grid, HeaderLabel("Status", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Gen", title), rowIndex, columnID++, title);
@@ -1336,7 +1328,7 @@ public partial class DinoPage : ContentPage
             if (hasCharge) { AddToGrid(grid, HeaderLabel("Capacity", title), rowIndex, columnID++, title); }
             AddToGrid(grid, HeaderLabel("Food", title), rowIndex, columnID++, title);
             AddToGrid(grid, HeaderLabel("Weight", title), rowIndex, columnID++, title);
-            AddToGrid(grid, HeaderLabel("Dmg", title), rowIndex, columnID++, title);
+            AddToGrid(grid, HeaderLabel("Damage", title), rowIndex, columnID++, title);
             if (hasCraft) { AddToGrid(grid, HeaderLabel("CraftSkill", title), rowIndex, columnID++, title); }
             if (hasSpeed) { AddToGrid(grid, HeaderLabel("Speed", title), rowIndex, columnID++, title); }
             AddToGrid(grid, HeaderLabel("Status", title), rowIndex, columnID++, title);

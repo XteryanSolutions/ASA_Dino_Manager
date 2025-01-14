@@ -530,7 +530,8 @@ public partial class BabyPage : ContentPage
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 11
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 12
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 13
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 14
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 14
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 15
 
 
         Color DefaultColor = Shared.maleColor;
@@ -563,42 +564,43 @@ public partial class BabyPage : ContentPage
         string sortChar = "";
 
         // maybe some width adjustment for headers to line up the tables
-        int colID = 0;
-        int[] cellW = { 110, 100 }; // maybe figure out the max width of any cells
+        // int colID = 0;
+        // int[] cellW = { 110, 100 }; // maybe figure out the max width of any cells
 
 
-        if (newTest == $"{Smap["Class"]}Class") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var tagH = new Label { Text = $"{Smap["Class"]}Class{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize, WidthRequest = cellW[colID++] };
-        sortChar = ""; if (newTest == $"{Smap["Name"]}Name") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var nameH = new Label { Text = $"{Smap["Name"]}Name{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["Level"]}Level") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var levelH = new Label { Text = $"{Smap["Level"]}Level{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["Age"]}Age") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var ageH = new Label { Text = $"{Smap["Age"]}Age{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["Time"]}Time") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var timeH = new Label { Text = $"{Smap["Time"]}Time{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["Rate"]}Rate") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var rateH = new Label { Text = $"{Smap["Rate"]}Rate{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        if (newTest == $"{Smap["Class"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var tagH = new Label { Text = $"{Smap["Class"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{Smap["Name"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var nameH = new Label { Text = $"{Smap["Name"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{Smap["Level"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var levelH = new Label { Text = $"{Smap["Level"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{Smap["Age"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var ageH = new Label { Text = $"{Smap["Age"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{Smap["Time"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var timeH = new Label { Text = $"{Smap["Time"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{Smap["Rate"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var rateH = new Label { Text = $"{Smap["Rate"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
         // no need to sort date
-        var dateH = new Label { Text = $"{Smap["Date"]}Date", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var dateH = new Label { Text = $"{Smap["Date"]}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
-        sortChar = ""; if (newTest == $"{Smap["Status"]}Status") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var statusH = new Label { Text = $"{Smap["Status"]}Status{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["Gen"]}Gen") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var genH = new Label { Text = $"{Smap["Gen"]}Gen{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["Papa"]}Papa") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var papaH = new Label { Text = $"{Smap["Papa"]}Papa{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleHeaderColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["Mama"]}Mama") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var mamaH = new Label { Text = $"{Smap["Mama"]}Mama{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.femaleHeaderColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["Mutation"]}PapaMute") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var papamH = new Label { Text = $"{Smap["Mutation"]}PapaMute{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleHeaderColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["Mutation"]}MamaMute") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var mamamH = new Label { Text = $"{Smap["Mutation"]}MamaMute{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.femaleHeaderColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["Imprint"]}Imprint") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var imprintH = new Label { Text = $"{Smap["Imprint"]}Imprint{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
-        sortChar = ""; if (newTest == $"{Smap["Imprinter"]}Imprinter") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var imprinterH = new Label { Text = $"{Smap["Imprinter"]}Imprinter{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{Smap["Status"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var statusH = new Label { Text = $"{Smap["Status"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{Smap["Gen"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var genH = new Label { Text = $"{Smap["Gen"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{Smap["Papa"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var papaH = new Label { Text = $"{Smap["Papa"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleHeaderColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{Smap["Mama"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var mamaH = new Label { Text = $"{Smap["Mama"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.femaleHeaderColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{Smap["pM"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var papamH = new Label { Text = $"{Smap["pM"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.maleHeaderColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{Smap["mM"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var mamamH = new Label { Text = $"{Smap["mM"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.femaleHeaderColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{Smap["Imprint"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var imprintH = new Label { Text = $"{Smap["Imprint"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        sortChar = ""; if (newTest == $"{Smap["Imprinter"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var imprinterH = new Label { Text = $"{Smap["Imprinter"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
+        var groupH = new Label { Text = $"{Smap["Group"]}Group", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
 
         // make columns sortable
@@ -638,6 +640,8 @@ public partial class BabyPage : ContentPage
 
         AddToGrid(grid, imprinterH, 0, startID++, title);// imprinter
 
+        AddToGrid(grid, groupH, 0, startID++, title);// group
+
 
         // add one xtra id for female header row
         if (title == "Female") { boxRowID++; }
@@ -658,7 +662,7 @@ public partial class BabyPage : ContentPage
 
 
             string id = row["ID"].ToString();
-
+            string group = DataManager.GetGroup(id);
 
             string dinoClass = row["Tag"].ToString();
             string name = row["Name"].ToString();
@@ -699,6 +703,11 @@ public partial class BabyPage : ContentPage
             double age2D = DataManager.ToDouble(age2);
             if (age2D > 0)
             {
+                // ageing rate is manually set
+                cellColor4 = PrimaryColor;
+            }
+            else
+            {
                 cellColor4 = SecondaryColor;
             }
 
@@ -727,9 +736,15 @@ public partial class BabyPage : ContentPage
             {
                 status = "Adolescent";
             }
-            if (ageD >= 100 || ageF >= 100)
+            if (ageD >= 100 || ageF >= 100 || totalMinutes < 0)
             {
                 status = "Adult";
+
+
+                cellColor2 = TrinaryColor;
+                cellColor3 = TrinaryColor;
+                cellColor4 = TrinaryColor;
+                cellColor5 = TrinaryColor;
             }
 
             string notes = DataManager.GetNotes(id);
@@ -746,15 +761,6 @@ public partial class BabyPage : ContentPage
                 gen = Shared.Smap["Warning"];
             }
 
-
-            if (ageD >= 100 || ageF >= 100 || totalMinutes < 0) 
-            { 
-                cellColor2 = TrinaryColor;
-                cellColor3 = TrinaryColor;
-                cellColor5 = TrinaryColor;
-            }
-
-            
 
             // Create a Labels
             var tagL = new Label { Text = dinoClass, TextColor = cellColor0 };
@@ -774,6 +780,7 @@ public partial class BabyPage : ContentPage
             var mamaML = new Label { Text = mamaM, TextColor = Shared.femaleColor };
             var imprintL = new Label { Text = imprint, TextColor = cellColor8 };
             var imprinterL = new Label { Text = imprinter, TextColor = cellColor8 };
+            var groupL = new Label { Text = group, TextColor = cellColor8 };
 
 
             bool selected = false;
@@ -794,6 +801,8 @@ public partial class BabyPage : ContentPage
             SelectDino(mamaML, id, boxRowID);
             SelectDino(imprintL, id, boxRowID);
             SelectDino(imprinterL, id, boxRowID);
+            SelectDino(groupL, id, boxRowID);
+
 
             // figure out if we have this dino selected
             // for row coloring purposes
@@ -818,6 +827,8 @@ public partial class BabyPage : ContentPage
             AddToGrid(grid, papaML, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, mamaML, rowIndex, startID++, title, selected, false, id);
             AddToGrid(grid, imprinterL, rowIndex, startID++, title, selected, false, id);
+            AddToGrid(grid, groupL, rowIndex, startID++, title, selected, false, id);
+
 
             rowIndex++;
         }
