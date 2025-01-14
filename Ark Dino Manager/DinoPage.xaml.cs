@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using Microsoft.Maui;
+using System.Data;
 using System.Diagnostics;
 using static Ark_Dino_Manager.DataManager;
 using static Ark_Dino_Manager.Shared;
@@ -194,7 +195,7 @@ public partial class DinoPage : ContentPage
         mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // 0
 
 
-        mainLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = 100 }); // 0 // width of the sidepanel
+        mainLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = sidePanelSize }); // 0 // width of the sidepanel
         mainLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 1
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -328,19 +329,21 @@ public partial class DinoPage : ContentPage
             ToggleBtnColor = Shared.TrinaryColor;
         }
 
-        string ToggleBtnText = "Toggle"; string StatsBtnText = "Breeding";
-        if (ToggleExcluded == 0) { ToggleBtnText = "All"; }
-        else if (ToggleExcluded == 1) { ToggleBtnText = "Included"; }
-        else if (ToggleExcluded == 2) { ToggleBtnText = "Excluded"; }
-        else if (ToggleExcluded == 3) { ToggleBtnText = "Archived"; }
+        string ToggleBtnText = "Toggle";
+        if (ToggleExcluded == 0) { ToggleBtnText = Smap["All"]; }
+        else if (ToggleExcluded == 1) { ToggleBtnText = Smap["Include"]; }
+        else if (ToggleExcluded == 2) { ToggleBtnText = Smap["Exclude"]; }
 
-        if (CurrentStats) { StatsBtnText = "Current"; StatsBtnColor = Shared.SecondaryColor; }
 
-        var BackBtn = new Button { Text = "Back", BackgroundColor = Shared.PrimaryColor };
+        string StatsBtnText = Smap["Breeding"];
+        if (CurrentStats) { StatsBtnText = Smap["Current"]; StatsBtnColor = Shared.SecondaryColor; }
+
+
+        var BackBtn = new Button { Text = Smap["Back"], BackgroundColor = Shared.PrimaryColor, FontSize = buttonFontSize };
 
         if (isDouble)
         {
-            var SaveBtn = new Button { Text = "Save", BackgroundColor = Shared.TrinaryColor };
+            var SaveBtn = new Button { Text = Smap["Save"], BackgroundColor = Shared.TrinaryColor, FontSize = buttonFontSize };
             SaveBtn.Clicked += SaveBtnClicked;
             AddToGrid(grid, SaveBtn, 0, 0);
 
@@ -354,39 +357,39 @@ public partial class DinoPage : ContentPage
         }
         else
         {
-            var ToggleBtn = new Button { Text = ToggleBtnText, BackgroundColor = ToggleBtnColor };
+            var ToggleBtn = new Button { Text = ToggleBtnText, BackgroundColor = ToggleBtnColor, FontSize = buttonFontSize };
             ToggleBtn.Clicked += ToggleBtnClicked;
             AddToGrid(grid, ToggleBtn, 0, 0);
 
 
-            var StatsBtn = new Button { Text = StatsBtnText, BackgroundColor = StatsBtnColor };
+            var StatsBtn = new Button { Text = StatsBtnText, BackgroundColor = StatsBtnColor, FontSize = buttonFontSize };
             StatsBtn.Clicked += StatsBtnClicked;
             AddToGrid(grid, StatsBtn, 1, 0);
         }
 
         if (!showTree && !isDouble)
         {
-            var TreeBtn = new Button { Text = "Heritage", BackgroundColor = DefaultBColor };
+            var TreeBtn = new Button { Text = Smap["Heritage"], BackgroundColor = DefaultBColor, FontSize = buttonFontSize };
             TreeBtn.Clicked += TreeBtnClicked;
             AddToGrid(grid, TreeBtn, 3, 0);
         }
 
         // ExcludeBtn.Text = "Include";
 
-        ExcludeBtn = new Button { Text = "" };
+        ExcludeBtn = new Button { Text = "", FontSize = buttonFontSize };
         ExcludeBtn.Clicked += ExcludeBtnClicked;
         AddToGrid(grid, ExcludeBtn, 5, 0);
 
-        ArchiveBtn = new Button { Text = "" };
+        ArchiveBtn = new Button { Text = "", FontSize = buttonFontSize };
         ArchiveBtn.Clicked += ArchiveBtnClicked;
         AddToGrid(grid, ArchiveBtn, 6, 0);
 
         string group = DataManager.GetGroup(selectedID);
-        if (group == "Exclude") { ExcludeBtn.Text = "Include"; ExcludeBtn.BackgroundColor = Shared.PrimaryColor; }
-        else { ExcludeBtn.Text = "Exclude"; ExcludeBtn.BackgroundColor = Shared.SecondaryColor; }
+        if (group == "Exclude") { ExcludeBtn.Text = Smap["Include"]; ExcludeBtn.BackgroundColor = Shared.PrimaryColor; }
+        else { ExcludeBtn.Text = Smap["Exclude"]; ExcludeBtn.BackgroundColor = Shared.SecondaryColor; }
 
-        if (group == "Archived") { ArchiveBtn.Text = "Include"; ArchiveBtn.BackgroundColor = Shared.PrimaryColor; }
-        else { ArchiveBtn.Text = "Archive"; ArchiveBtn.BackgroundColor = Shared.TrinaryColor; }
+        if (group == "Archived") { ArchiveBtn.Text = Smap["Include"]; ArchiveBtn.BackgroundColor = Shared.PrimaryColor; }
+        else { ArchiveBtn.Text = Smap["Archive"]; ArchiveBtn.BackgroundColor = Shared.TrinaryColor; }
 
         if (!isSelected)
         {
@@ -1436,11 +1439,11 @@ public partial class DinoPage : ContentPage
     private void ButtonGroup()
     {
         string group = DataManager.GetGroup(selectedID);
-        if (group == "Exclude") { ExcludeBtn.Text = "Include"; ExcludeBtn.BackgroundColor = Shared.PrimaryColor; }
-        else { ExcludeBtn.Text = "Exclude"; ExcludeBtn.BackgroundColor = Shared.SecondaryColor; }
+        if (group == "Exclude") { ExcludeBtn.Text = Smap["Include"]; ExcludeBtn.BackgroundColor = Shared.PrimaryColor; }
+        else { ExcludeBtn.Text = Smap["Exclude"]; ExcludeBtn.BackgroundColor = Shared.SecondaryColor; }
 
-        if (group == "Archived") { ArchiveBtn.Text = "Include"; ArchiveBtn.BackgroundColor = Shared.PrimaryColor; }
-        else { ArchiveBtn.Text = "Archive"; ArchiveBtn.BackgroundColor = Shared.TrinaryColor; }
+        if (group == "Archived") { ArchiveBtn.Text = Smap["Include"]; ArchiveBtn.BackgroundColor = Shared.PrimaryColor; }
+        else { ArchiveBtn.Text = Smap["Archive"]; ArchiveBtn.BackgroundColor = Shared.TrinaryColor; }
 
         ExcludeBtn.IsVisible = true;
         ArchiveBtn.IsVisible = true;

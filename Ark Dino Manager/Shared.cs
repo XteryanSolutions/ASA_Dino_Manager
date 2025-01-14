@@ -23,15 +23,15 @@
         public static int doubleClick = 500;
 
 
-        // symbols
+        // symbols have to be unique
         public static readonly Dictionary<string, string> Smap = new Dictionary<string, string>
     {
-        { "Unknown", "👽" },
-        { "Warning", "❗" },
+        { "Unknown", "❔" },
+        { "Warning", "⚠" },
         { "Missing", "❓" },
         { "Garbage", "💩" },
         { "NewTame", "🧬" },
-        { "Age", "🐣" },
+        { "Age", "🐤" },
         { "Grown", "🦖" },
         { "LessThan", "📉" },
         { "Identical", "🔀" },
@@ -40,7 +40,7 @@
         { "Rate", "📶" },
         { "Date", "📆" },
         { "Name", "🔤" },
-        { "Level", "🔎" },
+        { "Level", "💯" },
         { "Hp", "💚" },
         { "Stamina", "⚡" },
         { "O2", "🤿" },
@@ -50,22 +50,33 @@
         { "CraftSkill", "🔨" },
         { "Speed", "🐌" },
         { "Gen", "👪" },
-        { "Papa", "👨" },
-        { "Mama", "👩" },
-        { "pM", "🔷" },
-        { "mM", "🔶" },
+        { "Papa", "♂" },
+        { "Mama", "♀" },
+        { "pM", "📘" },
+        { "mM", "📙" },
         { "Status", "📑" },
         { "Imprint", "💖" },
         { "Imprinter", "💑" },
         { "Class", "📚" },
         { "SortUp", "▲" },
         { "SortDown", "▼" },
-        { "Save", "💾" },
         { "ID", "💳" },
         { "Tag", "🔖" },
-        { "Regen", "💫" },
+        { "Regen", "🔌" },
         { "Capacity", "🔋" },
         { "Group", "🔗" },
+        { "Breeding", "🐣" },
+        { "Current", "🐓" },
+        { "Back", "🔙" },
+        { "Save", "💾" },
+        { "Heritage", "🌳" },
+        { "All", "📚" },
+        { "Include", "📗" },
+        { "Exclude", "📘" },
+        { "Archive", "🗑" },
+        { "Restore", "❎" },
+        { "Purge", "🔥" },
+        { "PurgeAll", "🧨" },
     };
 
 
@@ -111,10 +122,13 @@
         public static int rowHeight = 24; // rowheight to determine bottom panel size
         public static int sizeOffset = 5; // Extra buffer to prevent scrolling
 
-
+        
         public static int startupX = 1180;   // 16:9
         public static int startupY = 664;
 
+
+        public static int buttonFontSize = 26;
+        public static int sidePanelSize = 75;
 
         ////////////////////////////////////////////////////////////
         ////////////////////    Configurable    ////////////////////

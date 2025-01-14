@@ -165,7 +165,7 @@ public partial class ArchivePage : ContentPage
         mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // 0
 
 
-        mainLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = 100 }); // 0
+        mainLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = sidePanelSize }); // 0
         mainLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 1
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -203,15 +203,15 @@ public partial class ArchivePage : ContentPage
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // 6
 
 
-        ArchiveBtn = new Button { Text = "Restore", BackgroundColor = Shared.PrimaryColor };
+        ArchiveBtn = new Button { Text = Smap["Restore"], BackgroundColor = Shared.PrimaryColor, FontSize = buttonFontSize };
         ArchiveBtn.Clicked += ArchiveBtnClicked;
         AddToGrid(grid, ArchiveBtn, 0, 0);
 
-        PurgeBtn = new Button { Text = "Purge", BackgroundColor = Shared.TrinaryColor };
+        PurgeBtn = new Button { Text = Smap["Purge"], BackgroundColor = Shared.TrinaryColor, FontSize = buttonFontSize };
         PurgeBtn.Clicked += PurgeBtnClicked;
         AddToGrid(grid, PurgeBtn, 5, 0);
 
-        PurgeAllBtn = new Button { Text = "Purge All", BackgroundColor = Shared.TrinaryColor };
+        PurgeAllBtn = new Button { Text = Smap["PurgeAll"], BackgroundColor = Shared.TrinaryColor, FontSize = buttonFontSize };
         PurgeAllBtn.Clicked += PurgeAllBtnClicked;
         AddToGrid(grid, PurgeAllBtn, 6, 0);
 

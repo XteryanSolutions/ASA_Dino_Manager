@@ -134,7 +134,7 @@ public partial class BabyPage : ContentPage
         // Define row definitions
         mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // 0
 
-        mainLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = 100 }); // 0
+        mainLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = sidePanelSize }); // 0
         mainLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 1
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -265,52 +265,52 @@ public partial class BabyPage : ContentPage
 
 
         string toggleBtnText = "Toggle";
-        if (ToggleExcluded == 0) { toggleBtnText = "All"; }
-        else if (ToggleExcluded == 1) { toggleBtnText = "Included"; }
-        else if (ToggleExcluded == 2) { toggleBtnText = "Excluded"; }
-        else if (ToggleExcluded == 3) { toggleBtnText = "Archived"; }
+        if (ToggleExcluded == 0) { toggleBtnText = Smap["All"]; }
+        else if (ToggleExcluded == 1) { toggleBtnText = Smap["Include"]; }
+        else if (ToggleExcluded == 2) { toggleBtnText = Smap["Exclude"]; }
+
 
 
         if (isDouble)
         {
-            var saveBtn = new Button { Text = "Save", BackgroundColor = Shared.TrinaryColor };
+            var saveBtn = new Button { Text = Smap["Save"], BackgroundColor = Shared.TrinaryColor, FontSize = buttonFontSize };
             saveBtn.Clicked += SaveBtnClicked;
             AddToGrid(grid, saveBtn, 0, 0);
 
 
-            var backBtn = new Button { Text = "Back", BackgroundColor = Shared.PrimaryColor };
+            var backBtn = new Button { Text = Smap["Back"], BackgroundColor = Shared.PrimaryColor, FontSize = buttonFontSize };
             backBtn.Clicked += BackBtnClicked;
             AddToGrid(grid, backBtn, 1, 0);
         }
         else
         {
-            var toggleBtn = new Button { Text = toggleBtnText, BackgroundColor = toggleBtnColor };
+            var toggleBtn = new Button { Text = toggleBtnText, BackgroundColor = toggleBtnColor, FontSize = buttonFontSize };
             AddToGrid(grid, toggleBtn, 0, 0);
             toggleBtn.Clicked += ToggleBtnClicked;
 
 
-            var speciesBtn = new Button { Text = speciesBtnText, BackgroundColor = speciesBtnColor };
+            var speciesBtn = new Button { Text = speciesBtnText, BackgroundColor = speciesBtnColor, FontSize = buttonFontSize };
             //AddToGrid(grid, speciesBtn, 1, 0);
             speciesBtn.Clicked += SpeciesBtnClicked;
         }
 
 
         // add dynamic buttons (shown only when dino is selected)
-        ExcludeBtn = new Button { Text = "" };
+        ExcludeBtn = new Button { Text = "", FontSize = buttonFontSize };
         ExcludeBtn.Clicked += ExcludeBtnClicked;
         AddToGrid(grid, ExcludeBtn, 5, 0);
 
-        ArchiveBtn = new Button { Text = "" };
+        ArchiveBtn = new Button { Text = "", FontSize = buttonFontSize };
         ArchiveBtn.Clicked += ArchiveBtnClicked;
         AddToGrid(grid, ArchiveBtn, 6, 0);
 
 
         string group = DataManager.GetGroup(selectedID);
-        if (group == "Exclude") { ExcludeBtn.Text = "Include"; ExcludeBtn.BackgroundColor = Shared.PrimaryColor; }
-        else { ExcludeBtn.Text = "Exclude"; ExcludeBtn.BackgroundColor = Shared.SecondaryColor; }
+        if (group == "Exclude") { ExcludeBtn.Text = Smap["Include"]; ExcludeBtn.BackgroundColor = Shared.PrimaryColor; }
+        else { ExcludeBtn.Text = Smap["Exclude"]; ExcludeBtn.BackgroundColor = Shared.SecondaryColor; }
 
-        if (group == "Archived") { ArchiveBtn.Text = "Include"; ArchiveBtn.BackgroundColor = Shared.PrimaryColor; }
-        else { ArchiveBtn.Text = "Archive"; ArchiveBtn.BackgroundColor = Shared.TrinaryColor; }
+        if (group == "Archived") { ArchiveBtn.Text = Smap["Include"]; ArchiveBtn.BackgroundColor = Shared.PrimaryColor; }
+        else { ArchiveBtn.Text = Smap["Archive"]; ArchiveBtn.BackgroundColor = Shared.TrinaryColor; }
 
         if (!isSelected)
         {
@@ -600,7 +600,7 @@ public partial class BabyPage : ContentPage
         sortChar = ""; if (newTest == $"{Smap["Imprinter"]}") { if (testingSort.Contains("ASC")) { sortChar = " " + upChar; } if (testingSort.Contains("DESC")) { sortChar = " " + downChar; } }
         var imprinterH = new Label { Text = $"{Smap["Imprinter"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
-        var groupH = new Label { Text = $"{Smap["Group"]}Group", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        var groupH = new Label { Text = $"{Smap["Group"]}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
 
         // make columns sortable
@@ -900,11 +900,11 @@ public partial class BabyPage : ContentPage
     private void ButtonGroup()
     {
         string group = DataManager.GetGroup(selectedID);
-        if (group == "Exclude") { ExcludeBtn.Text = "Include"; ExcludeBtn.BackgroundColor = Shared.PrimaryColor; }
-        else { ExcludeBtn.Text = "Exclude"; ExcludeBtn.BackgroundColor = Shared.SecondaryColor; }
+        if (group == "Exclude") { ExcludeBtn.Text = Smap["Include"]; ExcludeBtn.BackgroundColor = Shared.PrimaryColor; }
+        else { ExcludeBtn.Text = Smap["Exclude"]; ExcludeBtn.BackgroundColor = Shared.SecondaryColor; }
 
-        if (group == "Archived") { ArchiveBtn.Text = "Include"; ArchiveBtn.BackgroundColor = Shared.PrimaryColor; }
-        else { ArchiveBtn.Text = "Archive"; ArchiveBtn.BackgroundColor = Shared.TrinaryColor; }
+        if (group == "Archived") { ArchiveBtn.Text = Smap["Include"]; ArchiveBtn.BackgroundColor = Shared.PrimaryColor; }
+        else { ArchiveBtn.Text = Smap["Archive"]; ArchiveBtn.BackgroundColor = Shared.TrinaryColor; }
 
         ExcludeBtn.IsVisible = true;
         ArchiveBtn.IsVisible = true;
@@ -1106,7 +1106,7 @@ public partial class BabyPage : ContentPage
     private void ToggleBtnClicked(object? sender, EventArgs e)
     {
         ToggleExcluded++;
-        if (ToggleExcluded == 4)
+        if (ToggleExcluded == 3)
         {
             ToggleExcluded = 0;
         }
