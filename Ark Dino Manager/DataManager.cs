@@ -2253,7 +2253,6 @@ namespace Ark_Dino_Manager
 
                         if (change)
                         {
-                            bool updated = false;
                             string newMama = importedNew[11];
                             string newPapa = importedNew[12];
 
