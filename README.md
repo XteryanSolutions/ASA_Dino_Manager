@@ -30,3 +30,5 @@ Automatically imports dinos for easy tracking of new babies and tames without ga
 ![image](https://github.com/user-attachments/assets/78f735c2-1b4a-4d5e-9b5f-a5c9fbbb6227)
 
 ![image](https://github.com/user-attachments/assets/46951965-f678-4a4e-8eba-21125bb31375)
+
+![image](https://github.com/user-attachments/assets/1b33bcd1-d730-4101-adce-0b9f77a8bb05)
