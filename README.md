@@ -1,6 +1,8 @@
 # Ark Dino Manager
 
-Ark Dino Manager is a tool designed to assist players in managing their dinos more effectively. Features include breeding support, mutation detection, and more.
+Ark Dino Manager is a tool designed to assist players in managing their dinos more effectively. Features include breeding support, mutation detection, and more. Keep track of dinos current stats and breeding stats and see when baby dinos will grow up etc.
+
+Automatically imports dinos for easy tracking of new babies and tames without gameplay interruption.
 
 ## Installation Instructions
 
