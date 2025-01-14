@@ -1105,7 +1105,10 @@ public partial class DinoPage : ContentPage
                     if (column == "Regen") { aC = mutes.Substring(7, 1); testStat = RegenMax; }
                     if (column == "Capacity") { aC = mutes.Substring(8, 1); testStat = CapacityMax; }
 
-                    if (aC == "1" && ToDouble(rowText) + statOffset >= testStat) { RowLabelColor = mutaColor; } else if (aC == "1" && ToDouble(rowText) - statOffset < testStat) { RowLabelColor = mutaBadColor; }
+
+                    if (aC == "1" && ToDouble(rowText) + statOffset >= testStat) { RowLabelColor = mutaGoodColor; } 
+                    else if (aC == "1" && ToDouble(rowText) - statOffset < testStat) { RowLabelColor = mutaColor; }
+                    if (aC == "2") { RowLabelColor = mutaBadColor; }
                 }
             }
 

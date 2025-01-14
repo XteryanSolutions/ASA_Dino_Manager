@@ -136,7 +136,7 @@
         public static Color goldColor = Color.FromArgb("#FFFF00"); // Yellow
         public static Color mutaColor = Color.FromArgb("#ffdb7a"); //
         public static Color mutaBadColor = Color.FromArgb("#ff1803"); // ADD THIS TO CONFIG
-
+        public static Color mutaGoodColor = Color.FromArgb("#FFFF00"); // ADD THIS TO CONFIG
 
         // Button colors
         public static Color DefaultBColor = Color.FromArgb("#ADD8E6"); // LightBlue
