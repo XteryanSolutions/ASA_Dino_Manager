@@ -73,7 +73,7 @@
         { "SortUp", "▲" },
         { "SortDown", "▼" },
         { "Breeding", "🐣" },
-        { "Current", "🦖" },
+        { "Current", "🐓" },
         { "Back", "🔙" },
         { "Save", "💾" },
         { "Heritage", "🌳" },

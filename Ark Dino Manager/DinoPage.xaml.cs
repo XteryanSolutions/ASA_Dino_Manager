@@ -1199,7 +1199,11 @@ public partial class DinoPage : ContentPage
                 AddToGrid(grid, HeaderLabel("mM", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Imprint", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Imprinter", title), rowIndex, columnID++, title);
-
+                if (ToggleExcluded == 0)
+                {
+                    Label groupH = new Label { Text = $"{StatMap["Group"]}", FontAttributes = FontAttributes.Bold, TextColor = maleHeaderColor, FontSize = headerSize };
+                    AddToGrid(grid, groupH, rowIndex, columnID++, title);
+                }
 
                 // increase row index for header row
                 rowIndex++;
@@ -1237,6 +1241,15 @@ public partial class DinoPage : ContentPage
                     AddToGrid(grid, RowLabel("MamaMute", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Imprint", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Imprinter", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+
+                    if (ToggleExcluded == 0)
+                    {
+                        string group = GetGroup(id);
+                        if (group == "") { group = "Include"; }
+                        Label OutLabel = new Label { Text = $"{Smap[group]}", TextColor = maleColor };
+                        AddToGrid(grid, OutLabel, rowIndex, columnID++, title);
+                    }  
+
 
                     rowIndex++;
                 }
@@ -1286,6 +1299,12 @@ public partial class DinoPage : ContentPage
                 AddToGrid(grid, HeaderLabel("mM", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Imprint", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Imprinter", title), rowIndex, columnID++, title);
+                if (ToggleExcluded == 0)
+                {
+                    Label groupH = new Label { Text = $"{StatMap["Group"]}", FontAttributes = FontAttributes.Bold, TextColor = femaleHeaderColor, FontSize = headerSize };
+                    AddToGrid(grid, groupH, rowIndex, columnID++, title);
+                }
+
 
                 rowIndex++;
 
@@ -1322,6 +1341,13 @@ public partial class DinoPage : ContentPage
                     AddToGrid(grid, RowLabel("MamaMute", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Imprint", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Imprinter", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    if (ToggleExcluded == 0)
+                    {
+                        string group = GetGroup(id);
+                        if (group == "") { group = "Include"; }
+                        Label OutLabel = new Label { Text = $"{Smap[group]}", TextColor = femaleColor };
+                        AddToGrid(grid, OutLabel, rowIndex, columnID++, title);
+                    }
 
                     rowIndex++;
                 }
