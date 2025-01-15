@@ -91,33 +91,12 @@ public partial class BabyPage : ContentPage
         mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // Fixed button row
         mainLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // Scrollable content
 
-
-        var scrollContent = new StackLayout
-        {
-            Spacing = 20,
-            Padding = 3
-        };
-
         var image1 = new Image { Source = "bigegg.png", HeightRequest = 400, Aspect = Aspect.AspectFit, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start };
         var label1 = new Label { Text = labelText, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Start, FontAttributes = FontAttributes.Bold, TextColor = Shared.PrimaryColor, FontSize = 22 };
-
 
         AddToGrid(mainLayout, image1, 0, 0);
         AddToGrid(mainLayout, label1, 1, 0);
 
-
-        // Wrap the scrollable content in a ScrollView and add it to the second row
-        var scrollView = new ScrollView { Content = scrollContent };
-
-        AddToGrid(mainLayout, scrollView, 0, 0);
-
-        // only attach the tapgesture if we have something selected
-        if (isSelected)
-        {
-            UnSelectDino(mainLayout);
-        }
-
-        this.Content = null;
         this.Content = mainLayout;
     }
 

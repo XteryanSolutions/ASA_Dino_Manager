@@ -4,7 +4,6 @@ using System.Diagnostics;
 using static Ark_Dino_Manager.DataManager;
 using static Ark_Dino_Manager.Shared;
 
-
 namespace Ark_Dino_Manager;
 
 public partial class DinoPage : ContentPage
@@ -1119,6 +1118,17 @@ public partial class DinoPage : ContentPage
 
         if (column == "Mama") { RowLabelColor = Shared.femaleColor; }
         if (column == "Papa") { RowLabelColor = Shared.maleColor; }
+
+
+        // override for missing ancestry info
+        if (column == "Mama" || column == "Papa" || column == "Gen" || column == "MamaMute" || column == "PapaMute")
+        {
+            string mama = row["Mama"].ToString(); string papa = row["Papa"].ToString();
+            if (mama.Contains(Smap["Warning"]) || papa.Contains(Smap["Warning"])) 
+            {
+                rowText = Smap["Warning"];
+            }
+        }
 
         Label OutLabel = new Label { Text = rowText, TextColor = RowLabelColor };
 

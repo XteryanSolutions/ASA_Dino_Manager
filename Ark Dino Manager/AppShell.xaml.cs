@@ -38,7 +38,22 @@
 
             // create default shell
             CreateContent();
+
+           // bool test = PlatformHelper.IsWindows;
         }
+
+        public static class PlatformHelper
+        {
+            public static bool IsWindows { get; private set; }
+            public static bool IsAndroid { get; private set; }
+
+            static PlatformHelper()
+            {
+                IsWindows = DeviceInfo.Platform == DevicePlatform.WinUI;
+                IsAndroid = DeviceInfo.Platform == DevicePlatform.Android;
+            }
+        }
+
 
         private void CreateContent()
         {

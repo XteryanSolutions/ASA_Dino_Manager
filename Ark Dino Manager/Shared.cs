@@ -28,7 +28,7 @@
     {
         { "ID", "💳" },
         { "Tag", "🔖" },
-        { "Class", "📚" },
+        { "Class", "🦖" },
         { "Name", "🔤" },
         { "Level", "💯" },
         { "Hp", "💚" },
@@ -53,16 +53,16 @@
         { "Date", "📆" },
         { "Regen", "🔌" },
         { "Capacity", "🔋" },
-        { "Group", "🔗" }
+        { "Group", "📚" }
     };
 
 
         // symbols
         public static readonly Dictionary<string, string> Smap = new Dictionary<string, string>
     {
-        { "Unknown", "❔" },
-        { "Warning", "⚠" },
-        { "Missing", "❓" },
+        { "Unknown", "❔" }, // Wild Tame
+        { "Missing", "⚠" }, // Link info missing from database
+        { "Warning", "❓" }, // need to import ancestry
         { "Garbage", "💩" },
         { "NewTame", "🧬" },
         { "Baby", "🐣" },
@@ -73,7 +73,7 @@
         { "SortUp", "▲" },
         { "SortDown", "▼" },
         { "Breeding", "🐣" },
-        { "Current", "🐓" },
+        { "Current", "🦖" },
         { "Back", "🔙" },
         { "Save", "💾" },
         { "Heritage", "🌳" },
