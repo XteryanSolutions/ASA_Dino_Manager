@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using WinRT.Interop;
 
 namespace Ark_Dino_Manager
 {
@@ -241,35 +242,83 @@ namespace Ark_Dino_Manager
             }
         }
 
-        public static void MergeDatabases(string dataLocation)
+        public static void UpdateBreedingData(string file)
         {
             // Load the second table from XML
             DataTable table2 = new DataTable();
-            table2.ReadXml(dataLocation);
+            table2.ReadXml(file);
 
-            // Clone structure from the ImportsTable
-            DataTable mergedTable = ImportsTable.Clone();
+            // only update the breeding stats of the dinos we have in our database
+            int updateCount = 0;
 
-            // Combine all rows from ImportsTable and table2
-            DataTable allRows = ImportsTable.Copy();
-            allRows.Merge(table2);
+            // check for updates to our breeding stats
+            HashSet<string> resultSet = new HashSet<string>();
 
-            // Group by Dino ID and select the most recent entry (ordered by oldest first)
-            var groupedRows = allRows.AsEnumerable()
-                .GroupBy(row => row["ID"].ToString())
-                .Select(group =>
-                {
-                    // Parse "Time" as DateTime (assume all timestamps are in UTC)
-                    return group.OrderBy(row =>
-                        DateTime.ParseExact(row["Time"].ToString(), "dd/MM/yyyy HH:mm:ss", Culture, DateTimeStyles.AssumeUniversal))
-                        .First();
-                });
-
-            // Clear ImportsTable and add the most recent rows from merged data
-            ImportsTable.Clear();
-            foreach (var row in groupedRows)
+            // Iterate through the rows of the table
+            foreach (DataRow rowM in table2.Rows)
             {
-                ImportsTable.ImportRow(row);
+                // get id and time data point
+                string idM = rowM["ID"]?.ToString();
+                string timeM = rowM["Time"]?.ToString();
+                DateTime timeM_D = DateTime.ParseExact(timeM, "dd/MM/yyyy HH:mm:ss", Culture);
+
+                if (!resultSet.Contains(idM)) // check so we have not processed this dino already
+                {
+                    int rowID = 0;
+                    foreach (DataRow rowI in ImportsTable.Rows)
+                    {
+                        string idI = rowI["ID"]?.ToString();
+                        string timeI = rowI["Time"]?.ToString();
+                        DateTime timeI_D = DateTime.ParseExact(timeI, "dd/MM/yyyy HH:mm:ss", Culture);
+
+                        if (idM == idI)
+                        {
+                            // check if the data supplied is older than what we have
+                            if (timeM_D < timeI_D)
+                            {
+                                // then its probably more accurate breed stats so update our database
+                                updateCount++;
+                                FileManager.Log($"=============== {idI} ===============", 1);
+
+                                // update all the breed stats
+                                UpdateField(rowID, "Level", rowM);
+                                UpdateField(rowID, "Hp", rowM);
+                                UpdateField(rowID, "Stamina", rowM);
+                                UpdateField(rowID, "Oxygen", rowM);
+                                UpdateField(rowID, "Food", rowM);
+                                UpdateField(rowID, "Weight", rowM);
+                                UpdateField(rowID, "Damage", rowM);
+                                UpdateField(rowID, "CraftSkill", rowM);
+                                UpdateField(rowID, "ChargeRegen", rowM);
+                                UpdateField(rowID, "ChargeCapacity", rowM);
+
+                                // also update the timeStamp and other stats
+                                UpdateField(rowID, "BabyAge", rowM);
+                                UpdateField(rowID, "Speed", rowM);
+                                UpdateField(rowID, "Time", rowM);
+
+                                FileManager.Log($"=============== === ===============", 1);
+                            }
+                            // break out of loop here since we only update first appearance of each id
+                            break;
+                        }
+                        rowID++;
+                    }
+                    // add id to hashSet to ignore it while moving to next id in list
+                    resultSet.Add(idM);
+                }
+            }
+
+            FileManager.Log($"Updated breed stats on {updateCount} dinos", 1);
+        }
+
+        private static void UpdateField(int rowID, string field, DataRow rowM)
+        {
+            // check if the data is different
+            if (ImportsTable.Rows[rowID][field].ToString() != rowM[field]?.ToString())
+            {
+                FileManager.Log($"Updated: {field} from: {ImportsTable.Rows[rowID][field].ToString()} to: {rowM[field]?.ToString()}", 1);
+                ImportsTable.Rows[rowID].SetField(field, rowM[field]?.ToString());
             }
         }
 
