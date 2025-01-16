@@ -40,15 +40,15 @@
 		<ApplicationVersion>1</ApplicationVersion>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
-		<WindowsPackageType>MSIX</WindowsPackageType>
-		<AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+		<WindowsPackageType>None</WindowsPackageType>
+		<!--<AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>-->
 		<GenerateAppInstallerFile>False</GenerateAppInstallerFile>
 		<NeutralLanguage>en</NeutralLanguage>
 		<SignAssembly>True</SignAssembly>
 		<AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>
-		<PackageCertificateThumbprint>2E9D027B7AA40F47D67ACC08205C53FC087BC73E</PackageCertificateThumbprint>
-		<AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
-		<AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+		<!--<PackageCertificateThumbprint>2E9D027B7AA40F47D67ACC08205C53FC087BC73E</PackageCertificateThumbprint>-->
+		<!--<AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>-->
+		<!--<AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>-->
 		<AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
 		<GenerateTestArtifacts>True</GenerateTestArtifacts>
 		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
@@ -64,14 +64,14 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'" />
 
 	<PropertyGroup>
-		<ApplicationIcon>Resources\AppIcon\dinoicon.ico</ApplicationIcon>
+		<ApplicationIcon>Resources\AppIcon\eggico.ico</ApplicationIcon>
 		<NoWin32Manifest>true</NoWin32Manifest>
+		<PackageIcon>eggicon.png</PackageIcon>
 	</PropertyGroup>
 	
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\dinopngicon.png" />
 		
 		<!-- Splash Screen -->
 		<!--<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />-->
@@ -143,61 +143,6 @@
 	  <None Remove="Platforms\Windows\Assets\EggLeaf\SplashScreen.scale-150.png" />
 	  <None Remove="Platforms\Windows\Assets\EggLeaf\SplashScreen.scale-200.png" />
 	  <None Remove="Platforms\Windows\Assets\EggLeaf\SplashScreen.scale-400.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\dino.scale-100.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\dino.scale-125.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\dino.scale-150.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\dino.scale-200.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\dino.scale-400.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoApp.scale-100.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoApp.scale-125.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoApp.scale-150.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoApp.scale-200.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoApp.scale-400.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoApp.targetsize-16.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoApp.targetsize-16_altform-lightunplated.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoApp.targetsize-16_altform-unplated.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoApp.targetsize-24.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoApp.targetsize-24_altform-lightunplated.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoApp.targetsize-24_altform-unplated.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoApp.targetsize-256.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoApp.targetsize-256_altform-lightunplated.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoApp.targetsize-256_altform-unplated.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoApp.targetsize-32.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoApp.targetsize-32_altform-lightunplated.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoApp.targetsize-32_altform-unplated.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoApp.targetsize-48.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoApp.targetsize-48_altform-lightunplated.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoApp.targetsize-48_altform-unplated.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoBadge.scale-100.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoBadge.scale-125.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoBadge.scale-150.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoBadge.scale-200.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoBadge.scale-400.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoLarge.scale-100.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoLarge.scale-125.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoLarge.scale-150.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoLarge.scale-200.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoLarge.scale-400.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoMedium.scale-100.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoMedium.scale-125.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoMedium.scale-150.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoMedium.scale-200.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoMedium.scale-400.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoSmall.scale-100.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoSmall.scale-125.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoSmall.scale-150.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoSmall.scale-200.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoSmall.scale-400.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoWide.scale-100.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoWide.scale-125.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoWide.scale-150.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoWide.scale-200.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\DinoWide.scale-400.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\SplashScreen.scale-100.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\SplashScreen.scale-125.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\SplashScreen.scale-150.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\SplashScreen.scale-200.png" />
-	  <None Remove="Platforms\Windows\Assets\Generated\SplashScreen.scale-400.png" />
 	</ItemGroup>
 	
 
@@ -257,61 +202,6 @@
 	  <Content Include="Platforms\Windows\Assets\EggLeaf\SplashScreen.scale-150.png" />
 	  <Content Include="Platforms\Windows\Assets\EggLeaf\SplashScreen.scale-200.png" />
 	  <Content Include="Platforms\Windows\Assets\EggLeaf\SplashScreen.scale-400.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\dino.scale-100.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\dino.scale-125.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\dino.scale-150.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\dino.scale-200.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\dino.scale-400.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoApp.scale-100.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoApp.scale-125.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoApp.scale-150.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoApp.scale-200.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoApp.scale-400.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoApp.targetsize-16.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoApp.targetsize-16_altform-lightunplated.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoApp.targetsize-16_altform-unplated.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoApp.targetsize-24.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoApp.targetsize-24_altform-lightunplated.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoApp.targetsize-24_altform-unplated.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoApp.targetsize-256.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoApp.targetsize-256_altform-lightunplated.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoApp.targetsize-256_altform-unplated.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoApp.targetsize-32.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoApp.targetsize-32_altform-lightunplated.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoApp.targetsize-32_altform-unplated.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoApp.targetsize-48.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoApp.targetsize-48_altform-lightunplated.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoApp.targetsize-48_altform-unplated.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoBadge.scale-100.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoBadge.scale-125.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoBadge.scale-150.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoBadge.scale-200.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoBadge.scale-400.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoLarge.scale-100.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoLarge.scale-125.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoLarge.scale-150.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoLarge.scale-200.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoLarge.scale-400.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoMedium.scale-100.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoMedium.scale-125.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoMedium.scale-150.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoMedium.scale-200.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoMedium.scale-400.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoSmall.scale-100.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoSmall.scale-125.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoSmall.scale-150.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoSmall.scale-200.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoSmall.scale-400.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoWide.scale-100.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoWide.scale-125.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoWide.scale-150.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoWide.scale-200.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\DinoWide.scale-400.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\SplashScreen.scale-100.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\SplashScreen.scale-125.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\SplashScreen.scale-150.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\SplashScreen.scale-200.png" />
-	  <Content Include="Platforms\Windows\Assets\Generated\SplashScreen.scale-400.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -333,6 +223,9 @@
 		<Compile Update="ArchivePage.xaml.cs">
 			<DependentUpon>ArchivePage.xaml</DependentUpon>
 		</Compile>
+		<Compile Update="BabyPage.xaml.cs">
+			<DependentUpon>BabyPage.xaml</DependentUpon>
+		</Compile>
 		<Compile Update="DinoPage.xaml.cs">
 			<DependentUpon>DinoPage.xaml</DependentUpon>
 		</Compile>
@@ -342,8 +235,20 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Maui.Controls" Version="8.0.100" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
+		<PackageReference Include="Costura.Fody" Version="6.0.0">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Fody" Version="6.9.1">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.30">
+		  <IncludeAssets></IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.1">
+		  <IncludeAssets></IncludeAssets>
+		</PackageReference>
 	</ItemGroup>
 
 	<ItemGroup>
