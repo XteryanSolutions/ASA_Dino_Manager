@@ -92,13 +92,16 @@
             {
                 // now we should have the new target
                 string target = e.Target.Location.ToString();
+                string trimTarget = target.Replace("/", "").Trim();
 
                 // replace all / and trim it
-                if (target.Replace("/", "").Trim() != Shared.setPage) // we navigate to a new page reset values
+                if (trimTarget != Shared.setPage) // we navigate to a new page reset values
                 {
-                    Shared.setPage = target.Replace("/", "").Trim();
+                    FileManager.Log($"New: {Shared.setPage} -> {trimTarget}", 0);
+                    Shared.setPage = trimTarget;
+                   
                     // got a new setpage
-                    UpdateMenuContents(Shared.setPage);
+                    // UpdateMenuContents(Shared.setPage);
 
                     // reset toggles and unselect dino when navigating
                     DinoPage.CurrentStats = Shared.DefaultStat; DinoPage.ToggleExcluded = Shared.DefaultToggle;
@@ -113,11 +116,12 @@
                 }
                 else
                 {
-                    Shared.setPage = target.Replace("/", "").Trim();
+                    FileManager.Log($"Old: {Shared.setPage} -> {trimTarget}", 0);
+                    Shared.setPage = trimTarget;
                 }
                 
 
-                FileManager.Log($"Navigating -> {Shared.setPage}", 0);
+                
 
                 // set the selected class to the entire class string
                 // so we need to translate readable back to unreadable
@@ -187,7 +191,7 @@
                 Items.Add(shellContent);
             }
             disableNavSet = false; // FileManager.Log("Enabled setPage", 0);
-            FileManager.Log("Created classList", 0);
+            FileManager.Log("Created classList menu", 0);
         }
 
         public void UpdateMenuContents(string page)
@@ -300,11 +304,13 @@
                     }
                 }
                 disableNavSet = false; // FileManager.Log("Enabled setPage", 0);
+                FileManager.Log("Updated classList menu", 0);
             }
             else
             {
                 FileManager.Log("No setPage", 1);
             }
+           
         }
 
         public void ProcessAllFiles()

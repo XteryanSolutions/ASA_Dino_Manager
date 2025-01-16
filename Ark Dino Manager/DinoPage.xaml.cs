@@ -416,6 +416,9 @@ public partial class DinoPage : ContentPage
         tester = tester.Replace("Regen", "ChargeRegen");
         tester = tester.Replace("Capacity", "ChargeCapacity");
 
+        string papaID = DataManager.GetLastColumnData("ID", selectedID, "Papa");
+        string mamaID = DataManager.GetLastColumnData("ID", selectedID, "Mama");
+
         string value = "";
         if (what == "D")
         {
@@ -423,47 +426,55 @@ public partial class DinoPage : ContentPage
         }
         if (what == "P")
         {
-            string mamaID = DataManager.GetLastColumnData("ID", selectedID, "Papa");
-            value = DataManager.GetFirstColumnData("ID", mamaID, tester).Replace(".", sep);
+            value = DataManager.GetFirstColumnData("ID", papaID, tester).Replace(".", sep);
+            fontColor = Shared.maleColor;
+            if (papaID != "" && papaID != "N/A") { if (value == "") { value = "0"; } }
         }
         if (what == "M")
         {
-            string mamaID = DataManager.GetLastColumnData("ID", selectedID, "Mama");
             value = DataManager.GetFirstColumnData("ID", mamaID, tester).Replace(".", sep);
+            fontColor = Shared.femaleColor;
+            if (mamaID != "" && mamaID != "N/A") { if (value == "") { value = "0"; } }
         }
 
-        double tesValue = 0;
+        double outV = DataManager.ToDouble(value);
+        double tesValue = 0; bool tes = true;
         if (rowText == "Level") { tesValue = DataManager.LevelMax; }
         if (rowText == "Hp") { tesValue = DataManager.HpMax; }
-        if (rowText == "Stamina") { tesValue = DataManager.StaminaMax; }
-        if (rowText == "O2") { tesValue = DataManager.O2Max; }
+        if (rowText == "Stamina") { tesValue = DataManager.StaminaMax; if (!hasStamina) { tes = false; } }
+        if (rowText == "O2") { tesValue = DataManager.O2Max; if (!hasO2) { tes = false; } }
         if (rowText == "Food") { tesValue = DataManager.FoodMax; }
         if (rowText == "Weight") { tesValue = DataManager.WeightMax; }
-        if (rowText == "Damage") { tesValue = DataManager.DamageMax; }
-        if (rowText == "Speed") { tesValue = DataManager.SpeedMax; }
-        if (rowText == "CraftSkill") { tesValue = DataManager.CraftMax; }
-        if (rowText == "Regen") { tesValue = DataManager.RegenMax; }
-        if (rowText == "Capacity") { tesValue = DataManager.CapacityMax; }
+        if (rowText == "Damage") { tesValue = DataManager.DamageMax; outV = (outV + 1) * 100; }
+        if (rowText == "Speed") { tesValue = DataManager.SpeedMax; outV = (outV + 1) * 100; }
+        if (rowText == "CraftSkill") { tesValue = DataManager.CraftMax; if (!hasCraft) { tes = false; } outV = (outV + 1) * 100; }
+        if (rowText == "Regen") { tesValue = DataManager.RegenMax; if (!hasCharge) { tes = false; } }
+        if (rowText == "Capacity") { tesValue = DataManager.CapacityMax; if (!hasCharge) { tes = false; } }
 
-
-        if ((DataManager.ToDouble(value) + statViewOffset) >= tesValue) { fontColor = Shared.goodColor; }
-
-        // mutation detection overrides normal coloring -> mutaColor
-        string mutes = DataManager.GetMutes(selectedID);
-        if (mutes.Length >= 7 && what == "D")
+        if (tes)
         {
-            if (rowText == "Hp") { if (mutes.Substring(0, 1) == "1") { fontColor = Shared.mutaColor; } }
-            if (rowText == "Stamina") { if (mutes.Substring(1, 1) == "1") { fontColor = Shared.mutaColor; } }
-            if (rowText == "O2") { if (mutes.Substring(2, 1) == "1") { fontColor = Shared.mutaColor; } }
-            if (rowText == "Food") { if (mutes.Substring(3, 1) == "1") { fontColor = Shared.mutaColor; } }
-            if (rowText == "Weight") { if (mutes.Substring(4, 1) == "1") { fontColor = Shared.mutaColor; } }
-            if (rowText == "Damage") { if (mutes.Substring(5, 1) == "1") { fontColor = Shared.mutaColor; } }
-            if (rowText == "CraftSkill") { if (mutes.Substring(6, 1) == "1") { fontColor = Shared.mutaColor; } }
-            if (rowText == "Regen") { if (mutes.Substring(7, 1) == "1") { fontColor = Shared.mutaColor; } }
-            if (rowText == "Capacity") { if (mutes.Substring(8, 1) == "1") { fontColor = Shared.mutaColor; } }
+            if ((outV + statViewOffset) >= tesValue) { fontColor = Shared.goodColor; }
+
+            // mutation detection overrides normal coloring -> mutaColor
+            string mutes = DataManager.GetMutes(selectedID);
+            if (mutes.Length >= 7 && what == "D")
+            {
+                if (rowText == "Hp") { if (mutes.Substring(0, 1) == "1") { fontColor = Shared.mutaColor; } }
+                if (rowText == "Stamina") { if (mutes.Substring(1, 1) == "1") { fontColor = Shared.mutaColor; } }
+                if (rowText == "O2") { if (mutes.Substring(2, 1) == "1") { fontColor = Shared.mutaColor; } }
+                if (rowText == "Food") { if (mutes.Substring(3, 1) == "1") { fontColor = Shared.mutaColor; } }
+                if (rowText == "Weight") { if (mutes.Substring(4, 1) == "1") { fontColor = Shared.mutaColor; } }
+                if (rowText == "Damage") { if (mutes.Substring(5, 1) == "1") { fontColor = Shared.mutaColor; } }
+                if (rowText == "CraftSkill") { if (mutes.Substring(6, 1) == "1") { fontColor = Shared.mutaColor; } }
+                if (rowText == "Regen") { if (mutes.Substring(7, 1) == "1") { fontColor = Shared.mutaColor; } }
+                if (rowText == "Capacity") { if (mutes.Substring(8, 1) == "1") { fontColor = Shared.mutaColor; } }
+            }
         }
 
-        if (what != "D") { rowText = value; }
+        if (what != "D") 
+        {
+            rowText = outV.ToString();
+        }
 
         Label outLabel = new Label { Text = rowText, TextColor = fontColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
 
@@ -479,38 +490,43 @@ public partial class DinoPage : ContentPage
 
         string value = DataManager.GetFirstColumnData("ID", selectedID, tester).Replace(".", sep);
 
-        double tesValue = 0;
+        double outV = DataManager.ToDouble(value);
+        double tesValue = 0; bool tes = true;
         if (rowText == "Level") { levelText = value; tesValue = DataManager.LevelMax; }
         if (rowText == "Hp") { hpText = value; tesValue = DataManager.HpMax; }
-        if (rowText == "Stamina") { staminaText = value; tesValue = DataManager.StaminaMax; }
-        if (rowText == "O2") { O2Text = value; tesValue = DataManager.O2Max; }
+        if (rowText == "Stamina") { staminaText = value; tesValue = DataManager.StaminaMax; if (!hasStamina) { tes = false; } }
+        if (rowText == "O2") { O2Text = value; tesValue = DataManager.O2Max; if (!hasO2) { tes = false; } }
         if (rowText == "Food") { foodText = value; tesValue = DataManager.FoodMax; }
         if (rowText == "Weight") { weightText = value; tesValue = DataManager.WeightMax; }
-        if (rowText == "Damage") { damageText = value; tesValue = DataManager.DamageMax; }
-        if (rowText == "Speed") { speedText = value; tesValue = DataManager.SpeedMax; }
-        if (rowText == "CraftSkill") { craftText = value; tesValue = DataManager.CraftMax; }
-        if (rowText == "Regen") { regenText = value; tesValue = DataManager.RegenMax; }
-        if (rowText == "Capacity") { capacityText = value; tesValue = DataManager.CapacityMax; }
+        if (rowText == "Damage") { damageText = value; tesValue = DataManager.DamageMax; outV = (outV + 1) * 100; }
+        if (rowText == "Speed") { speedText = value; tesValue = DataManager.SpeedMax; outV = (outV + 1) * 100; }
+        if (rowText == "CraftSkill") { craftText = value; tesValue = DataManager.CraftMax; if (!hasCraft) { tes = false; } outV = (outV + 1) * 100;  }
+        if (rowText == "Regen") { regenText = value; tesValue = DataManager.RegenMax; if (!hasCharge) { tes = false; } }
+        if (rowText == "Capacity") { capacityText = value; tesValue = DataManager.CapacityMax; if (!hasCharge) { tes = false; } }
 
-
-        if (DataManager.ToDouble(value) >= (tesValue - 0.1)) { fontColor = Shared.goodColor; }
-
-        // mutation detection overrides normal coloring -> mutaColor
-        string mutes = DataManager.GetMutes(selectedID);
-        if (mutes.Length >= 7)
+        if (tes)
         {
-            if (rowText == "Hp") { if (mutes.Substring(0, 1) == "1") { fontColor = Shared.mutaColor; } }
-            if (rowText == "Stamina") { if (mutes.Substring(1, 1) == "1") { fontColor = Shared.mutaColor; } }
-            if (rowText == "O2") { if (mutes.Substring(2, 1) == "1") { fontColor = Shared.mutaColor; } }
-            if (rowText == "Food") { if (mutes.Substring(3, 1) == "1") { fontColor = Shared.mutaColor; } }
-            if (rowText == "Weight") { if (mutes.Substring(4, 1) == "1") { fontColor = Shared.mutaColor; } }
-            if (rowText == "Damage") { if (mutes.Substring(5, 1) == "1") { fontColor = Shared.mutaColor; } }
-            if (rowText == "CraftSkill") { if (mutes.Substring(6, 1) == "1") { fontColor = Shared.mutaColor; } }
-            if (rowText == "Regen") { if (mutes.Substring(7, 1) == "1") { fontColor = Shared.mutaColor; } }
-            if (rowText == "Capacity") { if (mutes.Substring(8, 1) == "1") { fontColor = Shared.mutaColor; } }
+            if (outV >= (tesValue - 0.1)) { fontColor = Shared.goodColor; }
+
+            // mutation detection overrides normal coloring -> mutaColor
+            string mutes = DataManager.GetMutes(selectedID);
+            if (mutes.Length >= 7)
+            {
+                if (rowText == "Hp") { if (mutes.Substring(0, 1) == "1") { fontColor = Shared.mutaColor; } }
+                if (rowText == "Stamina") { if (mutes.Substring(1, 1) == "1") { fontColor = Shared.mutaColor; } }
+                if (rowText == "O2") { if (mutes.Substring(2, 1) == "1") { fontColor = Shared.mutaColor; } }
+                if (rowText == "Food") { if (mutes.Substring(3, 1) == "1") { fontColor = Shared.mutaColor; } }
+                if (rowText == "Weight") { if (mutes.Substring(4, 1) == "1") { fontColor = Shared.mutaColor; } }
+                if (rowText == "Damage") { if (mutes.Substring(5, 1) == "1") { fontColor = Shared.mutaColor; } }
+                if (rowText == "CraftSkill") { if (mutes.Substring(6, 1) == "1") { fontColor = Shared.mutaColor; } }
+                if (rowText == "Regen") { if (mutes.Substring(7, 1) == "1") { fontColor = Shared.mutaColor; } }
+                if (rowText == "Capacity") { if (mutes.Substring(8, 1) == "1") { fontColor = Shared.mutaColor; } }
+            }
         }
 
-        Entry outEntry = new Entry { Text = value, Placeholder = rowText, WidthRequest = 200, HeightRequest = 10, TextColor = fontColor, BackgroundColor = Shared.OddMPanelColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start };
+        if (value == "") { outV = 0; }
+
+        Entry outEntry = new Entry { Text = outV.ToString(), Placeholder = rowText, WidthRequest = 200, HeightRequest = 10, TextColor = fontColor, BackgroundColor = Shared.OddMPanelColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start };
 
         outEntry.TextChanged += (sender, e) =>
         {
@@ -518,15 +534,16 @@ public partial class DinoPage : ContentPage
             else
             {
                 value = e.NewTextValue;
+                double tValue = (ToDouble(value) / 100) - 1;
                 if (rowText == "Level") { levelText = value; }
                 if (rowText == "Hp") { hpText = value; }
                 if (rowText == "Stamina") { staminaText = value; }
                 if (rowText == "O2") { O2Text = value; }
                 if (rowText == "Food") { foodText = value; }
                 if (rowText == "Weight") { weightText = value; }
-                if (rowText == "Damage") { damageText = value; }
-                if (rowText == "Speed") { speedText = value; }
-                if (rowText == "CraftSkill") { craftText = value; }
+                if (rowText == "Damage") { damageText = tValue.ToString(); }
+                if (rowText == "Speed") { speedText = tValue.ToString(); }
+                if (rowText == "CraftSkill") { craftText = tValue.ToString(); }
                 if (rowText == "Regen") { regenText = value; }
                 if (rowText == "Capacity") { capacityText = value; }
             }
@@ -1124,7 +1141,7 @@ public partial class DinoPage : ContentPage
         if (column == "Mama" || column == "Papa" || column == "Gen" || column == "MamaMute" || column == "PapaMute")
         {
             string mama = row["Mama"].ToString(); string papa = row["Papa"].ToString();
-            if (mama.Contains(Smap["Warning"]) || papa.Contains(Smap["Warning"])) 
+            if (mama.Contains(Smap["Warning"]) || papa.Contains(Smap["Warning"]))
             {
                 rowText = Smap["Warning"];
             }
@@ -1250,7 +1267,7 @@ public partial class DinoPage : ContentPage
                         if (group == "") { group = "Include"; }
                         Label OutLabel = new Label { Text = $"{Smap[group]}", TextColor = maleColor };
                         AddToGrid(grid, OutLabel, rowIndex, columnID++, title);
-                    }  
+                    }
 
 
                     rowIndex++;
