@@ -44,7 +44,7 @@
 		<!--<AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>-->
 		<GenerateAppInstallerFile>False</GenerateAppInstallerFile>
 		<NeutralLanguage>en</NeutralLanguage>
-		<SignAssembly>True</SignAssembly>
+		<SignAssembly>False</SignAssembly>
 		<AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>
 		<!--<PackageCertificateThumbprint>2E9D027B7AA40F47D67ACC08205C53FC087BC73E</PackageCertificateThumbprint>-->
 		<!--<AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>-->
@@ -52,9 +52,6 @@
 		<AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
 		<GenerateTestArtifacts>True</GenerateTestArtifacts>
 		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-
-		<PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -66,7 +63,9 @@
 	<PropertyGroup>
 		<ApplicationIcon>Resources\AppIcon\eggico.ico</ApplicationIcon>
 		<NoWin32Manifest>true</NoWin32Manifest>
-		<PackageIcon>eggicon.png</PackageIcon>
+		<PackageIcon></PackageIcon>
+		<NuGetAuditMode>All</NuGetAuditMode>
+		<PackageId>Ark_Dino_Manger</PackageId>
 	</PropertyGroup>
 	
 
@@ -237,11 +236,11 @@
 	<ItemGroup>
 		<PackageReference Include="Costura.Fody" Version="6.0.0">
 		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		  <IncludeAssets>all</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Fody" Version="6.9.1">
 		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		  <IncludeAssets>all</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.30">
 		  <IncludeAssets></IncludeAssets>
