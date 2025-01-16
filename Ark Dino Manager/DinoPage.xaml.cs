@@ -1163,8 +1163,10 @@ public partial class DinoPage : ContentPage
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 14 Imprint
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 15 Imprinter
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 16
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 17
 
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 17
+
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star }); // 18
 
         int columnID = 0;
         int rowIndex = 0;
