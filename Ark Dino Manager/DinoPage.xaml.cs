@@ -439,15 +439,15 @@ public partial class DinoPage : ContentPage
 
         double outV = DataManager.ToDouble(value);
         double tesValue = 0; bool tes = true;
-        if (rowText == "Level") { tesValue = DataManager.LevelMax; }
+        if (rowText == "Level") { tesValue = DataManager.LevelMax; tes = false; } // disable recoloring
         if (rowText == "Hp") { tesValue = DataManager.HpMax; }
         if (rowText == "Stamina") { tesValue = DataManager.StaminaMax; if (!hasStamina) { tes = false; } }
         if (rowText == "O2") { tesValue = DataManager.O2Max; if (!hasO2) { tes = false; } }
         if (rowText == "Food") { tesValue = DataManager.FoodMax; }
         if (rowText == "Weight") { tesValue = DataManager.WeightMax; }
-        if (rowText == "Damage") { tesValue = DataManager.DamageMax; outV = (outV + 1) * 100; }
-        if (rowText == "Speed") { tesValue = DataManager.SpeedMax; outV = (outV + 1) * 100; }
-        if (rowText == "CraftSkill") { tesValue = DataManager.CraftMax; if (!hasCraft) { tes = false; } outV = (outV + 1) * 100; }
+        if (rowText == "Damage") { tesValue = DataManager.DamageMax; if (outV != 0) { outV = (outV + 1) * 100; } }
+        if (rowText == "Speed") { tesValue = DataManager.SpeedMax; if (outV != 0) { outV = (outV + 1) * 100; } tes = false; } // disable recoloring
+        if (rowText == "CraftSkill") { tesValue = DataManager.CraftMax; if (!hasCraft) { tes = false; } if (outV != 0) { outV = (outV + 1) * 100; } }
         if (rowText == "Regen") { tesValue = DataManager.RegenMax; if (!hasCharge) { tes = false; } }
         if (rowText == "Capacity") { tesValue = DataManager.CapacityMax; if (!hasCharge) { tes = false; } }
 
@@ -489,17 +489,18 @@ public partial class DinoPage : ContentPage
         tester = tester.Replace("Capacity", "ChargeCapacity");
 
         string value = DataManager.GetFirstColumnData("ID", selectedID, tester).Replace(".", sep);
+        if (value == "") { value = "0"; }
 
         double outV = DataManager.ToDouble(value);
         double tesValue = 0; bool tes = true;
-        if (rowText == "Level") { levelText = value; tesValue = DataManager.LevelMax; }
+        if (rowText == "Level") { levelText = value; tesValue = DataManager.LevelMax; tes = false; } // disable recoloring
         if (rowText == "Hp") { hpText = value; tesValue = DataManager.HpMax; }
         if (rowText == "Stamina") { staminaText = value; tesValue = DataManager.StaminaMax; if (!hasStamina) { tes = false; } }
         if (rowText == "O2") { O2Text = value; tesValue = DataManager.O2Max; if (!hasO2) { tes = false; } }
         if (rowText == "Food") { foodText = value; tesValue = DataManager.FoodMax; }
         if (rowText == "Weight") { weightText = value; tesValue = DataManager.WeightMax; }
         if (rowText == "Damage") { damageText = value; tesValue = DataManager.DamageMax; outV = (outV + 1) * 100; }
-        if (rowText == "Speed") { speedText = value; tesValue = DataManager.SpeedMax; outV = (outV + 1) * 100; }
+        if (rowText == "Speed") { speedText = value; tesValue = DataManager.SpeedMax; outV = (outV + 1) * 100; tes = false; }// disable recoloring
         if (rowText == "CraftSkill") { craftText = value; tesValue = DataManager.CraftMax; if (!hasCraft) { tes = false; } outV = (outV + 1) * 100;  }
         if (rowText == "Regen") { regenText = value; tesValue = DataManager.RegenMax; if (!hasCharge) { tes = false; } }
         if (rowText == "Capacity") { capacityText = value; tesValue = DataManager.CapacityMax; if (!hasCharge) { tes = false; } }
@@ -524,7 +525,7 @@ public partial class DinoPage : ContentPage
             }
         }
 
-        if (value == "") { outV = 0; }
+        if (value == "0") { outV = 0; }
 
         Entry outEntry = new Entry { Text = outV.ToString(), Placeholder = rowText, WidthRequest = 200, HeightRequest = 10, TextColor = fontColor, BackgroundColor = Shared.OddMPanelColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start };
 
@@ -726,13 +727,6 @@ public partial class DinoPage : ContentPage
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
             //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
 
-            labelT = "Speed"; rowID++; colID = 0;
-            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
-            //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
-
             labelT = "CraftSkill"; rowID++; colID = 0;
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
@@ -754,6 +748,12 @@ public partial class DinoPage : ContentPage
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
             //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
 
+            labelT = "Speed"; rowID++; colID = 0;
+            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
+            AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
+            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
+            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
+            //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
 
             scrollContent.Children.Add(statGrid);
 
