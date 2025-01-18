@@ -41,14 +41,12 @@
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
 		<WindowsPackageType>None</WindowsPackageType>
-		<!--<AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>-->
+		<AppxPackageSigningEnabled>False</AppxPackageSigningEnabled>
 		<GenerateAppInstallerFile>False</GenerateAppInstallerFile>
 		<NeutralLanguage>en</NeutralLanguage>
 		<SignAssembly>False</SignAssembly>
 		<AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>
-		<!--<PackageCertificateThumbprint>2E9D027B7AA40F47D67ACC08205C53FC087BC73E</PackageCertificateThumbprint>-->
-		<!--<AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>-->
-		<!--<AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>-->
+		<AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
 		<AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
 		<GenerateTestArtifacts>True</GenerateTestArtifacts>
 		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
@@ -66,6 +64,7 @@
 		<PackageIcon></PackageIcon>
 		<NuGetAuditMode>All</NuGetAuditMode>
 		<PackageId>Ark_Dino_Manger</PackageId>
+		<PlatformTarget>AnyCPU</PlatformTarget>
 	</PropertyGroup>
 	
 
@@ -82,125 +81,7 @@
 		<MauiFont Include="Resources\Fonts\*" />
 
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
-		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
-	</ItemGroup>
-	
-
-	<ItemGroup>
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\dino.scale-100.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\dino.scale-125.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\dino.scale-150.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\dino.scale-200.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\dino.scale-400.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoApp.scale-100.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoApp.scale-125.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoApp.scale-150.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoApp.scale-200.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoApp.scale-400.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-16.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-16_altform-lightunplated.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-16_altform-unplated.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-24.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-24_altform-lightunplated.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-24_altform-unplated.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-256.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-256_altform-lightunplated.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-256_altform-unplated.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-32.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-32_altform-lightunplated.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-32_altform-unplated.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-48.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-48_altform-lightunplated.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-48_altform-unplated.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoBadge.scale-100.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoBadge.scale-125.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoBadge.scale-150.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoBadge.scale-200.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoBadge.scale-400.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoLarge.scale-100.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoLarge.scale-125.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoLarge.scale-150.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoLarge.scale-200.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoLarge.scale-400.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoMedium.scale-100.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoMedium.scale-125.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoMedium.scale-150.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoMedium.scale-200.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoMedium.scale-400.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoSmall.scale-100.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoSmall.scale-125.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoSmall.scale-150.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoSmall.scale-200.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoSmall.scale-400.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoWide.scale-100.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoWide.scale-125.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoWide.scale-150.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoWide.scale-200.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\DinoWide.scale-400.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\SplashScreen.scale-100.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\SplashScreen.scale-125.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\SplashScreen.scale-150.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\SplashScreen.scale-200.png" />
-	  <None Remove="Platforms\Windows\Assets\EggLeaf\SplashScreen.scale-400.png" />
-	</ItemGroup>
-	
-
-	<ItemGroup>
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\dino.scale-100.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\dino.scale-125.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\dino.scale-150.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\dino.scale-200.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\dino.scale-400.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoApp.scale-100.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoApp.scale-125.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoApp.scale-150.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoApp.scale-200.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoApp.scale-400.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-16.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-16_altform-lightunplated.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-16_altform-unplated.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-24.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-24_altform-lightunplated.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-24_altform-unplated.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-256.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-256_altform-lightunplated.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-256_altform-unplated.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-32.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-32_altform-lightunplated.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-32_altform-unplated.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-48.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-48_altform-lightunplated.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoApp.targetsize-48_altform-unplated.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoBadge.scale-100.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoBadge.scale-125.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoBadge.scale-150.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoBadge.scale-200.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoBadge.scale-400.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoLarge.scale-100.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoLarge.scale-125.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoLarge.scale-150.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoLarge.scale-200.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoLarge.scale-400.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoMedium.scale-100.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoMedium.scale-125.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoMedium.scale-150.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoMedium.scale-200.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoMedium.scale-400.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoSmall.scale-100.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoSmall.scale-125.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoSmall.scale-150.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoSmall.scale-200.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoSmall.scale-400.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoWide.scale-100.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoWide.scale-125.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoWide.scale-150.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoWide.scale-200.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\DinoWide.scale-400.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\SplashScreen.scale-100.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\SplashScreen.scale-125.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\SplashScreen.scale-150.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\SplashScreen.scale-200.png" />
-	  <Content Include="Platforms\Windows\Assets\EggLeaf\SplashScreen.scale-400.png" />
+		<!--<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />-->
 	</ItemGroup>
 
 	<ItemGroup>
