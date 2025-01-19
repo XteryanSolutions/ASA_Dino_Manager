@@ -1004,7 +1004,7 @@ namespace Ark_Dino_Manager
             return result;
         }
 
-        public static void EditBreedStats(string id, string level, string hp, string st, string ox, string fo, string we, string da, string notes, string speed, string craft, string regen, string capacity)
+        public static void EditBreedStats(string id, string level, string hp, string st, string ox, string fo, string we, string da, string notes, string speed, string craft, string regen, string capacity, string emission)
         {
             if (id != "")
             {
@@ -1025,6 +1025,7 @@ namespace Ark_Dino_Manager
                         ImportsTable.Rows[rowID].SetField("CraftSkill", craft);
                         ImportsTable.Rows[rowID].SetField("ChargeRegen", regen);
                         ImportsTable.Rows[rowID].SetField("ChargeCapacity", capacity);
+                        ImportsTable.Rows[rowID].SetField("Emission", emission);
 
                         // break here to only edit the first row of stats
                         break;
@@ -1280,8 +1281,7 @@ namespace Ark_Dino_Manager
 
                     double RegM = Math.Round(ToDouble(FirstStats[rowID][21].ToString()), 1);
                     double CapM = Math.Round(ToDouble(FirstStats[rowID][22].ToString()), 1);
-                    double EmiM = Math.Round(ToDouble(FirstStats[rowID][23].ToString()), 1);
-
+                    double EmiM = Math.Round((ToDouble(FirstStats[rowID][23].ToString()) + 1) * 100, 1);
 
                     double SpeedM = Math.Round((ToDouble(FirstStats[rowID][8].ToString()) + 1) * 100);
                     string status = "";
@@ -1667,10 +1667,10 @@ namespace Ark_Dino_Manager
         {
             bool hasStamina = true; if (StaminaMax == 0) { hasStamina = false; }
             bool hasO2 = true; if (O2Max == 150 || O2Max == 0) { hasO2 = false; }
-            bool hasCraft = true; if (CraftMax == 100 || CraftMax == 0) { hasCraft = false; }
-            bool hasCharge = true; if (RegenMax == 0) { hasCharge = false; }
-            bool hasDamage = true; if (DamageMax == 0) { hasDamage = false; }
-            bool hasEmission = true; if (EmissionMax == 0) { hasEmission = false; }
+            bool hasCraft = true; if (CraftMax == 0 || CraftMax == 100) { hasCraft = false; }
+            bool hasCharge = true; if (RegenMax == 0 || RegenMax == 100) { hasCharge = false; }
+            bool hasDamage = true; if (DamageMax == 0 || DamageMax == 100) { hasDamage = false; }
+            bool hasEmission = true; if (EmissionMax == 0 || EmissionMax == 100) { hasEmission = false; }
 
             int rowIDC = 0; // Male dinos
             foreach (DataRow rowC in MaleTable.Rows)
@@ -1855,8 +1855,8 @@ namespace Ark_Dino_Manager
 
             bool hasStamina = true; if (StaminaMax == 0) { hasStamina = false; }
             bool hasO2 = true; if (O2Max == 150 || O2Max == 0) { hasO2 = false; }
-            bool hasCraft = true; if (CraftMax == 100 || CraftMax == 0) { hasCraft = false; }
-            bool hasCharge = true; if (RegenMax == 0) { hasCharge = false; }
+            bool hasCraft = true; if (CraftMax == 0 || CraftMax == 100) { hasCraft = false; }
+            bool hasCharge = true; if (RegenMax == 0 || RegenMax == 100) { hasCharge = false; }
             bool hasDamage = true; if (DamageMax == 0 || DamageMax == 100) { hasDamage = false; }
             bool hasEmission = true; if (EmissionMax == 0 || EmissionMax == 100) { hasEmission = false; }
 

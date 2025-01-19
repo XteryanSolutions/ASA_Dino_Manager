@@ -106,11 +106,11 @@ public partial class DinoPage : ContentPage
 
                         // check for sats we dont need
                         if (DataManager.StaminaMax == 0) { hasStamina = false; } else { hasStamina = true; }
-                        if (DataManager.O2Max == 150 || DataManager.O2Max == 0) { hasO2 = false; } else { hasO2 = true; }
-                        if (DataManager.CraftMax == 100 || DataManager.CraftMax == 0) { hasCraft = false; } else { hasCraft = true; }
-                        if (DataManager.RegenMax == 0) { hasCharge = false; } else { hasCharge = true; }
-                        if (DataManager.DamageMax == 100 || DataManager.DamageMax == 0) { hasDamage = false; } else { hasDamage = true; }
-                        if (DataManager.EmissionMax == 100 || DataManager.EmissionMax == 0) { hasEmission = false; } else { hasEmission = true; }
+                        if (DataManager.O2Max == 0 || DataManager.O2Max == 150) { hasO2 = false; } else { hasO2 = true; }
+                        if (DataManager.CraftMax == 0 || DataManager.CraftMax == 100) { hasCraft = false; } else { hasCraft = true; }
+                        if (DataManager.RegenMax == 0 || DataManager.RegenMax == 100) { hasCharge = false; } else { hasCharge = true; }
+                        if (DataManager.DamageMax == 0 || DataManager.DamageMax == 100) { hasDamage = false; } else { hasDamage = true; }
+                        if (DataManager.EmissionMax == 0 || DataManager.EmissionMax == 100) { hasEmission = false; } else { hasEmission = true; }
 
 
                         // load this data only when showing all and included
@@ -774,6 +774,15 @@ public partial class DinoPage : ContentPage
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
             //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
 
+            labelT = "Emission"; rowID++; colID = 0;
+            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
+            AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
+            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
+            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
+            //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
+
+
+
             scrollContent.Children.Add(statGrid);
 
             int rowid = 0;
@@ -1055,13 +1064,15 @@ public partial class DinoPage : ContentPage
             if (column == "CraftSkill") { if (DataManager.ToDouble(rowText) + statViewOffset >= DataManager.CraftMax) { RowLabelColor = Shared.goodColor; } }
             if (column == "Regen") { if (DataManager.ToDouble(rowText) + statViewOffset >= DataManager.RegenMax) { RowLabelColor = Shared.goodColor; } }
             if (column == "Capacity") { if (DataManager.ToDouble(rowText) + statViewOffset >= DataManager.CapacityMax) { RowLabelColor = Shared.goodColor; } }
+            if (column == "Emission") { if (DataManager.ToDouble(rowText) + statViewOffset >= DataManager.EmissionMax) { RowLabelColor = Shared.goodColor; } }
+
 
             if (title == "Bottom")
             {
                 // this column only exist in bottom table
                 string IDC = row["Res"].ToString();
 
-                if (IDC.Length > 8)
+                if (IDC.Length >= 10)
                 {
                     string aC = IDC.Substring(0, 1);
                     string bC = IDC.Substring(1, 1);
@@ -1072,6 +1083,7 @@ public partial class DinoPage : ContentPage
                     string gC = IDC.Substring(6, 1);
                     string hC = IDC.Substring(7, 1);
                     string iC = IDC.Substring(8, 1);
+                    string jC = IDC.Substring(9, 1);
 
 
                     // override offspring colors based on breed points
@@ -1084,16 +1096,19 @@ public partial class DinoPage : ContentPage
                     if (column == "CraftSkill") { if (gC == "2") { RowLabelColor = Shared.bestColor; } }
                     if (column == "Regen") { if (hC == "2") { RowLabelColor = Shared.bestColor; } }
                     if (column == "Capacity") { if (iC == "2") { RowLabelColor = Shared.bestColor; } }
+                    if (column == "Emission") { if (jC == "2") { RowLabelColor = Shared.bestColor; } }
+
 
                     if (!hasStamina) { bC = "2"; }
                     if (!hasO2) { cC = "2"; }
                     if (!hasDamage) { fC = "2"; }
                     if (!hasCraft) { gC = "2"; }
                     if (!hasCharge) { hC = "2"; iC = "2"; }
+                    if (!hasEmission) { jC = "2"; }
 
-                    if (column == "Hp" || column == "Stamina" || column == "O2" || column == "Food" || column == "Weight" || column == "Damage" || column == "CraftSkill" || column == "Regen" || column == "Capacity")
+                    if (column == "Hp" || column == "Stamina" || column == "O2" || column == "Food" || column == "Weight" || column == "Damage" || column == "CraftSkill" || column == "Regen" || column == "Capacity" || column == "Emission")
                     {
-                        if ((aC + bC + cC + dC + eC + fC + gC + hC + iC) == "222222222") { RowLabelColor = Shared.goldColor; }
+                        if ((aC + bC + cC + dC + eC + fC + gC + hC + iC + jC) == "2222222222") { RowLabelColor = Shared.goldColor; }
                     }
                 }
             }
@@ -1108,7 +1123,7 @@ public partial class DinoPage : ContentPage
                 string mutes = row["Mutes"].ToString();
 
                 // mutation detection overrides normal coloring -> mutaColor
-                if (mutes.Length >= 9 && !CurrentStats) // dont show mutations on current statview
+                if (mutes.Length >= 10 && !CurrentStats) // dont show mutations on current statview
                 {
                     double testStat = 0;
                     string aC = "";
@@ -1122,6 +1137,7 @@ public partial class DinoPage : ContentPage
                     if (column == "CraftSkill") { aC = mutes.Substring(6, 1); testStat = CraftMax; }
                     if (column == "Regen") { aC = mutes.Substring(7, 1); testStat = RegenMax; }
                     if (column == "Capacity") { aC = mutes.Substring(8, 1); testStat = CapacityMax; }
+                    if (column == "Emission") { aC = mutes.Substring(9, 1); testStat = EmissionMax; }
 
 
                     if (aC == "1" && ToDouble(rowText) + statOffset >= testStat) { RowLabelColor = mutaGoodColor; }
@@ -1298,7 +1314,7 @@ public partial class DinoPage : ContentPage
                 boxRowID++;
 
                 // add empty row between tables
-                var emptyH = new Label { Text = "=================" };
+                var emptyH = new Label { Text = "" };
                 AddToGrid(grid, emptyH, rowIndex, columnID, "Empty");
                 rowIndex++; boxRowID++;
 
@@ -1794,6 +1810,7 @@ public partial class DinoPage : ContentPage
         levelText = ""; hpText = ""; staminaText = ""; O2Text = "";
         foodText = ""; weightText = ""; damageText = ""; notesText = "";
         speedText = ""; craftText = ""; regenText = ""; capacityText = "";
+        emissionText = "";
         dataValid = false;
         isDouble = false; showTree = false;
         ClearSelection();
@@ -1810,7 +1827,7 @@ public partial class DinoPage : ContentPage
 
         if (editStats)
         {
-            DataManager.EditBreedStats(selectedID, levelText, hpText, staminaText, O2Text, foodText, weightText, damageText, notesText, speedText, craftText, regenText, capacityText);
+            DataManager.EditBreedStats(selectedID, levelText, hpText, staminaText, O2Text, foodText, weightText, damageText, notesText, speedText, craftText, regenText, capacityText, emissionText);
             FileManager.needSave = true;
             dataValid = false;
         }
@@ -1819,6 +1836,7 @@ public partial class DinoPage : ContentPage
         levelText = ""; hpText = ""; staminaText = ""; O2Text = "";
         foodText = ""; weightText = ""; damageText = ""; notesText = "";
         speedText = ""; craftText = ""; regenText = ""; capacityText = "";
+        emissionText = "";
         isDouble = false;
 
         ClearSelection();
