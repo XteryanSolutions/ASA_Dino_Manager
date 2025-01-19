@@ -101,7 +101,7 @@
                     Shared.setPage = trimTarget;
                    
                     // got a new setpage
-                    // UpdateMenuContents(Shared.setPage);
+                    UpdateMenuContents(Shared.setPage);
 
                     // reset toggles and unselect dino when navigating
                     DinoPage.CurrentStats = Shared.DefaultStat; DinoPage.ToggleExcluded = Shared.DefaultToggle;

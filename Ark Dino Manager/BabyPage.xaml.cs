@@ -817,41 +817,30 @@ public partial class BabyPage : ContentPage
 
     private void DefaultRowColors()
     {
-        if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
+        try
         {
-            try
+            if (boxViews.Count > 0)
             {
-                if (boxViews.Count > 0)
-                {
-                    int rowsM = DataManager.MaleTable.Rows.Count;
-                    int rowsT = boxViews.Count;
-                    int z = 0;
+                int rowsM = DataManager.MaleTable.Rows.Count;
+                int rowsT = boxViews.Count;
+                int z = 0;
 
-                    for (int i = 0; i < rowsT; i++) // color all male rows
+                for (int i = 0; i < rowsT; i++) // color all male rows
+                {
+                    // start coloring the rows with Solid color
+                    if (i <= rowsM)
                     {
-                        // start coloring the rows with Solid color
-                        if (i <= rowsM)
-                        {
-                            boxViews[i].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
-                        }
-                        else // use z instead of i to reset odd & even at new table
-                        {
-                            boxViews[i].Color = z % 2 == 0 ? OddMPanelColor : MainPanelColor;
-                            z++;
-                        }
+                        boxViews[i].Color = i % 2 == 0 ? OddMPanelColor : MainPanelColor;
+                    }
+                    else // use z instead of i to reset odd & even at new table
+                    {
+                        boxViews[i].Color = z % 2 == 0 ? OddMPanelColor : MainPanelColor;
+                        z++;
                     }
                 }
             }
-            catch { }
-            finally
-            {
-                Monitor.Exit(Shared._dbLock);
-            }
         }
-        else
-        {
-            FileManager.Log("Recoloring failure", 1);
-        }
+        catch { }
     }
 
     private void ClearSelection()

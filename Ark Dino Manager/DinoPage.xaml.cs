@@ -44,17 +44,20 @@ public partial class DinoPage : ContentPage
     private string craftText = "";
     private string regenText = "";
     private string capacityText = "";
+    private string emissionText = "";
 
     ////////////////////    Data   ////////////////////
     private bool editStats = false;
     private bool dataValid = false;
     private int dinoCount = 0;
 
-    private bool hasO2 = true;
+    private bool hasO2 = false;
     private bool hasSpeed = false;
-    private bool hasCraft = true;
+    private bool hasCraft = false;
     private bool hasCharge = false;
-    private bool hasStamina = true;
+    private bool hasStamina = false;
+    private bool hasDamage = false;
+    private bool hasEmission = false;
 
     private Stopwatch timer1 = Stopwatch.StartNew();
 
@@ -106,6 +109,9 @@ public partial class DinoPage : ContentPage
                         if (DataManager.O2Max == 150 || DataManager.O2Max == 0) { hasO2 = false; } else { hasO2 = true; }
                         if (DataManager.CraftMax == 100 || DataManager.CraftMax == 0) { hasCraft = false; } else { hasCraft = true; }
                         if (DataManager.RegenMax == 0) { hasCharge = false; } else { hasCharge = true; }
+                        if (DataManager.DamageMax == 100 || DataManager.DamageMax == 0) { hasDamage = false; } else { hasDamage = true; }
+                        if (DataManager.EmissionMax == 100 || DataManager.EmissionMax == 0) { hasEmission = false; } else { hasEmission = true; }
+
 
                         // load this data only when showing all and included
                         if (ToggleExcluded == 0 || ToggleExcluded == 1 || ToggleExcluded == 2)
@@ -221,6 +227,11 @@ public partial class DinoPage : ContentPage
 
     private void AddToGrid(Grid grid, View view, int row, int column, string title = "", bool selected = false, bool isDoubl = false, string id = "")
     {
+        Color c1 = Shared.MainPanelColor;
+        Color c1_o = Shared.MainPanelColor;
+
+        Color c2 = Shared.BottomPanelColor;
+
         // Ensure rows exist up to the specified index
         while (grid.RowDefinitions.Count <= row)
         {
@@ -260,7 +271,6 @@ public partial class DinoPage : ContentPage
                 ? grid.ColumnDefinitions.Count
                 : 1); // Cover all columns
 
-            // dont recolor the bottom panel since its not selectable
             if (title != "Bottom")
             {
                 boxViews[boxID++] = rowBackground;
@@ -450,6 +460,8 @@ public partial class DinoPage : ContentPage
         if (rowText == "CraftSkill") { tesValue = DataManager.CraftMax; if (!hasCraft) { tes = false; } if (outV != 0) { outV = (outV + 1) * 100; } }
         if (rowText == "Regen") { tesValue = DataManager.RegenMax; if (!hasCharge) { tes = false; } }
         if (rowText == "Capacity") { tesValue = DataManager.CapacityMax; if (!hasCharge) { tes = false; } }
+        if (rowText == "Emission") { tesValue = DataManager.EmissionMax; if (!hasEmission) { tes = false; } if (outV != 0) { outV = (outV + 1) * 100; } }
+
 
         if (tes)
         {
@@ -457,21 +469,23 @@ public partial class DinoPage : ContentPage
 
             // mutation detection overrides normal coloring -> mutaColor
             string mutes = DataManager.GetMutes(selectedID);
-            if (mutes.Length >= 7 && what == "D")
+            if (mutes.Length >= 10 && what == "D")
             {
-                if (rowText == "Hp") { if (mutes.Substring(0, 1) == "1") { fontColor = Shared.mutaColor; } }
-                if (rowText == "Stamina") { if (mutes.Substring(1, 1) == "1") { fontColor = Shared.mutaColor; } }
-                if (rowText == "O2") { if (mutes.Substring(2, 1) == "1") { fontColor = Shared.mutaColor; } }
-                if (rowText == "Food") { if (mutes.Substring(3, 1) == "1") { fontColor = Shared.mutaColor; } }
-                if (rowText == "Weight") { if (mutes.Substring(4, 1) == "1") { fontColor = Shared.mutaColor; } }
-                if (rowText == "Damage") { if (mutes.Substring(5, 1) == "1") { fontColor = Shared.mutaColor; } }
-                if (rowText == "CraftSkill") { if (mutes.Substring(6, 1) == "1") { fontColor = Shared.mutaColor; } }
-                if (rowText == "Regen") { if (mutes.Substring(7, 1) == "1") { fontColor = Shared.mutaColor; } }
-                if (rowText == "Capacity") { if (mutes.Substring(8, 1) == "1") { fontColor = Shared.mutaColor; } }
+                if (rowText == "Hp") { if (mutes.Substring(0, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(0, 1) == "2") { fontColor = Shared.mutaBadColor; } }
+                if (rowText == "Stamina") { if (mutes.Substring(1, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(1, 1) == "2") { fontColor = Shared.mutaBadColor; } }
+                if (rowText == "O2") { if (mutes.Substring(2, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(2, 1) == "2") { fontColor = Shared.mutaBadColor; } }
+                if (rowText == "Food") { if (mutes.Substring(3, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(3, 1) == "2") { fontColor = Shared.mutaBadColor; } }
+                if (rowText == "Weight") { if (mutes.Substring(4, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(4, 1) == "2") { fontColor = Shared.mutaBadColor; } }
+                if (rowText == "Damage") { if (mutes.Substring(5, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(5, 1) == "2") { fontColor = Shared.mutaBadColor; } }
+                if (rowText == "CraftSkill") { if (mutes.Substring(6, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(6, 1) == "2") { fontColor = Shared.mutaBadColor; } }
+                if (rowText == "Regen") { if (mutes.Substring(7, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(7, 1) == "2") { fontColor = Shared.mutaBadColor; } }
+                if (rowText == "Capacity") { if (mutes.Substring(8, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(8, 1) == "2") { fontColor = Shared.mutaBadColor; } }
+                if (rowText == "Emission") { if (mutes.Substring(9, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(9, 1) == "2") { fontColor = Shared.mutaBadColor; } }
+
             }
         }
 
-        if (what != "D") 
+        if (what != "D")
         {
             rowText = outV.ToString();
         }
@@ -499,11 +513,13 @@ public partial class DinoPage : ContentPage
         if (rowText == "O2") { O2Text = value; tesValue = DataManager.O2Max; if (!hasO2) { tes = false; } }
         if (rowText == "Food") { foodText = value; tesValue = DataManager.FoodMax; }
         if (rowText == "Weight") { weightText = value; tesValue = DataManager.WeightMax; }
-        if (rowText == "Damage") { damageText = value; tesValue = DataManager.DamageMax; outV = (outV + 1) * 100; }
+        if (rowText == "Damage") { damageText = value; tesValue = DataManager.DamageMax; if (!hasDamage) { tes = false; } outV = (outV + 1) * 100; }
         if (rowText == "Speed") { speedText = value; tesValue = DataManager.SpeedMax; outV = (outV + 1) * 100; tes = false; }// disable recoloring
-        if (rowText == "CraftSkill") { craftText = value; tesValue = DataManager.CraftMax; if (!hasCraft) { tes = false; } outV = (outV + 1) * 100;  }
+        if (rowText == "CraftSkill") { craftText = value; tesValue = DataManager.CraftMax; if (!hasCraft) { tes = false; } outV = (outV + 1) * 100; }
         if (rowText == "Regen") { regenText = value; tesValue = DataManager.RegenMax; if (!hasCharge) { tes = false; } }
         if (rowText == "Capacity") { capacityText = value; tesValue = DataManager.CapacityMax; if (!hasCharge) { tes = false; } }
+        if (rowText == "Emission") { emissionText = value; tesValue = DataManager.EmissionMax; if (!hasEmission) { tes = false; } outV = (outV + 1) * 100; }
+
 
         if (tes)
         {
@@ -513,15 +529,17 @@ public partial class DinoPage : ContentPage
             string mutes = DataManager.GetMutes(selectedID);
             if (mutes.Length >= 7)
             {
-                if (rowText == "Hp") { if (mutes.Substring(0, 1) == "1") { fontColor = Shared.mutaColor; } }
-                if (rowText == "Stamina") { if (mutes.Substring(1, 1) == "1") { fontColor = Shared.mutaColor; } }
-                if (rowText == "O2") { if (mutes.Substring(2, 1) == "1") { fontColor = Shared.mutaColor; } }
-                if (rowText == "Food") { if (mutes.Substring(3, 1) == "1") { fontColor = Shared.mutaColor; } }
-                if (rowText == "Weight") { if (mutes.Substring(4, 1) == "1") { fontColor = Shared.mutaColor; } }
-                if (rowText == "Damage") { if (mutes.Substring(5, 1) == "1") { fontColor = Shared.mutaColor; } }
-                if (rowText == "CraftSkill") { if (mutes.Substring(6, 1) == "1") { fontColor = Shared.mutaColor; } }
-                if (rowText == "Regen") { if (mutes.Substring(7, 1) == "1") { fontColor = Shared.mutaColor; } }
-                if (rowText == "Capacity") { if (mutes.Substring(8, 1) == "1") { fontColor = Shared.mutaColor; } }
+                if (rowText == "Hp") { if (mutes.Substring(0, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(0, 1) == "2") { fontColor = Shared.mutaBadColor; } }
+                if (rowText == "Stamina") { if (mutes.Substring(1, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(1, 1) == "2") { fontColor = Shared.mutaBadColor; } }
+                if (rowText == "O2") { if (mutes.Substring(2, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(2, 1) == "2") { fontColor = Shared.mutaBadColor; } }
+                if (rowText == "Food") { if (mutes.Substring(3, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(3, 1) == "2") { fontColor = Shared.mutaBadColor; } }
+                if (rowText == "Weight") { if (mutes.Substring(4, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(4, 1) == "2") { fontColor = Shared.mutaBadColor; } }
+                if (rowText == "Damage") { if (mutes.Substring(5, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(5, 1) == "2") { fontColor = Shared.mutaBadColor; } }
+                if (rowText == "CraftSkill") { if (mutes.Substring(6, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(6, 1) == "2") { fontColor = Shared.mutaBadColor; } }
+                if (rowText == "Regen") { if (mutes.Substring(7, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(7, 1) == "2") { fontColor = Shared.mutaBadColor; } }
+                if (rowText == "Capacity") { if (mutes.Substring(8, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(8, 1) == "2") { fontColor = Shared.mutaBadColor; } }
+                if (rowText == "Emission") { if (mutes.Substring(9, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(9, 1) == "2") { fontColor = Shared.mutaBadColor; } }
+
             }
         }
 
@@ -547,6 +565,7 @@ public partial class DinoPage : ContentPage
                 if (rowText == "CraftSkill") { craftText = tValue.ToString(); }
                 if (rowText == "Regen") { regenText = value; }
                 if (rowText == "Capacity") { capacityText = value; }
+                if (rowText == "Emission") { emissionText = tValue.ToString(); }
             }
         };
 
@@ -1068,6 +1087,7 @@ public partial class DinoPage : ContentPage
 
                     if (!hasStamina) { bC = "2"; }
                     if (!hasO2) { cC = "2"; }
+                    if (!hasDamage) { fC = "2"; }
                     if (!hasCraft) { gC = "2"; }
                     if (!hasCharge) { hC = "2"; iC = "2"; }
 
@@ -1207,7 +1227,8 @@ public partial class DinoPage : ContentPage
                 if (hasCharge) { AddToGrid(grid, HeaderLabel("Capacity", title), rowIndex, columnID++, title); }
                 AddToGrid(grid, HeaderLabel("Food", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Weight", title), rowIndex, columnID++, title);
-                AddToGrid(grid, HeaderLabel("Damage", title), rowIndex, columnID++, title);
+                if (hasEmission) { AddToGrid(grid, HeaderLabel("Emission", title), rowIndex, columnID++, title); }
+                if (hasDamage) { AddToGrid(grid, HeaderLabel("Damage", title), rowIndex, columnID++, title); }
                 if (hasCraft) { AddToGrid(grid, HeaderLabel("CraftSkill", title), rowIndex, columnID++, title); }
                 if (hasSpeed) { AddToGrid(grid, HeaderLabel("Speed", title), rowIndex, columnID++, title); }
                 AddToGrid(grid, HeaderLabel("Status", title), rowIndex, columnID++, title);
@@ -1249,7 +1270,8 @@ public partial class DinoPage : ContentPage
                     if (hasCharge) { AddToGrid(grid, RowLabel("Capacity", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
                     AddToGrid(grid, RowLabel("Food", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Weight", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("Damage", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    if (hasEmission) { AddToGrid(grid, RowLabel("Emission", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
+                    if (hasDamage) { AddToGrid(grid, RowLabel("Damage", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
                     if (hasCraft) { AddToGrid(grid, RowLabel("CraftSkill", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
                     if (hasSpeed) { AddToGrid(grid, RowLabel("Speed", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
                     AddToGrid(grid, RowLabel("Status", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
@@ -1276,7 +1298,7 @@ public partial class DinoPage : ContentPage
                 boxRowID++;
 
                 // add empty row between tables
-                var emptyH = new Label { Text = "" };
+                var emptyH = new Label { Text = "=================" };
                 AddToGrid(grid, emptyH, rowIndex, columnID, "Empty");
                 rowIndex++; boxRowID++;
 
@@ -1307,7 +1329,8 @@ public partial class DinoPage : ContentPage
                 if (hasCharge) { AddToGrid(grid, HeaderLabel("Capacity", title), rowIndex, columnID++, title); }
                 AddToGrid(grid, HeaderLabel("Food", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Weight", title), rowIndex, columnID++, title);
-                AddToGrid(grid, HeaderLabel("Damage", title), rowIndex, columnID++, title);
+                if (hasEmission) { AddToGrid(grid, HeaderLabel("Emission", title), rowIndex, columnID++, title); }
+                if (hasDamage) { AddToGrid(grid, HeaderLabel("Damage", title), rowIndex, columnID++, title); }
                 if (hasCraft) { AddToGrid(grid, HeaderLabel("CraftSkill", title), rowIndex, columnID++, title); }
                 if (hasSpeed) { AddToGrid(grid, HeaderLabel("Speed", title), rowIndex, columnID++, title); }
                 AddToGrid(grid, HeaderLabel("Status", title), rowIndex, columnID++, title);
@@ -1349,7 +1372,8 @@ public partial class DinoPage : ContentPage
                     if (hasCharge) { AddToGrid(grid, RowLabel("Capacity", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
                     AddToGrid(grid, RowLabel("Food", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Weight", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("Damage", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    if (hasEmission) { AddToGrid(grid, RowLabel("Emission", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
+                    if (hasDamage) { AddToGrid(grid, RowLabel("Damage", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
                     if (hasCraft) { AddToGrid(grid, RowLabel("CraftSkill", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
                     if (hasSpeed) { AddToGrid(grid, RowLabel("Speed", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
                     AddToGrid(grid, RowLabel("Status", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
@@ -1386,7 +1410,8 @@ public partial class DinoPage : ContentPage
             if (hasCharge) { AddToGrid(grid, HeaderLabel("Capacity", title), rowIndex, columnID++, title); }
             AddToGrid(grid, HeaderLabel("Food", title), rowIndex, columnID++, title);
             AddToGrid(grid, HeaderLabel("Weight", title), rowIndex, columnID++, title);
-            AddToGrid(grid, HeaderLabel("Damage", title), rowIndex, columnID++, title);
+            if (hasEmission) { AddToGrid(grid, HeaderLabel("Emission", title), rowIndex, columnID++, title); }
+            if (hasDamage) { AddToGrid(grid, HeaderLabel("Damage", title), rowIndex, columnID++, title); }
             if (hasCraft) { AddToGrid(grid, HeaderLabel("CraftSkill", title), rowIndex, columnID++, title); }
             if (hasSpeed) { AddToGrid(grid, HeaderLabel("Speed", title), rowIndex, columnID++, title); }
             AddToGrid(grid, HeaderLabel("Status", title), rowIndex, columnID++, title);
@@ -1410,7 +1435,8 @@ public partial class DinoPage : ContentPage
                 if (hasCharge) { AddToGrid(grid, RowLabel("Capacity", title, row), rowIndex, columnID++, title); }
                 AddToGrid(grid, RowLabel("Food", title, row), rowIndex, columnID++, title);
                 AddToGrid(grid, RowLabel("Weight", title, row), rowIndex, columnID++, title);
-                AddToGrid(grid, RowLabel("Damage", title, row), rowIndex, columnID++, title);
+                if (hasEmission) { AddToGrid(grid, RowLabel("Emission", title, row), rowIndex, columnID++, title); }
+                if (hasDamage) { AddToGrid(grid, RowLabel("Damage", title, row), rowIndex, columnID++, title); }
                 if (hasCraft) { AddToGrid(grid, RowLabel("CraftSkill", title, row), rowIndex, columnID++, title); }
                 if (hasSpeed) { AddToGrid(grid, RowLabel("Speed", title, row), rowIndex, columnID++, title); }
 
