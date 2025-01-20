@@ -4,7 +4,7 @@
     internal class Shared
     {
         ////////////////////    Title version   ////////////////////
-        public static string version = "Ark Dino Manager 0.04.67";
+        public static string version = "Ark Dino Manager 0.04.68";
 
 
         ////////////////////////////////////////////////////////////

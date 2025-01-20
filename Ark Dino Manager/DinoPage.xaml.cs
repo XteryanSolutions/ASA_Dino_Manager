@@ -693,10 +693,9 @@ public partial class DinoPage : ContentPage
             int rowID = 0; int colID = 0; string labelT = "";
 
             AddToGrid(statGrid, EditHeader("", DefaultColor), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditHeader("Breeding Stats", DefaultColor), rowID, colID++, "", false, true);
+            AddToGrid(statGrid, EditHeader("Edit Stats", DefaultColor), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditHeader(papaName, Shared.maleColor), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditHeader(mamaName, Shared.femaleColor), rowID, colID++, "", false, true);
-            //AddToGrid(statGrid, EditHeader("Points", DefaultColor), rowID, colID++, "", false, true);
 
             labelT = "Level"; rowID++; colID = 0;
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
@@ -709,79 +708,84 @@ public partial class DinoPage : ContentPage
             AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
-            //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
 
-            labelT = "Stamina"; rowID++; colID = 0;
-            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
-            //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
+            if (hasStamina)
+            {
+                labelT = "Stamina"; rowID++; colID = 0;
+                AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
+                AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
+                AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
+                AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
+            }
 
-            labelT = "O2"; rowID++; colID = 0;
-            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
-            //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
+            if (hasO2)
+            {
+                labelT = "O2"; rowID++; colID = 0;
+                AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
+                AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
+                AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
+                AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
+            }
+
+            if (hasCharge)
+            {
+                labelT = "Capacity"; rowID++; colID = 0;
+                AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
+                AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
+                AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
+                AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
+
+                labelT = "Regen"; rowID++; colID = 0;
+                AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
+                AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
+                AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
+                AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
+            }
 
             labelT = "Food"; rowID++; colID = 0;
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
-            //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
 
             labelT = "Weight"; rowID++; colID = 0;
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
-            //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
 
-            labelT = "Damage"; rowID++; colID = 0;
-            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
-            //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
+            if (hasDamage)
+            {
+                labelT = "Damage"; rowID++; colID = 0;
+                AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
+                AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
+                AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
+                AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
+            }
 
-            labelT = "CraftSkill"; rowID++; colID = 0;
-            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
-            //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
+            if (hasEmission)
+            {
+                labelT = "Emission"; rowID++; colID = 0;
+                AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
+                AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
+                AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
+                AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
+            }
 
-            labelT = "Regen"; rowID++; colID = 0;
-            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
-            //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
-
-            labelT = "Capacity"; rowID++; colID = 0;
-            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
-            //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
+            if (hasCraft)
+            {
+                labelT = "CraftSkill"; rowID++; colID = 0;
+                AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
+                AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
+                AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
+                AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
+            }
 
             labelT = "Speed"; rowID++; colID = 0;
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
-            //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
-
-            labelT = "Emission"; rowID++; colID = 0;
-            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
-            //AddToGrid(statGrid, EditRowPoints(labelT, DefaultColor), rowID, colID++, "", false, true);
-
-
 
             scrollContent.Children.Add(statGrid);
 
@@ -1239,8 +1243,8 @@ public partial class DinoPage : ContentPage
                 AddToGrid(grid, HeaderLabel("Hp", title), rowIndex, columnID++, title);
                 if (hasStamina) { AddToGrid(grid, HeaderLabel("Stamina", title), rowIndex, columnID++, title); }
                 if (hasO2) { AddToGrid(grid, HeaderLabel("O2", title), rowIndex, columnID++, title); }
-                if (hasCharge) { AddToGrid(grid, HeaderLabel("Regen", title), rowIndex, columnID++, title); }
                 if (hasCharge) { AddToGrid(grid, HeaderLabel("Capacity", title), rowIndex, columnID++, title); }
+                if (hasCharge) { AddToGrid(grid, HeaderLabel("Regen", title), rowIndex, columnID++, title); }
                 AddToGrid(grid, HeaderLabel("Food", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Weight", title), rowIndex, columnID++, title);
                 if (hasEmission) { AddToGrid(grid, HeaderLabel("Emission", title), rowIndex, columnID++, title); }
@@ -1282,8 +1286,8 @@ public partial class DinoPage : ContentPage
                     AddToGrid(grid, RowLabel("Hp", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     if (hasStamina) { AddToGrid(grid, RowLabel("Stamina", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
                     if (hasO2) { AddToGrid(grid, RowLabel("O2", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
-                    if (hasCharge) { AddToGrid(grid, RowLabel("Regen", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
                     if (hasCharge) { AddToGrid(grid, RowLabel("Capacity", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
+                    if (hasCharge) { AddToGrid(grid, RowLabel("Regen", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
                     AddToGrid(grid, RowLabel("Food", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Weight", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     if (hasEmission) { AddToGrid(grid, RowLabel("Emission", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
@@ -1341,8 +1345,8 @@ public partial class DinoPage : ContentPage
                 AddToGrid(grid, HeaderLabel("Hp", title), rowIndex, columnID++, title);
                 if (hasStamina) { AddToGrid(grid, HeaderLabel("Stamina", title), rowIndex, columnID++, title); }
                 if (hasO2) { AddToGrid(grid, HeaderLabel("O2", title), rowIndex, columnID++, title); }
-                if (hasCharge) { AddToGrid(grid, HeaderLabel("Regen", title), rowIndex, columnID++, title); }
                 if (hasCharge) { AddToGrid(grid, HeaderLabel("Capacity", title), rowIndex, columnID++, title); }
+                if (hasCharge) { AddToGrid(grid, HeaderLabel("Regen", title), rowIndex, columnID++, title); }
                 AddToGrid(grid, HeaderLabel("Food", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Weight", title), rowIndex, columnID++, title);
                 if (hasEmission) { AddToGrid(grid, HeaderLabel("Emission", title), rowIndex, columnID++, title); }
@@ -1384,8 +1388,8 @@ public partial class DinoPage : ContentPage
                     AddToGrid(grid, RowLabel("Hp", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     if (hasStamina) { AddToGrid(grid, RowLabel("Stamina", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
                     if (hasO2) { AddToGrid(grid, RowLabel("O2", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
-                    if (hasCharge) { AddToGrid(grid, RowLabel("Regen", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
                     if (hasCharge) { AddToGrid(grid, RowLabel("Capacity", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
+                    if (hasCharge) { AddToGrid(grid, RowLabel("Regen", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
                     AddToGrid(grid, RowLabel("Food", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Weight", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     if (hasEmission) { AddToGrid(grid, RowLabel("Emission", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
@@ -1422,8 +1426,8 @@ public partial class DinoPage : ContentPage
             AddToGrid(grid, HeaderLabel("Hp", title), rowIndex, columnID++, title);
             if (hasStamina) { AddToGrid(grid, HeaderLabel("Stamina", title), rowIndex, columnID++, title); }
             if (hasO2) { AddToGrid(grid, HeaderLabel("O2", title), rowIndex, columnID++, title); }
-            if (hasCharge) { AddToGrid(grid, HeaderLabel("Regen", title), rowIndex, columnID++, title); }
             if (hasCharge) { AddToGrid(grid, HeaderLabel("Capacity", title), rowIndex, columnID++, title); }
+            if (hasCharge) { AddToGrid(grid, HeaderLabel("Regen", title), rowIndex, columnID++, title); }
             AddToGrid(grid, HeaderLabel("Food", title), rowIndex, columnID++, title);
             AddToGrid(grid, HeaderLabel("Weight", title), rowIndex, columnID++, title);
             if (hasEmission) { AddToGrid(grid, HeaderLabel("Emission", title), rowIndex, columnID++, title); }
@@ -1447,8 +1451,8 @@ public partial class DinoPage : ContentPage
                 AddToGrid(grid, RowLabel("Hp", title, row), rowIndex, columnID++, title);
                 if (hasStamina) { AddToGrid(grid, RowLabel("Stamina", title, row), rowIndex, columnID++, title); }
                 if (hasO2) { AddToGrid(grid, RowLabel("O2", title, row), rowIndex, columnID++, title); }
-                if (hasCharge) { AddToGrid(grid, RowLabel("Regen", title, row), rowIndex, columnID++, title); }
                 if (hasCharge) { AddToGrid(grid, RowLabel("Capacity", title, row), rowIndex, columnID++, title); }
+                if (hasCharge) { AddToGrid(grid, RowLabel("Regen", title, row), rowIndex, columnID++, title); }
                 AddToGrid(grid, RowLabel("Food", title, row), rowIndex, columnID++, title);
                 AddToGrid(grid, RowLabel("Weight", title, row), rowIndex, columnID++, title);
                 if (hasEmission) { AddToGrid(grid, RowLabel("Emission", title, row), rowIndex, columnID++, title); }
