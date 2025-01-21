@@ -456,12 +456,18 @@ public partial class DinoPage : ContentPage
         if (rowText == "Food") { tesValue = DataManager.FoodMax; }
         if (rowText == "Weight") { tesValue = DataManager.WeightMax; }
         if (rowText == "Damage") { tesValue = DataManager.DamageMax; if (outV != 0) { outV = (outV + 1) * 100; } }
-        if (rowText == "Speed") { tesValue = DataManager.SpeedMax; if (outV != 0) { outV = (outV + 1) * 100; } tes = false; } // disable recoloring
+        if (rowText == "Speed") { tesValue = DataManager.SpeedMax;  outV = (outV + 1) * 100; tes = false; } // disable recoloring
         if (rowText == "CraftSkill") { tesValue = DataManager.CraftMax; if (!hasCraft) { tes = false; } if (outV != 0) { outV = (outV + 1) * 100; } }
         if (rowText == "Regen") { tesValue = DataManager.RegenMax; if (!hasCharge) { tes = false; } }
         if (rowText == "Capacity") { tesValue = DataManager.CapacityMax; if (!hasCharge) { tes = false; } }
         if (rowText == "Emission") { tesValue = DataManager.EmissionMax; if (!hasEmission) { tes = false; } if (outV != 0) { outV = (outV + 1) * 100; } }
 
+
+        string mamaName = DataManager.GetLastColumnData("ID", mamaID, "Name");
+        string papaName = DataManager.GetLastColumnData("ID", papaID, "Name");
+
+        if (mamaID == "" || mamaID == "N/A" || mamaName == "N/A" || mamaName == "") { outV = 0; tes = false; } // set label to 0 and no recoloring if there is no mama
+        if (papaID == "" || papaID == "N/A" || papaName == "N/A" || papaName == "") { outV = 0; tes = false; } // set label to 0 and no recoloring if there is no mama
 
         if (tes)
         {
@@ -523,7 +529,7 @@ public partial class DinoPage : ContentPage
 
         if (tes)
         {
-            if (outV >= (tesValue - 0.1)) { fontColor = Shared.goodColor; }
+            if (outV >= (tesValue - statViewOffset)) { fontColor = Shared.goodColor; }
 
             // mutation detection overrides normal coloring -> mutaColor
             string mutes = DataManager.GetMutes(selectedID);
@@ -543,7 +549,7 @@ public partial class DinoPage : ContentPage
             }
         }
 
-        if (value == "0") { outV = 0; }
+        //if (value == "0") { outV = 0; }
 
         Entry outEntry = new Entry { Text = outV.ToString(), Placeholder = rowText, WidthRequest = 200, HeightRequest = 10, TextColor = fontColor, BackgroundColor = Shared.OddMPanelColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start };
 
