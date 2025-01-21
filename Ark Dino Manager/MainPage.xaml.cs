@@ -31,6 +31,11 @@
                         // redirect to start page once first import is run
                         Shared.firstImport = true; Shared.setPage = "ASA";
                     }
+                    else if (Shared.setPage == @"Looking_for_game")
+                    {
+                        this.Title = "Could not find game install location";
+                        DefaultView("Check configs for game install folder 🔎", "bigegg.png");
+                    }
                     else
                     {
                         this.Title = "Dino Manager";

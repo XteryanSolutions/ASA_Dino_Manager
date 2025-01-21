@@ -1,4 +1,6 @@
-﻿namespace Ark_Dino_Manager
+﻿using Windows.Gaming.Input;
+
+namespace Ark_Dino_Manager
 {
     public partial class AppShell : Shell
     {
@@ -39,7 +41,7 @@
             // create default shell
             CreateContent();
 
-           // bool test = PlatformHelper.IsWindows;
+            // bool test = PlatformHelper.IsWindows;
         }
 
         public static class PlatformHelper
@@ -59,29 +61,48 @@
         {
             string[] classList = DataManager.GetAllClassesShort();
 
-            // if manager initialized and we are not scanning and there is dinos in taglist
-            if (classList.Length > 0)
-            {
-               // DataManager.CleanDataBaseByID();
-                DataManager.DeepCleanDatabase();
-                Shared.setPage = "ASA";
-                CreateMenuContents();
-            }
-            else
+            if (Shared.ImportEnabled == false)
             {
                 disableNavSet = true;
                 Items.Clear();
                 var shellContent = new ShellContent
                 {
-                    Title = "Looking for dinos",
+                    Title = "Looking for game",
                     ContentTemplate = new DataTemplate(typeof(MainPage)),
-                    Route = "Looking_for_dinos"
+                    Route = "Looking_for_game"
                 };
                 Items.Add(shellContent);
-                FileManager.Log("No dinos =(", 0);
-                Shared.setPage = $"Looking_for_dinos";
+                FileManager.Log("No game =(", 0);
+                Shared.setPage = $"Looking_for_game";
                 disableNavSet = false;
             }
+            else
+            {
+                // if manager initialized and we are not scanning and there is dinos in taglist
+                if (classList.Length > 0)
+                {
+                    // DataManager.CleanDataBaseByID();
+                    DataManager.DeepCleanDatabase();
+                    Shared.setPage = "ASA";
+                    CreateMenuContents();
+                }
+                else
+                {
+                    disableNavSet = true;
+                    Items.Clear();
+                    var shellContent = new ShellContent
+                    {
+                        Title = "Looking for dinos",
+                        ContentTemplate = new DataTemplate(typeof(MainPage)),
+                        Route = "Looking_for_dinos"
+                    };
+                    Items.Add(shellContent);
+                    FileManager.Log("No dinos =(", 0);
+                    Shared.setPage = $"Looking_for_dinos";
+                    disableNavSet = false;
+                }
+            }
+
             StartTimer();
         }
 
@@ -99,7 +120,7 @@
                 {
                     FileManager.Log($"New: {Shared.setPage} -> {trimTarget}", 0);
                     Shared.setPage = trimTarget;
-                   
+
                     // got a new setpage
                     UpdateMenuContents(Shared.setPage);
 
@@ -108,7 +129,7 @@
                     DinoPage.isSelected = false; DinoPage.isDouble = false; DinoPage.canDouble = false; DinoPage.selectedID = "";
                     DinoPage.sortM = Shared.DefaultSortM; DinoPage.sortF = Shared.DefaultSortF; DinoPage.showTree = false;
 
-                    BabyPage.ToggleExcluded = Shared.DefaultToggleB; 
+                    BabyPage.ToggleExcluded = Shared.DefaultToggleB;
                     BabyPage.isSelected = false; BabyPage.isDouble = false; BabyPage.canDouble = false; BabyPage.selectedID = "";
                     BabyPage.sortM = Shared.DefaultSortM; BabyPage.sortF = Shared.DefaultSortF; BabyPage.speciesToggle = "All";
 
@@ -119,9 +140,9 @@
                     FileManager.Log($"Old: {Shared.setPage} -> {trimTarget}", 0);
                     Shared.setPage = trimTarget;
                 }
-                
 
-                
+
+
 
                 // set the selected class to the entire class string
                 // so we need to translate readable back to unreadable
@@ -213,7 +234,7 @@
                 string route = location.Replace(" ", "_");
 
 
-                if (route.Contains("ASA")) 
+                if (route.Contains("ASA"))
                 {
                     var shellContent0 = new ShellContent
                     {
@@ -253,8 +274,8 @@
                     };
                     Items.Add(shellContent0);
                 }
-                
-                
+
+
 
                 var shellContent1 = new ShellContent
                 {
@@ -310,7 +331,7 @@
             {
                 FileManager.Log("No setPage", 1);
             }
-           
+
         }
 
         public void ProcessAllFiles()
@@ -334,7 +355,7 @@
                             {
                                 Shared.firstImport = false;
                                 UpdateMenuContents(Shared.setPage);
-                            }     
+                            }
 
                             if (DataManager.ModC > 0)
                             {
@@ -458,7 +479,7 @@
         {
             if (FileManager.needSave)
             {
-                
+
                 if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
                 {
                     try

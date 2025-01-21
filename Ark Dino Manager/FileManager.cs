@@ -78,9 +78,16 @@ namespace Ark_Dino_Manager
                                     string gamePath = Path.Combine(dinoExportsPath, userID);
 
                                     FileManager.Log($"Game path: {gamePath}", 0);
-
-                                    Shared.ImportEnabled = true;
-                                    return true;
+                                    if (gamePath == "")
+                                    {
+                                        Shared.ImportEnabled = false;
+                                        return true;
+                                    }
+                                    else
+                                    {
+                                        Shared.ImportEnabled = true;
+                                        return true;
+                                    }
                                 }
                                 else
                                 {
