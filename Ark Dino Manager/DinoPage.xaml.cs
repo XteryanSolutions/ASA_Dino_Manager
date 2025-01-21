@@ -429,6 +429,9 @@ public partial class DinoPage : ContentPage
         string papaID = DataManager.GetLastColumnData("ID", selectedID, "Papa");
         string mamaID = DataManager.GetLastColumnData("ID", selectedID, "Mama");
 
+        string mamaName = DataManager.GetLastColumnData("ID", mamaID, "Name");
+        string papaName = DataManager.GetLastColumnData("ID", papaID, "Name");
+
         string value = "";
         if (what == "D")
         {
@@ -438,13 +441,11 @@ public partial class DinoPage : ContentPage
         {
             value = DataManager.GetFirstColumnData("ID", papaID, tester).Replace(".", sep);
             fontColor = Shared.maleColor;
-            if (papaID != "" && papaID != "N/A") { if (value == "") { value = "0"; } }
         }
         if (what == "M")
         {
             value = DataManager.GetFirstColumnData("ID", mamaID, tester).Replace(".", sep);
             fontColor = Shared.femaleColor;
-            if (mamaID != "" && mamaID != "N/A") { if (value == "") { value = "0"; } }
         }
 
         double outV = DataManager.ToDouble(value);
@@ -462,9 +463,6 @@ public partial class DinoPage : ContentPage
         if (rowText == "Capacity") { tesValue = DataManager.CapacityMax; if (!hasCharge) { tes = false; } }
         if (rowText == "Emission") { tesValue = DataManager.EmissionMax; if (!hasEmission) { tes = false; } if (outV != 0) { outV = (outV + 1) * 100; } }
 
-
-        string mamaName = DataManager.GetLastColumnData("ID", mamaID, "Name");
-        string papaName = DataManager.GetLastColumnData("ID", papaID, "Name");
 
         if (mamaID == "" || mamaID == "N/A" || mamaName == "N/A" || mamaName == "") { outV = 0; tes = false; } // set label to 0 and no recoloring if there is no mama
         if (papaID == "" || papaID == "N/A" || papaName == "N/A" || papaName == "") { outV = 0; tes = false; } // set label to 0 and no recoloring if there is no mama
