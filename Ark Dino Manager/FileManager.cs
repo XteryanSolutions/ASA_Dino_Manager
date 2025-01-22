@@ -60,7 +60,7 @@ namespace Ark_Dino_Manager
                         return true;
                     }
                     else
-                    { 
+                    {
                         FileManager.Log("Ascended is not installed.", 1);
                         string installPath2 = GetGameInstallPath("346110"); // appID for Evolved
                         if (installPath2 != null)
@@ -118,7 +118,7 @@ namespace Ark_Dino_Manager
         public static bool CheckPath()
         {
             try
-            {  
+            {
                 string dir = GamePath;
 
                 if (Directory.Exists(dir))
@@ -156,9 +156,11 @@ namespace Ark_Dino_Manager
                     writer.WriteLine("BottomHeaderColor=" + ColorToHex(Shared.bottomHeaderColor));
                     writer.WriteLine("BottomColor=" + ColorToHex(Shared.bottomColor));
                     writer.WriteLine("GoodStatColor=" + ColorToHex(Shared.goodColor));
+                    writer.WriteLine("GarbageColor=" + ColorToHex(Shared.garbageColor));
                     writer.WriteLine("BestStatColor=" + ColorToHex(Shared.bestColor));
                     writer.WriteLine("GoldStatColor=" + ColorToHex(Shared.goldColor));
-                    writer.WriteLine("MutatedColor=" + ColorToHex(Shared.mutaColor));
+                    writer.WriteLine("MutatedStatColor=" + ColorToHex(Shared.mutaColor));
+                    writer.WriteLine("MutatedGoodColor=" + ColorToHex(Shared.mutaGoodColor));
                     writer.WriteLine("MutatedBadColor=" + ColorToHex(Shared.mutaBadColor));
                     writer.WriteLine("");
                     writer.WriteLine("[Button Colors]");
@@ -176,6 +178,40 @@ namespace Ark_Dino_Manager
                     writer.WriteLine("OddBPanelColor=" + ColorToHex(Shared.OddBPanelColor));
                     writer.WriteLine("ArchivePanelColor=" + ColorToHex(Shared.ArchivePanelColor));
                     writer.WriteLine("OddAPanelColor=" + ColorToHex(Shared.OddAPanelColor));
+                    writer.WriteLine("");
+                    writer.WriteLine("# Header symbols must be unique.");
+                    writer.WriteLine("# can contain names like: Stamina=⚡Stamina or just Stamina=Stamina");
+                    writer.WriteLine("");
+                    writer.WriteLine("[Header Symbols]");
+                    string v = "ID"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "Tag"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "Class"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "Name"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "Level"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "Hp"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "Stamina"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "O2"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "Food"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "Weight"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "Damage"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "CraftSkill"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "Capacity"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "Regen"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "Emission"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "Speed"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "Gen"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "Papa"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "Mama"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "pM"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "mM"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "Status"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "Imprint"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "Imprinter"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "Age"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "Time"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "Rate"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "Date"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "Group"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
                 }
                 FileManager.Log("Config Saved/Updated", 0);
                 return true;
@@ -183,6 +219,9 @@ namespace Ark_Dino_Manager
             catch { }
             return false;
         }
+
+
+
 
         private static string ColorToHex(Color color)
         {
@@ -194,6 +233,7 @@ namespace Ark_Dino_Manager
 
         public static bool LoadConfig()
         {
+            var cci = StringComparison.CurrentCultureIgnoreCase;
             try
             {
                 bool fail = false;
@@ -203,11 +243,11 @@ namespace Ark_Dino_Manager
                     var iniData = IniParser.ParseIniFile(filename);
                     foreach (var section in iniData)
                     {
-                        if (section.Key.ToUpper() == "GAME LOCATION")
+                        if (section.Key.Equals("Game Location", cci))
                         {
                             foreach (var key in section.Value)
                             {
-                                if (key.Key.ToUpper() == "GAMEPATH")
+                                if (key.Key.Equals("GamePath", cci))
                                 {
                                     GamePath = key.Value;
                                 }
@@ -220,113 +260,332 @@ namespace Ark_Dino_Manager
                         // try all colors at once for now and return to default if any fails
                         try
                         {
-                            if (section.Key.ToUpper() == "TABLE COLORS")
+                            // if (key.Key.Equals("OddAPanelColor", cci))
+                            if (section.Key.Equals("Table Colors", cci))
                             {
                                 foreach (var key in section.Value)
                                 {
-                                    if (key.Key.ToUpper() == "MALEHEADERCOLOR")
+                                    if (key.Key.Equals("MaleHeaderColor", cci))
                                     {
                                         Shared.maleHeaderColor = Color.FromArgb(key.Value);
                                     }
-                                    if (key.Key.ToUpper() == "MALECOLOR")
+                                    if (key.Key.Equals("MaleColor", cci))
                                     {
                                         Shared.maleColor = Color.FromArgb(key.Value);
                                     }
-                                    if (key.Key.ToUpper() == "FEMALEHEADERCOLOR")
+                                    if (key.Key.Equals("FemaleHeaderColor", cci))
                                     {
                                         Shared.femaleHeaderColor = Color.FromArgb(key.Value);
                                     }
-                                    if (key.Key.ToUpper() == "FEMALECOLOR")
+                                    if (key.Key.Equals("FemaleColor", cci))
                                     {
                                         Shared.femaleColor = Color.FromArgb(key.Value);
                                     }
-                                    if (key.Key.ToUpper() == "BOTTOMHEADERCOLOR")
+                                    if (key.Key.Equals("BottomHeaderColor", cci))
                                     {
                                         Shared.bottomHeaderColor = Color.FromArgb(key.Value);
                                     }
-                                    if (key.Key.ToUpper() == "BOTTOMCOLOR")
+                                    if (key.Key.Equals("BottomColor", cci))
                                     {
                                         Shared.bottomColor = Color.FromArgb(key.Value);
                                     }
-                                    if (key.Key.ToUpper() == "GOODSTATCOLOR")
+                                    if (key.Key.Equals("GoodStatColor", cci))
                                     {
                                         Shared.goodColor = Color.FromArgb(key.Value);
                                     }
-                                    if (key.Key.ToUpper() == "BESTSTATCOLOR")
+                                    if (key.Key.Equals("BestStatColor", cci))
                                     {
                                         Shared.bestColor = Color.FromArgb(key.Value);
                                     }
-                                    if (key.Key.ToUpper() == "GOLDSTATCOLOR")
+                                    if (key.Key.Equals("GoldStatColor", cci))
                                     {
                                         Shared.goldColor = Color.FromArgb(key.Value);
                                     }
-                                    if (key.Key.ToUpper() == "MUTATEDSTATCOLOR")
+                                    if (key.Key.Equals("MutatedStatColor", cci))
                                     {
                                         Shared.mutaColor = Color.FromArgb(key.Value);
                                     }
-                                    if (key.Key.ToUpper() == "MUTATEDBADSTATCOLOR")
+                                    if (key.Key.Equals("MutatedBadColor", cci))
                                     {
                                         Shared.mutaColor = Color.FromArgb(key.Value);
+                                    }
+                                    if (key.Key.Equals("MutatedGoodColor", cci))
+                                    {
+                                        Shared.mutaGoodColor = Color.FromArgb(key.Value);
+                                    }
+                                    if (key.Key.Equals("GarbageColor", cci))
+                                    {
+                                        Shared.garbageColor = Color.FromArgb(key.Value);
                                     }
                                 }
                             }
-                            if (section.Key.ToUpper() == "BUTTON COLORS")
+                            if (section.Key.Equals("Button Colors", cci))
                             {
                                 foreach (var key in section.Value)
                                 {
-                                    if (key.Key.ToUpper() == "DEFAULTCOLOR")
+                                    if (key.Key.Equals("DefaultColor", cci))
                                     {
                                         Shared.DefaultBColor = Color.FromArgb(key.Value);
                                     }
-                                    if (key.Key.ToUpper() == "PRIMARYCOLOR")
+                                    if (key.Key.Equals("PrimaryColor", cci))
                                     {
                                         Shared.PrimaryColor = Color.FromArgb(key.Value);
                                     }
-                                    if (key.Key.ToUpper() == "SECONDARYCOLOR")
+                                    if (key.Key.Equals("SecondaryColor", cci))
                                     {
                                         Shared.SecondaryColor = Color.FromArgb(key.Value);
                                     }
-                                    if (key.Key.ToUpper() == "TRINARYCOLOR")
+                                    if (key.Key.Equals("TrinaryColor", cci))
                                     {
                                         Shared.TrinaryColor = Color.FromArgb(key.Value);
                                     }
                                 }
                             }
-                            if (section.Key.ToUpper() == "LAYOUT COLORS")
+                            if (section.Key.Equals("Layout Colors", cci))
                             {
                                 foreach (var key in section.Value)
                                 {
-                                    if (key.Key.ToUpper() == "SELECTEDCOLOR")
+                                    if (key.Key.Equals("SelectedColor", cci))
                                     {
                                         Shared.SelectedColor = Color.FromArgb(key.Value);
                                     }
-                                    if (key.Key.ToUpper() == "SIDEPANELCOLOR")
+                                    if (key.Key.Equals("SidePanelColor", cci))
                                     {
                                         Shared.SidePanelColor = Color.FromArgb(key.Value);
                                     }
-                                    if (key.Key.ToUpper() == "MAINPANELCOLOR")
+                                    if (key.Key.Equals("MainPanelColor", cci))
                                     {
                                         Shared.MainPanelColor = Color.FromArgb(key.Value);
                                     }
-                                    if (key.Key.ToUpper() == "ODDMPANELCOLOR")
+                                    if (key.Key.Equals("OddMPanelColor", cci))
                                     {
                                         Shared.OddMPanelColor = Color.FromArgb(key.Value);
                                     }
-                                    if (key.Key.ToUpper() == "BOTTOMPANELCOLOR")
+                                    if (key.Key.Equals("BottomPanelColor", cci))
                                     {
                                         Shared.BottomPanelColor = Color.FromArgb(key.Value);
                                     }
-                                    if (key.Key.ToUpper() == "ODDBPANELCOLOR")
+                                    if (key.Key.Equals("OddBPanelColor", cci))
                                     {
                                         Shared.OddBPanelColor = Color.FromArgb(key.Value);
                                     }
-                                    if (key.Key.ToUpper() == "ARCHIVEPANELCOLOR")
+                                    if (key.Key.Equals("ArchivePanelColor", cci))
                                     {
                                         Shared.ArchivePanelColor = Color.FromArgb(key.Value);
                                     }
-                                    if (key.Key.ToUpper() == "ODDAPANELCOLOR")
+                                    if (key.Key.Equals("OddAPanelColor", cci))
                                     {
                                         Shared.OddAPanelColor = Color.FromArgb(key.Value);
+                                    }
+                                }
+                            }
+                            if (section.Key.Equals("Header Symbols", cci))
+                            {
+                                foreach (var key in section.Value)
+                                {
+                                    string v = "ID";
+                                    if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "Tag"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "Class"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "Name"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "Level"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "Hp"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "Stamina"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "O2"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "Food"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "Weight"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "Damage"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "CraftSkill"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "Speed"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "Gen"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "Mama"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "Papa"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "mM"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "pM"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "Status"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "Imprint"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "Imprinter"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "Age"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "Time"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "Rate"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "Date"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "Regen"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "Capacity"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "Emission"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
+                                    }
+                                    v = "Group"; if (key.Key.Equals(v, cci))
+                                    {
+                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
+                                        {
+                                            Shared.StatMap[v] = key.Value;
+                                        }
                                     }
                                 }
                             }

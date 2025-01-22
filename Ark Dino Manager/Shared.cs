@@ -38,6 +38,9 @@
         { "Weight", "📦" },
         { "Damage", "💪" },
         { "CraftSkill", "🔨" },
+        { "Capacity", "🔋" },
+        { "Regen", "🔌" },
+        { "Emission", "🔆" },
         { "Speed", "🐌" },
         { "Gen", "👪" },
         { "Papa", "♂" },
@@ -51,9 +54,6 @@
         { "Time", "⌛" },
         { "Rate", "📶" },
         { "Date", "📆" },
-        { "Regen", "🔌" },
-        { "Capacity", "🔋" },
-        { "Emission", "🔆" },
         { "Group", "📚" }
     };
 
@@ -131,8 +131,8 @@
         public static int sizeOffset = 5; // Extra buffer to prevent scrolling
 
         
-        public static int startupX = 1180;   // 16:9
-        public static int startupY = 664;
+        public static int startupX = 1220;   // 16:9
+        public static int startupY = 675;
 
 
         public static int buttonFontSize = 26;
@@ -155,9 +155,9 @@
         public static Color bestColor = Color.FromArgb("#008000"); // Green
         public static Color goldColor = Color.FromArgb("#FFFF00"); // Yellow
         public static Color mutaColor = Color.FromArgb("#ffdb7a"); //
-        public static Color mutaBadColor = Color.FromArgb("#ff1803"); // ADD THIS TO CONFIG
-        public static Color mutaGoodColor = Color.FromArgb("#FFFF00"); // ADD THIS TO CONFIG
-        public static Color garbageColor = Color.FromArgb("#FFFFE0"); // ADD THIS TO CONFIG
+        public static Color mutaBadColor = Color.FromArgb("#ff1803"); // 
+        public static Color mutaGoodColor = Color.FromArgb("#FFFF00"); // 
+        public static Color garbageColor = Color.FromArgb("#FFFFE0"); // LightYellow
 
         // Button colors
         public static Color DefaultBColor = Color.FromArgb("#ADD8E6"); // LightBlue
