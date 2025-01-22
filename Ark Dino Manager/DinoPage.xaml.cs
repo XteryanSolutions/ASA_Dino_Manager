@@ -463,9 +463,11 @@ public partial class DinoPage : ContentPage
         if (rowText == "Capacity") { tesValue = DataManager.CapacityMax; if (!hasCharge) { tes = false; } }
         if (rowText == "Emission") { tesValue = DataManager.EmissionMax; if (!hasEmission) { tes = false; } if (outV != 0) { outV = (outV + 1) * 100; } }
 
-
-        if (mamaID == "" || mamaID == "N/A" || mamaName == "N/A" || mamaName == "") { outV = 0; tes = false; } // set label to 0 and no recoloring if there is no mama
-        if (papaID == "" || papaID == "N/A" || papaName == "N/A" || papaName == "") { outV = 0; tes = false; } // set label to 0 and no recoloring if there is no mama
+        if (what != "D")
+        {
+            if (mamaID == "" || mamaID == "N/A" || mamaName == "N/A" || mamaName == "") { outV = 0; tes = false; } // set label to 0 and no recoloring if there is no mama
+            if (papaID == "" || papaID == "N/A" || papaName == "N/A" || papaName == "") { outV = 0; tes = false; } // set label to 0 and no recoloring if there is no mama
+        }
 
         if (tes)
         {

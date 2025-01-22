@@ -180,7 +180,7 @@ namespace Ark_Dino_Manager
                     writer.WriteLine("OddAPanelColor=" + ColorToHex(Shared.OddAPanelColor));
                     writer.WriteLine("");
                     writer.WriteLine("# Header symbols must be unique.");
-                    writer.WriteLine("# can contain names like: Stamina=⚡Stamina or just Stamina=Stamina");
+                    writer.WriteLine("# i.e. Stamina=⚡Stamina , Stamina=Stamina");
                     writer.WriteLine("");
                     writer.WriteLine("[Header Symbols]");
                     string v = "ID"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
