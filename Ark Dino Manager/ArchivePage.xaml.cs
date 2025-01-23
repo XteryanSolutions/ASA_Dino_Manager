@@ -642,21 +642,10 @@ public partial class ArchivePage : ContentPage
 
     private void ImportBtnClicked(object? sender, EventArgs e)
     {
-        if (selectedID != "")
-        {
-            // Handle the click event
-
-            // DataManager.SetGroup(selectedID, "");
-            FileManager.Log($"Clicked import", 0);
-           var test = FilePicker.PickAsync(PickOptions.Default);
-
-            // recompile the archive after archiving or unarchiving
-            // DataManager.CompileDinoArchive(sortA);
-
-            // ClearSelection();
-            //  CreateContent();
-
-        }
+        FileManager.Log($"Clicked import", 0);
+        var test = FilePicker.PickAsync(PickOptions.Default);
+      
+        // WIP
 
     }
 
