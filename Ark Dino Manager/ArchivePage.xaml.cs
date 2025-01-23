@@ -26,7 +26,7 @@ public partial class ArchivePage : ContentPage
     public ArchivePage()
     {
         InitializeComponent();
-        
+
         CreateContent();
     }
 
@@ -511,18 +511,36 @@ public partial class ArchivePage : ContentPage
 
     private async Task PickFile()
     {
-        FileManager.Log($"Clicked import", 0);
-       
+        await Application.Current.MainPage.DisplayAlert("Invalid File", "Select dataBase to merge", "OK");
+        var customFileType = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
+{
+    { DevicePlatform.WinUI, new[] { "*.hrv" } } // Restrict to .hrv files
+});
+        // { DevicePlatform.Android, new[] { "application/octet-stream" } }
 
-        // WIP
-        FileManager.Log("Purge Dino???", 1);
-        var file = await FilePicker.PickAsync(PickOptions.Default);
-
-        if (file != null && file.FullPath.ToString() != "")
+        var pickOptions = new PickOptions
         {
-            DataManager.MerC = file.FullPath.ToString(); // trigger merge function to run instead of importing
-            Shared.Delay = 0; // trigger import function to run
-        }   
+            PickerTitle = "Select a dataBase file to merge",
+            FileTypes = customFileType
+        };
+
+        var file = await FilePicker.PickAsync(pickOptions);
+
+        if (file != null && !string.IsNullOrEmpty(file.FullPath))
+        {
+            // Check if the selected file has the .hrv extension
+            if (file.FullPath.EndsWith(".hrv", StringComparison.OrdinalIgnoreCase))
+            {
+                // Trigger merge function to run instead of importing
+                DataManager.MerC = file.FullPath; // Pass the file
+                Shared.Delay = 0; // Trigger import function to run
+            }
+            else
+            {
+                // Show a message box if the file is not an .hrv file
+                await Application.Current.MainPage.DisplayAlert("Invalid File", "Please select a file with the .hrv extension.", "OK");
+            }
+        }
     }
 
     private void DefaultRowColors()
@@ -658,6 +676,7 @@ public partial class ArchivePage : ContentPage
 
     private void ImportBtnClicked(object? sender, EventArgs e)
     {
+        FileManager.Log($"Clicked import", 0);
         PickFile();
     }
 
