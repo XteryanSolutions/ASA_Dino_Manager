@@ -348,13 +348,21 @@ namespace Ark_Dino_Manager
                         {
                             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
-                            // handle import files first
-                            DataManager.Import();
-
-                            if (DataManager.MerC != 0)
+                            if (DataManager.MerC != "")
                             {
-                               // DataManager.UpdateBreedingData("dinos.hrv");
-                                DataManager.MerC = 0;
+                                try
+                                {
+                                    DataManager.UpdateBreedingData(DataManager.MerC);
+                                }
+                                catch 
+                                {
+                                    FileManager.Log("Merge failure", 1);
+                                }
+                                DataManager.MerC = "";
+                            }
+                            else
+                            {
+                                DataManager.Import();
                             }
 
                             if (DataManager.ModC > 0 || DataManager.AddC > 0 || (Shared.setPage == "Baby_Dinos" && !BabyPage.isDouble) || Shared.firstImport)

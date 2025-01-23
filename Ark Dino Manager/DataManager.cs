@@ -32,7 +32,7 @@ namespace Ark_Dino_Manager
 
         public static int ModC = 0;  // keep track of updated dinos
         public static int AddC = 0;  // keep track of added dinos
-        public static int MerC = 0;  // keep track of merging
+        public static string MerC = "";  // keep track of merging
 
 
         public static string DecimalSeparator = "";

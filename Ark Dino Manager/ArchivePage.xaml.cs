@@ -509,6 +509,22 @@ public partial class ArchivePage : ContentPage
         }
     }
 
+    private async Task PickFile()
+    {
+        FileManager.Log($"Clicked import", 0);
+       
+
+        // WIP
+        FileManager.Log("Purge Dino???", 1);
+        var file = await FilePicker.PickAsync(PickOptions.Default);
+
+        if (file != null && file.FullPath.ToString() != "")
+        {
+            DataManager.MerC = file.FullPath.ToString(); // trigger merge function to run instead of importing
+            Shared.Delay = 0; // trigger import function to run
+        }   
+    }
+
     private void DefaultRowColors()
     {
         if (Monitor.TryEnter(Shared._dbLock, TimeSpan.FromSeconds(5)))
@@ -642,11 +658,7 @@ public partial class ArchivePage : ContentPage
 
     private void ImportBtnClicked(object? sender, EventArgs e)
     {
-        FileManager.Log($"Clicked import", 0);
-        var test = FilePicker.PickAsync(PickOptions.Default);
-      
-        // WIP
-
+        PickFile();
     }
 
 
