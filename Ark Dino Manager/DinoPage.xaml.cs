@@ -1249,8 +1249,8 @@ public partial class DinoPage : ContentPage
                 AddToGrid(grid, HeaderLabel("Hp", title), rowIndex, columnID++, title);
                 if (hasStamina) { AddToGrid(grid, HeaderLabel("Stamina", title), rowIndex, columnID++, title); }
                 if (hasO2) { AddToGrid(grid, HeaderLabel("O2", title), rowIndex, columnID++, title); }
-                if (hasCharge) { AddToGrid(grid, HeaderLabel("Capacity", title), rowIndex, columnID++, title); }
-                if (hasCharge) { AddToGrid(grid, HeaderLabel("Regen", title), rowIndex, columnID++, title); }
+                if (hasCharge) { AddToGrid(grid, HeaderLabel("ChargeCapacity", title), rowIndex, columnID++, title); }
+                if (hasCharge) { AddToGrid(grid, HeaderLabel("ChargeRegen", title), rowIndex, columnID++, title); }
                 AddToGrid(grid, HeaderLabel("Food", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Weight", title), rowIndex, columnID++, title);
                 if (hasEmission) { AddToGrid(grid, HeaderLabel("Emission", title), rowIndex, columnID++, title); }
@@ -1292,8 +1292,8 @@ public partial class DinoPage : ContentPage
                     AddToGrid(grid, RowLabel("Hp", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     if (hasStamina) { AddToGrid(grid, RowLabel("Stamina", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
                     if (hasO2) { AddToGrid(grid, RowLabel("O2", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
-                    if (hasCharge) { AddToGrid(grid, RowLabel("Capacity", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
-                    if (hasCharge) { AddToGrid(grid, RowLabel("Regen", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
+                    if (hasCharge) { AddToGrid(grid, RowLabel("ChargeCapacity", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
+                    if (hasCharge) { AddToGrid(grid, RowLabel("ChargeRegen", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
                     AddToGrid(grid, RowLabel("Food", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Weight", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     if (hasEmission) { AddToGrid(grid, RowLabel("Emission", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
@@ -1351,8 +1351,8 @@ public partial class DinoPage : ContentPage
                 AddToGrid(grid, HeaderLabel("Hp", title), rowIndex, columnID++, title);
                 if (hasStamina) { AddToGrid(grid, HeaderLabel("Stamina", title), rowIndex, columnID++, title); }
                 if (hasO2) { AddToGrid(grid, HeaderLabel("O2", title), rowIndex, columnID++, title); }
-                if (hasCharge) { AddToGrid(grid, HeaderLabel("Capacity", title), rowIndex, columnID++, title); }
-                if (hasCharge) { AddToGrid(grid, HeaderLabel("Regen", title), rowIndex, columnID++, title); }
+                if (hasCharge) { AddToGrid(grid, HeaderLabel("ChargeCapacity", title), rowIndex, columnID++, title); }
+                if (hasCharge) { AddToGrid(grid, HeaderLabel("ChargeRegen", title), rowIndex, columnID++, title); }
                 AddToGrid(grid, HeaderLabel("Food", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Weight", title), rowIndex, columnID++, title);
                 if (hasEmission) { AddToGrid(grid, HeaderLabel("Emission", title), rowIndex, columnID++, title); }
@@ -1394,8 +1394,8 @@ public partial class DinoPage : ContentPage
                     AddToGrid(grid, RowLabel("Hp", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     if (hasStamina) { AddToGrid(grid, RowLabel("Stamina", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
                     if (hasO2) { AddToGrid(grid, RowLabel("O2", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
-                    if (hasCharge) { AddToGrid(grid, RowLabel("Capacity", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
-                    if (hasCharge) { AddToGrid(grid, RowLabel("Regen", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
+                    if (hasCharge) { AddToGrid(grid, RowLabel("ChargeCapacity", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
+                    if (hasCharge) { AddToGrid(grid, RowLabel("ChargeRegen", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
                     AddToGrid(grid, RowLabel("Food", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Weight", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     if (hasEmission) { AddToGrid(grid, RowLabel("Emission", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id); }
@@ -1432,8 +1432,8 @@ public partial class DinoPage : ContentPage
             AddToGrid(grid, HeaderLabel("Hp", title), rowIndex, columnID++, title);
             if (hasStamina) { AddToGrid(grid, HeaderLabel("Stamina", title), rowIndex, columnID++, title); }
             if (hasO2) { AddToGrid(grid, HeaderLabel("O2", title), rowIndex, columnID++, title); }
-            if (hasCharge) { AddToGrid(grid, HeaderLabel("Capacity", title), rowIndex, columnID++, title); }
-            if (hasCharge) { AddToGrid(grid, HeaderLabel("Regen", title), rowIndex, columnID++, title); }
+            if (hasCharge) { AddToGrid(grid, HeaderLabel("ChargeCapacity", title), rowIndex, columnID++, title); }
+            if (hasCharge) { AddToGrid(grid, HeaderLabel("ChargeRegen", title), rowIndex, columnID++, title); }
             AddToGrid(grid, HeaderLabel("Food", title), rowIndex, columnID++, title);
             AddToGrid(grid, HeaderLabel("Weight", title), rowIndex, columnID++, title);
             if (hasEmission) { AddToGrid(grid, HeaderLabel("Emission", title), rowIndex, columnID++, title); }
@@ -1457,8 +1457,8 @@ public partial class DinoPage : ContentPage
                 AddToGrid(grid, RowLabel("Hp", title, row), rowIndex, columnID++, title);
                 if (hasStamina) { AddToGrid(grid, RowLabel("Stamina", title, row), rowIndex, columnID++, title); }
                 if (hasO2) { AddToGrid(grid, RowLabel("O2", title, row), rowIndex, columnID++, title); }
-                if (hasCharge) { AddToGrid(grid, RowLabel("Capacity", title, row), rowIndex, columnID++, title); }
-                if (hasCharge) { AddToGrid(grid, RowLabel("Regen", title, row), rowIndex, columnID++, title); }
+                if (hasCharge) { AddToGrid(grid, RowLabel("ChargeCapacity", title, row), rowIndex, columnID++, title); }
+                if (hasCharge) { AddToGrid(grid, RowLabel("ChargeRegen", title, row), rowIndex, columnID++, title); }
                 AddToGrid(grid, RowLabel("Food", title, row), rowIndex, columnID++, title);
                 AddToGrid(grid, RowLabel("Weight", title, row), rowIndex, columnID++, title);
                 if (hasEmission) { AddToGrid(grid, RowLabel("Emission", title, row), rowIndex, columnID++, title); }

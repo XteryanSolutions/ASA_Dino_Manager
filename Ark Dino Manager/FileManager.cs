@@ -195,8 +195,8 @@ namespace Ark_Dino_Manager
                     v = "Weight"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
                     v = "Damage"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
                     v = "CraftSkill"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "Capacity"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "Regen"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "ChargeCapacity"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
+                    v = "ChargeRegen"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
                     v = "Emission"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
                     v = "Speed"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
                     v = "Gen"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
@@ -559,14 +559,14 @@ namespace Ark_Dino_Manager
                                             Shared.StatMap[v] = key.Value;
                                         }
                                     }
-                                    v = "Regen"; if (key.Key.Equals(v, cci))
+                                    v = "ChargeRegen"; if (key.Key.Equals(v, cci))
                                     {
                                         if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
                                         {
                                             Shared.StatMap[v] = key.Value;
                                         }
                                     }
-                                    v = "Capacity"; if (key.Key.Equals(v, cci))
+                                    v = "ChargeCapacity"; if (key.Key.Equals(v, cci))
                                     {
                                         if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
                                         {

@@ -201,8 +201,8 @@ namespace Ark_Dino_Manager
                 BottomTable.Columns.Add("Weight", typeof(double));
                 BottomTable.Columns.Add("Damage", typeof(double));
                 BottomTable.Columns.Add("CraftSkill", typeof(double));
-                BottomTable.Columns.Add("Regen", typeof(double));
-                BottomTable.Columns.Add("Capacity", typeof(double));
+                BottomTable.Columns.Add("ChargeRegen", typeof(double));
+                BottomTable.Columns.Add("ChargeCapacity", typeof(double));
                 BottomTable.Columns.Add("Emission", typeof(double));
                 // ==============
                 BottomTable.Columns.Add("Speed", typeof(double));
@@ -1452,9 +1452,10 @@ namespace Ark_Dino_Manager
                     dr["Weight"] = WeightM;
                     dr["Damage"] = DamageM;
                     dr["CraftSkill"] = CraftM;
+                    dr["ChargeCapacity"] = CapM;
+                    dr["ChargeRegen"] = RegM;
                     //---------------------------
-                    dr["Regen"] = RegM;
-                    dr["Capacity"] = CapM;
+
                     dr["Emission"] = EmiM;
 
                     dr["Speed"] = SpeedM;
@@ -1699,8 +1700,8 @@ namespace Ark_Dino_Manager
                 double WeightC = ToDouble(rowC["Weight"].ToString());
                 double DamageC = ToDouble(rowC["Damage"].ToString());
                 double CraftC = ToDouble(rowC["CraftSkill"].ToString());
-                double RegenC = ToDouble(rowC["Regen"].ToString());
-                double CapacityC = ToDouble(rowC["Capacity"].ToString());
+                double RegenC = ToDouble(rowC["ChargeRegen"].ToString());
+                double CapacityC = ToDouble(rowC["ChargeCapacity"].ToString());
                 double EmissionC = ToDouble(rowC["Emission"].ToString());
 
 
@@ -1743,8 +1744,8 @@ namespace Ark_Dino_Manager
                             double WeightW = ToDouble(rowW["Weight"].ToString());
                             double DamageW = ToDouble(rowW["Damage"].ToString());
                             double CraftW = ToDouble(rowW["CraftSkill"].ToString());
-                            double RegenW = ToDouble(rowW["Regen"].ToString());
-                            double CapacityW = ToDouble(rowW["Capacity"].ToString());
+                            double RegenW = ToDouble(rowW["ChargeRegen"].ToString());
+                            double CapacityW = ToDouble(rowW["ChargeCapacity"].ToString());
                             double EmissionW = ToDouble(rowW["Emission"].ToString());
 
 
@@ -1830,8 +1831,8 @@ namespace Ark_Dino_Manager
                 double WeightC = ToDouble(rowC["Weight"].ToString());
                 double DamageC = ToDouble(rowC["Damage"].ToString());
                 double CraftC = ToDouble(rowC["CraftSkill"].ToString());
-                double RegenC = ToDouble(rowC["Regen"].ToString());
-                double CapacityC = ToDouble(rowC["Capacity"].ToString());
+                double RegenC = ToDouble(rowC["ChargeRegen"].ToString());
+                double CapacityC = ToDouble(rowC["ChargeCapacity"].ToString());
                 double EmissionC = ToDouble(rowC["Emission"].ToString());
 
 
@@ -2000,8 +2001,8 @@ namespace Ark_Dino_Manager
                         double WeightM = ToDouble(rowM["Weight"].ToString());
                         double DamageM = ToDouble(rowM["Damage"].ToString());
                         double CraftM = ToDouble(rowM["CraftSkill"].ToString());
-                        double RegenM = ToDouble(rowM["Regen"].ToString());
-                        double CapacityM = ToDouble(rowM["Capacity"].ToString());
+                        double RegenM = ToDouble(rowM["ChargeRegen"].ToString());
+                        double CapacityM = ToDouble(rowM["ChargeCapacity"].ToString());
                         double EmissionM = ToDouble(rowM["Emission"].ToString());
 
 
@@ -2024,8 +2025,8 @@ namespace Ark_Dino_Manager
                                 double CraftF = ToDouble(rowF["CraftSkill"].ToString());
                                 double GenF = ToDouble(rowF["Gen"].ToString());
                                 double levelF = ToDouble(rowF["Level"].ToString());
-                                double RegenF = ToDouble(rowF["Regen"].ToString());
-                                double CapacityF = ToDouble(rowF["Capacity"].ToString());
+                                double RegenF = ToDouble(rowF["ChargeRegen"].ToString());
+                                double CapacityF = ToDouble(rowF["ChargeCapacity"].ToString());
                                 double EmissionF = ToDouble(rowF["Emission"].ToString());
 
 
@@ -2072,8 +2073,8 @@ namespace Ark_Dino_Manager
                 dr["Weight"] = Weight;
                 dr["Damage"] = Damage;
                 dr["CraftSkill"] = Craft;
-                dr["Regen"] = Regen;
-                dr["Capacity"] = Capacity;
+                dr["ChargeRegen"] = Regen;
+                dr["ChargeCapacity"] = Capacity;
                 dr["Emission"] = Emission;
                 dr["Gen"] = Gen;
                 dr["Mama"] = mama;
