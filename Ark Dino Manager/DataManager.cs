@@ -253,7 +253,7 @@ namespace Ark_Dino_Manager
         public static void UpdateBreedingData(string file)
         {
             // Load the second table from XML
-            DataTable table2 = new DataTable();
+            DataTable table2 = ImportsTable.Clone();
             table2.ReadXml(file);
 
             // only update the breeding stats of the dinos we have in our database

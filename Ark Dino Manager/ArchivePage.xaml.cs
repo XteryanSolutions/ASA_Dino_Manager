@@ -511,7 +511,8 @@ public partial class ArchivePage : ContentPage
 
     private async Task PickFile()
     {
-        await Application.Current.MainPage.DisplayAlert("Invalid File", "Select dataBase to merge", "OK");
+        await Application.Current.MainPage.DisplayAlert("Open File", "Select dataBase to merge", "OK");
+
         var customFileType = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
 {
     { DevicePlatform.WinUI, new[] { "*.hrv" } } // Restrict to .hrv files

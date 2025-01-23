@@ -353,6 +353,10 @@ namespace Ark_Dino_Manager
                                 try
                                 {
                                     DataManager.UpdateBreedingData(DataManager.MerC);
+                                    if (DataManager.ModC > 0)
+                                    {
+                                        //  await Application.Current.MainPage.DisplayAlert("Updated dinos", "Updated stats on {DataManager.ModC} dinos", "OK");
+                                    }
                                 }
                                 catch 
                                 {
