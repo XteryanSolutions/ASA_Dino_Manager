@@ -4,7 +4,7 @@
     internal class Shared
     {
         ////////////////////    Title version   ////////////////////
-        public static string version = "Ark Dino Manager 0.04.69";
+        public static string version = "Ark Dino Manager 0.04.70";
 
 
         ////////////////////////////////////////////////////////////
@@ -85,6 +85,7 @@
         { "Restore", "📗" },
         { "Purge", "🧨" },
         { "PurgeAll", "⛔" },
+        { "Import", "📩" },
     };
 
 

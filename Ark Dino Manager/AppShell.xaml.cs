@@ -351,6 +351,12 @@ namespace Ark_Dino_Manager
                             // handle import files first
                             DataManager.Import();
 
+                            if (DataManager.MerC != 0)
+                            {
+                               // DataManager.UpdateBreedingData("dinos.hrv");
+                                DataManager.MerC = 0;
+                            }
+
                             if (DataManager.ModC > 0 || DataManager.AddC > 0 || (Shared.setPage == "Baby_Dinos" && !BabyPage.isDouble) || Shared.firstImport)
                             {
                                 Shared.firstImport = false;

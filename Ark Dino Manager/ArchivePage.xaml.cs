@@ -1,5 +1,6 @@
 using System.Data;
 using static Ark_Dino_Manager.Shared;
+using Fileprompt;
 
 namespace Ark_Dino_Manager;
 
@@ -20,11 +21,12 @@ public partial class ArchivePage : ContentPage
     Button PurgeBtn = new Button { };
     Button ArchiveBtn = new Button { };
     Button PurgeAllBtn = new Button { };
+    Button ImportBtn = new Button { };
 
     public ArchivePage()
     {
         InitializeComponent();
-
+        
         CreateContent();
     }
 
@@ -174,9 +176,9 @@ public partial class ArchivePage : ContentPage
         // Create rows for buttons
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // 0
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // 1
-        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // 2
-        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // 3
-        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // Autosize this row to keep following buttons at bottom
+        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // 2
+        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); //  Autosize this row to keep following buttons at bottom
+        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star }); // 4
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // 5
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); // 6
 
@@ -184,6 +186,10 @@ public partial class ArchivePage : ContentPage
         ArchiveBtn = new Button { Text = Smap["Restore"], BackgroundColor = Shared.PrimaryColor, FontSize = buttonFontSize };
         ArchiveBtn.Clicked += ArchiveBtnClicked;
         AddToGrid(grid, ArchiveBtn, 0, 0);
+
+        ImportBtn = new Button { Text = Smap["Import"], BackgroundColor = Shared.PrimaryColor, FontSize = buttonFontSize };
+        ImportBtn.Clicked += ImportBtnClicked;
+        AddToGrid(grid, ImportBtn, 3, 0);
 
         PurgeBtn = new Button { Text = Smap["Purge"], BackgroundColor = Shared.TrinaryColor, FontSize = buttonFontSize };
         PurgeBtn.Clicked += PurgeBtnClicked;
@@ -633,6 +639,27 @@ public partial class ArchivePage : ContentPage
             CreateContent();
         }
     }
+
+    private void ImportBtnClicked(object? sender, EventArgs e)
+    {
+        if (selectedID != "")
+        {
+            // Handle the click event
+
+            // DataManager.SetGroup(selectedID, "");
+            FileManager.Log($"Clicked import", 0);
+           var test = FilePicker.PickAsync(PickOptions.Default);
+
+            // recompile the archive after archiving or unarchiving
+            // DataManager.CompileDinoArchive(sortA);
+
+            // ClearSelection();
+            //  CreateContent();
+
+        }
+
+    }
+
 
     private void PurgeBtnClicked(object? sender, EventArgs e)
     {

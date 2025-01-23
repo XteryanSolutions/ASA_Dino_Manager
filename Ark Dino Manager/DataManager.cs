@@ -32,6 +32,8 @@ namespace Ark_Dino_Manager
 
         public static int ModC = 0;  // keep track of updated dinos
         public static int AddC = 0;  // keep track of added dinos
+        public static int MerC = 0;  // keep track of merging
+
 
         public static string DecimalSeparator = "";
         private static string ThousandsSeparator = "";
@@ -143,8 +145,8 @@ namespace Ark_Dino_Manager
                 FemaleTable.Columns.Add("Time", typeof(double));
                 FemaleTable.Columns.Add("Rate", typeof(double));
 
-                FemaleTable.Columns.Add("Regen", typeof(double));
-                FemaleTable.Columns.Add("Capacity", typeof(double));
+                FemaleTable.Columns.Add("ChargeCapacity", typeof(double));
+                FemaleTable.Columns.Add("ChargeRegen", typeof(double));
                 FemaleTable.Columns.Add("Emission", typeof(double));
 
 
@@ -153,13 +155,16 @@ namespace Ark_Dino_Manager
                 MaleTable.Columns.Add("Name", typeof(string));
                 MaleTable.Columns.Add("Level", typeof(double));
                 // ==============
-                MaleTable.Columns.Add("HP", typeof(double));
-                MaleTable.Columns.Add("Stamina", typeof(double));
-                MaleTable.Columns.Add("O2", typeof(double));
-                MaleTable.Columns.Add("Food", typeof(double));
-                MaleTable.Columns.Add("Weight", typeof(double));
-                MaleTable.Columns.Add("Damage", typeof(double));
-                MaleTable.Columns.Add("CraftSkill", typeof(double));
+                MaleTable.Columns.Add("HP", typeof(double));            // a
+                MaleTable.Columns.Add("Stamina", typeof(double));       // b
+                MaleTable.Columns.Add("O2", typeof(double));            // c
+                MaleTable.Columns.Add("Food", typeof(double));          // d
+                MaleTable.Columns.Add("Weight", typeof(double));        // e
+                MaleTable.Columns.Add("Damage", typeof(double));        // f
+                MaleTable.Columns.Add("CraftSkill", typeof(double));    // g
+                MaleTable.Columns.Add("ChargeCapacity", typeof(double));// h
+                MaleTable.Columns.Add("ChargeRegen", typeof(double));   // i
+                MaleTable.Columns.Add("Emission", typeof(double));      // j
                 // ==============
                 MaleTable.Columns.Add("Speed", typeof(double));
                 MaleTable.Columns.Add("Gen", typeof(double));
@@ -180,9 +185,7 @@ namespace Ark_Dino_Manager
                 MaleTable.Columns.Add("Time", typeof(double));
                 MaleTable.Columns.Add("Rate", typeof(double));
 
-                MaleTable.Columns.Add("Regen", typeof(double));
-                MaleTable.Columns.Add("Capacity", typeof(double));
-                MaleTable.Columns.Add("Emission", typeof(double));
+
 
 
 
@@ -197,6 +200,10 @@ namespace Ark_Dino_Manager
                 BottomTable.Columns.Add("Food", typeof(double));
                 BottomTable.Columns.Add("Weight", typeof(double));
                 BottomTable.Columns.Add("Damage", typeof(double));
+                BottomTable.Columns.Add("CraftSkill", typeof(double));
+                BottomTable.Columns.Add("Regen", typeof(double));
+                BottomTable.Columns.Add("Capacity", typeof(double));
+                BottomTable.Columns.Add("Emission", typeof(double));
                 // ==============
                 BottomTable.Columns.Add("Speed", typeof(double));
                 BottomTable.Columns.Add("Gen", typeof(double));
@@ -208,14 +215,11 @@ namespace Ark_Dino_Manager
                 BottomTable.Columns.Add("Imprint", typeof(double));
                 BottomTable.Columns.Add("Imprinter", typeof(string));
                 BottomTable.Columns.Add("ID", typeof(string));
-                BottomTable.Columns.Add("CraftSkill", typeof(double));
+                
                 BottomTable.Columns.Add("Mutes", typeof(string));
                 BottomTable.Columns.Add("Group", typeof(string));
                 BottomTable.Columns.Add("Res", typeof(string));
-
-                BottomTable.Columns.Add("Regen", typeof(double));
-                BottomTable.Columns.Add("Capacity", typeof(double));
-                BottomTable.Columns.Add("Emission", typeof(double));
+  
 
 
 
@@ -313,8 +317,11 @@ namespace Ark_Dino_Manager
                     resultSet.Add(idM);
                 }
             }
-
-            FileManager.Log($"Updated breed stats on {updateCount} dinos", 1);
+            if (updateCount > 0)
+            {
+                FileManager.Log($"Updated breed stats on {updateCount} dinos", 1);
+                DataManager.ModC = updateCount;
+            }
         }
 
         private static void UpdateField(int rowID, string field, DataRow rowM)
