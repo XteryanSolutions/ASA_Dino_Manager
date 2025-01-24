@@ -11,6 +11,9 @@
         ////////////////////    Shared Variables ///////////////////
         ////////////////////////////////////////////////////////////
 
+        public static string ASAgameID = "2399830";
+        public static string ASEgameID = "346110";
+
         ////////////////////    Default values         ////////////////////
         // Sorting
         public static string DefaultSortA = ""; // default sorting for archive

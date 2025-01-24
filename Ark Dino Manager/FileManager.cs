@@ -45,7 +45,7 @@ namespace Ark_Dino_Manager
                 if (!Directory.Exists(AppPath + dataLocation)) { Directory.CreateDirectory(AppPath + dataLocation); }
 
 
-                if (LoadLocalization()) { }
+                if (LoadLocalization()) { FileManager.Log($"Loaded localization file", 0); }
 
                 // load config file check if path works return true
                 if (LoadConfig()) // loaded
@@ -55,7 +55,7 @@ namespace Ark_Dino_Manager
                 }
                 else
                 {
-                    string installPath = GetGameInstallPath("2399830"); // appID for Ascended
+                    string installPath = GetGameInstallPath(Shared.ASAgameID); // appID for Ascended
                     if (installPath != null)
                     {
                         FileManager.Log($"Game is installed at: {installPath}", 0);
@@ -66,7 +66,7 @@ namespace Ark_Dino_Manager
                     else
                     {
                         FileManager.Log("Ascended is not installed.", 1);
-                        string installPath2 = GetGameInstallPath("346110"); // appID for Evolved
+                        string installPath2 = GetGameInstallPath(Shared.ASEgameID); // appID for Evolved
                         if (installPath2 != null)
                         {
                             FileManager.Log($"Game is installed at: {installPath2}", 0);
