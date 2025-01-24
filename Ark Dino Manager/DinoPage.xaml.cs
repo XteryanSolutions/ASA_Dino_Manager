@@ -132,7 +132,7 @@ public partial class DinoPage : ContentPage
             catch
             {
                 FileManager.Log("Failed updating dinos", 2);
-                DefaultView(DinoMap["dataError"]);
+                DefaultView(StringMap["dataError"]);
             }
             finally
             {
@@ -142,7 +142,7 @@ public partial class DinoPage : ContentPage
         else
         {
             FileManager.Log("DinoPage Failed to acquire database lock", 1);
-            DefaultView(DinoMap["dataWarning"]);
+            DefaultView(StringMap["dataWarning"]);
         }
         ToHere("Time1"); // Stop timer and show results
     }
@@ -955,7 +955,7 @@ public partial class DinoPage : ContentPage
 
             var label1 = new Label // DinoMap["noDino"]
             {
-                Text = DinoMap["noDino"],
+                Text = StringMap["noDino"],
                 HorizontalOptions = LayoutOptions.Center,
                 VerticalOptions = LayoutOptions.Center,
                 Style = (Style)Application.Current.Resources["Headline"],
@@ -1009,7 +1009,9 @@ public partial class DinoPage : ContentPage
         string upChar = Smap["SortUp"];
         string downChar = Smap["SortDown"];
 
-        if (sortString == $"{StatMap[textL]}")
+
+
+        if (sortString == $"{textL}")
         {
             if (tableSort.Contains("ASC"))
             {
@@ -1024,7 +1026,7 @@ public partial class DinoPage : ContentPage
         if (textL == "Mama") { headerColor = Shared.femaleColor; }
         if (textL == "Papa") { headerColor = Shared.maleColor; }
 
-        Label nameH = new Label { Text = $"{StatMap[textL]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
+        Label nameH = new Label { Text = $"{SymMap[textL]}{HeaderMap[textL]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = headerColor, FontSize = fSize };
 
         if (title != "Bottom")
         {
@@ -1091,8 +1093,8 @@ public partial class DinoPage : ContentPage
                     if (column == "Weight") { if (eC == "2") { RowLabelColor = Shared.bestColor; } }
                     if (column == "Damage") { if (fC == "2") { RowLabelColor = Shared.bestColor; } }
                     if (column == "CraftSkill") { if (gC == "2") { RowLabelColor = Shared.bestColor; } }
-                    if (column == "Regen") { if (hC == "2") { RowLabelColor = Shared.bestColor; } }
-                    if (column == "Capacity") { if (iC == "2") { RowLabelColor = Shared.bestColor; } }
+                    if (column == "ChargeRegen") { if (hC == "2") { RowLabelColor = Shared.bestColor; } }
+                    if (column == "ChargeCapacity") { if (iC == "2") { RowLabelColor = Shared.bestColor; } }
                     if (column == "Emission") { if (jC == "2") { RowLabelColor = Shared.bestColor; } }
 
 
@@ -1248,13 +1250,13 @@ public partial class DinoPage : ContentPage
                 AddToGrid(grid, HeaderLabel("Gen", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Papa", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Mama", title), rowIndex, columnID++, title);
-                AddToGrid(grid, HeaderLabel("pM", title), rowIndex, columnID++, title);
-                AddToGrid(grid, HeaderLabel("mM", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("papaMute", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("mamaMute", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Imprint", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Imprinter", title), rowIndex, columnID++, title);
                 if (ToggleExcluded == 0)
                 {
-                    Label groupH = new Label { Text = $"{StatMap["Group"]}", FontAttributes = FontAttributes.Bold, TextColor = maleHeaderColor, FontSize = headerSize };
+                    Label groupH = new Label { Text = $"{HeaderMap["Group"]}", FontAttributes = FontAttributes.Bold, TextColor = maleHeaderColor, FontSize = headerSize };
                     AddToGrid(grid, groupH, rowIndex, columnID++, title);
                 }
 
@@ -1291,8 +1293,8 @@ public partial class DinoPage : ContentPage
                     AddToGrid(grid, RowLabel("Gen", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Papa", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Mama", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("PapaMute", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("MamaMute", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("papaMute", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("pamaMute", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Imprint", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Imprinter", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
 
@@ -1350,13 +1352,13 @@ public partial class DinoPage : ContentPage
                 AddToGrid(grid, HeaderLabel("Gen", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Papa", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Mama", title), rowIndex, columnID++, title);
-                AddToGrid(grid, HeaderLabel("pM", title), rowIndex, columnID++, title);
-                AddToGrid(grid, HeaderLabel("mM", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("papaMute", title), rowIndex, columnID++, title);
+                AddToGrid(grid, HeaderLabel("mamaMute", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Imprint", title), rowIndex, columnID++, title);
                 AddToGrid(grid, HeaderLabel("Imprinter", title), rowIndex, columnID++, title);
                 if (ToggleExcluded == 0)
                 {
-                    Label groupH = new Label { Text = $"{StatMap["Group"]}", FontAttributes = FontAttributes.Bold, TextColor = femaleHeaderColor, FontSize = headerSize };
+                    Label groupH = new Label { Text = $"{HeaderMap["Group"]}", FontAttributes = FontAttributes.Bold, TextColor = femaleHeaderColor, FontSize = headerSize };
                     AddToGrid(grid, groupH, rowIndex, columnID++, title);
                 }
 
@@ -1393,8 +1395,8 @@ public partial class DinoPage : ContentPage
                     AddToGrid(grid, RowLabel("Gen", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Papa", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Mama", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("PapaMute", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("MamaMute", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("papaMute", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("pamaMute", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Imprint", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Imprinter", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     if (ToggleExcluded == 0)
@@ -1457,8 +1459,8 @@ public partial class DinoPage : ContentPage
                 AddToGrid(grid, RowLabel("Gen", title, row), rowIndex, columnID++, title);
                 AddToGrid(grid, RowLabel("Papa", title, row), rowIndex, columnID++, title);
                 AddToGrid(grid, RowLabel("Mama", title, row), rowIndex, columnID++, title);
-                AddToGrid(grid, RowLabel("PapaMute", title, row), rowIndex, columnID++, title);
-                AddToGrid(grid, RowLabel("MamaMute", title, row), rowIndex, columnID++, title);
+                AddToGrid(grid, RowLabel("papaMute", title, row), rowIndex, columnID++, title);
+                AddToGrid(grid, RowLabel("pamaMute", title, row), rowIndex, columnID++, title);
                 AddToGrid(grid, RowLabel("Imprint", title, row), rowIndex, columnID++, title);
                 AddToGrid(grid, RowLabel("Imprinter", title, row), rowIndex, columnID++, title);
 
@@ -1554,6 +1556,25 @@ public partial class DinoPage : ContentPage
         {
             // Handle the click event and pass additional data
             string column = label.Text;
+
+            foreach (var kvp in HeaderMap)
+            {
+                if (kvp.Value != "")
+                {
+                    column = column.Replace(kvp.Value, "");
+                }
+            }
+
+            foreach (var kvp in SymMap)
+            {
+                var key = kvp.Key;
+                var value = kvp.Value;
+
+                if (!string.IsNullOrEmpty(value))
+                {
+                    column = column.Replace(value, key);
+                }
+            }
 
             if (column.Contains(Smap["SortUp"]) || column.Contains(Smap["SortDown"]))
             {

@@ -91,13 +91,13 @@ public partial class ArchivePage : ContentPage
                 }
                 else
                 {
-                    DefaultView("No dinos in here :(");
+                    DefaultView(StringMap["noDino"]);
                 }
             }
             catch
             {
                 FileManager.Log("Failed updating Archive table", 2);
-                DefaultView("Dinos imploded =O");
+                DefaultView(StringMap["dataError"]);
             }
             finally
             {
@@ -106,7 +106,7 @@ public partial class ArchivePage : ContentPage
         }
         else
         {
-            DefaultView("Dinos ran away :(");
+            DefaultView(StringMap["dataWarning"]);
             FileManager.Log("ArchivePage Failed to acquire database lock", 1);
         }
     }
@@ -292,21 +292,29 @@ public partial class ArchivePage : ContentPage
         string upChar = Smap["SortUp"];
         string downChar = Smap["SortDown"];
 
+        string colu = "";
 
-        sortChar = ""; if (newTest == $"{StatMap["ID"]}") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var idH = new Label { Text = $"{StatMap["ID"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
 
-        sortChar = ""; if (newTest == $"{StatMap["Tag"]}") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var tagH = new Label { Text = $"{StatMap["Tag"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
 
-        sortChar = ""; if (newTest == $"{StatMap["Name"]}") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var nameH = new Label { Text = $"{StatMap["Name"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
+        colu = "ID";
+        sortChar = ""; if (newTest == $"{colu}") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var idH = new Label { Text = $"{SymMap[colu]}{HeaderMap[colu]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
 
-        sortChar = ""; if (newTest == $"{StatMap["Level"]}") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var levelH = new Label { Text = $"{StatMap["Level"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
+        colu = "Tag";
+        sortChar = ""; if (newTest == $"{colu}") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var tagH = new Label { Text = $"{SymMap[colu]}{HeaderMap[colu]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
 
-        sortChar = ""; if (newTest == $"{StatMap["Class"]}") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
-        var classH = new Label { Text = $"{StatMap["Class"]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
+        colu = "Name";
+        sortChar = ""; if (newTest == $"{colu}") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var nameH = new Label { Text = $"{SymMap[colu]}{HeaderMap[colu]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
+
+        colu = "Level";
+        sortChar = ""; if (newTest == $"{colu}") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var levelH = new Label { Text = $"{SymMap[colu]}{HeaderMap[colu]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
+
+        colu = "Class";
+        sortChar = ""; if (newTest == $"{colu}") { if (tableSort.Contains("ASC")) { sortChar = " " + upChar; } if (tableSort.Contains("DESC")) { sortChar = " " + downChar; } }
+        var classH = new Label { Text = $"{SymMap[colu]}{HeaderMap[colu]}{sortChar}", FontAttributes = FontAttributes.Bold, TextColor = Shared.TrinaryColor };
 
 
         // Add header row
@@ -381,6 +389,25 @@ public partial class ArchivePage : ContentPage
             // Handle the click event and pass additional data
             string column = label.Text;
 
+            foreach (var kvp in HeaderMap)
+            {
+                if (kvp.Value != "")
+                {
+                    column = column.Replace(kvp.Value, "");
+                }
+            }
+
+            foreach (var kvp in SymMap)
+            {
+                var key = kvp.Key;
+                var value = kvp.Value;
+
+                if (!string.IsNullOrEmpty(value))
+                {
+                    column = column.Replace(value, key);
+                }
+            }
+
             if (column.Contains(Smap["SortUp"]) || column.Contains(Smap["SortDown"]))
             {
                 column = column.Substring(0, column.Length - 2);
@@ -440,12 +467,7 @@ public partial class ArchivePage : ContentPage
     private async Task PurgeDinoAsync(string dinoID)
     {
         FileManager.Log("Purge Dino???", 1);
-        bool answer = await Application.Current.MainPage.DisplayAlert(
-"Purge dino from DataBase",         // Title
-"Do you want to proceed?", // Message
-"Yes",                    // Yes button text
-"No"                      // No button text
-);
+        bool answer = await Application.Current.MainPage.DisplayAlert(StringMap["purgeTitle"], StringMap["purgeMessage"], StringMap["purgeYes"], StringMap["purgeNo"]);
 
         if (answer)
         {
@@ -474,12 +496,8 @@ public partial class ArchivePage : ContentPage
     private async Task PurgeAllAsync()
     {
         FileManager.Log("Purge Dino???", 1);
-        bool answer = await Application.Current.MainPage.DisplayAlert(
-"Purge All dinos from DataBase",         // Title
-"Do you want to proceed?", // Message
-"Yes",                    // Yes button text
-"No"                      // No button text
-);
+
+        bool answer = await Application.Current.MainPage.DisplayAlert(StringMap["purgeAllTitle"], StringMap["purgeAllMessage"], StringMap["purgeYes"], StringMap["purgeNo"]);
 
         if (answer)
         {
@@ -511,7 +529,7 @@ public partial class ArchivePage : ContentPage
 
     private async Task PickFile()
     {
-        await Application.Current.MainPage.DisplayAlert("Open File", "Select dataBase to merge", "OK");
+        await Application.Current.MainPage.DisplayAlert(StringMap["openFileTitle"], StringMap["openFileMessage"], StringMap["okBtnText"]);
 
         var customFileType = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
 {
@@ -521,7 +539,7 @@ public partial class ArchivePage : ContentPage
 
         var pickOptions = new PickOptions
         {
-            PickerTitle = "Select a dataBase file to merge",
+            PickerTitle = StringMap["openFileMessage"],
             FileTypes = customFileType
         };
 
@@ -539,7 +557,7 @@ public partial class ArchivePage : ContentPage
             else
             {
                 // Show a message box if the file is not an .hrv file
-                await Application.Current.MainPage.DisplayAlert("Invalid File", "Please select a file with the .hrv extension.", "OK");
+                await Application.Current.MainPage.DisplayAlert(StringMap["invalidTitle"], StringMap["invalidMessage"], StringMap["okBtnText"]);
             }
         }
     }

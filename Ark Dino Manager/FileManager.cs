@@ -230,18 +230,18 @@ namespace Ark_Dino_Manager
                         foreach (var section in iniData)
                         {
 
-                            if (section.Key.Equals("Headers", cci)) // header section with unique key values
+                            if (section.Key.Equals("Headers", cci)) // header section
                             {
                                 foreach (var key in section.Value)
                                 {
-                                    foreach (var d in StatMap)
+                                    foreach (var d in HeaderMap)
                                     {
                                         keyName = d.Key;
                                         if (key.Key.Equals(keyName, cci))
                                         {
-                                            if (!StatMap.ContainsValue(key.Value) && key.Value != "")
+                                            if (key.Value != "")
                                             {
-                                                StatMap[keyName] = key.Value;
+                                                HeaderMap[keyName] = key.Value;
                                             }
                                         }
                                     }
@@ -252,73 +252,20 @@ namespace Ark_Dino_Manager
                             {
                                 foreach (var key in section.Value)
                                 {
-                                    foreach (var d in MainMap)
+                                    foreach (var d in StringMap)
                                     {
                                         keyName = d.Key;
                                         if (key.Key.Equals(keyName, cci))
                                         {
                                             if (key.Value != "")
                                             {
-                                                MainMap[keyName] = key.Value;
+                                                StringMap[keyName] = key.Value;
                                             }
                                         }
                                     }
                                 }
                             }
 
-                            if (section.Key.Equals("Dino", cci))
-                            {
-                                foreach (var key in section.Value)
-                                {
-                                    foreach (var d in DinoMap)
-                                    {
-                                        keyName = d.Key;
-                                        if (key.Key.Equals(keyName, cci))
-                                        {
-                                            if (key.Value != "")
-                                            {
-                                                DinoMap[keyName] = key.Value;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                            if (section.Key.Equals("Baby", cci))
-                            {
-                                foreach (var key in section.Value)
-                                {
-                                    foreach (var d in BabyMap)
-                                    {
-                                        keyName = d.Key;
-                                        if (key.Key.Equals(keyName, cci))
-                                        {
-                                            if (key.Value != "")
-                                            {
-                                                BabyMap[keyName] = key.Value;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                            if (section.Key.Equals("Archive", cci))
-                            {
-                                foreach (var key in section.Value)
-                                {
-                                    foreach (var d in ArchiveMap)
-                                    {
-                                        keyName = d.Key;
-                                        if (key.Key.Equals(keyName, cci))
-                                        {
-                                            if (key.Value != "")
-                                            {
-                                                ArchiveMap[keyName] = key.Value;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
                         }
                     }
                 }

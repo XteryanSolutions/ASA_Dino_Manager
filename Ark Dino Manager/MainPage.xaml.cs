@@ -27,20 +27,20 @@ namespace Ark_Dino_Manager
 
                     if (Shared.setPage == @"Looking_for_dinos")
                     {
-                        this.Title = MainMap["hasGameTitle"];
-                        DefaultView(MainMap["hasGame"], "bigegg.png");
+                        this.Title = StringMap["hasGameTitle"];
+                        DefaultView(StringMap["hasGame"], "bigegg.png");
                         // redirect to start page once first import is run
                         Shared.firstImport = true; Shared.setPage = "ASA";
                     }
                     else if (Shared.setPage == @"Looking_for_game")
                     {
-                        this.Title = MainMap["noGameTitle"];
-                        DefaultView(MainMap["noGame"], "bigegg.png");
+                        this.Title = StringMap["noGameTitle"];
+                        DefaultView(StringMap["noGame"], "bigegg.png");
                     }
                     else
                     {
-                        this.Title = MainMap["mainTitle"];
-                        DefaultView(MainMap["mainText"]);
+                        this.Title = StringMap["mainTitle"];
+                        DefaultView(StringMap["mainText"]);
                     }
                 }
                 finally

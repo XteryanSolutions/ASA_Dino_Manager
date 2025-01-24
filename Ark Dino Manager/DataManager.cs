@@ -1548,20 +1548,11 @@ namespace Ark_Dino_Manager
                 ProcessDinos(males, FirstStatsM, LastStatsM, MaleTable, toggle, baby);
             }
 
-
-            // remove symbols to use correct name in sorting
-
-            
-
             if (baby)
             {
-                sortiM = ReplaceSymbols(sortiM, StatMap, true);
-                sortiF = ReplaceSymbols(sortiF, StatMap, true);
-            }
-            else
-            {
-                sortiM = ReplaceSymbols(sortiM, StatMap);
-                sortiF = ReplaceSymbols(sortiF, StatMap);
+                sortiM = sortiM.Replace("Class", "Tag");
+                sortiF = sortiF.Replace("Class", "Tag");
+
             }
 
             // Sort the MaleTable based on the desired column
@@ -1577,59 +1568,6 @@ namespace Ark_Dino_Manager
 
 
             //  FileManager.Log("updated data");
-        }
-
-        public static string ReplaceColumns(string inputValue, bool baby = false)
-        {
-            string outputValue = "";
-
-            if (baby) 
-            {
-                inputValue = inputValue.Replace("Class", "Tag");
-            }
-           
-            inputValue = inputValue.Replace("pM", "PapaMute");
-            inputValue = inputValue.Replace("mM", "MamaMute");
-            inputValue = inputValue.Replace("Dmg", "Damage");
-
-
-            outputValue = inputValue.Replace("Crafting", "CraftSkill");
-
-            return outputValue;
-        }
-
-        public static string ReplaceSymbols(string input, Dictionary<string, string> symbolMap, bool baby = false)
-        {
-            // replace symbols with their Key names
-            foreach (var kvp in symbolMap)
-            {
-                var key = kvp.Key;
-                var symbol = kvp.Value;
-
-                if (!string.IsNullOrEmpty(symbol))
-                {
-                    input = input.Replace(symbol, key);
-                }
-            }
-
-            // replace the key names with correct column names
-            input =  ReplaceColumns(input, baby);
-
-            var parts = input.Split(' ', 2); // Split into at most 2 parts
-            if (parts.Length > 1 && parts[0].Length % 2 == 0)
-            {
-                var halfLength = parts[0].Length / 2;
-                if (parts[0].Substring(0, halfLength) == parts[0].Substring(halfLength))
-                {
-                    parts[0] = parts[0].Substring(0, halfLength); // Use only the first half
-                }
-            }
-
-            // Recombine the parts
-            input = string.Join(" ", parts);
-
-
-            return input;
         }
 
         public static void CompileDinoArchive(string sortC = "")
@@ -1660,7 +1598,7 @@ namespace Ark_Dino_Manager
             }
 
             // remove symbols to use correct name in sorting
-            sortC = ReplaceSymbols(sortC, StatMap);
+            //sortC = ReplaceSymbols(sortC, SymMap);
 
 
             // Sort the MaleTable based on the desired column
