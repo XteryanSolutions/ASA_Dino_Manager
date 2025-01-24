@@ -45,7 +45,7 @@ namespace Ark_Dino_Manager
                 if (!Directory.Exists(AppPath + dataLocation)) { Directory.CreateDirectory(AppPath + dataLocation); }
 
 
-                if (LoadLocalization()) { FileManager.Log($"Loaded localization file", 0); }
+                if (LoadLocalization()) { }
 
                 // load config file check if path works return true
                 if (LoadConfig()) // loaded
@@ -267,7 +267,17 @@ namespace Ark_Dino_Manager
                             }
 
                         }
+
+                        FileManager.Log($"Loaded localization file: {language}.ini", 0);
                     }
+                    else
+                    {
+                        FileManager.Log($"no localization file for: {language}", 1);  
+                    }
+                }
+                else
+                {
+                    FileManager.Log($"no localization folder", 1);
                 }
             }
             catch
