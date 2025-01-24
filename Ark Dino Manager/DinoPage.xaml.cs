@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using static Ark_Dino_Manager.DataManager;
 using static Ark_Dino_Manager.Localization;
@@ -494,6 +495,22 @@ public partial class DinoPage : ContentPage
         if (what != "D")
         {
             rowText = outV.ToString();
+        }
+        else
+        {
+            string h = "";
+            h = "Level"; if (rowText == h) { rowText = $"{SymMap[h]}{HeaderMap[h]}"; }
+            h = "Hp"; if (rowText == h) { rowText = $"{SymMap[h]}{HeaderMap[h]}"; }
+            h = "Stamina"; if (rowText == h) { rowText = $"{SymMap[h]}{HeaderMap[h]}"; }
+            h = "O2"; if (rowText == h) { rowText = $"{SymMap[h]}{HeaderMap[h]}"; }
+            h = "Food"; if (rowText == h) { rowText = $"{SymMap[h]}{HeaderMap[h]}"; }
+            h = "Weight"; if (rowText == h) { rowText = $"{SymMap[h]}{HeaderMap[h]}"; }
+            h = "Damage"; if (rowText == h) { rowText = $"{SymMap[h]}{HeaderMap[h]}"; }
+            h = "CraftSkill"; if (rowText == h) { rowText = $"{SymMap[h]}{HeaderMap[h]}"; }
+            h = "ChargeRegen"; if (rowText == h) { rowText = $"{SymMap[h]}{HeaderMap[h]}"; }
+            h = "ChargeCapacity"; if (rowText == h) { rowText = $"{SymMap[h]}{HeaderMap[h]}"; }
+            h = "Emission"; if (rowText == h) { rowText = $"{SymMap[h]}{HeaderMap[h]}"; }
+            h = "Speed"; if (rowText == h) { rowText = $"{SymMap[h]}{HeaderMap[h]}"; }
         }
 
         Label outLabel = new Label { Text = rowText, TextColor = fontColor, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
