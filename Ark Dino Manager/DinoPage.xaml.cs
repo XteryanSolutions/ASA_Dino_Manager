@@ -1294,7 +1294,7 @@ public partial class DinoPage : ContentPage
                     AddToGrid(grid, RowLabel("Papa", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Mama", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("papaMute", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("pamaMute", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("mamaMute", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Imprint", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Imprinter", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
 
@@ -1396,7 +1396,7 @@ public partial class DinoPage : ContentPage
                     AddToGrid(grid, RowLabel("Papa", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Mama", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("papaMute", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
-                    AddToGrid(grid, RowLabel("pamaMute", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
+                    AddToGrid(grid, RowLabel("mamaMute", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Imprint", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     AddToGrid(grid, RowLabel("Imprinter", title, row, boxRowID, id), rowIndex, columnID++, title, selected, false, id);
                     if (ToggleExcluded == 0)
@@ -1460,7 +1460,7 @@ public partial class DinoPage : ContentPage
                 AddToGrid(grid, RowLabel("Papa", title, row), rowIndex, columnID++, title);
                 AddToGrid(grid, RowLabel("Mama", title, row), rowIndex, columnID++, title);
                 AddToGrid(grid, RowLabel("papaMute", title, row), rowIndex, columnID++, title);
-                AddToGrid(grid, RowLabel("pamaMute", title, row), rowIndex, columnID++, title);
+                AddToGrid(grid, RowLabel("mamaMute", title, row), rowIndex, columnID++, title);
                 AddToGrid(grid, RowLabel("Imprint", title, row), rowIndex, columnID++, title);
                 AddToGrid(grid, RowLabel("Imprinter", title, row), rowIndex, columnID++, title);
 
