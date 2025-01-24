@@ -459,8 +459,8 @@ public partial class DinoPage : ContentPage
         if (rowText == "Damage") { tesValue = DataManager.DamageMax; if (outV != 0) { outV = (outV + 1) * 100; } }
         if (rowText == "Speed") { tesValue = DataManager.SpeedMax; outV = (outV + 1) * 100; tes = false; } // disable recoloring
         if (rowText == "CraftSkill") { tesValue = DataManager.CraftMax; if (!hasCraft) { tes = false; } if (outV != 0) { outV = (outV + 1) * 100; } }
-        if (rowText == "Regen") { tesValue = DataManager.RegenMax; if (!hasCharge) { tes = false; } }
-        if (rowText == "Capacity") { tesValue = DataManager.CapacityMax; if (!hasCharge) { tes = false; } }
+        if (rowText == "ChargeRegen") { tesValue = DataManager.RegenMax; if (!hasCharge) { tes = false; } }
+        if (rowText == "ChargeCapacity") { tesValue = DataManager.CapacityMax; if (!hasCharge) { tes = false; } }
         if (rowText == "Emission") { tesValue = DataManager.EmissionMax; if (!hasEmission) { tes = false; } if (outV != 0) { outV = (outV + 1) * 100; } }
 
         if (what != "D")
@@ -484,8 +484,8 @@ public partial class DinoPage : ContentPage
                 if (rowText == "Weight") { if (mutes.Substring(4, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(4, 1) == "2") { fontColor = Shared.mutaBadColor; } }
                 if (rowText == "Damage") { if (mutes.Substring(5, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(5, 1) == "2") { fontColor = Shared.mutaBadColor; } }
                 if (rowText == "CraftSkill") { if (mutes.Substring(6, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(6, 1) == "2") { fontColor = Shared.mutaBadColor; } }
-                if (rowText == "Regen") { if (mutes.Substring(7, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(7, 1) == "2") { fontColor = Shared.mutaBadColor; } }
-                if (rowText == "Capacity") { if (mutes.Substring(8, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(8, 1) == "2") { fontColor = Shared.mutaBadColor; } }
+                if (rowText == "ChargeRegen") { if (mutes.Substring(7, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(7, 1) == "2") { fontColor = Shared.mutaBadColor; } }
+                if (rowText == "ChargeCapacity") { if (mutes.Substring(8, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(8, 1) == "2") { fontColor = Shared.mutaBadColor; } }
                 if (rowText == "Emission") { if (mutes.Substring(9, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(9, 1) == "2") { fontColor = Shared.mutaBadColor; } }
 
             }
