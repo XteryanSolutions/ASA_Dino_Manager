@@ -11,6 +11,7 @@ namespace Ark_Dino_Manager
         private static readonly string configLocation = @"\config.ini";
         private static readonly string dataLocation = @"\Data";
         private static readonly string logsLocation = @"\Logs";
+        private static readonly string locLocation = @"\Localization";
 
         // Filemanager stuff
         private static DateTime TimeStart = DateTime.Now;
@@ -43,7 +44,7 @@ namespace Ark_Dino_Manager
 
                 if (!Directory.Exists(AppPath + logsLocation)) { Directory.CreateDirectory(AppPath + logsLocation); }
                 if (!Directory.Exists(AppPath + dataLocation)) { Directory.CreateDirectory(AppPath + dataLocation); }
-
+                if (!Directory.Exists(AppPath + locLocation)) { Directory.CreateDirectory(AppPath + locLocation); }
 
                 if (LoadLocalization()) { }
 
@@ -219,65 +220,79 @@ namespace Ark_Dino_Manager
                 // Get the full locale (e.g., "en-US" for English (United States))
                 string locale = currentCulture.Name;
 
+
                 string locPath = AppContext.BaseDirectory;
-                string filename = locPath + @$"\Localization\{language}.ini";
+                string source = locPath + locLocation + @$"\{language}.ini";
 
-                if (Directory.Exists(locPath + @"\Localization"))
+                string locPath2 = AppPath;
+                string dest = locPath2 + locLocation + @$"\{language}.ini";
+
+                if (File.Exists(source))
                 {
-                    if (File.Exists(filename)) // load localization file and set values
+                    if (!File.Exists(dest))
                     {
-                        var iniData = IniParser.ParseIniFile(filename);
-                        foreach (var section in iniData)
+                        try
                         {
+                            // copy locale file from here to there (do not overwrite if we already have a custom version)
+                            File.Copy(source, dest, false);
+                            FileManager.Log($"Copied Localization file", 0);
+                        }
+                        catch
+                        {
+                            FileManager.Log($"Localization file Copy error", 1);
+                        }
+                    }
+                }   
 
-                            if (section.Key.Equals("Headers", cci)) // header section
+                if (File.Exists(dest)) // load localization file and set values
+                {
+                    var iniData = IniParser.ParseIniFile(dest);
+                    foreach (var section in iniData)
+                    {
+
+                        if (section.Key.Equals("Headers", cci)) // header section
+                        {
+                            foreach (var key in section.Value)
                             {
-                                foreach (var key in section.Value)
+                                foreach (var d in HeaderMap)
                                 {
-                                    foreach (var d in HeaderMap)
+                                    keyName = d.Key;
+                                    if (key.Key.Equals(keyName, cci))
                                     {
-                                        keyName = d.Key;
-                                        if (key.Key.Equals(keyName, cci))
+                                        if (key.Value != "")
                                         {
-                                            if (key.Value != "")
-                                            {
-                                                HeaderMap[keyName] = key.Value;
-                                            }
+                                            HeaderMap[keyName] = key.Value;
                                         }
                                     }
                                 }
                             }
-
-                            if (section.Key.Equals("Main", cci))
-                            {
-                                foreach (var key in section.Value)
-                                {
-                                    foreach (var d in StringMap)
-                                    {
-                                        keyName = d.Key;
-                                        if (key.Key.Equals(keyName, cci))
-                                        {
-                                            if (key.Value != "")
-                                            {
-                                                StringMap[keyName] = key.Value;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
                         }
 
-                        FileManager.Log($"Loaded localization file: {language}.ini", 0);
+                        if (section.Key.Equals("Main", cci))
+                        {
+                            foreach (var key in section.Value)
+                            {
+                                foreach (var d in StringMap)
+                                {
+                                    keyName = d.Key;
+                                    if (key.Key.Equals(keyName, cci))
+                                    {
+                                        if (key.Value != "")
+                                        {
+                                            StringMap[keyName] = key.Value;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                     }
-                    else
-                    {
-                        FileManager.Log($"no localization file for: {language}", 1);  
-                    }
+
+                    FileManager.Log($"Loaded localization file: {dest}", 0);
                 }
                 else
                 {
-                    FileManager.Log($"no localization folder", 1);
+                    FileManager.Log($"no localization file for: {language}", 1);
                 }
             }
             catch

@@ -139,7 +139,7 @@
 
 	<ItemGroup>
 	  <None Update="Localization\en.ini">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
 	</ItemGroup>
 
