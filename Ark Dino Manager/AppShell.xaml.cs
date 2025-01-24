@@ -1,4 +1,4 @@
-﻿using Windows.Gaming.Input;
+﻿using static Ark_Dino_Manager.Localization;
 
 namespace Ark_Dino_Manager
 {
@@ -503,7 +503,7 @@ namespace Ark_Dino_Manager
                     try
                     {
                         FileManager.SaveFiles();
-                        this.Title = this.Title + " " + Shared.Smap["Save"]; DisableSaveIcon();
+                        this.Title = this.Title + " " + Smap["Save"]; DisableSaveIcon();
                     }
                     finally
                     {
@@ -520,7 +520,7 @@ namespace Ark_Dino_Manager
         private async Task DisableSaveIcon()
         {
             await Task.Delay(1500);
-            this.Title = this.Title.Replace(Shared.Smap["Save"], "");
+            this.Title = this.Title.Replace(Smap["Save"], "");
         }
     }
 }

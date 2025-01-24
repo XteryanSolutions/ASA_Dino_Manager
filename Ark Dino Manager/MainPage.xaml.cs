@@ -1,4 +1,6 @@
-﻿namespace Ark_Dino_Manager
+﻿using static Ark_Dino_Manager.Localization;
+
+namespace Ark_Dino_Manager
 {
 
 
@@ -23,23 +25,22 @@
                 {
                     FileManager.Log("Updating GUI -> " + Shared.setPage, 0);
 
-
                     if (Shared.setPage == @"Looking_for_dinos")
                     {
-                        this.Title = "Ready to start importing data";
-                        DefaultView("Looking for dino exports 🔎", "bigegg.png");
+                        this.Title = MainMap["hasGameTitle"];
+                        DefaultView(MainMap["hasGame"], "bigegg.png");
                         // redirect to start page once first import is run
                         Shared.firstImport = true; Shared.setPage = "ASA";
                     }
                     else if (Shared.setPage == @"Looking_for_game")
                     {
-                        this.Title = "Could not find game install location";
-                        DefaultView("Check configs for game install folder 🔎", "bigegg.png");
+                        this.Title = MainMap["noGameTitle"];
+                        DefaultView(MainMap["noGame"], "bigegg.png");
                     }
                     else
                     {
-                        this.Title = "Dino Manager";
-                        DefaultView("Remember to feed your dinos!!!");
+                        this.Title = MainMap["mainTitle"];
+                        DefaultView(MainMap["mainText"]);
                     }
                 }
                 finally

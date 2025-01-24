@@ -1,7 +1,7 @@
-﻿using Microsoft.Maui;
-using System.Data;
+﻿using System.Data;
 using System.Diagnostics;
 using static Ark_Dino_Manager.DataManager;
+using static Ark_Dino_Manager.Localization;
 using static Ark_Dino_Manager.Shared;
 
 namespace Ark_Dino_Manager;
@@ -132,7 +132,7 @@ public partial class DinoPage : ContentPage
             catch
             {
                 FileManager.Log("Failed updating dinos", 2);
-                DefaultView("Dinos exploded :O");
+                DefaultView(DinoMap["dataError"]);
             }
             finally
             {
@@ -142,7 +142,7 @@ public partial class DinoPage : ContentPage
         else
         {
             FileManager.Log("DinoPage Failed to acquire database lock", 1);
-            DefaultView("Dinos walked away :(");
+            DefaultView(DinoMap["dataWarning"]);
         }
         ToHere("Time1"); // Stop timer and show results
     }
@@ -423,8 +423,8 @@ public partial class DinoPage : ContentPage
     {
         string sep = DataManager.DecimalSeparator;
         string tester = rowText.Replace("O2", "Oxygen");
-        tester = tester.Replace("Regen", "ChargeRegen");
-        tester = tester.Replace("Capacity", "ChargeCapacity");
+        // tester = tester.Replace("Regen", "ChargeRegen");
+        // tester = tester.Replace("Capacity", "ChargeCapacity");
 
         string papaID = DataManager.GetLastColumnData("ID", selectedID, "Papa");
         string mamaID = DataManager.GetLastColumnData("ID", selectedID, "Mama");
@@ -457,7 +457,7 @@ public partial class DinoPage : ContentPage
         if (rowText == "Food") { tesValue = DataManager.FoodMax; }
         if (rowText == "Weight") { tesValue = DataManager.WeightMax; }
         if (rowText == "Damage") { tesValue = DataManager.DamageMax; if (outV != 0) { outV = (outV + 1) * 100; } }
-        if (rowText == "Speed") { tesValue = DataManager.SpeedMax;  outV = (outV + 1) * 100; tes = false; } // disable recoloring
+        if (rowText == "Speed") { tesValue = DataManager.SpeedMax; outV = (outV + 1) * 100; tes = false; } // disable recoloring
         if (rowText == "CraftSkill") { tesValue = DataManager.CraftMax; if (!hasCraft) { tes = false; } if (outV != 0) { outV = (outV + 1) * 100; } }
         if (rowText == "Regen") { tesValue = DataManager.RegenMax; if (!hasCharge) { tes = false; } }
         if (rowText == "Capacity") { tesValue = DataManager.CapacityMax; if (!hasCharge) { tes = false; } }
@@ -505,8 +505,8 @@ public partial class DinoPage : ContentPage
     {
         string sep = DataManager.DecimalSeparator;
         string tester = rowText.Replace("O2", "Oxygen");
-        tester = tester.Replace("Regen", "ChargeRegen");
-        tester = tester.Replace("Capacity", "ChargeCapacity");
+        // tester = tester.Replace("Regen", "ChargeRegen");
+        // tester = tester.Replace("Capacity", "ChargeCapacity");
 
         string value = DataManager.GetFirstColumnData("ID", selectedID, tester).Replace(".", sep);
         if (value == "") { value = "0"; }
@@ -522,8 +522,8 @@ public partial class DinoPage : ContentPage
         if (rowText == "Damage") { damageText = value; tesValue = DataManager.DamageMax; if (!hasDamage) { tes = false; } outV = (outV + 1) * 100; }
         if (rowText == "Speed") { speedText = value; tesValue = DataManager.SpeedMax; outV = (outV + 1) * 100; tes = false; }// disable recoloring
         if (rowText == "CraftSkill") { craftText = value; tesValue = DataManager.CraftMax; if (!hasCraft) { tes = false; } outV = (outV + 1) * 100; }
-        if (rowText == "Regen") { regenText = value; tesValue = DataManager.RegenMax; if (!hasCharge) { tes = false; } }
-        if (rowText == "Capacity") { capacityText = value; tesValue = DataManager.CapacityMax; if (!hasCharge) { tes = false; } }
+        if (rowText == "ChargeRegen") { regenText = value; tesValue = DataManager.RegenMax; if (!hasCharge) { tes = false; } }
+        if (rowText == "ChargeCapacity") { capacityText = value; tesValue = DataManager.CapacityMax; if (!hasCharge) { tes = false; } }
         if (rowText == "Emission") { emissionText = value; tesValue = DataManager.EmissionMax; if (!hasEmission) { tes = false; } outV = (outV + 1) * 100; }
 
 
@@ -542,8 +542,8 @@ public partial class DinoPage : ContentPage
                 if (rowText == "Weight") { if (mutes.Substring(4, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(4, 1) == "2") { fontColor = Shared.mutaBadColor; } }
                 if (rowText == "Damage") { if (mutes.Substring(5, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(5, 1) == "2") { fontColor = Shared.mutaBadColor; } }
                 if (rowText == "CraftSkill") { if (mutes.Substring(6, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(6, 1) == "2") { fontColor = Shared.mutaBadColor; } }
-                if (rowText == "Regen") { if (mutes.Substring(7, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(7, 1) == "2") { fontColor = Shared.mutaBadColor; } }
-                if (rowText == "Capacity") { if (mutes.Substring(8, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(8, 1) == "2") { fontColor = Shared.mutaBadColor; } }
+                if (rowText == "ChargeRegen") { if (mutes.Substring(7, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(7, 1) == "2") { fontColor = Shared.mutaBadColor; } }
+                if (rowText == "ChargeCapacity") { if (mutes.Substring(8, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(8, 1) == "2") { fontColor = Shared.mutaBadColor; } }
                 if (rowText == "Emission") { if (mutes.Substring(9, 1) == "1") { fontColor = Shared.mutaColor; } else if (mutes.Substring(9, 1) == "2") { fontColor = Shared.mutaBadColor; } }
 
             }
@@ -569,8 +569,8 @@ public partial class DinoPage : ContentPage
                 if (rowText == "Damage") { damageText = tValue.ToString(); }
                 if (rowText == "Speed") { speedText = tValue.ToString(); }
                 if (rowText == "CraftSkill") { craftText = tValue.ToString(); }
-                if (rowText == "Regen") { regenText = value; }
-                if (rowText == "Capacity") { capacityText = value; }
+                if (rowText == "ChargeRegen") { regenText = value; }
+                if (rowText == "ChargeCapacity") { capacityText = value; }
                 if (rowText == "Emission") { emissionText = tValue.ToString(); }
             }
         };
@@ -735,13 +735,13 @@ public partial class DinoPage : ContentPage
 
             if (hasCharge)
             {
-                labelT = "Capacity"; rowID++; colID = 0;
+                labelT = "ChargeCapacity"; rowID++; colID = 0;
                 AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
                 AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
                 AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
                 AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "M"), rowID, colID++, "", false, true);
 
-                labelT = "Regen"; rowID++; colID = 0;
+                labelT = "ChargeRegen"; rowID++; colID = 0;
                 AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "D"), rowID, colID++, "", false, true);
                 AddToGrid(statGrid, EditRowBox(labelT, DefaultColor), rowID, colID++, "", false, true);
                 AddToGrid(statGrid, EditRowLabel(labelT, DefaultColor, "P"), rowID, colID++, "", false, true);
@@ -885,13 +885,13 @@ public partial class DinoPage : ContentPage
 
                     if (papaName == "")
                     {
-                        if (papaID == "00") { papaName = Shared.Smap["Unknown"]; }
-                        else { papaName = Shared.Smap["Missing"]; }
+                        if (papaID == "00") { papaName = Smap["Unknown"]; }
+                        else { papaName = Smap["Missing"]; }
                     }
                     if (mamaName == "")
                     {
-                        if (mamaID == "00") { mamaName = Shared.Smap["Unknown"]; }
-                        else { mamaName = Shared.Smap["Missing"]; }
+                        if (mamaID == "00") { mamaName = Smap["Unknown"]; }
+                        else { mamaName = Smap["Missing"]; }
                     }
 
 
@@ -933,28 +933,15 @@ public partial class DinoPage : ContentPage
             // create empty table content
 
             // Create scrollable content
-            var scrollContent = new StackLayout
-            {
-                Spacing = 20,
-                Padding = 3
-            };
+            var scrollContent = new StackLayout { Spacing = 20, Padding = 3 };
 
             // Create grid to put data in
-            var grid1 = new Grid
-            {
-                RowSpacing = 0,
-                ColumnSpacing = 20,
-                Padding = 3
-            };
+            var grid1 = new Grid { RowSpacing = 0, ColumnSpacing = 20, Padding = 3 };
+
             // Define columns
             maingrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 0
 
-
-            var imageContainer = new Grid
-            {
-                BackgroundColor = Shared.MainPanelColor, // Set the background color here
-                Padding = 0
-            };
+            var imageContainer = new Grid { BackgroundColor = Shared.MainPanelColor, Padding = 0 };
 
             var image = new Image
             {
@@ -966,9 +953,9 @@ public partial class DinoPage : ContentPage
             // Add the image to the container
             imageContainer.Children.Add(image);
 
-            var label1 = new Label
+            var label1 = new Label // DinoMap["noDino"]
             {
-                Text = "No dinos in here 🔎",
+                Text = DinoMap["noDino"],
                 HorizontalOptions = LayoutOptions.Center,
                 VerticalOptions = LayoutOptions.Center,
                 Style = (Style)Application.Current.Resources["Headline"],
@@ -1072,8 +1059,8 @@ public partial class DinoPage : ContentPage
             if (column == "Weight") { if (DataManager.ToDouble(rowText) + statViewOffset >= DataManager.WeightMax) { RowLabelColor = Shared.goodColor; } }
             if (column == "Damage") { if (DataManager.ToDouble(rowText) + statViewOffset >= DataManager.DamageMax) { RowLabelColor = Shared.goodColor; } }
             if (column == "CraftSkill") { if (DataManager.ToDouble(rowText) + statViewOffset >= DataManager.CraftMax) { RowLabelColor = Shared.goodColor; } }
-            if (column == "Regen") { if (DataManager.ToDouble(rowText) + statViewOffset >= DataManager.RegenMax) { RowLabelColor = Shared.goodColor; } }
-            if (column == "Capacity") { if (DataManager.ToDouble(rowText) + statViewOffset >= DataManager.CapacityMax) { RowLabelColor = Shared.goodColor; } }
+            if (column == "ChargeRegen") { if (DataManager.ToDouble(rowText) + statViewOffset >= DataManager.RegenMax) { RowLabelColor = Shared.goodColor; } }
+            if (column == "ChargeCapacity") { if (DataManager.ToDouble(rowText) + statViewOffset >= DataManager.CapacityMax) { RowLabelColor = Shared.goodColor; } }
             if (column == "Emission") { if (DataManager.ToDouble(rowText) + statViewOffset >= DataManager.EmissionMax) { RowLabelColor = Shared.goodColor; } }
 
 
@@ -1116,7 +1103,7 @@ public partial class DinoPage : ContentPage
                     if (!hasCharge) { hC = "2"; iC = "2"; }
                     if (!hasEmission) { jC = "2"; }
 
-                    if (column == "Hp" || column == "Stamina" || column == "O2" || column == "Food" || column == "Weight" || column == "Damage" || column == "CraftSkill" || column == "Regen" || column == "Capacity" || column == "Emission")
+                    if (column == "Hp" || column == "Stamina" || column == "O2" || column == "Food" || column == "Weight" || column == "Damage" || column == "CraftSkill" || column == "ChargeRegen" || column == "ChargeCapacity" || column == "Emission")
                     {
                         if ((aC + bC + cC + dC + eC + fC + gC + hC + iC + jC) == "2222222222") { RowLabelColor = Shared.goldColor; }
                     }
@@ -1124,7 +1111,7 @@ public partial class DinoPage : ContentPage
             }
             else
             {
-                if (row["Status"].ToString().Contains(Shared.Smap["Garbage"])) // recolor if its a garbage dino
+                if (row["Status"].ToString().Contains(Smap["Garbage"])) // recolor if its a garbage dino
                 {
                     RowLabelColor = garbageColor;
                 }
@@ -1145,8 +1132,8 @@ public partial class DinoPage : ContentPage
                     if (column == "Weight") { aC = mutes.Substring(4, 1); testStat = WeightMax; }
                     if (column == "Damage") { aC = mutes.Substring(5, 1); testStat = DamageMax; }
                     if (column == "CraftSkill") { aC = mutes.Substring(6, 1); testStat = CraftMax; }
-                    if (column == "Regen") { aC = mutes.Substring(7, 1); testStat = RegenMax; }
-                    if (column == "Capacity") { aC = mutes.Substring(8, 1); testStat = CapacityMax; }
+                    if (column == "ChargeRegen") { aC = mutes.Substring(7, 1); testStat = RegenMax; }
+                    if (column == "ChargeCapacity") { aC = mutes.Substring(8, 1); testStat = CapacityMax; }
                     if (column == "Emission") { aC = mutes.Substring(9, 1); testStat = EmissionMax; }
 
 
@@ -1160,11 +1147,11 @@ public partial class DinoPage : ContentPage
 
         if (column == "Status")
         {
-            rowText = rowText.Replace("#", Shared.Smap["Identical"]);
-            rowText = rowText.Replace("<", Shared.Smap["LessThan"]);
+            rowText = rowText.Replace("#", Smap["Identical"]);
+            rowText = rowText.Replace("<", Smap["LessThan"]);
 
             string notes = DataManager.GetNotes(id);
-            if (notes != "") { rowText += Shared.Smap["Notes"]; }
+            if (notes != "") { rowText += Smap["Notes"]; }
 
             if (title != "Bottom")
             {
@@ -1173,7 +1160,7 @@ public partial class DinoPage : ContentPage
                 {
                     if (!rowText.Contains(Smap["Baby"]))
                     {
-                        rowText = Shared.Smap["Baby"] + rowText;
+                        rowText = Smap["Baby"] + rowText;
                     }
                 }
             }
@@ -1212,8 +1199,8 @@ public partial class DinoPage : ContentPage
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 0  Name
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 1  Level
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 2  Hp
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 3  Stamina / Regen
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 4  O2 / Capacity
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 3  Stamina / ChargeRegen
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 4  O2 / ChargeCapacity
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 5  Food
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 6  Damage
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // 7  CraftSkill

@@ -1,4 +1,5 @@
 using System.Data;
+using static Ark_Dino_Manager.Localization;
 using static Ark_Dino_Manager.Shared;
 
 namespace Ark_Dino_Manager;
@@ -733,11 +734,11 @@ public partial class BabyPage : ContentPage
             }
 
             // mark all generation dependant data as invalid
-            if (mama == Shared.Smap["Warning"] && papa == Shared.Smap["Warning"])
+            if (mama == Smap["Warning"] && papa == Smap["Warning"])
             {
-                papaM = Shared.Smap["Warning"];
-                mamaM = Shared.Smap["Warning"];
-                gen = Shared.Smap["Warning"];
+                papaM = Smap["Warning"];
+                mamaM = Smap["Warning"];
+                gen = Smap["Warning"];
             }
 
 

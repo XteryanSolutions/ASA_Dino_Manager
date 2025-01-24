@@ -1,8 +1,6 @@
 ﻿using System.Data;
 using System.Globalization;
-using System.Linq;
-using System.Text.RegularExpressions;
-using WinRT.Interop;
+using static Ark_Dino_Manager.Localization;
 
 namespace Ark_Dino_Manager
 {
@@ -1383,35 +1381,35 @@ namespace Ark_Dino_Manager
                         if (lastAge < 100)
                         {
                             DateTime firstTimeD = DateTime.ParseExact(firstTime, "dd/MM/yyyy HH:mm:ss", null);
-                            status = $"{Shared.Smap["Baby"]}" + ConvertUtcToLocal(firstTimeD.ToString("dd/MM/yyyy HH:mm:ss"));
+                            status = $"{Smap["Baby"]}" + ConvertUtcToLocal(firstTimeD.ToString("dd/MM/yyyy HH:mm:ss"));
                         }
                         else
                         {
-                            status = $"{Shared.Smap["Grown"]}" + GrowUpTime(dino);
+                            status = $"{Smap["Grown"]}" + GrowUpTime(dino);
                         }
 
                         // warn if dont know any of the parent id's
                         if ((mama == "" || mama == "N/A") && (papa == "" || papa == "N/A"))
                         {
-                            mamaName = Shared.Smap["Warning"];
-                            papaName = Shared.Smap["Warning"];
+                            mamaName = Smap["Warning"];
+                            papaName = Smap["Warning"];
                         }
                         else // we has one of the parents id
                         {
-                            if (mamaName == "") { mamaName = Shared.Smap["Missing"]; }
-                            if (papaName == "") { papaName = Shared.Smap["Missing"]; }
+                            if (mamaName == "") { mamaName = Smap["Missing"]; }
+                            if (papaName == "") { papaName = Smap["Missing"]; }
                         }
 
-                        if (mama == "00") { mamaName = Shared.Smap["Unknown"]; }
-                        if (papa == "00") { papaName = Shared.Smap["Unknown"]; }
+                        if (mama == "00") { mamaName = Smap["Unknown"]; }
+                        if (papa == "00") { papaName = Smap["Unknown"]; }
                     }
                     else // Fresh adult tame
                     {
                         DateTime firstTimeD = DateTime.ParseExact(firstTime, "dd/MM/yyyy HH:mm:ss", null);
-                        status = $"{Shared.Smap["NewTame"]}" + ConvertUtcToLocal(firstTimeD.ToString("dd/MM/yyyy HH:mm:ss"));
+                        status = $"{Smap["NewTame"]}" + ConvertUtcToLocal(firstTimeD.ToString("dd/MM/yyyy HH:mm:ss"));
 
-                        mamaName = Shared.Smap["Unknown"];
-                        papaName = Shared.Smap["Unknown"];
+                        mamaName = Smap["Unknown"];
+                        papaName = Smap["Unknown"];
 
                         imprinter = DataManager.GetLastColumnData("ID", dino, "Tribe");
                     }
@@ -1557,13 +1555,13 @@ namespace Ark_Dino_Manager
 
             if (baby)
             {
-                sortiM = ReplaceSymbols(sortiM, Shared.StatMap, true);
-                sortiF = ReplaceSymbols(sortiF, Shared.StatMap, true);
+                sortiM = ReplaceSymbols(sortiM, StatMap, true);
+                sortiF = ReplaceSymbols(sortiF, StatMap, true);
             }
             else
             {
-                sortiM = ReplaceSymbols(sortiM, Shared.StatMap);
-                sortiF = ReplaceSymbols(sortiF, Shared.StatMap);
+                sortiM = ReplaceSymbols(sortiM, StatMap);
+                sortiF = ReplaceSymbols(sortiF, StatMap);
             }
 
             // Sort the MaleTable based on the desired column
@@ -1662,7 +1660,7 @@ namespace Ark_Dino_Manager
             }
 
             // remove symbols to use correct name in sorting
-            sortC = ReplaceSymbols(sortC, Shared.StatMap);
+            sortC = ReplaceSymbols(sortC, StatMap);
 
 
             // Sort the MaleTable based on the desired column
@@ -1806,7 +1804,7 @@ namespace Ark_Dino_Manager
 
                 // edit the row that we show
                 if (outStatus.Contains("<") || outStatus.Contains("#")) { compareStatus = outStatus; }
-                if (!binaryC.Contains("1")) { compareStatus = $"{compareStatus}{Shared.Smap["Garbage"]}"; }
+                if (!binaryC.Contains("1")) { compareStatus = $"{compareStatus}{Smap["Garbage"]}"; }
                 MaleTable.Rows[rowIDC].SetField("Status", compareStatus);
                 MaleTable.Rows[rowIDC].SetField("Res", binaryC);
                 rowIDC++;
@@ -1850,7 +1848,7 @@ namespace Ark_Dino_Manager
                 binaryC = aC + bC + cC + dC + eC + fC + gC + hC + iC + jC;
 
                 // edit the row we show
-                if (!binaryC.Contains("1")) { compareStatus = $"{compareStatus}{Shared.Smap["Garbage"]}"; }
+                if (!binaryC.Contains("1")) { compareStatus = $"{compareStatus}{Smap["Garbage"]}"; }
                 FemaleTable.Rows[rowIDC].SetField("Status", compareStatus);
                 FemaleTable.Rows[rowIDC].SetField("Res", binaryC);
                 rowIDC++;

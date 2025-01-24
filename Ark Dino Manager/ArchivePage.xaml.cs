@@ -1,6 +1,6 @@
 using System.Data;
+using static Ark_Dino_Manager.Localization;
 using static Ark_Dino_Manager.Shared;
-using Fileprompt;
 
 namespace Ark_Dino_Manager;
 

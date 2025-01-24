@@ -1,5 +1,7 @@
 ﻿using Microsoft.Win32;
+using System.Globalization;
 using System.Text;
+using static Ark_Dino_Manager.Localization;
 
 namespace Ark_Dino_Manager
 {
@@ -42,6 +44,8 @@ namespace Ark_Dino_Manager
                 if (!Directory.Exists(AppPath + logsLocation)) { Directory.CreateDirectory(AppPath + logsLocation); }
                 if (!Directory.Exists(AppPath + dataLocation)) { Directory.CreateDirectory(AppPath + dataLocation); }
 
+
+                if (LoadLocalization()) { }
 
                 // load config file check if path works return true
                 if (LoadConfig()) // loaded
@@ -179,39 +183,6 @@ namespace Ark_Dino_Manager
                     writer.WriteLine("ArchivePanelColor=" + ColorToHex(Shared.ArchivePanelColor));
                     writer.WriteLine("OddAPanelColor=" + ColorToHex(Shared.OddAPanelColor));
                     writer.WriteLine("");
-                    writer.WriteLine("# Header symbols must be unique.");
-                    writer.WriteLine("# i.e. Stamina=⚡Stamina , Stamina=Stamina");
-                    writer.WriteLine("");
-                    writer.WriteLine("[Header Symbols]");
-                    string v = "ID"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "Tag"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "Class"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "Name"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "Level"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "Hp"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "Stamina"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "O2"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "Food"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "Weight"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "Damage"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "CraftSkill"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "ChargeCapacity"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "ChargeRegen"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "Emission"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "Speed"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "Gen"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "Papa"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "Mama"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "pM"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "mM"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "Status"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "Imprint"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "Imprinter"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "Age"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "Time"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "Rate"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "Date"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
-                    v = "Group"; writer.WriteLine($"{v}=" + Shared.StatMap[v]);
                 }
                 FileManager.Log("Config Saved/Updated", 0);
                 return true;
@@ -229,6 +200,134 @@ namespace Ark_Dino_Manager
             int g = (int)(color.Green * 255);
             int b = (int)(color.Blue * 255);
             return $"#{r:X2}{g:X2}{b:X2}";
+        }
+
+
+        public static bool LoadLocalization()
+        {
+            try
+            {
+                string keyName = "";
+                var cci = StringComparison.CurrentCultureIgnoreCase;
+
+                // get current culture
+                CultureInfo currentCulture = CultureInfo.CurrentCulture;
+
+                // Get the language (e.g., "en" for English, "fr" for French)
+                string language = currentCulture.TwoLetterISOLanguageName;
+
+                // Get the full locale (e.g., "en-US" for English (United States))
+                string locale = currentCulture.Name;
+
+                string locPath = AppContext.BaseDirectory;
+                string filename = locPath + @$"\Localization\{language}.ini";
+
+                if (Directory.Exists(locPath + @"\Localization"))
+                {
+                    if (File.Exists(filename)) // load localization file and set values
+                    {
+                        var iniData = IniParser.ParseIniFile(filename);
+                        foreach (var section in iniData)
+                        {
+
+                            if (section.Key.Equals("Headers", cci)) // header section with unique key values
+                            {
+                                foreach (var key in section.Value)
+                                {
+                                    foreach (var d in StatMap)
+                                    {
+                                        keyName = d.Key;
+                                        if (key.Key.Equals(keyName, cci))
+                                        {
+                                            if (!StatMap.ContainsValue(key.Value) && key.Value != "")
+                                            {
+                                                StatMap[keyName] = key.Value;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (section.Key.Equals("Main", cci))
+                            {
+                                foreach (var key in section.Value)
+                                {
+                                    foreach (var d in MainMap)
+                                    {
+                                        keyName = d.Key;
+                                        if (key.Key.Equals(keyName, cci))
+                                        {
+                                            if (key.Value != "")
+                                            {
+                                                MainMap[keyName] = key.Value;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (section.Key.Equals("Dino", cci))
+                            {
+                                foreach (var key in section.Value)
+                                {
+                                    foreach (var d in DinoMap)
+                                    {
+                                        keyName = d.Key;
+                                        if (key.Key.Equals(keyName, cci))
+                                        {
+                                            if (key.Value != "")
+                                            {
+                                                DinoMap[keyName] = key.Value;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (section.Key.Equals("Baby", cci))
+                            {
+                                foreach (var key in section.Value)
+                                {
+                                    foreach (var d in BabyMap)
+                                    {
+                                        keyName = d.Key;
+                                        if (key.Key.Equals(keyName, cci))
+                                        {
+                                            if (key.Value != "")
+                                            {
+                                                BabyMap[keyName] = key.Value;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (section.Key.Equals("Archive", cci))
+                            {
+                                foreach (var key in section.Value)
+                                {
+                                    foreach (var d in ArchiveMap)
+                                    {
+                                        keyName = d.Key;
+                                        if (key.Key.Equals(keyName, cci))
+                                        {
+                                            if (key.Value != "")
+                                            {
+                                                ArchiveMap[keyName] = key.Value;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
         }
 
         public static bool LoadConfig()
@@ -376,216 +475,6 @@ namespace Ark_Dino_Manager
                                     if (key.Key.Equals("OddAPanelColor", cci))
                                     {
                                         Shared.OddAPanelColor = Color.FromArgb(key.Value);
-                                    }
-                                }
-                            }
-                            if (section.Key.Equals("Header Symbols", cci))
-                            {
-                                foreach (var key in section.Value)
-                                {
-                                    string v = "ID";
-                                    if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "Tag"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "Class"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "Name"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "Level"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "Hp"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "Stamina"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "O2"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "Food"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "Weight"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "Damage"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "CraftSkill"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "Speed"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "Gen"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "Mama"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "Papa"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "mM"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "pM"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "Status"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "Imprint"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "Imprinter"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "Age"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "Time"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "Rate"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "Date"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "ChargeRegen"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "ChargeCapacity"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "Emission"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
-                                    }
-                                    v = "Group"; if (key.Key.Equals(v, cci))
-                                    {
-                                        if (!Shared.StatMap.ContainsValue(key.Value) && key.Value != "")
-                                        {
-                                            Shared.StatMap[v] = key.Value;
-                                        }
                                     }
                                 }
                             }
