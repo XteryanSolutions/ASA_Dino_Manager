@@ -227,24 +227,29 @@ namespace Ark_Dino_Manager
                 string locPath2 = AppPath;
                 string dest = locPath2 + locLocation + @$"\{language}.ini";
 
-                if (File.Exists(source))
+
+                if (!File.Exists(dest))
                 {
-                    if (!File.Exists(dest))
+                    try
                     {
-                        try
+                        if (File.Exists(source))
                         {
-                            // copy locale file from here to there (do not overwrite if we already have a custom version)
+                            // copy locale file from included assets to user data folder
+                            // (do not overwrite if we already have a custom version)
                             File.Copy(source, dest, false);
-                            FileManager.Log($"Copied Localization file", 0);
+                            FileManager.Log($"Copied Localization file: {dest}", 0);
                         }
-                        catch
+                        else
                         {
-                            FileManager.Log($"Localization file Copy error", 1);
+                            FileManager.Log($"no localization file for: {language}", 1);
                         }
                     }
-                }   
-
-                if (File.Exists(dest)) // load localization file and set values
+                    catch
+                    {
+                        FileManager.Log($"Localization file Copy error", 1);
+                    }
+                }
+                else // load existing localization file and set values
                 {
                     var iniData = IniParser.ParseIniFile(dest);
                     foreach (var section in iniData)
@@ -287,12 +292,7 @@ namespace Ark_Dino_Manager
                         }
 
                     }
-
                     FileManager.Log($"Loaded localization file: {dest}", 0);
-                }
-                else
-                {
-                    FileManager.Log($"no localization file for: {language}", 1);
                 }
             }
             catch
