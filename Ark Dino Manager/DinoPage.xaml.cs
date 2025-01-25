@@ -716,7 +716,7 @@ public partial class DinoPage : ContentPage
             int rowID = 0; int colID = 0; string labelT = "";
 
             AddToGrid(statGrid, EditHeader("", DefaultColor), rowID, colID++, "", false, true);
-            AddToGrid(statGrid, EditHeader("Edit Stats", DefaultColor), rowID, colID++, "", false, true);
+            AddToGrid(statGrid, EditHeader(StringMap["editStats"], DefaultColor), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditHeader(papaName, Shared.maleColor), rowID, colID++, "", false, true);
             AddToGrid(statGrid, EditHeader(mamaName, Shared.femaleColor), rowID, colID++, "", false, true);
 

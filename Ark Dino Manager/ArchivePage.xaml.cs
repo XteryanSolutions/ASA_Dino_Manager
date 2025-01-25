@@ -82,7 +82,7 @@ public partial class ArchivePage : ContentPage
 
 
                 FileManager.Log("Updating GUI -> " + Shared.setPage, 0);
-                if (!isSelected) { this.Title = $"{Shared.setPage.Replace("_", " ")}"; }
+                if (!isSelected) { this.Title = StringMap["archiveTitle"]; }
                 else { this.Title = $"{DataManager.GetLastColumnData("ID", selectedID, "Name")} - {selectedID}"; }
 
                 if (DataManager.ArchiveTable.Rows.Count > 0)
@@ -454,7 +454,7 @@ public partial class ArchivePage : ContentPage
         if (selectedID != "")
         {
             FileManager.Log($"Unselected {selectedID}", 0);
-            selectedID = ""; isSelected = false; this.Title = Shared.setPage;
+            selectedID = ""; isSelected = false; this.Title = StringMap["archiveTitle"];
 
             PurgeBtn.IsVisible = false;
             ArchiveBtn.IsVisible = false;

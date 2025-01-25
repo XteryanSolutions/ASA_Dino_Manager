@@ -63,7 +63,7 @@ public partial class BabyPage : ContentPage
 
 
                 FileManager.Log("Updating GUI -> " + Shared.setPage, 0);
-                if (!isSelected) { this.Title = $"{Shared.setPage.Replace("_", " ")}"; }
+                if (!isSelected) { this.Title = StringMap["babyTitle"]; }
                 else { this.Title = $"{DataManager.GetLastColumnData("ID", selectedID, "Name")} - {selectedID}"; }
 
                 DinoView();
@@ -372,7 +372,7 @@ public partial class BabyPage : ContentPage
 
             // add stat text
             var t0 = new Label { Text = "", Style = (Style)Application.Current.Resources["Headline"], TextColor = Shared.maleColor, FontSize = Shared.fontHSize, FontAttributes = FontAttributes.Bold };
-            var t1 = new Label { Text = "Age %/hr", TextColor = cellColor1, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
+            var t1 = new Label { Text = StringMap["ageRateText"], TextColor = cellColor1, FontSize = Shared.fontSize, HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center };
 
             int rowid = 0;
             int colid = 0;
@@ -382,7 +382,7 @@ public partial class BabyPage : ContentPage
 
             var editLabel = new Label
             {
-                Text = $"{shortClass} Aging Rate",
+                Text = $"{shortClass} " + StringMap["ageRateTitle"],
                 HorizontalOptions = LayoutOptions.Start,
                 VerticalOptions = LayoutOptions.Start,
                 Style = (Style)Application.Current.Resources["Headline"],
@@ -878,7 +878,7 @@ public partial class BabyPage : ContentPage
         if (selectedID != "" && !isDouble)
         {
             //  FileManager.Log($"Unselected {selectedID}", 0);
-            selectedID = ""; isSelected = false; this.Title = $"{Shared.setPage.Replace("_", " ")}";
+            selectedID = ""; isSelected = false; this.Title = StringMap["babyTitle"];
             canDouble = false; editStats = false;
 
             ExcludeBtn.IsVisible = false;
