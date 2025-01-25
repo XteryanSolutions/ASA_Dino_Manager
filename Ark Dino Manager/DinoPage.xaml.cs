@@ -495,6 +495,8 @@ public partial class DinoPage : ContentPage
         if (what != "D")
         {
             rowText = outV.ToString();
+            if (mamaID == "" || mamaID == "N/A" || mamaName == "N/A" || mamaName == "") { rowText = ""; }
+            if (papaID == "" || papaID == "N/A" || papaName == "N/A" || papaName == "") { rowText = ""; }
         }
         else
         {
@@ -702,8 +704,8 @@ public partial class DinoPage : ContentPage
             string papaName = DataManager.GetLastColumnData("ID", papaID, "Name");
             string mamaName = DataManager.GetLastColumnData("ID", mamaID, "Name");
 
-            if (papaName == "") { papaName = "Papa Stats"; }
-            if (mamaName == "") { mamaName = "Mama Stats"; }
+            //if (papaName == "") { papaName = "Papa Stats"; }
+           // if (mamaName == "") { mamaName = "Mama Stats"; }
 
 
             Color DefaultColor = Shared.maleColor;
@@ -1273,7 +1275,7 @@ public partial class DinoPage : ContentPage
                 AddToGrid(grid, HeaderLabel("Imprinter", title), rowIndex, columnID++, title);
                 if (ToggleExcluded == 0)
                 {
-                    Label groupH = new Label { Text = $"{HeaderMap["Group"]}", FontAttributes = FontAttributes.Bold, TextColor = maleHeaderColor, FontSize = headerSize };
+                    Label groupH = new Label { Text = $"{SymMap["Group"]}{HeaderMap["Group"]}", FontAttributes = FontAttributes.Bold, TextColor = maleHeaderColor, FontSize = headerSize };
                     AddToGrid(grid, groupH, rowIndex, columnID++, title);
                 }
 
@@ -1375,7 +1377,7 @@ public partial class DinoPage : ContentPage
                 AddToGrid(grid, HeaderLabel("Imprinter", title), rowIndex, columnID++, title);
                 if (ToggleExcluded == 0)
                 {
-                    Label groupH = new Label { Text = $"{HeaderMap["Group"]}", FontAttributes = FontAttributes.Bold, TextColor = femaleHeaderColor, FontSize = headerSize };
+                    Label groupH = new Label { Text = $"{SymMap["Group"]}{HeaderMap["Group"]}", FontAttributes = FontAttributes.Bold, TextColor = femaleHeaderColor, FontSize = headerSize };
                     AddToGrid(grid, groupH, rowIndex, columnID++, title);
                 }
 
