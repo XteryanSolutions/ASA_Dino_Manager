@@ -132,6 +132,7 @@ namespace Ark_Dino_Manager
             { "invalidTitle", "Invalid File" },
             { "invalidMessage", "Please select a file with the .hrv extension." },
             { "babyTitle", "Baby Dinos" },
+            { "archiveTitle", "Dino Archive" },
             { "ageRateTitle", "Aging Rate" },
             { "ageRateText", "Age %/hr" },
             { "editStats", "Edit Stats" },
